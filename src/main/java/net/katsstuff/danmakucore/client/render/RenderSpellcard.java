@@ -1,0 +1,86 @@
+/*
+ * This class was created by <Katrix>. It's distributed as
+ * part of the DanmakuCore Mod. Get the Source Code in github:
+ * https://github.com/Katrix-/DanmakuCore
+ *
+ * DanmakuCore is Open Source and distributed under the
+ * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
+ */
+package net.katsstuff.danmakucore.client.render;
+
+import org.lwjgl.opengl.GL11;
+
+import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
+import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
+import net.katsstuff.danmakucore.registry.DanmakuRegistry;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.ResourceLocation;
+
+public class RenderSpellcard extends Render<EntitySpellcard> {
+
+	public RenderSpellcard(RenderManager renderManager) {
+		super(renderManager);
+	}
+
+	@Override
+	public void doRender(EntitySpellcard entity, double x, double y, double z, float entityYaw, float partialTicks) {
+		GL11.glPushMatrix();
+		Tessellator tes = Tessellator.getInstance();
+		VertexBuffer vb = tes.getBuffer();
+		float rvl = 14F / 128F;
+		float rul = 0F;
+		float rvr = 114F / 128F;
+		float rur = 1F;
+		float size = 1.0F;
+		bindEntityTexture(entity);
+		GL11.glTranslated(x, y, z);
+		GL11.glScalef(size, size, size);
+		GL11.glRotatef(entity.ticksExisted * 20F, 0.0F, 1.0F, 0.0F);
+		GL11.glRotatef(30F, 0.0F, 0.0F, 1.0F);
+		GlStateManager.disableLighting();
+
+		//TODO: Are all four needed here?
+		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
+		vb.pos(0.2F, 0.3F, 0.0D).tex(rvl, rul).normal(0F, 1F, 0F).endVertex();
+		vb.pos(-0.2F, 0.3F, 0.0D).tex(rvr, rul).normal(0F, 1F, 0F).endVertex();
+		vb.pos(-0.2F, -0.3F, 0.0D).tex(rvr, rur).normal(0F, 1F, 0F).endVertex();
+		vb.pos(0.2F, -0.3F, 0.0D).tex(rvl, rur).normal(0F, 1F, 0F).endVertex();
+		tes.draw();
+
+		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
+		vb.pos(-0.2F, 0.3F, 0.0D).tex(rvl, rul).normal(0F, 1F, 0F).endVertex();
+		vb.pos(0.2F, 0.3F, 0.0D).tex(rvr, rul).normal(0F, 1F, 0F).endVertex();
+		vb.pos(0.2F, -0.3F, 0.0D).tex(rvr, rur).normal(0F, 1F, 0F).endVertex();
+		vb.pos(-0.2F, -0.3F, 0.0D).tex(rvl, rur).normal(0F, 1F, 0F).endVertex();
+		tes.draw();
+
+		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
+		vb.pos(0.2F, 0.3F, 0.001D).tex(rvl, rul).normal(0F, 1F, 0F).endVertex();
+		vb.pos(-0.2F, 0.3F, 0.001D).tex(rvr, rul).normal(0F, 1F, 0F).endVertex();
+		vb.pos(-0.2F, -0.3F, 0.001D).tex(rvr, rur).normal(0F, 1F, 0F).endVertex();
+		vb.pos(0.2F, -0.3F, 0.001D).tex(rvl, rur).normal(0F, 1F, 0F).endVertex();
+		tes.draw();
+
+		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
+		vb.pos(-0.2F, 0.3F, -0.001D).tex(rvl, rul).normal(0F, 1F, 0F).endVertex();
+		vb.pos(0.2F, 0.3F, -0.001D).tex(rvr, rul).normal(0F, 1F, 0F).endVertex();
+		vb.pos(0.2F, -0.3F, -0.001D).tex(rvr, rur).normal(0F, 1F, 0F).endVertex();
+		vb.pos(-0.2F, -0.3F, -0.001D).tex(rvl, rur).normal(0F, 1F, 0F).endVertex();
+		tes.draw();
+
+		GlStateManager.enableLighting();
+		GL11.glPopMatrix();
+	}
+
+	@Override
+	protected ResourceLocation getEntityTexture(EntitySpellcard entity) {
+		Spellcard type = DanmakuRegistry.INSTANCE.spellcard.get(entity.getSpellcardId());
+		return new ResourceLocation(DanmakuRegistry.INSTANCE.spellcard.getRegistry().getKey(type).getResourceDomain(),
+				"textures/items/spellcard/" + type.getName() + ".png");
+	}
+}

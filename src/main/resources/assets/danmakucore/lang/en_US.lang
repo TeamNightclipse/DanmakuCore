@@ -1,0 +1,132 @@
+#Creative
+itemGroup.danmakucore.general=DanmakuCore
+itemGroup.danmakucore.danmaku=Danmaku
+itemGroup.danmakucore.spellcard=Spellcard
+
+#Normal Item names
+item.bomb.name=Bomb Item
+item.score.name=Score Item
+item.extend.name=Extend Item
+
+#Spellcard item names
+item.spellcard.spellcard.danmakucore.delusionOfEnlightenment.name=Spellcard: Human Sword "Delusion of Enlightenment"
+
+#Spellcard names
+spellcard.danmakucore.delusionOfEnlightenment.name=Human Sword "Delusion of Enlightenment"
+
+#Spellcard Parameters
+item.spellcard.level=Lv.
+item.spellcard.spellcard=Spellcard
+item.spellcard.user=User
+item.spellcard.removeTime=Invincibility Time
+item.spellcard.endTime=Duration
+
+#Spellcard users
+item.spellcard.userName.marisa=Marisa Kirisame
+item.spellcard.userName.youmu=Youmu Konpaku
+
+#Danmaku Parameters
+item.danmaku.damage=Damage
+item.danmaku.size=Size
+item.danmaku.amount=Amount
+item.danmaku.type=Type
+item.danmaku.form=Shape
+item.danmaku.pattern=Pattern
+item.danmaku.speed=Speed
+item.danmaku.gravity=Gravity
+item.danmaku.color=Color
+item.danmaku.delay=Delay
+item.danmaku.end=End
+item.danmaku.subentity=Special
+item.danmaku.infinity=Infinity
+item.danmaku.custom=Custom
+item.danmaku.gFree=None
+
+#Names normal
+item.danmaku.danmakuvariant.danmakucore.default.name=Medium Danmaku
+item.danmaku.danmakuvariant.danmakucore.tiny.name=Tiny Danmaku
+item.danmaku.danmakuvariant.danmakucore.small.name=Small Danmaku
+item.danmaku.danmakuvariant.danmakucore.circle.name=Circle Danmaku
+item.danmaku.danmakuvariant.danmakucore.scale.name=Scale Danmaku
+item.danmaku.danmakuvariant.danmakucore.starSmall.name=Small Star Danmaku
+item.danmaku.danmakuvariant.danmakucore.star.name=Star Danmaku
+item.danmaku.danmakuvariant.danmakucore.rice.name=Rice Danmaku
+item.danmaku.danmakuvariant.danmakucore.crystal1.name=Pointed Crystal Danmaku
+item.danmaku.danmakuvariant.danmakucore.crystal2.name=Blunt Crystal Danmaku
+item.danmaku.danmakuvariant.danmakucore.kunai.name=Kunai Danmaku
+item.danmaku.danmakuvariant.danmakucore.oval.name=Oval Danmaku
+item.danmaku.danmakuvariant.danmakucore.laser.name=Laser Danmaku
+item.danmaku.danmakuvariant.danmakucore.laserShort.name=Short Laser Danmaku
+item.danmaku.danmakuvariant.danmakucore.laserLong.name=Long Laser Danmaku
+item.danmaku.danmakuvariant.danmakucore.pellet.name=Pellet Danmaku
+item.danmaku.danmakuvariant.danmakucore.sphereDark.name=Dark Sphere Danmaku
+
+#Forms
+item.danmaku.form.danmakucore.normal=Normal Shape
+item.danmaku.form.danmakucore.circle=Circle Shape
+item.danmaku.form.danmakucore.scale=Scale Shape
+item.danmaku.form.danmakucore.star=Star Shape
+item.danmaku.form.danmakucore.rice=Rice Shape
+item.danmaku.form.danmakucore.crystal1=Pointed Crystal Shape
+item.danmaku.form.danmakucore.crystal2=Blunt Crystal Shape
+item.danmaku.form.danmakucore.kunai=Kunai Shape
+item.danmaku.form.danmakucore.laser=Laser Shape
+item.danmaku.form.danmakucore.pellet=Pellet Shape
+item.danmaku.form.danmakucore.sphereDark=Dark Sphere Shape
+
+#Custom Names
+item.danmaku.custom.form.danmakucore.normal=Custom Normal Danmaku
+item.danmaku.custom.form.danmakucore.circle=Custom Circle Danmaku
+item.danmaku.custom.form.danmakucore.scale=Custom Scale Danmaku
+item.danmaku.custom.form.danmakucore.star=Custom Star Danmaku
+item.danmaku.custom.form.danmakucore.rice=Custom Rice Danmaku
+item.danmaku.custom.form.danmakucore.crystal1=Custom Pointed Crystal Danmaku
+item.danmaku.custom.form.danmakucore.crystal2=Custom Blunt Crystal Danmaku
+item.danmaku.custom.form.danmakucore.kunai=Custom Kunai Danmaku
+item.danmaku.custom.form.danmakucore.laser=Custom Laser Danmaku
+item.danmaku.custom.form.danmakucore.pellet=Custom Pellet Danmaku
+item.danmaku.custom.form.danmakucore.sphereDark=Custom Dark Sphere Danmaku
+
+#Vibrant colors
+item.danmaku.color.16711680=Strong Red
+item.danmaku.color.255=Strong Blue
+item.danmaku.color.65280=Strong Green
+item.danmaku.color.16776960=Strong Yellow
+item.danmaku.color.16711935=Strong Magenta
+item.danmaku.color.65535=Strong Cyan
+item.danmaku.color.16747520=Strong Orange
+
+#Vanilla Colors
+item.danmaku.color.14188339=Orange
+item.danmaku.color.11685080=Magenta
+item.danmaku.color.6724056=Light Blue
+item.danmaku.color.15066419=Yellow
+item.danmaku.color.8375321=Lime
+item.danmaku.color.15892389=Pink
+item.danmaku.color.5000268=Gray
+item.danmaku.color.10066329=Silver
+item.danmaku.color.5013401=Cyan
+item.danmaku.color.8339378=Purple
+item.danmaku.color.3361970=Blue
+item.danmaku.color.6704179=Brown
+item.danmaku.color.6717235=Green
+item.danmaku.color.10040115=Red
+item.danmaku.color.1644825=Black
+
+#Shot Patterns
+item.danmaku.pattern.0=Single Shot
+item.danmaku.pattern.1=Random Ring Shot
+item.danmaku.pattern.2=Wide Shot
+item.danmaku.pattern.3=Circle Shot
+item.danmaku.pattern.4=Sphere Shot
+item.danmaku.pattern.5=Ring Shot
+
+#Shot subentity
+item.danmaku.subentity.danmakucore.fire=Fire
+item.danmaku.subentity.danmakucore.explosion=Explosion
+item.danmaku.subentity.danmakucore.teleport=Teleport
+
+#Defaults
+item.danmaku.subentity.danmakucore.default=No Special
+item.danmaku.color.16777215=White
+item.danmaku.color.custom=Custom color

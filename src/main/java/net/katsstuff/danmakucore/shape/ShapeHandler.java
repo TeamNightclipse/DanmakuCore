@@ -1,0 +1,167 @@
+/*
+ * This class was created by <Katrix>. It's distributed as
+ * part of the DanmakuCore Mod. Get the Source Code in github:
+ * https://github.com/Katrix-/DanmakuCore
+ *
+ * DanmakuCore is Open Source and distributed under the
+ * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
+ */
+package net.katsstuff.danmakucore.shape;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import net.katsstuff.danmakucore.data.Vector3;
+import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.Tuple;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+public final class ShapeHandler {
+
+	public static final ShapeHandler INSTANCE = new ShapeHandler();
+
+	private final List<IShapeEntry> shapeList = new ArrayList<>();
+
+	private ShapeHandler() {}
+
+	/**
+	 * Creates a new shape with a position as an anchor
+	 * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
+	 */
+	public static Set<EntityDanmaku> createShape(IShape shape, Vector3 pos, Vector3 angle) {
+		return INSTANCE.createEntry(new ShapeEntryPosition(shape, pos, angle));
+	}
+
+	/**
+	 * Creates a new shape with an entity as an anchor
+	 * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
+	 */
+	public static Set<EntityDanmaku> createShape(IShape shape, Entity anchor) {
+		return INSTANCE.createEntry(new ShapeEntryEntity(shape, anchor));
+	}
+
+	/**
+	 * Creates a new shape with a living entity(eye height) as an anchor.
+	 * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
+	 */
+	public static Set<EntityDanmaku> createShape(IShape shape, EntityLivingBase anchor) {
+		return INSTANCE.createEntry(new ShapeEntryEntityLiving(shape, anchor));
+	}
+
+	/**
+	 * Creates a new shape with a from the specific {@link ShapeEntry}
+	 * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
+	 */
+	@SuppressWarnings("WeakerAccess")
+	public Set<EntityDanmaku> createEntry(IShapeEntry entry) {
+		shapeList.add(entry);
+		return entry.getDrawn();
+	}
+
+	@SubscribeEvent
+	public void onTick(TickEvent.WorldTickEvent event) {
+		if(event.phase == TickEvent.Phase.START) {
+			List<IShapeEntry> completedShapes = shapeList.stream().filter(IShapeEntry::draw).collect(Collectors.toList());
+			shapeList.removeAll(completedShapes);
+		}
+	}
+
+	public interface IShapeEntry {
+
+		/**
+		 * Gets the current drawn danmaku from this shape. This set should always be the same reference.
+		 */
+		Set<EntityDanmaku> getDrawn();
+
+		/**
+		 * Draws this shape, giving it the information it needs.
+		 * @return If this shape is completed and should be removed.
+		 */
+		boolean draw();
+	}
+
+	/**
+	 * A class that specifies how a shape should be drawn.
+	 */
+	private static abstract class ShapeEntry implements IShapeEntry {
+
+		final Set<EntityDanmaku> drawn = new HashSet<>();
+		final IShape shape;
+		int counter = 0;
+
+		ShapeEntry(IShape shape) {
+			this.shape = shape;
+		}
+
+		@Override
+		public Set<EntityDanmaku> getDrawn() {
+			return drawn;
+		}
+	}
+
+	private static class ShapeEntryEntity extends ShapeEntry {
+
+		private final Entity entity;
+
+		ShapeEntryEntity(IShape shape, Entity entity) {
+			super(shape);
+			this.entity = entity;
+		}
+
+		@Override
+		public boolean draw() {
+			Vector3 currentPos = new Vector3(entity);
+			Vector3 currentAngle = Vector3.fromSpherical(entity.rotationYaw, entity.rotationPitch);
+			Tuple<Boolean, Set<EntityDanmaku>> ret = shape.drawForTick(currentPos, currentAngle, counter);
+			drawn.addAll(ret.getSecond());
+			counter++;
+			return ret.getFirst();
+		}
+	}
+
+	private static class ShapeEntryEntityLiving extends ShapeEntry {
+
+		private final EntityLivingBase entity;
+
+		ShapeEntryEntityLiving(IShape shape, EntityLivingBase entity) {
+			super(shape);
+			this.entity = entity;
+		}
+
+		@Override
+		public boolean draw() {
+			Vector3 currentPos = new Vector3(entity);
+			Vector3 currentAngle = Vector3.fromSpherical(entity.rotationYaw, entity.rotationPitch);
+			Tuple<Boolean, Set<EntityDanmaku>> ret = shape.drawForTick(currentPos, currentAngle, counter);
+			drawn.addAll(ret.getSecond());
+			counter++;
+			return ret.getFirst();
+		}
+	}
+
+	private static class ShapeEntryPosition extends ShapeEntry {
+
+		private final Vector3 pos;
+		private final Vector3 angle;
+
+		ShapeEntryPosition(IShape shape, Vector3 pos, Vector3 angle) {
+			super(shape);
+			this.pos = pos;
+			this.angle = angle;
+		}
+
+		@Override
+		public boolean draw() {
+			Tuple<Boolean, Set<EntityDanmaku>> ret = shape.drawForTick(pos, angle, counter);
+			drawn.addAll(ret.getSecond());
+			counter++;
+			return ret.getFirst();
+		}
+	}
+}

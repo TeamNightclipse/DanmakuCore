@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "danmakucore:items/danmaku/MediumShot",
+    "layer1": "danmakucore:items/danmaku/MediumShot_2"
+  }
+}
