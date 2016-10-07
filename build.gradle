@@ -30,6 +30,10 @@ compileJava.options.encoding = 'UTF-8'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+compileScala {
+    scalaCompileOptions.additionalParameters = ["-Xexperimental"]
+}
+
 version = config.mc_version + "-" + config.version + "-" + config.build_number
 group = 'net.katsstuff'
 archivesBaseName = "danmakucore"
