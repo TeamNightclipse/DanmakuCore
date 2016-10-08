@@ -6,7 +6,7 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danamkucore.form.objloader
+package net.katsstuff.danmakucore.entity.danmaku.form.danobj
 
 import org.lwjgl.opengl.GL11
 

@@ -6,15 +6,12 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danamkucore.form.objloader
-
-import java.util.Optional
+package net.katsstuff.danmakucore.entity.danmaku.form.danobj
 
 import scala.io.Source
 
 import org.lwjgl.opengl.GL11
 
-import net.katsstuff.danamkucore.form.objloader.parser.OBJParser
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
 import net.minecraft.client.renderer.{GlStateManager, Tessellator}
@@ -23,14 +20,14 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-object OBJFormLoader {
+object DanOBJFormLoader {
 
 	@SideOnly(Side.CLIENT)
 	def createIRenderForm(location: ResourceLocation): Either[String, (IRenderForm, ResourceLocation)] = {
 		val url = getClass.getResource(s"assets/${location.getResourceDomain}/${location.getResourcePath}")
 		val textFromFile = Source.fromURL(url).mkString
 
-		OBJParser.read(textFromFile).right.map(seq => {
+		DanOBJParser.read(textFromFile).right.map{case (seq, texture) =>
 
 			val form: IRenderForm = new IRenderForm {
 				override def renderForm(danmaku: EntityDanmaku, x: Double, y: Double, z: Double, entityYaw: Float, partialTicks: Float,
@@ -62,7 +59,7 @@ object OBJFormLoader {
 				}
 			}
 
-			form
-		})
+			(form, texture)
+		}
 	}
 }

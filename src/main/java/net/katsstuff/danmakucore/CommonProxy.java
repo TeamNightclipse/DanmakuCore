@@ -53,19 +53,18 @@ public class CommonProxy {
 
 	void registerStuff() {
 		//Forms
-		new FormCoreGeneric(LibFormName.DEFAULT, new FormSphere(), new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png"));
-		new FormCoreGeneric(LibFormName.SPHERE_DARK, new FormSphereDark(), new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png"));
-		new FormCoreGeneric(LibFormName.CRYSTAL1, new FormCrystal1(), new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png"));
-		new FormCoreGeneric(LibFormName.CRYSTAL2, new FormCrystal2(), new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png"));
-		new FormCoreGeneric(LibFormName.CIRCLE, new FormSphereCircle(), new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png"));
-		new FormCoreGeneric(LibFormName.PELLET, new FormPellet(), new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png"));
+		ResourceLocation white = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png");
+		new FormCoreGeneric(LibFormName.DEFAULT, new FormSphere(), white);
+		new FormCoreGeneric(LibFormName.SPHERE_DARK, new FormSphereDark(), white);
+		new FormCoreGeneric(LibFormName.CRYSTAL1, new FormCrystal1(), white);
+		new FormCoreGeneric(LibFormName.CRYSTAL2, new FormCrystal2(), white);
+		new FormCoreGeneric(LibFormName.CIRCLE, new FormSphereCircle(), white);
+		new FormCoreGeneric(LibFormName.PELLET, new FormPellet(), white);
 		new FormCoreGeneric(LibFormName.KUNAI, new FormKunai(), new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/Kunai.png"));
-		new FormCoreGeneric(LibFormName.STAR, new FormStar(), new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png"));
-
-		//TODO: Unfinished Forms
-		new FormCoreGeneric(LibFormName.SCALE, new FormScale(), new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png"));
-		new FormCoreGeneric(LibFormName.RICE, new FormPointedSphere(), new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png"));
-		new FormCoreGeneric(LibFormName.LASER, new FormPointedSphere(), new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png"));
+		new FormCoreGeneric(LibFormName.STAR, new FormStar(), white);
+		new FormCoreGeneric(LibFormName.SCALE, new FormScale(),white);
+		new FormCoreGeneric(LibFormName.RICE, new FormPointedSphere(), white);
+		new FormCoreGeneric(LibFormName.LASER, new FormPointedSphere(), white);
 
 		//SubEntities
 		new SubEntityTypeDefault(LibSubEntityName.DEFAULT);

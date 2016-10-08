@@ -12,7 +12,7 @@ item.extend.name=Extend Item
 item.spellcard.spellcard.danmakucore.delusionOfEnlightenment.name=Spellcard: Human Sword "Delusion of Enlightenment"
 
 #Spellcard names
-spellcard.danmakucore.delusionOfEnlightenment.name=Human Sword "Delusion of Enlightenment"
+spellcard.danmakucore.delusionOfEnlightenment=Human Sword "Delusion of Enlightenment"
 
 #Spellcard Parameters
 item.spellcard.level=Lv.

@@ -6,15 +6,14 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danamkucore.form.objloader.parser
+package net.katsstuff.danmakucore.entity.danmaku.form.danobj
 
 import scala.annotation.tailrec
 import scala.util.parsing.combinator.JavaTokenParsers
 
-import net.katsstuff.danamkucore.form.objloader.{ColorData, NormalData, OptimizedTriangleData, PositionData, TriangleData, UVData, VertexData}
 import net.minecraft.util.ResourceLocation
 
-object OBJParser extends JavaTokenParsers {
+object DanOBJParser extends JavaTokenParsers {
 
 	override def skipWhitespace: Boolean = false
 
@@ -64,7 +63,7 @@ object OBJParser extends JavaTokenParsers {
 	def allNormals: Parser[Seq[NormalData]] = repsep(normal, '\n')
 	def allFaces: Parser[Seq[(FaceInfo, FaceInfo, FaceInfo)]] = repsep(face, '\n')
 
-	def read(string: String): Either[String, Seq[OptimizedTriangleData]] = {
+	def read(string: String): Either[String, (Seq[OptimizedTriangleData], ResourceLocation)] = {
 		val triangles = parse(version, string).flatMapWithNext {
 			case 1 => parse('\n' ~> danmakuColor, _)
 				.flatMapWithNext(danmakuMarkerColor => parse(glowColor, _)
@@ -92,7 +91,7 @@ object OBJParser extends JavaTokenParsers {
 													}
 												}
 
-												inner(faces, Seq())
+												(inner(faces, Seq()), texture)
 											}))))))))
 			case unknown => Failure(s"Unknown .danobj version: $unknown", _)
 		}
