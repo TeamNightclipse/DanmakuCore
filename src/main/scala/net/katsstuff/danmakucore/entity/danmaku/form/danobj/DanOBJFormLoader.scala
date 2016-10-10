@@ -8,58 +8,82 @@
  */
 package net.katsstuff.danmakucore.entity.danmaku.form.danobj
 
+import java.io.IOException
+
 import scala.io.Source
+import scala.util.{Failure, Success, Try}
 
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
-import net.minecraft.client.renderer.{GlStateManager, Tessellator}
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.renderer.{GlStateManager, Tessellator}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 object DanOBJFormLoader {
 
 	@SideOnly(Side.CLIENT)
-	def createIRenderForm(location: ResourceLocation): Either[String, (IRenderForm, ResourceLocation)] = {
+	@throws[DanmakuParseException]
+	@throws[IOException]
+	def createIRenderForm(location: ResourceLocation): (IRenderForm, ResourceLocation) = {
 		val url = getClass.getResource(s"assets/${location.getResourceDomain}/${location.getResourcePath}")
-		val textFromFile = Source.fromURL(url).mkString
+		val textFromFile = Try(Source.fromURL(url).mkString)
 
-		DanOBJParser.read(textFromFile).right.map{case (seq, texture) =>
+		val res = textFromFile
+			.flatMap(DanOBJParser.read(_)
+				.left.map(msg => Failure(new DanmakuParseException(msg)))
+				.right.map { case (triangleData, texture) =>
 
-			val form: IRenderForm = new IRenderForm {
-				override def renderForm(danmaku: EntityDanmaku, x: Double, y: Double, z: Double, entityYaw: Float, partialTicks: Float,
-					renderManager: RenderManager): Unit = {
-					val tes = Tessellator.getInstance
-					val vb = tes.getBuffer
-					val shotData = danmaku.getShotData
-					val sizeX = shotData.getSizeX
-					val sizeY = shotData.getSizeY
-					val sizeZ = shotData.getSizeZ
-					val color = shotData.getColor
-					val pitch = danmaku.rotationPitch
-					val yaw = danmaku.rotationYaw
-					val roll = danmaku.getRoll
+				val (glowTriangles, noGlowTriangles) = triangleData.partition(_.useGlow)
 
-					GlStateManager.scale(sizeX, sizeY, sizeZ)
-					GlStateManager.rotate(-yaw - 180, 0F, 1F, 0F)
-					GlStateManager.rotate(pitch, 1F, 0F, 0F)
-					GlStateManager.rotate(roll, 0F, 0F, 1F)
+				val form: IRenderForm = new IRenderForm {
+					override def renderForm(danmaku: EntityDanmaku, x: Double, y: Double, z: Double, entityYaw: Float, partialTicks: Float,
+						renderManager: RenderManager): Unit = {
+						val tes = Tessellator.getInstance
+						val vb = tes.getBuffer
+						val shotData = danmaku.getShotData
+						val sizeX = shotData.getSizeX
+						val sizeY = shotData.getSizeY
+						val sizeZ = shotData.getSizeZ
+						val color = shotData.getColor
+						val pitch = danmaku.rotationPitch
+						val yaw = danmaku.rotationYaw
+						val roll = danmaku.getRoll
 
-					val danmakuColorData = new ColorData(color, 1F)
-					val glowDanmakuColorData = new ColorData(color, 0.3F)
+						GlStateManager.scale(sizeX, sizeY, sizeZ)
+						GlStateManager.rotate(-yaw - 180, 0F, 1F, 0F)
+						GlStateManager.rotate(pitch, 1F, 0F, 0F)
+						GlStateManager.rotate(roll, 0F, 0F, 1F)
 
-					seq.foreach(data => {
+						val danmakuColorData = new ColorData(color, 1F)
+						val glowDanmakuColorData = new ColorData(color, 0.3F)
+
 						vb.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL)
-						if(data.useGlow) data.draw(vb, glowDanmakuColorData) else data.draw(vb, danmakuColorData)
+						noGlowTriangles.foreach(_.draw(vb, danmakuColorData))
 						tes.draw()
-					})
-				}
-			}
 
-			(form, texture)
+						GlStateManager.enableBlend()
+						GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE)
+						GlStateManager.depthMask(false)
+
+						vb.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL)
+						glowTriangles.foreach(_.draw(vb, glowDanmakuColorData))
+						tes.draw()
+
+						GlStateManager.depthMask(true)
+						GlStateManager.disableBlend()
+					}
+				}
+
+				Success((form, texture))
+			}.merge)
+
+		res match {
+			case Success(ret) => ret
+			case Failure(e) => throw e
 		}
 	}
 }

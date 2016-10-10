@@ -17,17 +17,10 @@ object DanOBJParser extends JavaTokenParsers {
 
 	override def skipWhitespace: Boolean = false
 
-	def vector2: Parser[(Double, Double)] = decimalNumber ~ ' ' ~ decimalNumber ^^ {
-		case x ~ _ ~ y => (x.toDouble, y.toDouble)
-	}
-
-	def vector3: Parser[(Double, Double, Double)] = decimalNumber ~ ' ' ~ decimalNumber ~ ' ' ~ decimalNumber ^^ {
-		case x ~ _ ~ y ~ _ ~ z => (x.toDouble, y.toDouble, z.toDouble)
-	}
-
-	def vector4: Parser[(Double, Double, Double, Double)] = decimalNumber ~ ' ' ~ decimalNumber ~ ' ' ~ decimalNumber ~ ' ' ~ decimalNumber ^^ {
-		case x ~ _ ~ y ~ _ ~ z ~ _ ~ w => (x.toDouble, y.toDouble, z.toDouble, w.toDouble)
-	}
+	def vector1: Parser[Double] = decimalNumber ^^ (_.toDouble)
+	def vector2: Parser[(Double, Double)] = vector1 ~ ' ' ~ vector1 ^^ { case x ~ _ ~ y => (x, y) }
+	def vector3: Parser[(Double, Double, Double)] = vector2 ~ ' ' ~ vector1 ^^ { case ((x, y)) ~ _ ~ z => (x, y, z) }
+	def vector4: Parser[(Double, Double, Double, Double)] = vector3 ~ ' ' ~ vector1 ^^ { case ((x, y, z)) ~ _ ~ w => (x, y, z, w) }
 
 	def version: Parser[Int] = "version " ~> wholeNumber ^^ (_.toInt)
 	def danmakuColor: Parser[Int] = "danmakuColor " ~> wholeNumber ^^ (_.toInt)
@@ -38,9 +31,7 @@ object DanOBJParser extends JavaTokenParsers {
 	//Need something better here
 	//http://stackoverflow.com/questions/169008/regex-for-parsing-directory-and-filename
 	def path: Parser[String] = """((?:[^/]*/)*)(.*)""".r
-	def texture: Parser[ResourceLocation] = "texture " ~> lowerCaseWord ~ ':' ~ path ^^ {
-		case domain ~ _ ~ path => new ResourceLocation(domain, path)
-	}
+	def texture: Parser[ResourceLocation] = "texture " ~> lowerCaseWord ~ ':' ~ path ^^ { case domain ~ _ ~ path => new ResourceLocation(domain, path) }
 
 	def vertex: Parser[PositionData] = "v " ~> vector3 ^^ { case ((x, y, z)) => PositionData(x, y, z) }
 	def uv: Parser[UVData] = "vt " ~> vector2 ^^ { case ((u, v)) => UVData(u, v) }
@@ -53,9 +44,7 @@ object DanOBJParser extends JavaTokenParsers {
 	}
 
 	def face: Parser[(FaceInfo, FaceInfo, FaceInfo)] =
-		"f " ~> faceInfo ~ ' ' ~ faceInfo ~ ' ' ~ faceInfo ^^ {
-			case f1 ~ _ ~ f2 ~ _ ~ f3 => (f1, f2, f3)
-		}
+		"f " ~> faceInfo ~ ' ' ~ faceInfo ~ ' ' ~ faceInfo ^^ { case f1 ~ _ ~ f2 ~ _ ~ f3 => (f1, f2, f3) }
 
 	def allVertices: Parser[Seq[PositionData]] = repsep(vertex, '\n')
 	def allTextures: Parser[Seq[UVData]] = repsep(uv, '\n')
@@ -64,36 +53,40 @@ object DanOBJParser extends JavaTokenParsers {
 	def allFaces: Parser[Seq[(FaceInfo, FaceInfo, FaceInfo)]] = repsep(face, '\n')
 
 	def read(string: String): Either[String, (Seq[OptimizedTriangleData], ResourceLocation)] = {
+		val newLine = "\n"
+		val blankLine = "\n\n"
+
 		val triangles = parse(version, string).flatMapWithNext {
-			case 1 => parse('\n' ~> danmakuColor, _)
-				.flatMapWithNext(danmakuMarkerColor => parse(glowColor, _)
-					.flatMapWithNext(glowMarkerColor => parse(texture, _)
-						.flatMapWithNext(texture => parse(allVertices, _)
-							.flatMapWithNext(pos => parse('\n' ~> allTextures, _)
-								.flatMapWithNext(uv => parse('\n' ~> allColors, _)
-									.flatMapWithNext(color => parse('\n' ~> allNormals, _)
-										.flatMapWithNext(norm => parse('\n' ~> allFaces, _)
+			case 1 => parse(newLine ~> danmakuColor, _)
+				.flatMapWithNext(danmakuMarkerColor => parse(newLine ~> glowColor, _)
+					.flatMapWithNext(glowMarkerColor => parse(newLine ~> texture, _)
+						.flatMapWithNext(texture => parse(blankLine ~> allVertices, _)
+							.flatMapWithNext(pos => parse(blankLine ~> allTextures, _)
+								.flatMapWithNext(uv => parse(blankLine ~> allColors, _)
+									.flatMapWithNext(color => parse(blankLine ~> allNormals, _)
+										.flatMapWithNext(norm => parse(blankLine ~> allFaces, _)
 											.map(faces => {
 
 												val mappedGlowColor = glowMarkerColor.map(color(_))
+												val mappedDanmakuColor = color(danmakuMarkerColor)
 
 												@tailrec
-												def inner(rest: Seq[(FaceInfo, FaceInfo, FaceInfo)], created: Seq[OptimizedTriangleData]): Seq[OptimizedTriangleData] = {
-													if(rest == Nil) created
+												def inner(rest: Seq[(FaceInfo, FaceInfo, FaceInfo)], acc: Seq[OptimizedTriangleData]): Seq[OptimizedTriangleData] = {
+													if(rest == Nil) acc
 													else {
 														val ((v1, vt1, vc1, vn1), (v2, vt2, vc2, vn2), (v3, vt3, vc3, vn3)) = rest.head
 														val vert1 = VertexData(pos(v1), uv(vt1), color(vc1), norm(vn1))
 														val vert2 = VertexData(pos(v3), uv(vt2), color(vc3), norm(vn2))
 														val vert3 = VertexData(pos(v2), uv(vt3), color(vc2), norm(vn3))
-														val triangle = TriangleData(vert1, vert2, vert3).optimize(mappedGlowColor, color(danmakuMarkerColor))
+														val triangle = TriangleData(vert1, vert2, vert3).optimize(mappedGlowColor, mappedDanmakuColor)
 
-														inner(rest.tail, created :+ triangle)
+														inner(rest.tail, acc :+ triangle)
 													}
 												}
 
 												(inner(faces, Seq()), texture)
 											}))))))))
-			case unknown => Failure(s"Unknown .danobj version: $unknown", _)
+			case unknown => Error(s"Unknown .danobj version: $unknown", _)
 		}
 
 		triangles match {

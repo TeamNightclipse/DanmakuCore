@@ -8,9 +8,7 @@
  */
 package net.katsstuff.danmakucore.entity.danmaku.form.danobj
 
-import org.lwjgl.opengl.GL11
-
-import net.minecraft.client.renderer.{GlStateManager, VertexBuffer}
+import net.minecraft.client.renderer.VertexBuffer
 
 case class PositionData(x: Double, y: Double, z: Double)
 case class ColorData(red: Float, green: Float, blue: Float, alpha: Float) {
@@ -22,17 +20,11 @@ case class ColorData(red: Float, green: Float, blue: Float, alpha: Float) {
 case class UVData(u: Double, v: Double)
 case class NormalData(x: Float, y: Float, z: Float)
 
+/**
+	* Raw vertex data.
+	* Should be optimized before it can be used.
+	*/
 case class VertexData(pos: PositionData, tex: UVData, color: ColorData, normal: NormalData) {
-
-	def draw(vb: VertexBuffer, danmakuMarkerColor: ColorData, danmakuColor: ColorData): Unit = {
-		val usedColor = if(color == danmakuMarkerColor) danmakuColor else color
-
-		vb.pos(pos.x, pos.y, pos.z)
-			.tex(tex.u, tex.v)
-			.color(usedColor.red, usedColor.green, usedColor.blue, usedColor.alpha)
-			.normal(normal.x, normal.y, normal.z)
-			.endVertex()
-	}
 
 	def optimize(danmakuMarkerColor: ColorData): OptimizedVertexData = {
 		val isDanmakuColor = color == danmakuMarkerColor
@@ -40,33 +32,11 @@ case class VertexData(pos: PositionData, tex: UVData, color: ColorData, normal: 
 	}
 }
 
+/**
+	* Raw triangle data.
+	* Should be optimized before it can be used.
+	*/
 case class TriangleData(first: VertexData, second: VertexData, third: VertexData) {
-
-	def draw(vb: VertexBuffer, danmakuMarkerColor: ColorData, glowMarkerColor: ColorData, danmakuColor: ColorData): Unit = {
-		val allEqual = first.color == second.color && second.color == third.color
-		val useGlow = allEqual && first.color == glowMarkerColor
-
-		val usedFirst = if(useGlow) first.copy(color = first.color.copy(alpha = 0.3F)) else first
-		val usedSecond = if(useGlow) second.copy(color = second.color.copy(alpha = 0.3F)) else second
-		val usedThird = if(useGlow) third.copy(color = third.color.copy(alpha = 0.3F)) else third
-
-		val usedDanmakuColor = if(useGlow) danmakuColor.copy(alpha = 0.3F) else danmakuColor
-
-		if(useGlow) {
-			GlStateManager.enableBlend()
-			GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE)
-			GlStateManager.depthMask(false)
-		}
-
-		usedFirst.draw(vb, danmakuMarkerColor, usedDanmakuColor)
-		usedSecond.draw(vb, danmakuMarkerColor, usedDanmakuColor)
-		usedThird.draw(vb, danmakuMarkerColor, usedDanmakuColor)
-
-		if(useGlow) {
-			GlStateManager.depthMask(true)
-			GlStateManager.disableBlend()
-		}
-	}
 
 	def optimize(glowMarkerColor: Seq[ColorData], danmakuMarkerColor: ColorData): OptimizedTriangleData = {
 		val optimizedFirst = first.optimize(danmakuMarkerColor)
@@ -84,6 +54,10 @@ case class TriangleData(first: VertexData, second: VertexData, third: VertexData
 	}
 }
 
+/**
+	* Optimized vertex data.
+	* Knows if it should use danmaku color or not.
+	*/
 case class OptimizedVertexData(pos: PositionData, tex: UVData, color: ColorData, normal: NormalData, isDanmakuColor: Boolean) {
 
 	def draw(vb: VertexBuffer, danmakuColor: ColorData): Unit = {
@@ -97,25 +71,20 @@ case class OptimizedVertexData(pos: PositionData, tex: UVData, color: ColorData,
 	}
 }
 
+/**
+	* Optimized triangle data.
+	* The vertex data inside is optimized, in addition to being modified for glow if that should be used.
+	*/
 case class OptimizedTriangleData(first: OptimizedVertexData, second: OptimizedVertexData, third: OptimizedVertexData, useGlow: Boolean) {
 
+	/**
+		* Draws this triangle
+		* The states are changed from the outside if glow should be used.
+		* The Danmaku color is changed from the outside if glow should be used
+		*/
 	def draw(vb: VertexBuffer, danmakuColor: ColorData): Unit = {
-
-		//The danmakuColor is changed from the outside
-
-		if(useGlow) {
-			GlStateManager.enableBlend()
-			GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE)
-			GlStateManager.depthMask(false)
-		}
-
 		first.draw(vb, danmakuColor)
 		second.draw(vb, danmakuColor)
 		third.draw(vb, danmakuColor)
-
-		if(useGlow) {
-			GlStateManager.depthMask(true)
-			GlStateManager.disableBlend()
-		}
 	}
 }
