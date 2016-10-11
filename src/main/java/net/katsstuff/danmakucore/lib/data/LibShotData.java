@@ -56,14 +56,14 @@ public class LibShotData {
 	public static final ShotData SHOT_SCALE = new ShotData(LibForms.SCALE, COLOR_VANILLA_RED, 1F, 0.2F);
 	public static final ShotData SHOT_SMALLSTAR = new ShotData(LibForms.STAR, COLOR_VANILLA_RED, 0.5F, 0.2F);
 	public static final ShotData SHOT_STAR = new ShotData(LibForms.STAR, COLOR_VANILLA_RED, 1F, 0.4F);
-	public static final ShotData SHOT_RICE = new ShotData(LibForms.RICE, COLOR_VANILLA_RED, 0.5F, 0.05F, 0.05F, 0.45F, 0, 80, LibSubEntities.DEFAULT_TYPE);
+	public static final ShotData SHOT_RICE = new ShotData(LibForms.SPHERE_POINTED, COLOR_VANILLA_RED, 0.5F, 0.05F, 0.05F, 0.45F, 0, 80, LibSubEntities.DEFAULT_TYPE);
 	public static final ShotData SHOT_CRYSTAL1 = new ShotData(LibForms.CRYSTAL_1, COLOR_VANILLA_RED, 1F, 0.2F);
 	public static final ShotData SHOT_CRYSTAL2 = new ShotData(LibForms.CRYSTAL_2, COLOR_VANILLA_RED, 1F, 0.2F);
 	public static final ShotData SHOT_KUNAI = new ShotData(LibForms.KUNAI, COLOR_VANILLA_RED, 1F, 0.2F);
 	public static final ShotData SHOT_OVAL = new ShotData(LibForms.SPHERE, COLOR_VANILLA_RED, 2F, 0.5F, 0.5F, 1F, 0, 80, LibSubEntities.DEFAULT_TYPE);
-	public static final ShotData SHOT_LASER = new ShotData(LibForms.LASER, COLOR_VANILLA_RED, 1.5F, 0.2F, 0.2F, 1.25F, 0, 80, LibSubEntities.DEFAULT_TYPE);
-	public static final ShotData SHOT_LASER_SHORT = new ShotData(LibForms.LASER, COLOR_VANILLA_RED, 1F, 0.2F, 0.2F, 1F, 0, 80, LibSubEntities.DEFAULT_TYPE);
-	public static final ShotData SHOT_LASER_LONG = new ShotData(LibForms.LASER, COLOR_VANILLA_RED, 2F, 0.2F, 0.2F, 1.5F, 0, 80, LibSubEntities.DEFAULT_TYPE);
+	public static final ShotData SHOT_LASER = new ShotData(LibForms.SPHERE_POINTED, COLOR_VANILLA_RED, 1.5F, 0.2F, 0.2F, 1.25F, 0, 80, LibSubEntities.DEFAULT_TYPE);
+	public static final ShotData SHOT_LASER_SHORT = new ShotData(LibForms.SPHERE_POINTED, COLOR_VANILLA_RED, 1F, 0.2F, 0.2F, 1F, 0, 80, LibSubEntities.DEFAULT_TYPE);
+	public static final ShotData SHOT_LASER_LONG = new ShotData(LibForms.SPHERE_POINTED, COLOR_VANILLA_RED, 2F, 0.2F, 0.2F, 1.5F, 0, 80, LibSubEntities.DEFAULT_TYPE);
 	//@formatter:on
 
 	//TODO: Better place for this

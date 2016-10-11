@@ -17,7 +17,7 @@ import net.minecraft.util.ResourceLocation;
 
 public abstract class FormCoreGeneric extends Form implements IRenderForm {
 
-	private final ResourceLocation texture = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png");;
+	private final ResourceLocation texture = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png");
 	private final String name;
 
 	public FormCoreGeneric(String name) {

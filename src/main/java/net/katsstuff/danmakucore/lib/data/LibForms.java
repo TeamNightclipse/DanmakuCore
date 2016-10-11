@@ -31,9 +31,8 @@ public final class LibForms implements IInitNeeded {
 
 	public static final Form SCALE;
 	public static final Form STAR;
-	public static final Form RICE;
 	public static final Form KUNAI;
-	public static final Form LASER;
+	public static final Form SPHERE_POINTED;
 
 	static {
 		if(!DanmakuCore.registriesInitialized || !DanmakuCore.stuffRegistered) {
@@ -50,10 +49,8 @@ public final class LibForms implements IInitNeeded {
 		PELLET = getForm(LibFormName.PELLET);
 		STAR = getForm(LibFormName.STAR);
 		KUNAI = getForm(LibFormName.KUNAI);
-
 		SCALE = getForm(LibFormName.SCALE);
-		RICE = getForm(LibFormName.RICE);
-		LASER = getForm(LibFormName.SPHERE_POINTED);
+		SPHERE_POINTED = getForm(LibFormName.SPHERE_POINTED);
 
 		CACHE.clear();
 	}
