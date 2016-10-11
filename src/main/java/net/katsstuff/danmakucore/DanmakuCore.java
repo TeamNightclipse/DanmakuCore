@@ -8,9 +8,12 @@
  */
 package net.katsstuff.danmakucore;
 
+import net.katsstuff.danmakucore.capability.CapabilityDanmakuCoreData;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
+import net.katsstuff.danmakucore.capability.DanmakuCoreDataHandler;
 import net.katsstuff.danmakucore.item.DanmakuCoreItem;
 import net.katsstuff.danmakucore.lib.LibMod;
+import net.katsstuff.danmakucore.network.DanmakuCorePacketHandler;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.katsstuff.danmakucore.shape.ShapeHandler;
 import net.minecraft.item.ItemStack;
@@ -78,12 +81,16 @@ public class DanmakuCore {
 		proxy.registerColors();
 		proxy.registerModels();
 		proxy.registerRenderers();
+
+		CapabilityDanmakuCoreData.register();
 	}
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 		proxy.bakeRenderModels();
+		DanmakuCorePacketHandler.init();
 		MinecraftForge.EVENT_BUS.register(ShapeHandler.INSTANCE);
+		MinecraftForge.EVENT_BUS.register(new DanmakuCoreDataHandler());
 	}
 
 	@Mod.EventHandler

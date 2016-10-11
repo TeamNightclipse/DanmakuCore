@@ -18,9 +18,11 @@ import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuBuilder;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
+import net.katsstuff.danmakucore.capability.IDanmakuCoreData;
 import net.katsstuff.danmakucore.helper.DanmakuCreationHelper;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
+import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.lib.LibItemName;
 import net.katsstuff.danmakucore.lib.data.LibSubEntities;
@@ -117,6 +119,15 @@ public class ItemDanmaku extends ItemBase {
 		}
 		DanmakuHelper.playShotSound(player);
 
+		if(!world.isRemote) {
+			if(player.isSneaking()) {
+				TouhouHelper.setPowerPlayerSync(player, 0F);
+			}
+			else {
+				TouhouHelper.addPowerPlayerSync(player, 0.1F);
+			}
+		}
+
 		/*
 		//ShapeWideShot shape = new ShapeWideShot(DanmakuBuilder.builder().setUser(player).setMovementData(0.4D).setShot(LibShotData.SHOT_SMALLSTAR).build(), 8, 45F, 0F, 0D);
 		//ShapeCircle shape = new ShapeCircle(DanmakuBuilder.builder().setUser(player).setMovementData(0.4D).setShot(LibShotData.SHOT_SMALLSTAR).build(), 16, 0F, 0D);
@@ -168,7 +179,7 @@ public class ItemDanmaku extends ItemBase {
 		}
 
 		float wide;
-		shot.setDamage(shot.getDamage() + TouhouHelper.getPlayerPower(player));
+		shot.setDamage(shot.getDamage() + TouhouHelper.getDanmakuCoreData(player).map(IDanmakuCoreData::getPower).orElse(0F));
 		DanmakuBuilder.Builder danmaku = DanmakuBuilder.builder();
 		danmaku.setUser(player).setShot(shot.asImmutable()).setMovementData(shotSpeed, gravity).setAngle(new Vector3(player.getLookVec()));
 		DanmakuBuilder built = danmaku.build();
@@ -227,7 +238,7 @@ public class ItemDanmaku extends ItemBase {
 		boolean isInfinity = ItemNBTHelper.getBoolean(stack, NBT_INFINITY, false);
 		boolean custom = ItemNBTHelper.getBoolean(stack, NBT_CUSTOM, false);
 
-		float powerDamage = TouhouHelper.getPlayerPower(player);
+		float powerDamage = TouhouHelper.getDanmakuCoreData(player).map(IDanmakuCoreData::getPower).orElse(0F);
 		String item = "item.danmaku";
 
 		list.add(I18n.format(item + ".damage") + " : " + shot.damage() + " + " + powerDamage);
