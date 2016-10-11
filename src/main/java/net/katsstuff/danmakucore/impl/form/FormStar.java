@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL11;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
+import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
@@ -21,7 +22,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class FormStar implements IRenderForm {
+public class FormStar extends FormCoreGeneric {
 
 	private final float[][] points = {
 		{1F, 1F, 1F},
@@ -30,6 +31,10 @@ public class FormStar implements IRenderForm {
 		{1F, -1F, -1}};
 
 	private final int[] tetraIndicies = {0, 1, 2, 3, 0, 1};
+
+	public FormStar() {
+		super(LibFormName.STAR);
+	}
 
 	@Override
 	public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks, RenderManager rendermanager) {

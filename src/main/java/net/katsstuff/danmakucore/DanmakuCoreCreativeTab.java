@@ -11,6 +11,8 @@ package net.katsstuff.danmakucore;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class DanmakuCoreCreativeTab extends CreativeTabs {
 
@@ -21,6 +23,7 @@ public abstract class DanmakuCoreCreativeTab extends CreativeTabs {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public Item getTabIconItem() {
 		return getIconItemStack().getItem();
 	}

@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
-import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
+import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
@@ -20,7 +20,11 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 
-public class FormPointedSphere implements IRenderForm {
+public class FormPointedSphere extends FormCoreGeneric {
+
+	public FormPointedSphere() {
+		super(LibFormName.SPHERE_POINTED);
+	}
 
 	@Override
 	public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks, RenderManager rendermanager) {

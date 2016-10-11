@@ -14,10 +14,15 @@ import net.katsstuff.danmakucore.client.helper.RenderHelper;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
+import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 
-public class FormSphereDark implements IRenderForm {
+public class FormSphereDark extends FormCoreGeneric {
+
+	public FormSphereDark() {
+		super(LibFormName.SPHERE_DARK);
+	}
 
 	@Override
 	public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks, RenderManager rendermanager) {

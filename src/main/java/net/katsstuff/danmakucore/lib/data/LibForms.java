@@ -53,7 +53,7 @@ public final class LibForms implements IInitNeeded {
 
 		SCALE = getForm(LibFormName.SCALE);
 		RICE = getForm(LibFormName.RICE);
-		LASER = getForm(LibFormName.LASER);
+		LASER = getForm(LibFormName.SPHERE_POINTED);
 
 		CACHE.clear();
 	}

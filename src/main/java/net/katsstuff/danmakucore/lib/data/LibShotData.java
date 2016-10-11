@@ -43,7 +43,7 @@ public class LibShotData {
 	public static final int COLOR_SATURATED_MAGENTA = 0xFF00FF;
 	public static final int COLOR_SATURATED_CYAN    = 0x00FFFF;
 	public static final int COLOR_SATURATED_ORANGE  = 0xFF8C00;
-	public static final int COLOR_WHITE             = 0xFFFFFF; //TODO: Needed?
+	public static final int COLOR_WHITE             = COLOR_VANILLA_WHITE;
 	//@formatter:on
 
 	//@formatter:off
@@ -82,7 +82,7 @@ public class LibShotData {
 	}
 
 	/**
-	 * @return Gives you a list of all the registered colors.
+	 * @return Gives you a list of all the registered SATURATED_COLORS.
 	 */
 	public static List<Integer> getRegisteredColors() {
 		return ImmutableList.copyOf(VALID_COLOR);

@@ -15,17 +15,14 @@ import net.katsstuff.danmakucore.lib.LibMod;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.util.ResourceLocation;
 
-public class FormCoreGeneric extends Form {
+public abstract class FormCoreGeneric extends Form implements IRenderForm {
 
-	private final IRenderForm renderer; //FIXME: This can't be a field
-	private final ResourceLocation texture;
+	private final ResourceLocation texture = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png");;
 	private final String name;
 
-	public FormCoreGeneric(String name, IRenderForm renderer, ResourceLocation texture) {
+	public FormCoreGeneric(String name) {
 		setRegistryName(name);
 		DanmakuRegistry.INSTANCE.form.register(this);
-		this.renderer = renderer;
-		this.texture = texture;
 		this.name = name;
 	}
 
@@ -36,7 +33,7 @@ public class FormCoreGeneric extends Form {
 
 	@Override
 	public IRenderForm getRenderer(EntityDanmaku danmaku) {
-		return renderer;
+		return this;
 	}
 
 	@Override

@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL11;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
+import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
@@ -23,7 +24,11 @@ import net.minecraft.util.math.MathHelper;
 /**
  * A two sided normal crystal. Pointy on both sides.
  */
-public class FormCrystal1 implements IRenderForm {
+public class FormCrystal1 extends FormCoreGeneric {
+
+	public FormCrystal1() {
+		super(LibFormName.CRYSTAL1);
+	}
 
 	@Override
 	public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks, RenderManager rendermanager) {

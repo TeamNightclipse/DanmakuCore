@@ -53,18 +53,16 @@ public class CommonProxy {
 
 	void registerStuff() {
 		//Forms
-		ResourceLocation white = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png");
-		new FormCoreGeneric(LibFormName.DEFAULT, new FormSphere(), white);
-		new FormCoreGeneric(LibFormName.SPHERE_DARK, new FormSphereDark(), white);
-		new FormCoreGeneric(LibFormName.CRYSTAL1, new FormCrystal1(), white);
-		new FormCoreGeneric(LibFormName.CRYSTAL2, new FormCrystal2(), white);
-		new FormCoreGeneric(LibFormName.CIRCLE, new FormSphereCircle(), white);
-		new FormCoreGeneric(LibFormName.PELLET, new FormPellet(), white);
-		new FormCoreGeneric(LibFormName.KUNAI, new FormKunai(), new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/Kunai.png"));
-		new FormCoreGeneric(LibFormName.STAR, new FormStar(), white);
-		new FormCoreGeneric(LibFormName.SCALE, new FormScale(),white);
-		new FormCoreGeneric(LibFormName.RICE, new FormPointedSphere(), white);
-		new FormCoreGeneric(LibFormName.LASER, new FormPointedSphere(), white);
+		new FormCrystal1();
+		new FormCrystal2();
+		new FormKunai();
+		new FormPellet();
+		new FormPointedSphere();
+		new FormScale();
+		new FormSphere();
+		new FormSphereCircle();
+		new FormSphereDark();
+		new FormStar();
 
 		//SubEntities
 		new SubEntityTypeDefault(LibSubEntityName.DEFAULT);
@@ -80,7 +78,7 @@ public class CommonProxy {
 		GameRegistry.register(new PhaseTypeSpellcard().setRegistryName(LibPhaseName.SPELLCARD));
 	}
 
-	//We do variants for them selves as they are kind of just named ShotData with some extra data
+	//We do variants for them selves as they are kind of just named ShotData with some extra data, and as such MUST come after everything else
 	void registerVariants() {
 		new DanmakuVariantCoreGeneric(LibDanmakuVariantName.DEFAULT, LibShotData.SHOT_MEDIUM, 0.4D);
 		new DanmakuVariantCoreGeneric(LibDanmakuVariantName.CIRCLE, LibShotData.SHOT_CIRCLE, 0.4D);

@@ -67,11 +67,13 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		ignoreFrustumCheck = true;
 	}
 
-	//FIXME: Where does movement and rotation data get set here?
 	public EntityDanmaku(World world, EntityLivingBase user, Entity source, ShotData shot) {
 		this(world, shot);
 		this.user = user;
 		this.source = source;
+
+		movement = MovementData.constant(0.4D);
+		rotation = RotationData.none();
 
 		setLocationAndAngles(user.posX, user.posY + user.getEyeHeight(), user.posZ, user.rotationYaw, user.rotationPitch);
 
@@ -85,11 +87,11 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		setThrowableHeading(angle.x(), angle.y(), angle.z(), 0.4F, 0.0F);
 	}
 
-	//FIXME: Where does rotation data get set here?
 	public EntityDanmaku(World world, ShotData shot, Vector3 pos, Vector3 angle, MovementData movement) {
 		this(world, shot);
 		this.angle = angle.asMutable();
 		this.movement = movement;
+		rotation = RotationData.none();
 		setPosition(pos.x(), pos.y(), pos.z());
 		setThrowableHeading(angle.x(), angle.y(), angle.z(), (float)movement.getSpeedOriginal(), 0.0F);
 	}

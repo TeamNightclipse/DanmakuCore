@@ -13,13 +13,27 @@ import org.lwjgl.opengl.GL11;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
+import net.katsstuff.danmakucore.lib.LibFormName;
+import net.katsstuff.danmakucore.lib.LibMod;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.ResourceLocation;
 
-public class FormKunai implements IRenderForm {
+public class FormKunai extends FormCoreGeneric {
+
+	private final ResourceLocation texture = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/Kunai.png");
+
+	public FormKunai() {
+		super(LibFormName.KUNAI);
+	}
+
+	@Override
+	public ResourceLocation getTexture(EntityDanmaku danmaku) {
+		return texture;
+	}
 
 	@Override
 	public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks, RenderManager rendermanager) {

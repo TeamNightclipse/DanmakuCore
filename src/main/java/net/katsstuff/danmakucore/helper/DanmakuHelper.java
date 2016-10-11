@@ -174,21 +174,23 @@ public class DanmakuHelper {
 		return LibShotData.getRegisteredColors().contains(color);
 	}
 
+	public static final int[] SATURATED_COLORS = {LibShotData.COLOR_SATURATED_BLUE, LibShotData.COLOR_SATURATED_CYAN, LibShotData.COLOR_SATURATED_GREEN,
+			LibShotData.COLOR_SATURATED_MAGENTA, LibShotData.COLOR_SATURATED_ORANGE, LibShotData.COLOR_SATURATED_RED, LibShotData.COLOR_WHITE,
+			LibShotData.COLOR_SATURATED_YELLOW};
+
+	public static final int[] VANILLA_COLORS = {LibShotData.COLOR_VANILLA_WHITE, LibShotData.COLOR_VANILLA_ORANGE, LibShotData.COLOR_VANILLA_MAGENTA,
+			LibShotData.COLOR_VANILLA_LIGHT_BLUE, LibShotData.COLOR_VANILLA_YELLOW, LibShotData.COLOR_VANILLA_LIME,
+			LibShotData.COLOR_VANILLA_PINK, LibShotData.COLOR_VANILLA_GRAY, LibShotData.COLOR_VANILLA_SILVER, LibShotData.COLOR_VANILLA_CYAN,
+			LibShotData.COLOR_VANILLA_PURPLE, LibShotData.COLOR_VANILLA_BLUE, LibShotData.COLOR_VANILLA_BROWN, LibShotData.COLOR_VANILLA_GREEN,
+			LibShotData.COLOR_VANILLA_RED, LibShotData.COLOR_VANILLA_BLACK};
+
+	private final static Random RAND = new Random();
+
 	public static int randomSaturatedColor() {
-		Random rand = new Random();
-		int[] colors = {LibShotData.COLOR_SATURATED_BLUE, LibShotData.COLOR_SATURATED_CYAN, LibShotData.COLOR_SATURATED_GREEN,
-				LibShotData.COLOR_SATURATED_MAGENTA, LibShotData.COLOR_SATURATED_ORANGE, LibShotData.COLOR_SATURATED_RED, LibShotData.COLOR_WHITE,
-				LibShotData.COLOR_SATURATED_YELLOW};
-		return colors[rand.nextInt(colors.length)];
+		return SATURATED_COLORS[RAND.nextInt(SATURATED_COLORS.length)];
 	}
 
 	public static int randomVanillaColor() {
-		Random rand = new Random();
-		int[] colors = {LibShotData.COLOR_VANILLA_WHITE, LibShotData.COLOR_VANILLA_ORANGE, LibShotData.COLOR_VANILLA_MAGENTA,
-				LibShotData.COLOR_VANILLA_LIGHT_BLUE, LibShotData.COLOR_VANILLA_YELLOW, LibShotData.COLOR_VANILLA_LIME,
-				LibShotData.COLOR_VANILLA_PINK, LibShotData.COLOR_VANILLA_GRAY, LibShotData.COLOR_VANILLA_SILVER, LibShotData.COLOR_VANILLA_CYAN,
-				LibShotData.COLOR_VANILLA_PURPLE, LibShotData.COLOR_VANILLA_BLUE, LibShotData.COLOR_VANILLA_BROWN, LibShotData.COLOR_VANILLA_GREEN,
-				LibShotData.COLOR_VANILLA_RED, LibShotData.COLOR_VANILLA_BLACK};
-		return colors[rand.nextInt(colors.length)];
+		return VANILLA_COLORS[RAND.nextInt(VANILLA_COLORS.length)];
 	}
 }
