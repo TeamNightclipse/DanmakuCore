@@ -13,7 +13,6 @@ import org.lwjgl.opengl.GL11;
 import net.katsstuff.danmakucore.client.helper.RenderHelper;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
-import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
 import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -44,9 +43,11 @@ public class FormSphereDark extends FormCoreGeneric {
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		GlStateManager.depthMask(false);
-		RenderHelper.drawSphere(8, 16, color, alpha, 1.2F);
+		GlStateManager.scale(1.2F, 1.2F, 1.2F);
+		RenderHelper.drawSphere(color, alpha);
 		GlStateManager.depthMask(true);
 		GlStateManager.disableBlend();
-		RenderHelper.drawSphere(8, 16, 0x000000, 1F, 1F);
+		GlStateManager.scale(0.8F, 0.8F, 0.8F);
+		RenderHelper.drawSphere(0x000000, 1F);
 	}
 }

@@ -82,6 +82,7 @@ public class DanmakuCore {
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
+		proxy.bakeRenderModels();
 		MinecraftForge.EVENT_BUS.register(ShapeHandler.INSTANCE);
 	}
 

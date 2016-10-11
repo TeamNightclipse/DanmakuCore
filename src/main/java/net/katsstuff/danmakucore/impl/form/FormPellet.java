@@ -15,7 +15,6 @@ import org.lwjgl.opengl.GL11;
 import net.katsstuff.danmakucore.client.helper.RenderHelper;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
-import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
 import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -49,11 +48,13 @@ public class FormPellet extends FormCoreGeneric {
 		GL11.glRotatef(roll, 0F, 0F, 1F);
 		GL11.glScalef(sizeX, sizeY, sizeZ);
 
-		RenderHelper.drawSphere(8, 16, Color.getHSBColor(hsb[0], hsb[1], hsb[2]).getRGB(), 1F, 1F);
+
+		RenderHelper.drawSphere(Color.getHSBColor(hsb[0], hsb[1], hsb[2]).getRGB(), 1F);
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		GlStateManager.depthMask(false);
-		RenderHelper.drawSphere(8, 16, color, alpha, 1.075F);
+		GlStateManager.scale(1.075F, 1.075F, 1.075F);
+		RenderHelper.drawSphere(color, alpha);
 		GlStateManager.depthMask(true);
 		GlStateManager.disableBlend();
 	}

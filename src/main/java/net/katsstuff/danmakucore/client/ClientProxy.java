@@ -9,6 +9,7 @@
 package net.katsstuff.danmakucore.client;
 
 import net.katsstuff.danmakucore.CommonProxy;
+import net.katsstuff.danmakucore.client.helper.RenderHelper;
 import net.katsstuff.danmakucore.client.render.RenderDanmaku;
 import net.katsstuff.danmakucore.client.render.RenderSpellcard;
 import net.katsstuff.danmakucore.data.ShotData;
@@ -54,6 +55,11 @@ public class ClientProxy extends CommonProxy {
 	public void registerRenderers() {
 		RenderingRegistry.registerEntityRenderingHandler(EntityDanmaku.class, RenderDanmaku::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntitySpellcard.class, RenderSpellcard::new);
+	}
+
+	@Override
+	public void bakeRenderModels() {
+		RenderHelper.bakeModels();
 	}
 
 	@Override

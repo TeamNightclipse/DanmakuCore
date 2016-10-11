@@ -13,7 +13,6 @@ import org.lwjgl.opengl.GL11;
 import net.katsstuff.danmakucore.client.helper.RenderHelper;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
-import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
 import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -51,7 +50,7 @@ public class FormScale extends FormCoreGeneric {
 
 		GL11.glScalef(0.5F, 0.5F, length * 0.4F);
 		GL11.glTranslatef(0F, 0F, -0.8F);
-		RenderHelper.drawSphere(8, 16, 0xFFFFFF, 1F, 1F);
+		RenderHelper.drawSphere(0xFFFFFF, 1F);
 
 		GL11.glTranslatef(0F, 0F, 0.8F);
 		GL11.glScalef(2F * 1.2F, 2F * 1.2F, length * 1.2F);

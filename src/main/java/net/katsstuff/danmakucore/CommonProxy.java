@@ -102,6 +102,8 @@ public class CommonProxy {
 
 	public void registerRenderers() {} //NO-OP
 
+	public void bakeRenderModels() {} //NO-OP
+
 	public void registerModels() {} //NO-OP
 
 	void registerColors() {
