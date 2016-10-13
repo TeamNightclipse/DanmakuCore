@@ -12,22 +12,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import net.katsstuff.danmakucore.DanmakuCore;
+import net.katsstuff.danmakucore.capability.IDanmakuCoreData;
 import net.katsstuff.danmakucore.data.MutableShotData;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuBuilder;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
-import net.katsstuff.danmakucore.capability.IDanmakuCoreData;
 import net.katsstuff.danmakucore.helper.DanmakuCreationHelper;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
-import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.lib.LibItemName;
+import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.lib.data.LibSubEntities;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
-import net.katsstuff.danmakucore.registry.Registry;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,6 +37,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -53,7 +53,7 @@ public class ItemDanmaku extends ItemBase {
 	public static final String NBT_CUSTOM = "custom";
 	private static final String NBT_SPEED = "speed";
 
-	ItemDanmaku() {
+	public ItemDanmaku() {
 		super(LibItemName.DANMAKU);
 		setHasSubtypes(true);
 		setMaxDamage(0);
@@ -63,12 +63,12 @@ public class ItemDanmaku extends ItemBase {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(Item item, CreativeTabs creativeTabs, List<ItemStack> list) {
-		Registry<DanmakuVariant> variantRegistry = DanmakuRegistry.INSTANCE.danmakuVariant;
+		FMLControlledNamespacedRegistry<DanmakuVariant> variantRegistry = DanmakuRegistry.DANMAKU_VARIANT;
 		list.addAll(variantRegistry.getValues().stream()
 				.sorted()
 				.map(variant -> {
 					ShotData shot = variant.getShotData().setColor(DanmakuHelper.randomSaturatedColor());
-					ItemStack stack = new ItemStack(DanmakuCoreItem.danmaku, 1, variantRegistry.getId(variant));
+					ItemStack stack = new ItemStack(LibItems.DANMAKU, 1, variantRegistry.getId(variant));
 					NBTTagCompound compound = new NBTTagCompound();
 					compound.setTag(ShotData.NbtShotData(), shot.serializeNBT());
 					stack.setTagCompound(compound);
@@ -86,19 +86,19 @@ public class ItemDanmaku extends ItemBase {
 	public String getUnlocalizedName(ItemStack stack) {
 		String name = ItemNBTHelper.getBoolean(stack, NBT_CUSTOM, false) ?
 				ShotData.fromNBTItemStack(stack).form().getUnlocalizedName() :
-				DanmakuRegistry.INSTANCE.danmakuVariant.get(stack.getItemDamage()).getUnlocalizedName();
+				DanmakuRegistry.DANMAKU_VARIANT.getObjectById(stack.getItemDamage()).getUnlocalizedName();
 		return this.getUnlocalizedName() + "." + name;
 	}
 
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
 		if(ItemNBTHelper.getBoolean(stack, NBT_CUSTOM, false)) {
-			if(!DanmakuRegistry.INSTANCE.form.get(stack.getItemDamage()).onRightClick(stack, world, player, hand)) {
+			if(!DanmakuRegistry.FORM.getObjectById(stack.getItemDamage()).onRightClick(stack, world, player, hand)) {
 				return super.onItemRightClick(stack, world, player, hand);
 			}
 		}
 		else {
-			if(!DanmakuRegistry.INSTANCE.danmakuVariant.get(stack.getItemDamage()).onRightClick(stack, world, player, hand)) {
+			if(!DanmakuRegistry.DANMAKU_VARIANT.getObjectById(stack.getItemDamage()).onRightClick(stack, world, player, hand)) {
 				return super.onItemRightClick(stack, world, player, hand);
 			}
 		}
@@ -171,10 +171,10 @@ public class ItemDanmaku extends ItemBase {
 
 	private void shootDanmaku(ItemStack stack, EntityPlayer player, boolean alternateMode, Vector3 pos, Vector3 angle, double distance) {
 		if(ItemNBTHelper.getBoolean(stack, NBT_CUSTOM, false)) {
-			if(!DanmakuRegistry.INSTANCE.form.get(stack.getItemDamage()).onShootDanmaku(player, alternateMode, pos, angle)) return;
+			if(!DanmakuRegistry.FORM.getObjectById(stack.getItemDamage()).onShootDanmaku(player, alternateMode, pos, angle)) return;
 		}
 		else {
-			if(!DanmakuRegistry.INSTANCE.danmakuVariant.get(stack.getItemDamage()).onShootDanmaku(player, alternateMode, pos, angle)) return;
+			if(!DanmakuRegistry.DANMAKU_VARIANT.getObjectById(stack.getItemDamage()).onShootDanmaku(player, alternateMode, pos, angle)) return;
 		}
 
 		int amount = ItemNBTHelper.getShort(stack, NBT_AMOUNT, (short)1);

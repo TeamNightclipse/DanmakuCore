@@ -10,10 +10,9 @@ package net.katsstuff.danmakucore.capability;
 
 import javax.annotation.Nullable;
 
-import net.katsstuff.danmakucore.capability.BoundedDanmakuCoreData;
-import net.katsstuff.danmakucore.capability.IDanmakuCoreData;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.lib.LibMod;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -38,8 +37,8 @@ public class DanmakuCoreDataHandler {
 	}
 
 	@SubscribeEvent
-	public void attachPlayer(AttachCapabilitiesEvent.Entity event) {
-		if(event.getEntity() instanceof EntityPlayer) {
+	public void attachPlayer(AttachCapabilitiesEvent<Entity> event) {
+		if(event.getObject() instanceof EntityPlayer) {
 			event.addCapability(new ResourceLocation(LibMod.MODID, "DanmakuCoreData"), new DanmakuCoreDataProvider());
 		}
 	}

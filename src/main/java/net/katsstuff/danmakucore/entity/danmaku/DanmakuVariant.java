@@ -8,27 +8,35 @@
  */
 package net.katsstuff.danmakucore.entity.danmaku;
 
+import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.data.MovementData;
 import net.katsstuff.danmakucore.data.RotationData;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
-import net.katsstuff.danmakucore.registry.DanmakuRegistry;
-import net.katsstuff.danmakucore.registry.IRegistryValueItemStack;
+import net.katsstuff.danmakucore.registry.RegistryValueItemStack;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 /**
- * A {@link DanmakuVariant} can be though of as a named {@link ShotData}
+ * A {@link DanmakuVariant} can be thought of as a named {@link ShotData}
  * with {@link MovementData} and {@link RotationData} packed into it.
  * It's purpose is to define what danmaku to fire, given only this and a source,
  * or a world + position + angle.
+ *
+ * Remember to not load the ShotData (and thus Form and SubEntity) before everything
+ * there has finished to register. One approach is to make it lazy.
  */
-public abstract class DanmakuVariant extends IForgeRegistryEntry.Impl<DanmakuVariant> implements IRegistryValueItemStack<DanmakuVariant> {
+public abstract class DanmakuVariant extends RegistryValueItemStack<DanmakuVariant> {
+
+	public DanmakuVariant(String name) {
+		setRegistryName(name);
+		DanmakuCore.proxy.bakeDanmakuVariant(this);
+	}
 
 	public abstract ShotData getShotData();
 
@@ -42,16 +50,6 @@ public abstract class DanmakuVariant extends IForgeRegistryEntry.Impl<DanmakuVar
 		builder.setMovementData(getMovementData());
 		builder.setRotationData(getRotationData());
 		return builder;
-	}
-
-	@Override
-	public FMLControlledNamespacedRegistry<DanmakuVariant> getRegistry() {
-		return DanmakuRegistry.INSTANCE.danmakuVariant.getRegistry();
-	}
-
-	@Override
-	public DanmakuVariant getObject() {
-		return this;
 	}
 
 	@Override
@@ -73,5 +71,11 @@ public abstract class DanmakuVariant extends IForgeRegistryEntry.Impl<DanmakuVar
 	@Override
 	public String getUnlocalizedName() {
 		return "danmakuvariant";
+	}
+
+	@Override
+	public ModelResourceLocation getItemModel() {
+		ResourceLocation name = getRegistryName();
+		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/" + name.getResourcePath()), "inventory");
 	}
 }

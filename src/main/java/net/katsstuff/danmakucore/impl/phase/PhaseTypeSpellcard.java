@@ -13,7 +13,7 @@ import net.katsstuff.danmakucore.entity.living.phase.PhaseManager;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
-import net.katsstuff.danmakucore.item.DanmakuCoreItem;
+import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.misc.IItemStackConvertible;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.entity.monster.EntityMob;
@@ -25,7 +25,7 @@ public class PhaseTypeSpellcard extends PhaseType {
 
 	@Override
 	public Phase instantiate(PhaseManager manager) {
-		return new PhaseSpellcard(manager, this, DanmakuRegistry.INSTANCE.spellcard.getRegistry().getRandomObject(manager.entity.getRNG()));
+		return new PhaseSpellcard(manager, this, DanmakuRegistry.SPELLCARD.getRandomObject(manager.entity.getRNG()));
 	}
 
 	public PhaseSpellcard instantiate(PhaseManager manager, Spellcard spellcard) {
@@ -82,12 +82,12 @@ public class PhaseTypeSpellcard extends PhaseType {
 		@Override
 		public void deserializeNBT(NBTTagCompound nbt) {
 			super.deserializeNBT(nbt);
-			spellcard = DanmakuRegistry.INSTANCE.spellcard.get(new ResourceLocation(nbt.getString(NBT_SPELLCARD)));
+			spellcard = DanmakuRegistry.SPELLCARD.getObject(new ResourceLocation(nbt.getString(NBT_SPELLCARD)));
 		}
 
 		@Override
 		public ItemStack getItemStack() {
-			return new ItemStack(DanmakuCoreItem.spellcard, 1, DanmakuRegistry.INSTANCE.spellcard.getId(spellcard));
+			return new ItemStack(LibItems.SPELLCARD, 1, DanmakuRegistry.SPELLCARD.getId(spellcard));
 		}
 	}
 }

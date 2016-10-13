@@ -11,6 +11,7 @@ package net.katsstuff.danmakucore.registry;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.katsstuff.danmakucore.misc.ITranslatable;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
@@ -18,19 +19,21 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 @SuppressWarnings("UnusedParameters")
-public interface IRegistryValueItemStack<T extends IForgeRegistryEntry.Impl<T> & IRegistryValueItemStack<T>> extends IRegistryValue<T>, Comparable<T>,
-		ITranslatable {
+public abstract class RegistryValueItemStack<T extends IForgeRegistryEntry<T>> extends RegistryValue<T>
+		implements Comparable<T>, ITranslatable {
 
 	/**
 	 * Called when a itemStack representing this is rightclicked.
 	 *
 	 * @return If the the action should continue.
 	 */
-	boolean onRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand);
+	public abstract boolean onRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand);
 
 	@Override
 	@ParametersAreNonnullByDefault
-	default int compareTo(T other) {
-		return getFullName().toString().compareToIgnoreCase(other.getFullName().toString());
+	public int compareTo(T other) {
+		return getRegistryName().toString().compareToIgnoreCase(other.getRegistryName().toString());
 	}
+
+	public abstract ModelResourceLocation getItemModel();
 }

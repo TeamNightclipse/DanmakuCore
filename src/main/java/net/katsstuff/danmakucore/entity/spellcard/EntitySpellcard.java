@@ -56,7 +56,7 @@ public class EntitySpellcard extends Entity {
 		setRotation(user.rotationYaw, user.rotationPitch);
 		this.user = user;
 		spellCard = type.instantiate(this, target);
-		setSpellcardId(DanmakuRegistry.INSTANCE.spellcard.getId(type));
+		setSpellcardId(DanmakuRegistry.SPELLCARD.getId(type));
 	}
 
 	@Override
@@ -115,8 +115,8 @@ public class EntitySpellcard extends Entity {
 
 		if(user != null) {
 			this.user = user;
-			Spellcard type = DanmakuRegistry.INSTANCE.spellcard.get(new ResourceLocation(tag.getString(NBT_SPELLCARD_TYPE)));
-			setSpellcardId(DanmakuRegistry.INSTANCE.spellcard.getId(type));
+			Spellcard type = DanmakuRegistry.SPELLCARD.getObject(new ResourceLocation(tag.getString(NBT_SPELLCARD_TYPE)));
+			setSpellcardId(DanmakuRegistry.SPELLCARD.getId(type));
 			spellCard = type.instantiate(this, user);
 			spellCard.deserializeNBT(tag.getCompoundTag(NBT_SPELLCARD_DATA));
 		}

@@ -10,15 +10,14 @@ package net.katsstuff.danmakucore.impl.spellcard;
 
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.lib.LibMod;
-import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 
+@SuppressWarnings("WeakerAccess")
 public abstract class SpellcardCore extends Spellcard {
 
 	private final String name;
 
 	public SpellcardCore(String name) {
-		setRegistryName(name);
-		DanmakuRegistry.INSTANCE.spellcard.register(this);
+		super(name);
 		this.name = name;
 	}
 

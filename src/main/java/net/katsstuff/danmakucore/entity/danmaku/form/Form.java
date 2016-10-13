@@ -8,24 +8,28 @@
  */
 package net.katsstuff.danmakucore.entity.danmaku.form;
 
+import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
-import net.katsstuff.danmakucore.registry.DanmakuRegistry;
-import net.katsstuff.danmakucore.registry.IRegistryValueItemStack;
+import net.katsstuff.danmakucore.registry.RegistryValueItemStack;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SuppressWarnings("UnusedParameters")
-public abstract class Form extends IForgeRegistryEntry.Impl<Form> implements IRegistryValueItemStack<Form> {
+public abstract class Form extends RegistryValueItemStack<Form> {
+
+	public Form(String name) {
+		setRegistryName(name);
+		DanmakuCore.proxy.bakeDanmakuForm(this);
+	}
 
 	/**
 	 * @return The ResourceLocation assigned to this registration.
@@ -62,17 +66,13 @@ public abstract class Form extends IForgeRegistryEntry.Impl<Form> implements IRe
 	public void onTick(EntityDanmaku danmaku) {}
 
 	@Override
-	public FMLControlledNamespacedRegistry<Form> getRegistry() {
-		return DanmakuRegistry.INSTANCE.form.getRegistry();
-	}
-
-	@Override
-	public Form getObject() {
-		return this;
-	}
-
-	@Override
 	public String getUnlocalizedName() {
 		return "form";
+	}
+
+	@Override
+	public ModelResourceLocation getItemModel() {
+		ResourceLocation name = getRegistryName();
+		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/" + name.getResourcePath()), "inventory");
 	}
 }

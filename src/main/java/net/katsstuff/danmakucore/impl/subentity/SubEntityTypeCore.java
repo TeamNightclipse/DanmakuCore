@@ -10,7 +10,6 @@ package net.katsstuff.danmakucore.impl.subentity;
 
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.katsstuff.danmakucore.lib.LibMod;
-import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 
 public abstract class SubEntityTypeCore extends SubEntityType {
 
@@ -18,7 +17,6 @@ public abstract class SubEntityTypeCore extends SubEntityType {
 
 	SubEntityTypeCore(String name) {
 		setRegistryName(name);
-		DanmakuRegistry.INSTANCE.subEntity.register(this);
 		this.name = name;
 	}
 

@@ -17,7 +17,7 @@ import scala.collection.JavaConverters._
 
 import com.google.common.base.{Predicate => GPredicate}
 
-import net.katsstuff.danmakucore.lib.data.LibShotData
+import net.katsstuff.danmakucore.helper.DanmakuHelper
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.util.math.{BlockPos, MathHelper, Vec3d}
 
@@ -506,7 +506,7 @@ object Vector3 {
 	final val One    = Vector3(1D, 1D, 1D)
 
 	final val GravityZero    = Zero
-	final val GravityDefault = Vector3(0D, LibShotData.GRAVITY_DEFAULT, 0D)
+	final val GravityDefault = Vector3(0D, DanmakuHelper.GRAVITY_DEFAULT, 0D)
 	final val RotateDefault  = Vector3(0D, 1D, 0D)
 
 	final val Up    = Vector3(0, 1, 0)

@@ -8,14 +8,17 @@
  */
 package net.katsstuff.danmakucore.lib.data;
 
-import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
+import net.katsstuff.danmakucore.item.ItemDanmaku;
+import net.katsstuff.danmakucore.item.ItemSpellcard;
+import net.katsstuff.danmakucore.lib.LibItemName;
 import net.katsstuff.danmakucore.lib.LibMod;
-import net.katsstuff.danmakucore.lib.LibSpellcardName;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
 @ObjectHolder(LibMod.MODID)
-public final class LibSpellcards {
+public class LibItems {
 
-	@ObjectHolder(LibSpellcardName.DELUSION_OF_ENLIGHTENMENT)
-	public static final Spellcard DELUSION_OF_ENLIGHTENMENT = null;
+	@ObjectHolder(LibItemName.DANMAKU)
+	public static final ItemDanmaku DANMAKU = null;
+	@ObjectHolder(LibItemName.SPELLCARD)
+	public static final ItemSpellcard SPELLCARD = null;
 }

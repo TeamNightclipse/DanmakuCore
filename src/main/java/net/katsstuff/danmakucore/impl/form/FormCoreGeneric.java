@@ -12,7 +12,6 @@ import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.Form;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
 import net.katsstuff.danmakucore.lib.LibMod;
-import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.util.ResourceLocation;
 
 public abstract class FormCoreGeneric extends Form implements IRenderForm {
@@ -20,9 +19,9 @@ public abstract class FormCoreGeneric extends Form implements IRenderForm {
 	private final ResourceLocation texture = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png");
 	private final String name;
 
+	@SuppressWarnings("WeakerAccess")
 	public FormCoreGeneric(String name) {
-		setRegistryName(name);
-		DanmakuRegistry.INSTANCE.form.register(this);
+		super(name);
 		this.name = name;
 	}
 

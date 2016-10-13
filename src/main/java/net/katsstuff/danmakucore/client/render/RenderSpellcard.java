@@ -79,8 +79,7 @@ public class RenderSpellcard extends Render<EntitySpellcard> {
 
 	@Override
 	protected ResourceLocation getEntityTexture(EntitySpellcard entity) {
-		Spellcard type = DanmakuRegistry.INSTANCE.spellcard.get(entity.getSpellcardId());
-		return new ResourceLocation(DanmakuRegistry.INSTANCE.spellcard.getRegistry().getKey(type).getResourceDomain(),
-				"textures/items/spellcard/" + type.getName() + ".png");
+		Spellcard type = DanmakuRegistry.SPELLCARD.getObjectById(entity.getSpellcardId());
+		return new ResourceLocation(type.getModId(), "textures/items/spellcard/" + type.getName() + ".png");
 	}
 }

@@ -19,37 +19,37 @@ import net.katsstuff.danmakucore.entity.danmaku.form.Form;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
-import net.katsstuff.danmakucore.item.DanmakuCoreItem;
+import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.item.ItemDanmaku;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+@Mod.EventBusSubscriber
 public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void bakeDanmakuVariant(DanmakuVariant variant) {
-		ModelBakery.registerItemVariants(DanmakuCoreItem.danmaku,
-				new ModelResourceLocation(new ResourceLocation(variant.getModId(), "danmaku/" + variant.getName()), "inventory"));
+		ModelBakery.registerItemVariants(LibItems.DANMAKU, variant.getItemModel());
 	}
 
 	@Override
 	public void bakeDanmakuForm(Form form) {
-		ModelBakery.registerItemVariants(DanmakuCoreItem.danmaku,
-				new ModelResourceLocation(new ResourceLocation(form.getModId(), "danmaku/custom/" + form.getName()), "inventory"));
+		ModelBakery.registerItemVariants(LibItems.DANMAKU, form.getItemModel());
 	}
 
 	@Override
 	public void bakeSpellcard(Spellcard spellcard) {
-		ModelLoader.setCustomModelResourceLocation(DanmakuCoreItem.spellcard, DanmakuRegistry.INSTANCE.spellcard.getId(spellcard),
-				new ModelResourceLocation(new ResourceLocation(spellcard.getModId(), "spellcard/" + spellcard.getName()), "inventory"));
+		ModelLoader.setCustomModelResourceLocation(LibItems.SPELLCARD, DanmakuRegistry.SPELLCARD.getId(spellcard), spellcard.getItemModel());
 	}
 
 	@Override
@@ -66,27 +66,6 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
-	public void registerModels() {
-		//Sets the item model to use depending on if the danmaku item is custom or not.
-		ModelLoader.setCustomMeshDefinition(DanmakuCoreItem.danmaku, stack -> {
-			if(ItemNBTHelper.getBoolean(stack, ItemDanmaku.NBT_CUSTOM, false)) {
-				ShotData shot = ShotData.fromNBTItemStack(stack);
-				Form registration = shot.form();
-				return new ModelResourceLocation(new ResourceLocation(registration.getModId(), "danmaku/custom/" + registration.getName()),
-						"inventory");
-			}
-			else {
-				DanmakuVariant registration = DanmakuRegistry.INSTANCE.danmakuVariant.get(stack.getItemDamage());
-				return new ModelResourceLocation(new ResourceLocation(registration.getModId(), "danmaku/" + registration.getName()), "inventory");
-			}
-		});
-
-		//Normal textures
-		registerItem(DanmakuCoreItem.scoreItem, 0);
-		registerItem(DanmakuCoreItem.bombItem, 0);
-		registerItem(DanmakuCoreItem.extendItem, 0);
-	}
-
 	public void registerItemColors() {
 		ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
 
@@ -96,7 +75,6 @@ public class ClientProxy extends CommonProxy {
 			}
 
 			int color = ShotData.fromNBTItemStack(stack).color();
-			//LogHelper.info(color);
 
 			if(color == 0) {
 				return 0xFFFFFF;
@@ -104,10 +82,20 @@ public class ClientProxy extends CommonProxy {
 			else {
 				return color;
 			}
-		}, DanmakuCoreItem.danmaku);
+		}, LibItems.DANMAKU);
 	}
 
-	private void registerItem(Item item, int damage) {
-		ModelLoader.setCustomModelResourceLocation(item, damage, new ModelResourceLocation(item.getRegistryName(), "inventory"));
+	@SubscribeEvent
+	public static void registerModels(ModelRegistryEvent event) {
+		ModelLoader.setCustomMeshDefinition(LibItems.DANMAKU, stack -> {
+			if(ItemNBTHelper.getBoolean(stack, ItemDanmaku.NBT_CUSTOM, false)) {
+				Form form = ShotData.fromNBTItemStack(stack).form();
+				return new ModelResourceLocation(new ResourceLocation(form.getModId(), "danmaku/custom/" + form.getName()), "inventory");
+			}
+			else {
+				DanmakuVariant variant = DanmakuRegistry.DANMAKU_VARIANT.getObjectById(stack.getItemDamage());
+				return new ModelResourceLocation(new ResourceLocation(variant.getModId(), "danmaku/" + variant.getName()), "inventory");
+			}
+		});
 	}
 }

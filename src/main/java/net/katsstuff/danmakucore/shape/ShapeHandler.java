@@ -24,18 +24,15 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public final class ShapeHandler {
 
-	public static final ShapeHandler INSTANCE = new ShapeHandler();
-
-	private final List<IShapeEntry> shapeList = new ArrayList<>();
-
-	private ShapeHandler() {}
+	private static final List<IShapeEntry> shapeList = new ArrayList<>();
 
 	/**
 	 * Creates a new shape with a position as an anchor
 	 * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
 	 */
+	@SuppressWarnings("WeakerAccess")
 	public static Set<EntityDanmaku> createShape(IShape shape, Vector3 pos, Vector3 angle) {
-		return INSTANCE.createEntry(new ShapeEntryPosition(shape, pos, angle));
+		return createEntry(new ShapeEntryPosition(shape, pos, angle));
 	}
 
 	/**
@@ -43,15 +40,16 @@ public final class ShapeHandler {
 	 * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
 	 */
 	public static Set<EntityDanmaku> createShape(IShape shape, Entity anchor) {
-		return INSTANCE.createEntry(new ShapeEntryEntity(shape, anchor));
+		return createEntry(new ShapeEntryEntity(shape, anchor));
 	}
 
 	/**
 	 * Creates a new shape with a living entity(eye height) as an anchor.
 	 * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
 	 */
+	@SuppressWarnings("unused")
 	public static Set<EntityDanmaku> createShape(IShape shape, EntityLivingBase anchor) {
-		return INSTANCE.createEntry(new ShapeEntryEntityLiving(shape, anchor));
+		return createEntry(new ShapeEntryEntityLiving(shape, anchor));
 	}
 
 	/**
@@ -59,19 +57,20 @@ public final class ShapeHandler {
 	 * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
 	 */
 	@SuppressWarnings("WeakerAccess")
-	public Set<EntityDanmaku> createEntry(IShapeEntry entry) {
+	public static Set<EntityDanmaku> createEntry(IShapeEntry entry) {
 		shapeList.add(entry);
 		return entry.getDrawn();
 	}
 
 	@SubscribeEvent
-	public void onTick(TickEvent.WorldTickEvent event) {
+	public static void onTick(TickEvent.WorldTickEvent event) {
 		if(event.phase == TickEvent.Phase.START) {
 			List<IShapeEntry> completedShapes = shapeList.stream().filter(IShapeEntry::draw).collect(Collectors.toList());
 			shapeList.removeAll(completedShapes);
 		}
 	}
 
+	@SuppressWarnings("WeakerAccess")
 	public interface IShapeEntry {
 
 		/**

@@ -20,6 +20,7 @@ import net.katsstuff.danmakucore.entity.spellcard.SpellcardEntity;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.helper.DanmakuCreationHelper;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
+import net.katsstuff.danmakucore.lib.LibColor;
 import net.katsstuff.danmakucore.lib.LibSpellcardName;
 import net.katsstuff.danmakucore.lib.data.LibShotData;
 import net.minecraft.entity.EntityLivingBase;
@@ -78,7 +79,7 @@ public class SpellcardDelusionEnlightenment extends SpellcardCore {
 					DanmakuBuilder danmaku = DanmakuBuilder.builder()
 							.setUser(getUser())
 							.setMovementData(1D / (place + 1))
-							.setShot(LibShotData.SHOT_MEDIUM.setColor(LibShotData.COLOR_SATURATED_RED).setDelay(place))
+							.setShot(LibShotData.SHOT_MEDIUM.setColor(LibColor.COLOR_SATURATED_RED).setDelay(place))
 							.build();
 
 					DanmakuHelper.playShotSound(card);
@@ -92,7 +93,7 @@ public class SpellcardDelusionEnlightenment extends SpellcardCore {
 						DanmakuBuilder danmaku = DanmakuBuilder.builder()
 								.setUser(getUser())
 								.setMovementData(1D / i)
-								.setShot(LibShotData.SHOT_MEDIUM.setColor(LibShotData.COLOR_SATURATED_RED))
+								.setShot(LibShotData.SHOT_MEDIUM.setColor(LibColor.COLOR_SATURATED_RED))
 								.build();
 
 						DanmakuCreationHelper.createWideShot(danmaku, danmakuLevelMultiplier, 30F, 0F, 0.5D);
@@ -118,7 +119,7 @@ public class SpellcardDelusionEnlightenment extends SpellcardCore {
 					.setAngle(Vector3.Up())
 					.setMovementData(0.2D)
 					.setPos(spawnPos)
-					.setShot(LibShotData.SHOT_RICE.setColor(LibShotData.COLOR_SATURATED_BLUE))
+					.setShot(LibShotData.SHOT_RICE.setColor(LibColor.COLOR_SATURATED_BLUE))
 					.build().asEntity();
 
 			getWorld().spawnEntityInWorld(danmaku);

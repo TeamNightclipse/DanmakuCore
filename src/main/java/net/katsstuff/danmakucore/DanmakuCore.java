@@ -9,12 +9,11 @@
 package net.katsstuff.danmakucore;
 
 import net.katsstuff.danmakucore.capability.CapabilityDanmakuCoreData;
-import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.capability.DanmakuCoreDataHandler;
-import net.katsstuff.danmakucore.item.DanmakuCoreItem;
+import net.katsstuff.danmakucore.handler.ConfigHandler;
+import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.katsstuff.danmakucore.network.DanmakuCorePacketHandler;
-import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.katsstuff.danmakucore.shape.ShapeHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataSerializers;
@@ -26,27 +25,21 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 @Mod(modid = LibMod.MODID, name = LibMod.NAME, version = LibMod.VERSION)
+@Mod.EventBusSubscriber
 public class DanmakuCore {
 
 	public static final DanmakuCoreCreativeTab DANMAKU_CREATIVE_TAB = new DanmakuCoreCreativeTab("danmaku") {
 
 		@Override
 		public ItemStack getIconItemStack() {
-			return new ItemStack(DanmakuCoreItem.danmaku);
+			return new ItemStack(LibItems.DANMAKU);
 		}
 	};
 	public static final DanmakuCoreCreativeTab SPELLCARD_CREATIVE_TAB = new DanmakuCoreCreativeTab("spellcard") {
 
 		@Override
 		public ItemStack getIconItemStack() {
-			return new ItemStack(DanmakuCoreItem.spellcard);
-		}
-	};
-	public static final DanmakuCoreCreativeTab GENERAL_CREATIVE_TAB = new DanmakuCoreCreativeTab("general") {
-
-		@Override
-		public ItemStack getIconItemStack() {
-			return new ItemStack(DanmakuCoreItem.scoreItem);
+			return new ItemStack(LibItems.SPELLCARD);
 		}
 	};
 
@@ -56,10 +49,6 @@ public class DanmakuCore {
 	@SidedProxy(clientSide = LibMod.CLIENT_PROXY, serverSide = LibMod.COMMON_PROXY, modId = LibMod.MODID)
 	public static CommonProxy proxy;
 
-	public static boolean registriesInitialized = false;
-	public static boolean stuffRegistered = false;
-	public static boolean variantsRegistered = false;
-
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		ConfigHandler.setConfig(event.getSuggestedConfigurationFile());
@@ -67,19 +56,7 @@ public class DanmakuCore {
 		DataSerializers.registerSerializer(CoreDataSerializers.SHOTDATA);
 		DataSerializers.registerSerializer(CoreDataSerializers.VECTOR_3);
 
-		DanmakuRegistry.INSTANCE.init();
-		registriesInitialized = true;
-
-		DanmakuCoreItem.preInit();
-
-		proxy.registerStuff();
-		stuffRegistered = true;
-
-		proxy.registerVariants();
-		variantsRegistered = true;
-
 		proxy.registerColors();
-		proxy.registerModels();
 		proxy.registerRenderers();
 
 		CapabilityDanmakuCoreData.register();
@@ -89,7 +66,7 @@ public class DanmakuCore {
 	public void init(FMLInitializationEvent event) {
 		proxy.bakeRenderModels();
 		DanmakuCorePacketHandler.init();
-		MinecraftForge.EVENT_BUS.register(ShapeHandler.INSTANCE);
+		MinecraftForge.EVENT_BUS.register(ShapeHandler.class);
 		MinecraftForge.EVENT_BUS.register(new DanmakuCoreDataHandler());
 	}
 

@@ -8,35 +8,38 @@
  */
 package net.katsstuff.danmakucore.impl.DanmakuVariant;
 
+import java.util.function.Supplier;
+
 import net.katsstuff.danmakucore.data.MovementData;
 import net.katsstuff.danmakucore.data.RotationData;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.lib.LibMod;
-import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 
 public class DanmakuVariantCoreGeneric extends DanmakuVariant {
 
-	private final ShotData shotData;
+	private ShotData shotData = null;
 	private final MovementData movement;
 	private final RotationData rotation = RotationData.none();
 	private final String name;
 
-	private DanmakuVariantCoreGeneric(String name, ShotData shotData, MovementData movement) {
-		setRegistryName(name);
-		DanmakuRegistry.INSTANCE.danmakuVariant.register(this);
-		this.shotData = shotData;
+	private final Supplier<ShotData> shotDataSupplier;
+
+	private DanmakuVariantCoreGeneric(String name, Supplier<ShotData> shotData, MovementData movement) {
+		super(name);
+		shotDataSupplier = shotData;
 		this.movement = movement;
 		this.name = name;
 	}
 
-	public DanmakuVariantCoreGeneric(String name, ShotData shotData, double speed) {
+	public DanmakuVariantCoreGeneric(String name, Supplier<ShotData> shotData, double speed) {
 		this(name, shotData, new MovementData(speed, speed, 0.0D, Vector3.GravityZero()));
 	}
 
 	@Override
 	public ShotData getShotData() {
+		if(shotData == null) shotData = shotDataSupplier.get();
 		return shotData;
 	}
 

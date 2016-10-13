@@ -9,40 +9,28 @@
 package net.katsstuff.danmakucore.registry;
 
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
-public interface IRegistryValue<T extends IForgeRegistryEntry.Impl<T> & IRegistryValue<T>> {
-
-	/**
-	 * Get the registry for this value.
-	 */
-	FMLControlledNamespacedRegistry<T> getRegistry();
+public abstract class RegistryValue<T extends IForgeRegistryEntry<T>> extends IForgeRegistryEntry.Impl<T> {
 
 	/**
 	 * The full name as of this value. Both modId and name.
 	 */
-	default ResourceLocation getFullName() {
-		return getRegistry().getKey(getObject());
+	public ResourceLocation getFullName() {
+		return getRegistryName();
 	}
 
 	/**
 	 * Get the mod id for this value.
 	 */
-	default String getModId() {
+	public String getModId() {
 		return getFullName().getResourceDomain();
 	}
 
 	/**
 	 * Get the short name for this value.
 	 */
-	default String getName() {
+	public String getName() {
 		return getFullName().getResourcePath();
 	}
-
-	/**
-	 * Returns this object, so that it can be used for the default implementation.
-	 */
-	T getObject();
-
 }

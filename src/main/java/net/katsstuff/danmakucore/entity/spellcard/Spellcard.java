@@ -10,19 +10,24 @@ package net.katsstuff.danmakucore.entity.spellcard;
 
 import javax.annotation.Nullable;
 
+import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.entity.living.boss.EnumTouhouCharacters;
-import net.katsstuff.danmakucore.registry.DanmakuRegistry;
-import net.katsstuff.danmakucore.registry.IRegistryValueItemStack;
+import net.katsstuff.danmakucore.registry.RegistryValueItemStack;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 @SuppressWarnings("UnusedParameters")
-public abstract class Spellcard extends IForgeRegistryEntry.Impl<Spellcard> implements IRegistryValueItemStack<Spellcard> {
+public abstract class Spellcard extends RegistryValueItemStack<Spellcard> {
+
+	public Spellcard(String name) {
+		setRegistryName(name);
+		DanmakuCore.proxy.bakeSpellcard(this);
+	}
 
 	public abstract SpellcardEntity instantiate(EntitySpellcard card, @Nullable EntityLivingBase target);
 
@@ -67,16 +72,6 @@ public abstract class Spellcard extends IForgeRegistryEntry.Impl<Spellcard> impl
 	}
 
 	@Override
-	public FMLControlledNamespacedRegistry<Spellcard> getRegistry() {
-		return DanmakuRegistry.INSTANCE.spellcard.getRegistry();
-	}
-
-	@Override
-	public Spellcard getObject() {
-		return this;
-	}
-
-	@Override
 	public int compareTo(Spellcard other) {
 		return getOriginalUser().getName().compareToIgnoreCase(other.getOriginalUser().getName());
 	}
@@ -84,5 +79,11 @@ public abstract class Spellcard extends IForgeRegistryEntry.Impl<Spellcard> impl
 	@Override
 	public String getUnlocalizedName() {
 		return "spellcard";
+	}
+
+	@Override
+	public ModelResourceLocation getItemModel() {
+		ResourceLocation name = getRegistryName();
+		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/" + name.getResourcePath()), "inventory");
 	}
 }

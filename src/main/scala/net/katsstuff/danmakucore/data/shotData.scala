@@ -13,7 +13,8 @@ import scala.beans.BeanProperty
 import io.netty.buffer.ByteBuf
 import net.katsstuff.danmakucore.entity.danmaku.form.Form
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType
-import net.katsstuff.danmakucore.lib.data.{LibForms, LibShotData, LibSubEntities}
+import net.katsstuff.danmakucore.lib.LibColor
+import net.katsstuff.danmakucore.lib.data.{LibForms, LibSubEntities}
 import net.katsstuff.danmakucore.registry.DanmakuRegistry
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
@@ -76,14 +77,14 @@ abstract sealed class AbstractShotData {
 	def subEntity: SubEntityType
 
 	def serializeByteBuf(buf: ByteBuf) {
-		buf.writeInt(DanmakuRegistry.INSTANCE.form.getId(form))
+		buf.writeInt(DanmakuRegistry.FORM.getId(form))
 		buf.writeInt(color)
 		buf.writeFloat(sizeX)
 		buf.writeFloat(sizeY)
 		buf.writeFloat(sizeZ)
 		buf.writeInt(delay)
 		buf.writeInt(end)
-		buf.writeInt(DanmakuRegistry.INSTANCE.subEntity.getId(subEntity))
+		buf.writeInt(DanmakuRegistry.SUB_ENTITY.getId(subEntity))
 	}
 
 	def serializeNBT: NBTTagCompound = {
@@ -107,7 +108,7 @@ abstract sealed class AbstractShotData {
 
 final case class MutableShotData(
 	@BeanProperty var form: Form = LibForms.SPHERE,
-	@BeanProperty var color: Int = LibShotData.COLOR_SATURATED_RED,
+	@BeanProperty var color: Int = LibColor.COLOR_SATURATED_RED,
 	@BeanProperty var damage: Float = 0.5F,
 	@BeanProperty var sizeX: Float = 0.5F,
 	@BeanProperty var sizeY: Float = 0.5F,
@@ -118,14 +119,14 @@ final case class MutableShotData(
 
 	def this(buf: ByteBuf) {
 		this (
-			form = DanmakuRegistry.INSTANCE.form.get(buf.readInt),
+			form = DanmakuRegistry.FORM.getObjectById(buf.readInt),
 			color = buf.readInt,
 			sizeX = buf.readFloat,
 			sizeY = buf.readFloat,
 			sizeZ = buf.readFloat,
 			delay = buf.readInt,
 			end = buf.readInt,
-			subEntity = DanmakuRegistry.INSTANCE.subEntity.get(buf.readInt)
+			subEntity = DanmakuRegistry.SUB_ENTITY.getObjectById(buf.readInt)
 		)
 	}
 
@@ -155,18 +156,18 @@ final case class MutableShotData(
 	}
 
 	def deserializeByteBuf(buf: ByteBuf) {
-		form = DanmakuRegistry.INSTANCE.form.get(buf.readInt)
+		form = DanmakuRegistry.FORM.getObjectById(buf.readInt)
 		color = buf.readInt
 		sizeX = buf.readFloat
 		sizeY = buf.readFloat
 		sizeZ = buf.readFloat
 		delay = buf.readInt
 		end = buf.readInt
-		subEntity = DanmakuRegistry.INSTANCE.subEntity.get(buf.readInt)
+		subEntity = DanmakuRegistry.SUB_ENTITY.getObjectById(buf.readInt)
 	}
 
 	override def deserializeNBT(tag: NBTTagCompound): Unit = {
-		form = DanmakuRegistry.INSTANCE.form.get(new ResourceLocation(tag.getString(ShotData.NbtForm)))
+		form = DanmakuRegistry.FORM.getObject(new ResourceLocation(tag.getString(ShotData.NbtForm)))
 		color = tag.getInteger(ShotData.NbtColor)
 		damage = tag.getFloat(ShotData.NbtDamage)
 		sizeX = tag.getFloat(ShotData.NbtSizeX)
@@ -174,7 +175,7 @@ final case class MutableShotData(
 		sizeZ = tag.getFloat(ShotData.NbtSizeZ)
 		delay = tag.getInteger(ShotData.NbtDelay)
 		end = tag.getInteger(ShotData.NbtEnd)
-		subEntity = DanmakuRegistry.INSTANCE.subEntity.get(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))
+		subEntity = DanmakuRegistry.SUB_ENTITY.getObject(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))
 	}
 
 	def copyObj: MutableShotData = copy()
@@ -186,7 +187,7 @@ final case class MutableShotData(
 
 final case class ShotData(
 	@BeanProperty form: Form = LibForms.SPHERE,
-	@BeanProperty color: Int = LibShotData.COLOR_SATURATED_RED,
+	@BeanProperty color: Int = LibColor.COLOR_SATURATED_RED,
 	@BeanProperty damage: Float = 0.5F,
 	@BeanProperty sizeX: Float = 0.5F,
 	@BeanProperty sizeY: Float = 0.5F,
@@ -197,20 +198,20 @@ final case class ShotData(
 
 	def this(buf: ByteBuf) {
 		this (
-			form = DanmakuRegistry.INSTANCE.form.get(buf.readInt),
+			form = DanmakuRegistry.FORM.getObjectById(buf.readInt),
 			color = buf.readInt,
 			sizeX = buf.readFloat,
 			sizeY = buf.readFloat,
 			sizeZ = buf.readFloat,
 			delay = buf.readInt,
 			end = buf.readInt,
-			subEntity = DanmakuRegistry.INSTANCE.subEntity.get(buf.readInt)
+			subEntity = DanmakuRegistry.SUB_ENTITY.getObjectById(buf.readInt)
 		)
 	}
 
 	def this(tag: NBTTagCompound) {
 		this(
-			form = DanmakuRegistry.INSTANCE.form.get(new ResourceLocation(tag.getString(ShotData.NbtForm))),
+			form = DanmakuRegistry.FORM.getObject(new ResourceLocation(tag.getString(ShotData.NbtForm))),
 			color = tag.getInteger(ShotData.NbtColor),
 			damage = tag.getFloat(ShotData.NbtDamage),
 			sizeX = tag.getFloat(ShotData.NbtSizeX),
@@ -218,7 +219,7 @@ final case class ShotData(
 			sizeZ = tag.getFloat(ShotData.NbtSizeZ),
 			delay = tag.getInteger(ShotData.NbtDelay),
 			end = tag.getInteger(ShotData.NbtEnd),
-			subEntity = DanmakuRegistry.INSTANCE.subEntity.get(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))
+			subEntity = DanmakuRegistry.SUB_ENTITY.getObject(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))
 		)
 	}
 
@@ -280,7 +281,7 @@ object ShotData {
 
 	def mutableSameSize(
 		form: Form = LibForms.SPHERE,
-		color: Int = LibShotData.COLOR_SATURATED_RED,
+		color: Int = LibColor.COLOR_SATURATED_RED,
 		damage: Float = 0.5F,
 		size: Float = 0.5F,
 		delay: Int = 0,
@@ -291,7 +292,7 @@ object ShotData {
 
 	def sameSize(
 		form: Form = LibForms.SPHERE,
-		color: Int = LibShotData.COLOR_SATURATED_RED,
+		color: Int = LibColor.COLOR_SATURATED_RED,
 		damage: Float = 0.5F,
 		size: Float = 0.5F,
 		delay: Int = 0,

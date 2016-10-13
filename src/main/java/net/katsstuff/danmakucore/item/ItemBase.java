@@ -9,14 +9,12 @@
 package net.katsstuff.danmakucore.item;
 
 import net.minecraft.item.Item;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @SuppressWarnings("WeakerAccess")
 public class ItemBase extends Item {
 
 	public ItemBase(String name) {
 		setRegistryName(name);
-		GameRegistry.register(this);
 		setUnlocalizedName(name);
 	}
 }

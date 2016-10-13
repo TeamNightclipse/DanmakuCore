@@ -161,7 +161,7 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 		int size = list.tagCount();
 		for(int i = 0; i < size; i++) {
 			NBTTagCompound tagPhase = list.getCompoundTagAt(i);
-			PhaseType type = DanmakuRegistry.INSTANCE.phase.get(new ResourceLocation(tagPhase.getString(Phase.NBT_NAME)));
+			PhaseType type = DanmakuRegistry.PHASE.getObject(new ResourceLocation(tagPhase.getString(Phase.NBT_NAME)));
 			Phase phase = type.instantiate(this);
 			phase.deserializeNBT(tagPhase);
 			phaseList.add(phase);

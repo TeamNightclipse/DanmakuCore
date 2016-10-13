@@ -8,7 +8,8 @@
  */
 package net.katsstuff.danmakucore.registry;
 
-import net.katsstuff.danmakucore.DanmakuCore;
+import javax.annotation.Nullable;
+
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.entity.danmaku.form.Form;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
@@ -18,52 +19,41 @@ import net.katsstuff.danmakucore.lib.LibDanmakuVariantName;
 import net.katsstuff.danmakucore.lib.LibFormName;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.katsstuff.danmakucore.lib.LibPhaseName;
+import net.katsstuff.danmakucore.lib.LibRegistryName;
 import net.katsstuff.danmakucore.lib.LibSubEntityName;
 import net.katsstuff.danmakucore.misc.IInitNeeded;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+import net.minecraftforge.fml.common.registry.PersistentRegistryManager;
 
+@Mod.EventBusSubscriber
 public final class DanmakuRegistry implements IInitNeeded {
 
-	public static final DanmakuRegistry INSTANCE = new DanmakuRegistry();
-	public final Registry<Form> form;
-	public final Registry<SubEntityType> subEntity;
-	public final Registry<DanmakuVariant> danmakuVariant;
-	public final Registry<Spellcard> spellcard;
-	public final Registry<PhaseType> phase;
+	public static FMLControlledNamespacedRegistry<Form> FORM;
+	public static FMLControlledNamespacedRegistry<SubEntityType> SUB_ENTITY;
+	public static FMLControlledNamespacedRegistry<DanmakuVariant> DANMAKU_VARIANT;
+	public static FMLControlledNamespacedRegistry<Spellcard> SPELLCARD;
+	public static FMLControlledNamespacedRegistry<PhaseType> PHASE;
 
-	private DanmakuRegistry() {
-		form = new Registry<Form>(resource("forms"), Form.class, resource(LibFormName.DEFAULT)) {
-
-			@Override
-			public Form register(Form value) {
-				Form res = super.register(value);
-				DanmakuCore.proxy.bakeDanmakuForm(value);
-				return res;
-			}
-		};
-		subEntity = new Registry<>(resource("subEntities"), SubEntityType.class, resource(LibSubEntityName.DEFAULT));
-		danmakuVariant = new Registry<DanmakuVariant>(resource("danmakuTypes"), DanmakuVariant.class, resource(LibDanmakuVariantName.DEFAULT)) {
-
-			@Override
-			public DanmakuVariant register(DanmakuVariant value) {
-				DanmakuVariant res = super.register(value);
-				DanmakuCore.proxy.bakeDanmakuVariant(value);
-				return res;
-			}
-		};
-		spellcard = new Registry<Spellcard>(resource("spellcard"), Spellcard.class, null) { //TODO: Use fallback spellcard
-
-			@Override
-			public Spellcard register(Spellcard value) {
-				Spellcard res = super.register(value);
-				DanmakuCore.proxy.bakeSpellcard(value);
-				return res;
-			}
-		};
-		phase = new Registry<>(resource("phase"), PhaseType.class, resource(LibPhaseName.FALLBACK));
+	@SubscribeEvent
+	public static void createRegistries(RegistryEvent.NewRegistry event) {
+		FORM = createRegistry(LibRegistryName.FORMS, Form.class, resource(LibFormName.DEFAULT));
+		SUB_ENTITY = createRegistry(LibRegistryName.SUB_ENTITIES, SubEntityType.class, resource(LibSubEntityName.DEFAULT));
+		DANMAKU_VARIANT = createRegistry(LibRegistryName.VARIANTS, DanmakuVariant.class, resource(LibDanmakuVariantName.DEFAULT));
+		SPELLCARD = createRegistry(LibRegistryName.SPELLCARDS, Spellcard.class, null);
+		PHASE = createRegistry(LibRegistryName.PHASES, PhaseType.class, resource(LibPhaseName.FALLBACK));
 	}
 
-	private static ResourceLocation resource(String keyValue) {
-		return new ResourceLocation(LibMod.MODID, keyValue);
+	private static <I extends IForgeRegistryEntry<I>> FMLControlledNamespacedRegistry<I> createRegistry(ResourceLocation name, Class<I> clazz,
+			@Nullable ResourceLocation defaultValue) {
+		return PersistentRegistryManager.createRegistry(name, clazz, defaultValue, 0, Short.MAX_VALUE, false, null, null, null);
+	}
+
+	private static ResourceLocation resource(String path) {
+		return new ResourceLocation(LibMod.MODID, path);
 	}
 }

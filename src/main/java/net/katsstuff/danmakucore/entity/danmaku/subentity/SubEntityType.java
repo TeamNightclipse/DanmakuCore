@@ -10,25 +10,12 @@ package net.katsstuff.danmakucore.entity.danmaku.subentity;
 
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.misc.ITranslatable;
-import net.katsstuff.danmakucore.registry.DanmakuRegistry;
-import net.katsstuff.danmakucore.registry.IRegistryValue;
+import net.katsstuff.danmakucore.registry.RegistryValue;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
-public abstract class SubEntityType extends IForgeRegistryEntry.Impl<SubEntityType> implements IRegistryValue<SubEntityType>, ITranslatable {
+public abstract class SubEntityType extends RegistryValue<SubEntityType> implements ITranslatable {
 
 	public abstract SubEntity instantiate(World world, EntityDanmaku entityDanmaku);
-
-	@Override
-	public FMLControlledNamespacedRegistry<SubEntityType> getRegistry() {
-		return DanmakuRegistry.INSTANCE.subEntity.getRegistry();
-	}
-
-	@Override
-	public SubEntityType getObject() {
-		return this;
-	}
 
 	@Override
 	public String getUnlocalizedName() {

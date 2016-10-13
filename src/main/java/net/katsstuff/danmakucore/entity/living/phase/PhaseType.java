@@ -8,22 +8,9 @@
  */
 package net.katsstuff.danmakucore.entity.living.phase;
 
-import net.katsstuff.danmakucore.registry.DanmakuRegistry;
-import net.katsstuff.danmakucore.registry.IRegistryValue;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+import net.katsstuff.danmakucore.registry.RegistryValue;
 
-public abstract class PhaseType extends IForgeRegistryEntry.Impl<PhaseType> implements IRegistryValue<PhaseType> {
+public abstract class PhaseType extends RegistryValue<PhaseType> {
 
 	public abstract Phase instantiate(PhaseManager phaseManager);
-
-	@Override
-	public FMLControlledNamespacedRegistry<PhaseType> getRegistry() {
-		return DanmakuRegistry.INSTANCE.phase.getRegistry();
-	}
-
-	@Override
-	public PhaseType getObject() {
-		return this;
-	}
 }

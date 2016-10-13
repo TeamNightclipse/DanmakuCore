@@ -18,7 +18,7 @@ import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.living.IAllyDanmaku;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
-import net.katsstuff.danmakucore.lib.data.LibShotData;
+import net.katsstuff.danmakucore.lib.LibColor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -167,22 +167,24 @@ public class DanmakuHelper {
 		}
 	}
 
+	public static final double GRAVITY_DEFAULT = -0.03D;
+
 	/**
 	 * Check if a color is registered
 	 */
 	public static boolean isNormalColor(int color) {
-		return LibShotData.getRegisteredColors().contains(color);
+		return LibColor.getRegisteredColors().contains(color);
 	}
 
-	public static final int[] SATURATED_COLORS = {LibShotData.COLOR_SATURATED_BLUE, LibShotData.COLOR_SATURATED_CYAN, LibShotData.COLOR_SATURATED_GREEN,
-			LibShotData.COLOR_SATURATED_MAGENTA, LibShotData.COLOR_SATURATED_ORANGE, LibShotData.COLOR_SATURATED_RED, LibShotData.COLOR_WHITE,
-			LibShotData.COLOR_SATURATED_YELLOW};
+	public static final int[] SATURATED_COLORS = {LibColor.COLOR_SATURATED_BLUE, LibColor.COLOR_SATURATED_CYAN, LibColor.COLOR_SATURATED_GREEN,
+			LibColor.COLOR_SATURATED_MAGENTA, LibColor.COLOR_SATURATED_ORANGE, LibColor.COLOR_SATURATED_RED, LibColor.COLOR_WHITE,
+			LibColor.COLOR_SATURATED_YELLOW};
 
-	public static final int[] VANILLA_COLORS = {LibShotData.COLOR_VANILLA_WHITE, LibShotData.COLOR_VANILLA_ORANGE, LibShotData.COLOR_VANILLA_MAGENTA,
-			LibShotData.COLOR_VANILLA_LIGHT_BLUE, LibShotData.COLOR_VANILLA_YELLOW, LibShotData.COLOR_VANILLA_LIME,
-			LibShotData.COLOR_VANILLA_PINK, LibShotData.COLOR_VANILLA_GRAY, LibShotData.COLOR_VANILLA_SILVER, LibShotData.COLOR_VANILLA_CYAN,
-			LibShotData.COLOR_VANILLA_PURPLE, LibShotData.COLOR_VANILLA_BLUE, LibShotData.COLOR_VANILLA_BROWN, LibShotData.COLOR_VANILLA_GREEN,
-			LibShotData.COLOR_VANILLA_RED, LibShotData.COLOR_VANILLA_BLACK};
+	public static final int[] VANILLA_COLORS = {LibColor.COLOR_VANILLA_WHITE, LibColor.COLOR_VANILLA_ORANGE, LibColor.COLOR_VANILLA_MAGENTA,
+			LibColor.COLOR_VANILLA_LIGHT_BLUE, LibColor.COLOR_VANILLA_YELLOW, LibColor.COLOR_VANILLA_LIME,
+			LibColor.COLOR_VANILLA_PINK, LibColor.COLOR_VANILLA_GRAY, LibColor.COLOR_VANILLA_SILVER, LibColor.COLOR_VANILLA_CYAN,
+			LibColor.COLOR_VANILLA_PURPLE, LibColor.COLOR_VANILLA_BLUE, LibColor.COLOR_VANILLA_BROWN, LibColor.COLOR_VANILLA_GREEN,
+			LibColor.COLOR_VANILLA_RED, LibColor.COLOR_VANILLA_BLACK};
 
 	private final static Random RAND = new Random();
 
