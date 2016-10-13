@@ -28,6 +28,8 @@ public class CapabilityDanmakuCoreData {
 				NBTTagCompound compound = new NBTTagCompound();
 				compound.setFloat("power", instance.getPower());
 				compound.setInteger("score", instance.getScore());
+				compound.setInteger("lives", instance.getLives());
+				compound.setInteger("bombs", instance.getBombs());
 				return compound;
 			}
 
@@ -36,6 +38,8 @@ public class CapabilityDanmakuCoreData {
 				NBTTagCompound compound = (NBTTagCompound)base;
 				instance.setPower(compound.getFloat("power"));
 				instance.setScore(compound.getInteger("score"));
+				instance.setLives(compound.getInteger("lives"));
+				instance.setBombs(compound.getInteger("bombs"));
 			}
 		}, BoundedDanmakuCoreData::new);
 	}

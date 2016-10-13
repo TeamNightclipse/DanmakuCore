@@ -121,10 +121,20 @@ public class ItemDanmaku extends ItemBase {
 
 		if(!world.isRemote) {
 			if(player.isSneaking()) {
-				TouhouHelper.setPowerPlayerSync(player, 0F);
+				TouhouHelper.changeAndSyncPlayerData(data -> {
+					data.setPower(0F);
+					data.setScore(0);
+					data.setLives(0);
+					data.setBombs(0);
+				}, player);
 			}
 			else {
-				TouhouHelper.addPowerPlayerSync(player, 0.1F);
+				TouhouHelper.changeAndSyncPlayerData(data -> {
+					data.addPower(0.1F);
+					data.addScore(1000);
+					data.addLife();
+					data.addBomb();
+				}, player);
 			}
 		}
 

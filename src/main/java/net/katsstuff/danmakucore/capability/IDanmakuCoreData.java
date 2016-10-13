@@ -24,10 +24,6 @@ public interface IDanmakuCoreData {
 		setPower(getPower() + power);
 	}
 
-	default void resetPower() {
-		setPower(0F);
-	}
-
 	int getScore();
 
 	void setScore(int score);
@@ -36,8 +32,35 @@ public interface IDanmakuCoreData {
 		setScore(getScore() + score);
 	}
 
-	default void resetScore() {
-		setScore(0);
+	int getLives();
+
+	void setLives(int lives);
+
+	default void addLives(int lives) {
+		setLives(getLives() + lives);
+	}
+
+	default void addLife() {
+		addLives(1);
+	}
+	default void removeLife() {
+		addLives(-1);
+	}
+
+	int getBombs();
+
+	void setBombs(int bombs);
+
+	default void addBombs(int bombs) {
+		setBombs(getBombs() + bombs);
+	}
+
+	default void addBomb() {
+		addBombs(1);
+	}
+
+	default void removeBomb() {
+		addBombs(-1);
 	}
 
 	default void syncTo(EntityPlayerMP playerMP, Entity target) {

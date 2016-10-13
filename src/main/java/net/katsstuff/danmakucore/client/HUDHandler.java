@@ -21,7 +21,10 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class HUDHandler {
 
 	private final ResourceLocation barResource = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png");
@@ -39,21 +42,36 @@ public class HUDHandler {
 				GlStateManager.pushMatrix();
 
 				float filled = data.getPower() / 4F;
-				int width = (int)(128 * filled);
+				int widthFull = 128;
+				int width = (int)(widthFull * filled);
 				int height = 16;
 
-				int baseX = res.getScaledWidth() - 24;
-				int baseY = res.getScaledHeight() - 16;
+				int baseX = res.getScaledWidth() - 8;
+				int baseY = res.getScaledHeight() - 26;
 
 				int x = baseX - width;
 				int y = baseY - (height / 2);
 
 
 				mc.getTextureManager().bindTexture(barResource);
+
+				GlStateManager.color(1F, 1F, 1F);
+				Gui.drawModalRectWithCustomSizedTexture(baseX - 130, y - 2, 0F, 0F, widthFull + 4, height + 4, 8, 8);
+
 				GlStateManager.color(1F, 0F, 0F);
 				Gui.drawModalRectWithCustomSizedTexture(x, y, 0F, 0F, width, height, 8, 8);
-				mc.fontRendererObj.drawStringWithShadow("Power: " + data.getPower(), baseX - 64, baseY - 30, 0xFFFFFF);
-				mc.fontRendererObj.drawStringWithShadow("Danmaku score: " + data.getScore(), baseX - 108, baseY - 18, 0xFFFFFF);
+
+				for(int i = 0; i < data.getLives(); i++) {
+					Gui.drawModalRectWithCustomSizedTexture(8 + (i * 12), baseY - 13, 0F, 0F, 8, 8, 8, 8);
+				}
+
+				GlStateManager.color(0F, 1F, 0F);
+				for(int i = 0; i < data.getBombs(); i++) {
+					Gui.drawModalRectWithCustomSizedTexture(8 + (i * 12), baseY, 0F, 0F, 8, 8, 8, 8);
+				}
+
+				mc.fontRendererObj.drawStringWithShadow("Power: " + data.getPower(), baseX - 128, baseY - 30, 0xFFFFFF);
+				mc.fontRendererObj.drawStringWithShadow("Score: " + data.getScore(), baseX - 128, baseY - 20, 0xFFFFFF);
 
 				GlStateManager.popMatrix();
 			}

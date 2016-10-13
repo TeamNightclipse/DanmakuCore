@@ -43,6 +43,9 @@ public class CoreDataPacket {
 		public void fromBytes(ByteBuf buf) {
 			data.setPower(buf.readFloat());
 			data.setScore(buf.readInt());
+			data.setLives(buf.readInt());
+			data.setBombs(buf.readInt());
+
 			target = new UUID(buf.readLong(), buf.readLong());
 		}
 
@@ -50,6 +53,9 @@ public class CoreDataPacket {
 		public void toBytes(ByteBuf buf) {
 			buf.writeFloat(data.getPower());
 			buf.writeInt(data.getScore());
+			buf.writeInt(data.getLives());
+			buf.writeInt(data.getBombs());
+
 			buf.writeLong(target.getMostSignificantBits());
 			buf.writeLong(target.getLeastSignificantBits());
 		}
@@ -72,6 +78,8 @@ public class CoreDataPacket {
 						IDanmakuCoreData data = optData.get();
 						data.setPower(message.data.getPower());
 						data.setScore(message.data.getScore());
+						data.setLives(message.data.getLives());
+						data.setBombs(message.data.getBombs());
 					}
 				}
 			};
