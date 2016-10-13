@@ -9,6 +9,7 @@
 package net.katsstuff.danmakucore.lib.data;
 
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
+import net.katsstuff.danmakucore.entity.living.phase.PhaseTypeDummy;
 import net.katsstuff.danmakucore.impl.phase.PhaseTypeSpellcard;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.katsstuff.danmakucore.lib.LibPhaseName;
@@ -18,7 +19,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 public class LibPhases {
 
 	@ObjectHolder(LibPhaseName.FALLBACK)
-	public static final PhaseType FALLBACK = null; //Default
+	public static final PhaseType FALLBACK = new PhaseTypeDummy(); //Default
 	@ObjectHolder(LibPhaseName.SPELLCARD)
 	public static final PhaseTypeSpellcard SPELLCARD = null;
 }

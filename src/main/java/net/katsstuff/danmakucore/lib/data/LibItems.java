@@ -9,9 +9,9 @@
 package net.katsstuff.danmakucore.lib.data;
 
 import net.katsstuff.danmakucore.item.ItemDanmaku;
-import net.katsstuff.danmakucore.item.ItemSpellcard;
 import net.katsstuff.danmakucore.lib.LibItemName;
 import net.katsstuff.danmakucore.lib.LibMod;
+import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
 @ObjectHolder(LibMod.MODID)
@@ -20,5 +20,5 @@ public class LibItems {
 	@ObjectHolder(LibItemName.DANMAKU)
 	public static final ItemDanmaku DANMAKU = null;
 	@ObjectHolder(LibItemName.SPELLCARD)
-	public static final ItemSpellcard SPELLCARD = null;
+	public static final Item SPELLCARD = new Item();
 }

@@ -31,6 +31,9 @@ public abstract class Form extends RegistryValueItemStack<Form> {
 		DanmakuCore.proxy.bakeDanmakuForm(this);
 	}
 
+	//For the dummy
+	Form() {}
+
 	/**
 	 * @return The ResourceLocation assigned to this registration.
 	 */

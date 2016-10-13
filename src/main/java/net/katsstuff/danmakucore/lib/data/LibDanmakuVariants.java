@@ -9,6 +9,7 @@
 package net.katsstuff.danmakucore.lib.data;
 
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
+import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariantDummy;
 import net.katsstuff.danmakucore.lib.LibDanmakuVariantName;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
@@ -17,37 +18,37 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 public final class LibDanmakuVariants {
 
 	@ObjectHolder(LibDanmakuVariantName.DEFAULT)
-	public static final DanmakuVariant DEFAULT_TYPE = null;
+	public static final DanmakuVariant DEFAULT_TYPE = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.CIRCLE)
-	public static final DanmakuVariant CIRCLE = null;
+	public static final DanmakuVariant CIRCLE = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.CRYSTAL1)
-	public static final DanmakuVariant CRYSTAL1 = null;
+	public static final DanmakuVariant CRYSTAL1 = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.CRYSTAL2)
-	public static final DanmakuVariant CRYSTAL2 = null;
+	public static final DanmakuVariant CRYSTAL2 = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.OVAL)
-	public static final DanmakuVariant OVAL = null;
+	public static final DanmakuVariant OVAL = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.SPHERE_DARK)
-	public static final DanmakuVariant SPHERE_DARK = null;
+	public static final DanmakuVariant SPHERE_DARK = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.PELLET)
-	public static final DanmakuVariant PELLET = null;
+	public static final DanmakuVariant PELLET = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.TINY)
-	public static final DanmakuVariant TINY = null;
+	public static final DanmakuVariant TINY = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.SMALL)
-	public static final DanmakuVariant SMALL = null;
+	public static final DanmakuVariant SMALL = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.STAR)
-	public static final DanmakuVariant STAR = null;
+	public static final DanmakuVariant STAR = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.STAR_SMALL)
-	public static final DanmakuVariant STAR_SMALL = null;
+	public static final DanmakuVariant STAR_SMALL = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.KUNAI)
-	public static final DanmakuVariant KUNAI = null;
+	public static final DanmakuVariant KUNAI = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.SCALE)
-	public static final DanmakuVariant SCALE = null;
+	public static final DanmakuVariant SCALE = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.RICE)
-	public static final DanmakuVariant RICE = null;
+	public static final DanmakuVariant RICE = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.LASER)
-	public static final DanmakuVariant LASER = null;
+	public static final DanmakuVariant LASER = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.LASER_SHORT)
-	public static final DanmakuVariant LASER_SHORT = null;
+	public static final DanmakuVariant LASER_SHORT = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.LASER_LONG)
-	public static final DanmakuVariant LASER_LONG = null;
+	public static final DanmakuVariant LASER_LONG = new DanmakuVariantDummy();
 }

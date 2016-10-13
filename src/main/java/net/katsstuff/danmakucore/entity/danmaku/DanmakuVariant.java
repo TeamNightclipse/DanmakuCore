@@ -38,6 +38,9 @@ public abstract class DanmakuVariant extends RegistryValueItemStack<DanmakuVaria
 		DanmakuCore.proxy.bakeDanmakuVariant(this);
 	}
 
+	//For the dummy
+	DanmakuVariant() {}
+
 	public abstract ShotData getShotData();
 
 	public abstract MovementData getMovementData();

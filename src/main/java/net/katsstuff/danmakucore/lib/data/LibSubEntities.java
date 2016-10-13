@@ -9,6 +9,7 @@
 package net.katsstuff.danmakucore.lib.data;
 
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
+import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityTypeDummy;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.katsstuff.danmakucore.lib.LibSubEntityName;
 import net.katsstuff.danmakucore.misc.IInitNeeded;
@@ -18,11 +19,11 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 public final class LibSubEntities implements IInitNeeded {
 
 	@ObjectHolder(LibSubEntityName.DEFAULT)
-	public static final SubEntityType DEFAULT_TYPE = null;
+	public static final SubEntityType DEFAULT_TYPE = new SubEntityTypeDummy();
 	@ObjectHolder(LibSubEntityName.FIRE)
-	public static final SubEntityType FIRE = null;
+	public static final SubEntityType FIRE = new SubEntityTypeDummy();
 	@ObjectHolder(LibSubEntityName.EXPLODE)
-	public static final SubEntityType EXPLOSION = null;
+	public static final SubEntityType EXPLOSION = new SubEntityTypeDummy();
 	@ObjectHolder(LibSubEntityName.TELEPORT)
-	public static final SubEntityType TELEPORT = null;
+	public static final SubEntityType TELEPORT = new SubEntityTypeDummy();
 }

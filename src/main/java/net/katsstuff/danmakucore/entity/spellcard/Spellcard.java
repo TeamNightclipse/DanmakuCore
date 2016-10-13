@@ -29,6 +29,9 @@ public abstract class Spellcard extends RegistryValueItemStack<Spellcard> {
 		DanmakuCore.proxy.bakeSpellcard(this);
 	}
 
+	//For the dummy
+	Spellcard() {}
+
 	public abstract SpellcardEntity instantiate(EntitySpellcard card, @Nullable EntityLivingBase target);
 
 	/**
