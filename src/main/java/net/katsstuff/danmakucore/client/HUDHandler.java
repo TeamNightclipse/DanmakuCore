@@ -58,6 +58,9 @@ public class HUDHandler {
 				GlStateManager.color(1F, 1F, 1F);
 				Gui.drawModalRectWithCustomSizedTexture(baseX - 130, y - 2, 0F, 0F, widthFull + 4, height + 4, 8, 8);
 
+				GlStateManager.color(0F, 0F, 0F);
+				Gui.drawModalRectWithCustomSizedTexture(baseX - 128, y, 0F, 0F, widthFull, height, 8, 8);
+
 				GlStateManager.color(1F, 0F, 0F);
 				Gui.drawModalRectWithCustomSizedTexture(x, y, 0F, 0F, width, height, 8, 8);
 
