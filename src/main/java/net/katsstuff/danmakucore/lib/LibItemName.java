@@ -12,8 +12,4 @@ public class LibItemName {
 
 	public static final String DANMAKU = "danmaku";
 	public static final String SPELLCARD = "spellcard";
-
-	public static final String BOMB = "bomb";
-	public static final String SCORE = "score";
-	public static final String EXTEND = "extend";
 }

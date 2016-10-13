@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityLivingBase;
 /**
  * Entities that implement this are able to call for help. They can also help other callers.
  */
+@SuppressWarnings("unused")
 public interface ICallable {
 
 	/**

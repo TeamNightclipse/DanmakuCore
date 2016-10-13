@@ -144,6 +144,7 @@ public class EntitySpellcard extends Entity {
 		return user;
 	}
 
+	@SuppressWarnings("unused")
 	public SpellcardEntity getSpellCard() {
 		return spellCard;
 	}

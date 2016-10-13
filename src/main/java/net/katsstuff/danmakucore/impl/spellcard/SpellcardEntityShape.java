@@ -15,6 +15,7 @@ import net.katsstuff.danmakucore.shape.IShape;
 import net.katsstuff.danmakucore.shape.ShapeHandler;
 import net.minecraft.entity.EntityLivingBase;
 
+@SuppressWarnings("unused")
 public class SpellcardEntityShape extends SpellcardEntity {
 
 	private IShape shape;

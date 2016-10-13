@@ -18,6 +18,7 @@ import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
 import net.minecraft.util.Tuple;
 
+@SuppressWarnings("unused")
 public class ShapeSingle implements IShape {
 
 	private final DanmakuBuilder danmaku;

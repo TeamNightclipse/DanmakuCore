@@ -14,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
+@SuppressWarnings("unused")
 public interface IDanmakuCoreData {
 
 	float getPower();

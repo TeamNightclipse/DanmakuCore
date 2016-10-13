@@ -27,6 +27,7 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class DanmakuHelper {
 
 	/**

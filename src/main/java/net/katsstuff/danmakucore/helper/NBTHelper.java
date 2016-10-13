@@ -20,6 +20,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
+@SuppressWarnings("unused")
 public class NBTHelper {
 
 	public static final String NBT_VECTOR = "vector";

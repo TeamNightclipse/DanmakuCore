@@ -11,17 +11,14 @@ package net.katsstuff.danmakucore.impl.shape;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuBuilder;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
 import net.minecraft.util.Tuple;
 
+@SuppressWarnings("unused")
 public class ShapeArrow implements IShape {
-
-	private static final Quat ROTATE_LEFT = Quat.fromVector(new Vector3(0, 1, 0), 90);
-	private static final Quat ROTATE_RIGHT = Quat.fromVector(new Vector3(0, 1, 0), -90);
 
 	private final int amount;
 	private final double distance;

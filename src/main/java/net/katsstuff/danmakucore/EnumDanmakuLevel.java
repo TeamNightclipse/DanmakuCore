@@ -11,6 +11,7 @@ package net.katsstuff.danmakucore;
 /**
  * The different difficulty levels for danmaku
  */
+@SuppressWarnings("unused")
 public enum EnumDanmakuLevel {
 	PEACEFUL(0),
 	EASY(1),

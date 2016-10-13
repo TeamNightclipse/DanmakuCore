@@ -14,7 +14,6 @@ public class LibFormName {
 	public static final String CIRCLE = "circle";
 	public static final String SCALE = "scale";
 	public static final String STAR = "star";
-	public static final String RICE = "rice";
 	public static final String CRYSTAL1 = "crystal1";
 	public static final String CRYSTAL2 = "crystal2";
 	public static final String KUNAI = "kunai";

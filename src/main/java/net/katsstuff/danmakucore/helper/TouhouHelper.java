@@ -14,18 +14,16 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
+import net.katsstuff.danmakucore.capability.CapabilityDanmakuCoreData;
+import net.katsstuff.danmakucore.capability.IDanmakuCoreData;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
-import net.katsstuff.danmakucore.capability.CapabilityDanmakuCoreData;
-import net.katsstuff.danmakucore.capability.IDanmakuCoreData;
-import net.katsstuff.danmakucore.item.DanmakuCoreItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -54,20 +52,15 @@ public class TouhouHelper {
 
 		if(!player.capabilities.isCreativeMode) {
 
-			int bombs = 0;
+			int bombs = getDanmakuCoreData(player).map(IDanmakuCoreData::getBombs).orElse(0);
 
-			for(ItemStack stack : player.inventory.mainInventory) {
-				if(stack != null && stack.getItem() == DanmakuCoreItem.bombItem) {
-					bombs += stack.stackSize;
-				}
-			}
 			if(player.experienceLevel + bombs < neededLevels) return false;
 
 			if(!simulate) {
 				int clearedLevels = neededLevels - bombs;
 				clearedLevels = clearedLevels < 0 ? 0 : clearedLevels;
 				int clearedBombs = neededLevels - clearedLevels;
-				player.inventory.clearMatchingItems(DanmakuCoreItem.bombItem, -1, clearedBombs, null);
+				changeAndSyncPlayerData(data -> data.addBombs(clearedBombs), player);
 				player.addExperienceLevel(-clearedLevels);
 			}
 		}
@@ -109,6 +102,7 @@ public class TouhouHelper {
 		else return Optional.empty();
 	}
 
+	@SuppressWarnings("unused")
 	public static void changeAndSyncEntityData(Consumer<IDanmakuCoreData> dataRunnable, Entity target, double radius) {
 		getDanmakuCoreData(target).ifPresent(data -> {
 			dataRunnable.accept(data);
@@ -116,22 +110,6 @@ public class TouhouHelper {
 			NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(target.dimension, target.posX, target.posY, target.posZ, radius);
 			data.syncToClose(point, target);
 		});
-	}
-
-	public static void addPowerEntitySync(Entity entity, float power, double radius) {
-		changeAndSyncEntityData(data -> data.addPower(power), entity, radius);
-	}
-
-	public static void setPowerEntitySync(Entity entity, float power, double radius) {
-		changeAndSyncEntityData(data -> data.setPower(power), entity, radius);
-	}
-
-	public static void addScoreEntitySync(Entity entity, int score, double radius) {
-		changeAndSyncEntityData(data -> data.addScore(score), entity, radius);
-	}
-
-	public static void setScoreEntitySync(Entity entity, int score, double radius) {
-		changeAndSyncEntityData(data -> data.setScore(score), entity, radius);
 	}
 
 	public static void changeAndSyncPlayerData(Consumer<IDanmakuCoreData> dataRunnable, EntityPlayer player) {
@@ -142,21 +120,5 @@ public class TouhouHelper {
 				data.syncTo((EntityPlayerMP)player, player);
 			}
 		});
-	}
-
-	public static void addPowerPlayerSync(EntityPlayer player, float power) {
-		changeAndSyncPlayerData(data -> data.addPower(power), player);
-	}
-
-	public static void setPowerPlayerSync(EntityPlayer player, float power) {
-		changeAndSyncPlayerData(data -> data.setPower(power), player);
-	}
-
-	public static void addScorePlayerSync(EntityPlayer player, int score) {
-		changeAndSyncPlayerData(data -> data.addScore(score), player);
-	}
-
-	public static void setScorePlayerSync(EntityPlayer player, int score) {
-		changeAndSyncPlayerData(data -> data.setScore(score), player);
 	}
 }

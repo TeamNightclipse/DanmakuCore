@@ -17,6 +17,7 @@ public class BoundlessDanmakuCoreData implements IDanmakuCoreData {
 	private int lives;
 	private int bombs;
 
+	@SuppressWarnings("WeakerAccess")
 	public BoundlessDanmakuCoreData(float power, int score, int lives, int bombs) {
 		this.power = power;
 		this.score = score;

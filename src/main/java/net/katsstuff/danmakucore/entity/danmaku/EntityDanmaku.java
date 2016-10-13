@@ -293,10 +293,12 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		return dataManager.get(ROLL);
 	}
 
+	@SuppressWarnings("WeakerAccess")
 	public void setRoll(float roll) {
 		dataManager.set(ROLL, roll);
 	}
 
+	@SuppressWarnings("WeakerAccess")
 	public SubEntity setSubEntity(SubEntityType type) {
 		setShotData(getShotData().setSubEntity(type));
 		return subEntity;

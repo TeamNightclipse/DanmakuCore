@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 
 import net.minecraft.util.math.MathHelper;
 
+@SuppressWarnings("WeakerAccess")
 public class BoundedDanmakuCoreData implements IDanmakuCoreData {
 
 	private float power;
