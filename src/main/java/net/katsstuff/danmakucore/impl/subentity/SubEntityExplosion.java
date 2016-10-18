@@ -17,7 +17,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class SubEntityExplosion extends SubEntityTypeCore {
+public class SubEntityExplosion extends SubEntityTypeGeneric {
 
 	private final float strength;
 

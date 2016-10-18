@@ -19,7 +19,7 @@ import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 
-public class FormPellet extends FormCoreGeneric {
+public class FormPellet extends FormGeneric {
 
 	public FormPellet() {
 		super(LibFormName.PELLET);

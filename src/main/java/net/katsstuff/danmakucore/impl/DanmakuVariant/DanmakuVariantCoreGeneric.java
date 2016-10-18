@@ -22,19 +22,23 @@ public class DanmakuVariantCoreGeneric extends DanmakuVariant {
 	private ShotData shotData = null;
 	private final MovementData movement;
 	private final RotationData rotation = RotationData.none();
-	private final String name;
 
 	private final Supplier<ShotData> shotDataSupplier;
 
-	private DanmakuVariantCoreGeneric(String name, Supplier<ShotData> shotData, MovementData movement) {
+	@SuppressWarnings("WeakerAccess")
+	public DanmakuVariantCoreGeneric(String name, Supplier<ShotData> shotData, MovementData movement) {
 		super(name);
 		shotDataSupplier = shotData;
 		this.movement = movement;
-		this.name = name;
 	}
 
 	public DanmakuVariantCoreGeneric(String name, Supplier<ShotData> shotData, double speed) {
 		this(name, shotData, new MovementData(speed, speed, 0.0D, Vector3.GravityZero()));
+	}
+
+	public DanmakuVariantCoreGeneric(MovementData movement, Supplier<ShotData> shotDataSupplier) {
+		this.movement = movement;
+		this.shotDataSupplier = shotDataSupplier;
 	}
 
 	@Override
@@ -51,10 +55,5 @@ public class DanmakuVariantCoreGeneric extends DanmakuVariant {
 	@Override
 	public RotationData getRotationData() {
 		return rotation;
-	}
-
-	@Override
-	public String getUnlocalizedName() {
-		return super.getUnlocalizedName() + "." + LibMod.MODID +  "." + name;
 	}
 }

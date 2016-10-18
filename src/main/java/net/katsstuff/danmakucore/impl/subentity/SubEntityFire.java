@@ -13,7 +13,7 @@ import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class SubEntityFire extends SubEntityTypeCore {
+public class SubEntityFire extends SubEntityTypeGeneric {
 
 	private final float multiplier;
 

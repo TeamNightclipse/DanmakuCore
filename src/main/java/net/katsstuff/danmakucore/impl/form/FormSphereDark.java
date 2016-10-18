@@ -17,7 +17,7 @@ import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 
-public class FormSphereDark extends FormCoreGeneric {
+public class FormSphereDark extends FormGeneric {
 
 	public FormSphereDark() {
 		super(LibFormName.SPHERE_DARK);

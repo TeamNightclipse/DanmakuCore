@@ -31,8 +31,7 @@ public abstract class Form extends RegistryValueItemStack<Form> {
 		DanmakuCore.proxy.bakeDanmakuForm(this);
 	}
 
-	//For the dummy
-	Form() {}
+	public Form() {}
 
 	/**
 	 * @return The ResourceLocation assigned to this registration.
@@ -70,7 +69,7 @@ public abstract class Form extends RegistryValueItemStack<Form> {
 
 	@Override
 	public String getUnlocalizedName() {
-		return "form";
+		return "form." + getModId() + "." + getName();
 	}
 
 	@Override

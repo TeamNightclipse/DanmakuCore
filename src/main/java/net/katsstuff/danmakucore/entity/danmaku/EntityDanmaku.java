@@ -281,7 +281,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		return dataManager.get(SHOT_DATA);
 	}
 
-	private void setShotData(ShotData shot) {
+	public void setShotData(ShotData shot) {
 		SubEntityType oldSubEntity = getShotData().subEntity();
 		dataManager.set(SHOT_DATA, shot);
 		if(shot.subEntity() != oldSubEntity || subEntity == null) {

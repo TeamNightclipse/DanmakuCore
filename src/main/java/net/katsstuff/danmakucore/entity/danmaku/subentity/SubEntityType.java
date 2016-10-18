@@ -15,10 +15,17 @@ import net.minecraft.world.World;
 
 public abstract class SubEntityType extends RegistryValue<SubEntityType> implements ITranslatable {
 
+	public SubEntityType(String name) {
+		setRegistryName(name);
+	}
+
+	@SuppressWarnings("WeakerAccess")
+	public SubEntityType() {}
+
 	public abstract SubEntity instantiate(World world, EntityDanmaku entityDanmaku);
 
 	@Override
 	public String getUnlocalizedName() {
-		return "subentity";
+		return "subentity." + getModId() + "." + getName();
 	}
 }

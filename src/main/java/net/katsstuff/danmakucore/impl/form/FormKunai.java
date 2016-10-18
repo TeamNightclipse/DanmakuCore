@@ -21,7 +21,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
-public class FormKunai extends FormCoreGeneric {
+public class FormKunai extends FormGeneric {
 
 	private final ResourceLocation texture = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/Kunai.png");
 

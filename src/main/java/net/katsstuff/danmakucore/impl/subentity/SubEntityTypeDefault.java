@@ -30,7 +30,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class SubEntityTypeDefault extends SubEntityTypeCore {
+public class SubEntityTypeDefault extends SubEntityTypeGeneric {
 
 	public SubEntityTypeDefault(String name) {
 		super(name);

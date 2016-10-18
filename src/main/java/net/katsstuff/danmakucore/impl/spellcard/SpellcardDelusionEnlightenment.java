@@ -16,6 +16,7 @@ import net.katsstuff.danmakucore.entity.danmaku.DanmakuBuilder;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.living.boss.EnumTouhouCharacters;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
+import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.entity.spellcard.SpellcardEntity;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.helper.DanmakuCreationHelper;
@@ -26,7 +27,7 @@ import net.katsstuff.danmakucore.lib.data.LibShotData;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.RayTraceResult;
 
-public class SpellcardDelusionEnlightenment extends SpellcardCore {
+public class SpellcardDelusionEnlightenment extends Spellcard {
 
 	public SpellcardDelusionEnlightenment() {
 		super(LibSpellcardName.DELUSION_OF_ENLIGHTENMENT);

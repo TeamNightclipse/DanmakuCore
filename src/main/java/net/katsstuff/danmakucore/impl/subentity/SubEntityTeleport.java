@@ -16,7 +16,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class SubEntityTeleport extends SubEntityTypeCore {
+public class SubEntityTeleport extends SubEntityTypeGeneric {
 
 	public SubEntityTeleport(String name) {
 		super(name);

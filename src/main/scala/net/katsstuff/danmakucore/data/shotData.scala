@@ -250,6 +250,7 @@ final case class ShotData(
 
 	def setForm(form: Form): ShotData = copy(form = form)
 	def setColor(color: Int): ShotData = copy(color = color)
+	def setDamage(damage: Float): ShotData = copy(damage = damage)
 	def setSizeX(sizeX: Float): ShotData = copy(sizeX = sizeX)
 	def setSizeY(sizeY: Float): ShotData = copy(sizeY = sizeY)
 	def setSizeZ(sizeZ: Float): ShotData = copy(sizeZ = sizeZ)

@@ -20,7 +20,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 
-public class FormPointedSphere extends FormCoreGeneric {
+public class FormPointedSphere extends FormGeneric {
 
 	public FormPointedSphere() {
 		super(LibFormName.SPHERE_POINTED);

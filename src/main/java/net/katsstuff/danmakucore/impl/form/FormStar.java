@@ -21,7 +21,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class FormStar extends FormCoreGeneric {
+public class FormStar extends FormGeneric {
 
 	private final float[][] points = {
 		{1F, 1F, 1F},

@@ -17,7 +17,7 @@ import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 
-public class FormSphereCircle extends FormCoreGeneric {
+public class FormSphereCircle extends FormGeneric {
 
 	public FormSphereCircle() {
 		super(LibFormName.CIRCLE);

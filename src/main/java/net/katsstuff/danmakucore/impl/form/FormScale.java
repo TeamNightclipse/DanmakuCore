@@ -21,7 +21,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 
-public class FormScale extends FormCoreGeneric {
+public class FormScale extends FormGeneric {
 
 	public FormScale() {
 		super(LibFormName.SCALE);

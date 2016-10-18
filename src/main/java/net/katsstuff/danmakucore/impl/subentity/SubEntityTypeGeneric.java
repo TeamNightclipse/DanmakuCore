@@ -11,17 +11,9 @@ package net.katsstuff.danmakucore.impl.subentity;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.katsstuff.danmakucore.lib.LibMod;
 
-public abstract class SubEntityTypeCore extends SubEntityType {
+public abstract class SubEntityTypeGeneric extends SubEntityType {
 
-	private final String name;
-
-	SubEntityTypeCore(String name) {
+	public SubEntityTypeGeneric(String name) {
 		setRegistryName(name);
-		this.name = name;
-	}
-
-	@Override
-	public String getUnlocalizedName() {
-		return super.getUnlocalizedName() + "." + LibMod.MODID +  "." + name;
 	}
 }

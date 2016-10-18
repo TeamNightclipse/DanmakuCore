@@ -38,8 +38,7 @@ public abstract class DanmakuVariant extends RegistryValueItemStack<DanmakuVaria
 		DanmakuCore.proxy.bakeDanmakuVariant(this);
 	}
 
-	//For the dummy
-	DanmakuVariant() {}
+	public DanmakuVariant() {}
 
 	public abstract ShotData getShotData();
 
@@ -73,7 +72,7 @@ public abstract class DanmakuVariant extends RegistryValueItemStack<DanmakuVaria
 
 	@Override
 	public String getUnlocalizedName() {
-		return "danmakuvariant";
+		return "danmakuvariant." + getModId() + "." + getName();
 	}
 
 	@Override

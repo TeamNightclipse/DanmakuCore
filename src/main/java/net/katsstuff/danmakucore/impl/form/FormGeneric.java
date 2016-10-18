@@ -13,17 +13,19 @@ import net.katsstuff.danmakucore.entity.danmaku.form.Form;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public abstract class FormCoreGeneric extends Form implements IRenderForm {
+public abstract class FormGeneric extends Form implements IRenderForm {
 
 	private final ResourceLocation texture = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png");
-	private final String name;
 
 	@SuppressWarnings("WeakerAccess")
-	public FormCoreGeneric(String name) {
+	public FormGeneric(String name) {
 		super(name);
-		this.name = name;
 	}
+
+	public FormGeneric() {}
 
 	@Override
 	public ResourceLocation getTexture(EntityDanmaku danmaku) {
@@ -31,12 +33,8 @@ public abstract class FormCoreGeneric extends Form implements IRenderForm {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public IRenderForm getRenderer(EntityDanmaku danmaku) {
 		return this;
-	}
-
-	@Override
-	public String getUnlocalizedName() {
-		return super.getUnlocalizedName() + "." + LibMod.MODID +  "." + name;
 	}
 }

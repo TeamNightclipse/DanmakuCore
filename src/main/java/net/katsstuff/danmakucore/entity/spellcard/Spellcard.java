@@ -29,8 +29,7 @@ public abstract class Spellcard extends RegistryValueItemStack<Spellcard> {
 		DanmakuCore.proxy.bakeSpellcard(this);
 	}
 
-	//For the dummy
-	Spellcard() {}
+	public Spellcard() {}
 
 	public abstract SpellcardEntity instantiate(EntitySpellcard card, @Nullable EntityLivingBase target);
 
@@ -81,12 +80,11 @@ public abstract class Spellcard extends RegistryValueItemStack<Spellcard> {
 
 	@Override
 	public String getUnlocalizedName() {
-		return "spellcard";
+		return "spellcard." + getModId() + "." + getName();
 	}
 
 	@Override
 	public ModelResourceLocation getItemModel() {
-		ResourceLocation name = getRegistryName();
-		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/" + name.getResourcePath()), "inventory");
+		return new ModelResourceLocation(new ResourceLocation(getModId(), "danmaku/" + getName().replace('.', '/')), "inventory");
 	}
 }

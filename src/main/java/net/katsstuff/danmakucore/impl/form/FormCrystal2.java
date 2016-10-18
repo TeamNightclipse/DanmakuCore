@@ -23,7 +23,7 @@ import net.minecraft.util.math.MathHelper;
 /**
  * A One sided crystal. Pointy on one side.
  */
-public class FormCrystal2 extends FormCoreGeneric {
+public class FormCrystal2 extends FormGeneric {
 
 	public FormCrystal2() {
 		super(LibFormName.CRYSTAL2);

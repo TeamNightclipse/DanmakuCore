@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 public class LibItems {
 
 	@ObjectHolder(LibItemName.DANMAKU)
-	public static final ItemDanmaku DANMAKU = null;
+	public static final ItemDanmaku DANMAKU = new ItemDanmaku();
 	@ObjectHolder(LibItemName.SPELLCARD)
 	public static final Item SPELLCARD = new Item();
 }
