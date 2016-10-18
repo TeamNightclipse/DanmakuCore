@@ -38,4 +38,6 @@ public final class LibForms implements IInitNeeded {
 	public static final Form KUNAI = new FormDummy();
 	@ObjectHolder(LibFormName.SPHERE_POINTED)
 	public static final Form SPHERE_POINTED = new FormDummy();
+	@ObjectHolder(LibFormName.CONTROL)
+	public static final Form CONTROL = new FormDummy();
 }

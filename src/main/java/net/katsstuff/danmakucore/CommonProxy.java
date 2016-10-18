@@ -16,6 +16,7 @@ import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.impl.DanmakuVariant.DanmakuVariantCoreGeneric;
+import net.katsstuff.danmakucore.impl.form.FormControl;
 import net.katsstuff.danmakucore.impl.form.FormCrystal1;
 import net.katsstuff.danmakucore.impl.form.FormCrystal2;
 import net.katsstuff.danmakucore.impl.form.FormKunai;
@@ -118,7 +119,8 @@ public class CommonProxy {
 				new FormSphere(),
 				new FormSphereCircle(),
 				new FormSphereDark(),
-				new FormStar()
+				new FormStar(),
+				new FormControl()
 		);
 	}
 

@@ -20,4 +20,5 @@ public class LibFormName {
 	public static final String SPHERE_POINTED = "spherePointed";
 	public static final String PELLET = "pellet";
 	public static final String SPHERE_DARK = "sphereDark";
+	public static final String CONTROL = "control";
 }
