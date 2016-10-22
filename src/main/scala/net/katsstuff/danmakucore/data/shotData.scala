@@ -249,25 +249,15 @@ final case class ShotData(
 	}
 
 	def setForm(form: Form): ShotData = copy(form = form)
-	def form_=(form: Form): ShotData = copy(form = form)
 	def setColor(color: Int): ShotData = copy(color = color)
-	def color_=(color: Int): ShotData = copy(color = color)
 	def setDamage(damage: Float): ShotData = copy(damage = damage)
-	def damage_=(damage: Float): ShotData = copy(damage = damage)
 	def setSize(size: Float): ShotData = copy(sizeX = size, sizeY = size, sizeZ = size)
-	def size_=(size: Float): ShotData = copy(sizeX = size, sizeY = size, sizeZ = size)
 	def setSizeX(sizeX: Float): ShotData = copy(sizeX = sizeX)
-	def sizeX_=(sizeX: Float): ShotData = copy(sizeX = sizeX)
 	def setSizeY(sizeY: Float): ShotData = copy(sizeY = sizeY)
-	def sizeY_=(sizeY: Float): ShotData = copy(sizeY = sizeY)
 	def setSizeZ(sizeZ: Float): ShotData = copy(sizeZ = sizeZ)
-	def sizeZ_=(sizeZ: Float): ShotData = copy(sizeZ = sizeZ)
 	def setDelay(delay: Int): ShotData = copy(delay = delay)
-	def delay_=(delay: Int): ShotData = copy(delay = delay)
 	def setEnd(end: Int): ShotData = copy(end = end)
-	def end_=(end: Int): ShotData = copy(end = end)
 	def setSubEntity(subEntity: SubEntityType): ShotData = copy(subEntity = subEntity)
-	def subEntity_=(subEntity: SubEntityType): ShotData = copy(subEntity = subEntity)
 
 	def scaleSize(scale: Float): ShotData = copy(sizeX = sizeX * scale, sizeY = sizeY * scale, sizeZ = sizeZ * scale)
 
