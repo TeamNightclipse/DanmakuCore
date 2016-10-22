@@ -69,10 +69,7 @@ public class ItemDanmaku extends ItemBase {
 				.map(variant -> {
 					ShotData shot = variant.getShotData().setColor(DanmakuHelper.randomSaturatedColor());
 					ItemStack stack = new ItemStack(LibItems.DANMAKU, 1, variantRegistry.getId(variant));
-					NBTTagCompound compound = new NBTTagCompound();
-					compound.setTag(ShotData.NbtShotData(), shot.serializeNBT());
-					stack.setTagCompound(compound);
-					return stack;})
+					return ShotData.serializeNBTItemStack(stack, shot);})
 				.collect(Collectors.toList()));
 	}
 

@@ -249,14 +249,27 @@ final case class ShotData(
 	}
 
 	def setForm(form: Form): ShotData = copy(form = form)
+	def form_=(form: Form): ShotData = copy(form = form)
 	def setColor(color: Int): ShotData = copy(color = color)
+	def color_=(color: Int): ShotData = copy(color = color)
 	def setDamage(damage: Float): ShotData = copy(damage = damage)
+	def damage_=(damage: Float): ShotData = copy(damage = damage)
+	def setSize(size: Float): ShotData = copy(sizeX = size, sizeY = size, sizeZ = size)
+	def size_=(size: Float): ShotData = copy(sizeX = size, sizeY = size, sizeZ = size)
 	def setSizeX(sizeX: Float): ShotData = copy(sizeX = sizeX)
+	def sizeX_=(sizeX: Float): ShotData = copy(sizeX = sizeX)
 	def setSizeY(sizeY: Float): ShotData = copy(sizeY = sizeY)
+	def sizeY_=(sizeY: Float): ShotData = copy(sizeY = sizeY)
 	def setSizeZ(sizeZ: Float): ShotData = copy(sizeZ = sizeZ)
+	def sizeZ_=(sizeZ: Float): ShotData = copy(sizeZ = sizeZ)
 	def setDelay(delay: Int): ShotData = copy(delay = delay)
+	def delay_=(delay: Int): ShotData = copy(delay = delay)
 	def setEnd(end: Int): ShotData = copy(end = end)
+	def end_=(end: Int): ShotData = copy(end = end)
 	def setSubEntity(subEntity: SubEntityType): ShotData = copy(subEntity = subEntity)
+	def subEntity_=(subEntity: SubEntityType): ShotData = copy(subEntity = subEntity)
+
+	def scaleSize(scale: Float): ShotData = copy(sizeX = sizeX * scale, sizeY = sizeY * scale, sizeZ = sizeZ * scale)
 
 	override def asMutable: MutableShotData = MutableShotData(form, color, damage, sizeX, sizeY, sizeZ, delay, end, subEntity)
 
@@ -280,29 +293,14 @@ object ShotData {
 
 	def emptyMutable: MutableShotData = MutableShotData()
 
-	def mutableSameSize(
-		form: Form = LibForms.SPHERE,
-		color: Int = LibColor.COLOR_SATURATED_RED,
-		damage: Float = 0.5F,
-		size: Float = 0.5F,
-		delay: Int = 0,
-		end: Int = 80,
-		subEntity: SubEntityType = LibSubEntities.DEFAULT_TYPE) {
-		MutableShotData(form, color, damage, size, size, size, delay, end, subEntity)
-	}
-
-	def sameSize(
-		form: Form = LibForms.SPHERE,
-		color: Int = LibColor.COLOR_SATURATED_RED,
-		damage: Float = 0.5F,
-		size: Float = 0.5F,
-		delay: Int = 0,
-		end: Int = 80,
-		subEntity: SubEntityType = LibSubEntities.DEFAULT_TYPE) {
-		ShotData(form, color, damage, size, size, size, delay, end, subEntity)
-	}
-
 	def fromNBTItemStack(stack: ItemStack): ShotData = {
 		new ShotData(stack.getSubCompound(NbtShotData, true))
+	}
+
+	def serializeNBTItemStack(stack: ItemStack, shotData: AbstractShotData): ItemStack = {
+		val rootTag = Option(stack.getTagCompound).getOrElse(new NBTTagCompound)
+		rootTag.setTag(NbtShotData, shotData.serializeNBT)
+		stack.setTagCompound(rootTag)
+		stack
 	}
 }
