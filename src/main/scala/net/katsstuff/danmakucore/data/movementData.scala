@@ -73,6 +73,13 @@ final case class MovementData(
 	@BeanProperty speedLimit: Double,
 	@BeanProperty speedAcceleration: Double,
 	@BeanProperty gravity: Vector3) extends AbstractMovementData {
+
+	def setSpeedOriginal(speedOriginal: Double): MovementData = copy(speedOriginal = speedOriginal)
+	def setSpeedLimit(speedLimit: Double): MovementData = copy(speedLimit = speedLimit)
+	def setSpeedAcceleration(speedAcceleration: Double): MovementData = copy(speedAcceleration = speedAcceleration)
+	def setGravity(gravity: Vector3): MovementData = copy(gravity = gravity)
+
+	def setConstant(speed: Double): MovementData = copy(speedOriginal = speed, speedLimit = speed, speedAcceleration = 0D)
 }
 
 object MovementData {
