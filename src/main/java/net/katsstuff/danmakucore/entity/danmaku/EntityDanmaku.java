@@ -77,14 +77,13 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 		setLocationAndAngles(user.posX, user.posY + user.getEyeHeight(), user.posZ, user.rotationYaw, user.rotationPitch);
 
-		//TODO: What does this do? Isn't setThrowableHeading enough?
 		posX -= MathHelper.cos((float)Math.toRadians(rotationYaw)) * 0.16F;
 		posY -= 0.1D;
 		posZ -= MathHelper.sin((float)Math.toRadians(rotationYaw)) * 0.16F;
 		setPosition(posX, posY, posZ);
 
 		angle = new MutableVector3(user.getLookVec());
-		setThrowableHeading(angle.x(), angle.y(), angle.z(), 0.4F, 0.0F);
+		resetMotion();
 	}
 
 	public EntityDanmaku(World world, ShotData shot, Vector3 pos, Vector3 angle, MovementData movement) {
@@ -93,7 +92,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		this.movement = movement;
 		rotation = RotationData.none();
 		setPosition(pos.x(), pos.y(), pos.z());
-		setThrowableHeading(angle.x(), angle.y(), angle.z(), (float)movement.getSpeedOriginal(), 0.0F);
+		resetMotion();
 	}
 
 	public EntityDanmaku(World world, @Nullable EntityLivingBase user, @Nullable Entity source, ShotData shot, Vector3 pos, Vector3 angle, float roll,
@@ -202,7 +201,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 			//Do a new check to see if the shot is still delayed, and if it isn't. Start it's movement
 			if(!worldObj.isRemote && shot.delay() <= 0) {
-				setThrowableHeading(angle.x(), angle.y(), angle.z(), (float)movement.getSpeedOriginal(), 0F);
+				resetMotion();
 			}
 			setShotData(shot);
 		}
@@ -263,6 +262,18 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			motionX = angle.x() * speed;
 			motionY = angle.y() * speed;
 			motionZ = angle.z() * speed;
+		}
+	}
+
+	public void resetMotion() {
+		if(!worldObj.isRemote) {
+			double speedOriginal = getMovementData().getSpeedOriginal();
+			motionX = angle.x() * speedOriginal;
+			motionY = angle.y() * speedOriginal;
+			motionZ = angle.z() * speedOriginal;
+
+			prevRotationYaw = rotationYaw = (float)angle.yaw();
+			prevRotationPitch = rotationPitch = (float)angle.pitch();
 		}
 	}
 
