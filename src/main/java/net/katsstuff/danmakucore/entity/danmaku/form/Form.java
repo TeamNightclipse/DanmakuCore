@@ -9,6 +9,9 @@
 package net.katsstuff.danmakucore.entity.danmaku.form;
 
 import net.katsstuff.danmakucore.DanmakuCore;
+import net.katsstuff.danmakucore.data.MovementData;
+import net.katsstuff.danmakucore.data.RotationData;
+import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
@@ -23,6 +26,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+/**
+ * Something that dictates the appearance and the logic that comes from that of a {@link EntityDanmaku}.
+ *
+ * Please note that even though both this and {@link SubEntity} have callbacks
+ * for tick and changes, the callbacks here should only be used if the logic is
+ * specific to this form. For example size restrictions.
+ */
 @SuppressWarnings("UnusedParameters")
 public abstract class Form extends RegistryValueItemStack<Form> {
 
@@ -66,6 +76,36 @@ public abstract class Form extends RegistryValueItemStack<Form> {
 	 * gravity.
 	 */
 	public void onTick(EntityDanmaku danmaku) {}
+
+	/**
+	 * Callback that is executed whenever {@link ShotData} is set on the underlying entity
+	 * @param oldShot The old shot
+	 * @param newShot The new shot
+	 * @return The shot that will be switched to
+	 */
+	public ShotData onShotDataChange(ShotData oldShot, ShotData newShot) {
+		return newShot;
+	}
+
+	/**
+	 * Callback that is executed when {@link MovementData} is set on the underlying entity.
+	 * @param oldMovement The old movement
+	 * @param newMovement the new movement
+	 * @return The movement that will be switched to
+	 */
+	public MovementData onMovementDataChange(MovementData oldMovement, MovementData newMovement) {
+		return newMovement;
+	}
+
+	/**
+	 * Callback that is executed when {@link RotationData} is set on the underlying entity.
+	 * @param oldRotation The old rotation
+	 * @param newRotation The new rotation
+	 * @return The rotation that will be switched to
+	 */
+	public RotationData onRotationDataChange(RotationData oldRotation, RotationData newRotation) {
+		return newRotation;
+	}
 
 	@Override
 	public String getUnlocalizedName() {

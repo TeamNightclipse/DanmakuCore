@@ -8,6 +8,9 @@
  */
 package net.katsstuff.danmakucore.entity.danmaku.subentity;
 
+import net.katsstuff.danmakucore.data.MovementData;
+import net.katsstuff.danmakucore.data.RotationData;
+import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.minecraft.world.World;
 
@@ -29,5 +32,38 @@ public abstract class SubEntity {
 	 * Called each tick as long as the danmaku is alive, and it's delay is 0.
 	 */
 	public abstract void subEntityTick();
+
+	/**
+	 * Callback that is executed whenever {@link ShotData} is set on the underlying entity
+	 * @param oldShot The old shot
+	 * @param formOpinion The shot that the form wants to use
+	 * @param newShot The new shot
+	 * @return The shot that will be switched to
+	 */
+	public ShotData onShotDataChange(ShotData oldShot, ShotData formOpinion, ShotData newShot) {
+		return formOpinion;
+	}
+
+	/**
+	 * Callback that is executed when {@link MovementData} is set on the underlying entity.
+	 * @param oldMovement The old movement
+	 * @param formOpinion The movement that the form wants to use
+	 * @param newMovement the new movement
+	 * @return The movement that will be switched to
+	 */
+	public MovementData onMovementDataChange(MovementData oldMovement, MovementData formOpinion, MovementData newMovement) {
+		return formOpinion;
+	}
+
+	/**
+	 * Callback that is executed when {@link RotationData} is set on the underlying entity.
+	 * @param oldRotation The old rotation
+	 * @param formOpinion The rotation that the form wants to use
+	 * @param newRotation The new rotation
+	 * @return The rotation that will be switched to
+	 */
+	public RotationData onRotationDataChange(RotationData oldRotation, RotationData formOpinion, RotationData newRotation) {
+		return formOpinion;
+	}
 
 }

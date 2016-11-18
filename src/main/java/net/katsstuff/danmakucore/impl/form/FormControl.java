@@ -8,6 +8,7 @@
  */
 package net.katsstuff.danmakucore.impl.form;
 
+import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -21,5 +22,10 @@ public class FormControl extends FormGeneric {
 	@Override
 	public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks, RenderManager rendermanager) {
 		//NO-OP
+	}
+
+	@Override
+	public ShotData onShotDataChange(ShotData oldShot, ShotData newShot) {
+		return newShot.setSize(oldShot.sizeX(), oldShot.sizeY(), oldShot.sizeZ());
 	}
 }

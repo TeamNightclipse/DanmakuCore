@@ -155,6 +155,19 @@ final case class MutableShotData(
 		this(form, color, damage, size, size, size, delay, end, subEntity)
 	}
 
+	def setSize(sizeX: Float, sizeY: Float, sizeZ: Float): MutableShotData = {
+		this.sizeX = sizeX
+		this.sizeY = sizeY
+		this.sizeZ = sizeZ
+		this
+	}
+
+	def setSize(size: Float): MutableShotData = setSize(size, size, size)
+
+	def scaleSize(scale: Float): MutableShotData = scaleSize(scale, scale, scale)
+	def scaleSize(scaleX: Float, scaleY: Float, scaleZ: Float): MutableShotData =
+		copy(sizeX = sizeX * scaleX, sizeY = sizeY * scaleY, sizeZ = sizeZ * scaleZ)
+
 	def deserializeByteBuf(buf: ByteBuf) {
 		form = DanmakuRegistry.FORM.getObjectById(buf.readInt)
 		color = buf.readInt
@@ -251,7 +264,8 @@ final case class ShotData(
 	def setForm(form: Form): ShotData = copy(form = form)
 	def setColor(color: Int): ShotData = copy(color = color)
 	def setDamage(damage: Float): ShotData = copy(damage = damage)
-	def setSize(size: Float): ShotData = copy(sizeX = size, sizeY = size, sizeZ = size)
+	def setSize(sizeX: Float, sizeY: Float, sizeZ: Float): ShotData = copy(sizeX = sizeX, sizeY = sizeY, sizeZ = sizeZ)
+	def setSize(size: Float): ShotData = setSize(size, size, size)
 	def setSizeX(sizeX: Float): ShotData = copy(sizeX = sizeX)
 	def setSizeY(sizeY: Float): ShotData = copy(sizeY = sizeY)
 	def setSizeZ(sizeZ: Float): ShotData = copy(sizeZ = sizeZ)
@@ -259,7 +273,9 @@ final case class ShotData(
 	def setEnd(end: Int): ShotData = copy(end = end)
 	def setSubEntity(subEntity: SubEntityType): ShotData = copy(subEntity = subEntity)
 
-	def scaleSize(scale: Float): ShotData = copy(sizeX = sizeX * scale, sizeY = sizeY * scale, sizeZ = sizeZ * scale)
+	def scaleSize(scale: Float): ShotData = scaleSize(scale, scale, scale)
+	def scaleSize(scaleX: Float, scaleY: Float, scaleZ: Float): ShotData =
+		copy(sizeX = sizeX * scaleX, sizeY = sizeY * scaleY, sizeZ = sizeZ * scaleZ)
 
 	override def asMutable: MutableShotData = MutableShotData(form, color, damage, sizeX, sizeY, sizeZ, delay, end, subEntity)
 

@@ -282,10 +282,13 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	}
 
 	public void setShotData(ShotData shot) {
+		ShotData oldShot = getShotData();
+		ShotData toUse = subEntity.onShotDataChange(oldShot, oldShot.form().onShotDataChange(oldShot, shot), shot);
+
 		SubEntityType oldSubEntity = getShotData().subEntity();
-		dataManager.set(SHOT_DATA, shot);
-		if(shot.subEntity() != oldSubEntity || subEntity == null) {
-			subEntity = shot.subEntity().instantiate(worldObj, this);
+		dataManager.set(SHOT_DATA, toUse);
+		if(toUse.subEntity() != oldSubEntity || subEntity == null) {
+			subEntity = toUse.subEntity().instantiate(worldObj, this);
 		}
 	}
 
@@ -325,7 +328,8 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	}
 
 	public void setMovementData(MovementData movement) {
-		this.movement = movement;
+		MovementData old = this.movement;
+		this.movement = subEntity.onMovementDataChange(old, getShotData().form().onMovementDataChange(old, movement), movement);
 	}
 
 	public RotationData getRotationData() {
@@ -333,7 +337,8 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	}
 
 	public void setRotationData(RotationData rotation) {
-		this.rotation = rotation;
+		RotationData old = this.rotation;
+		this.rotation = subEntity.onRotationDataChange(old, getShotData().form().onRotationDataChange(old, rotation), rotation);
 	}
 
 	public double getCurrentSpeed() {
