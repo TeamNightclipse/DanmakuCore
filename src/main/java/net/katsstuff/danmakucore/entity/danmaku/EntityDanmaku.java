@@ -283,22 +283,18 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		dataManager.register(ROLL, 0F);
 	}
 
-	/**
-	 * Get the {@link ShotData} for this danmaku. Although the returned
-	 * ShotData is mutable for convenience sake. If you change anything it is,
-	 * you still need to use {@link EntityDanmaku#setShotData(ShotData)}.
-	 */
 	public ShotData getShotData() {
 		return dataManager.get(SHOT_DATA);
 	}
 
 	public void setShotData(ShotData shot) {
 		ShotData oldShot = getShotData();
-		ShotData toUse = subEntity.onShotDataChange(oldShot, oldShot.form().onShotDataChange(oldShot, shot), shot);
+		boolean first = subEntity == null; //The first time we call this the subentity isn't created yet
+		ShotData toUse = first ? shot : subEntity.onShotDataChange(oldShot, oldShot.form().onShotDataChange(oldShot, shot), shot);
 
 		SubEntityType oldSubEntity = getShotData().subEntity();
 		dataManager.set(SHOT_DATA, toUse);
-		if(toUse.subEntity() != oldSubEntity || subEntity == null) {
+		if(toUse.subEntity() != oldSubEntity || first) {
 			subEntity = toUse.subEntity().instantiate(worldObj, this);
 		}
 	}
