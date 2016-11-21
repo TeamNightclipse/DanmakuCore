@@ -12,11 +12,12 @@ import java.util.Optional;
 
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
+import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class SubEntityTeleport extends SubEntityTypeGeneric {
+public class SubEntityTeleport extends SubEntityType {
 
 	public SubEntityTeleport(String name) {
 		super(name);
@@ -38,7 +39,10 @@ public class SubEntityTeleport extends SubEntityTypeGeneric {
 		public void impact(RayTraceResult rayTrace) {
 			Optional<EntityLivingBase> optUser = danmaku.getUser();
 			if(optUser.isPresent()) {
-				optUser.get().setPositionAndUpdate(danmaku.posX, danmaku.posY, danmaku.posZ);
+				EntityLivingBase user = optUser.get();
+				user.rotationYaw = danmaku.rotationYaw;
+				user.rotationPitch = danmaku.rotationPitch;
+				user.setPositionAndUpdate(danmaku.posX, danmaku.posY, danmaku.posZ);
 			}
 			super.impact(rayTrace);
 		}

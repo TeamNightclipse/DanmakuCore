@@ -13,7 +13,9 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import net.katsstuff.danmakucore.EnumDanmakuLevel;
 import net.katsstuff.danmakucore.data.Vector3;
+import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -30,6 +32,7 @@ public abstract class SpellcardEntity implements INBTSerializable<NBTTagCompound
 	protected EntityLivingBase target;
 	protected int time;
 	protected final Random rand = new Random();
+	protected EnumDanmakuLevel danmakuLevel = ConfigHandler.danmaku.danmakuLevel;
 
 	public SpellcardEntity(Spellcard type, EntitySpellcard card, @Nullable EntityLivingBase target) {
 		this.type = type;
@@ -60,7 +63,7 @@ public abstract class SpellcardEntity implements INBTSerializable<NBTTagCompound
 		return time;
 	}
 
-	public Random getRand() {
+	public Random getRNG() {
 		return rand;
 	}
 

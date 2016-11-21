@@ -20,6 +20,8 @@ import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class FormKunai extends FormGeneric {
 
@@ -35,6 +37,7 @@ public class FormKunai extends FormGeneric {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks, RenderManager rendermanager) {
 		Tessellator tes = Tessellator.getInstance();
 		VertexBuffer vb = tes.getBuffer();

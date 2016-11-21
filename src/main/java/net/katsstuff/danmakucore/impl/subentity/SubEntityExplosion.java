@@ -12,12 +12,13 @@ import java.util.Optional;
 
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
+import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class SubEntityExplosion extends SubEntityTypeGeneric {
+public class SubEntityExplosion extends SubEntityType {
 
 	private final float strength;
 

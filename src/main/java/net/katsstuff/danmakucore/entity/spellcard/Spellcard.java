@@ -26,17 +26,20 @@ public abstract class Spellcard extends RegistryValueItemStack<Spellcard> {
 
 	public Spellcard(String name) {
 		setRegistryName(name);
-		DanmakuCore.proxy.bakeSpellcard(this);
 	}
 
 	public Spellcard() {}
 
+	public final void bakeModel() {
+		DanmakuCore.proxy.bakeSpellcard(this);
+	}
+
 	public abstract SpellcardEntity instantiate(EntitySpellcard card, @Nullable EntityLivingBase target);
 
 	/**
-	 * @return The needed XP Levels to execute the spellcard.
+	 * @return The needed bombs to execute the spellcard.
 	 */
-	public abstract int getNeededLevel();
+	public abstract int getLevel();
 
 	/**
 	 * @return The remove time. How long the spellcard will remove danmaku for.
@@ -85,6 +88,7 @@ public abstract class Spellcard extends RegistryValueItemStack<Spellcard> {
 
 	@Override
 	public ModelResourceLocation getItemModel() {
-		return new ModelResourceLocation(new ResourceLocation(getModId(), "danmaku/" + getName().replace('.', '/')), "inventory");
+		ResourceLocation name = getRegistryName();
+		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/spellcard/" + name.getResourcePath()), "inventory");
 	}
 }

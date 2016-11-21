@@ -25,7 +25,7 @@ public class SpellcardDummy extends Spellcard {
 	}
 
 	@Override
-	public int getNeededLevel() {
+	public int getLevel() {
 		return 0;
 	}
 

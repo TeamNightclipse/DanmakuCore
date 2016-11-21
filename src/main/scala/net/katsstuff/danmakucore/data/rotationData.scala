@@ -47,7 +47,7 @@ abstract sealed class AbstractRotationData {
 	}
 }
 
-final case class MutableRotationData(@BooleanBeanProperty var enabled: Boolean, @BeanProperty var rotationQuat: Quat,  @BeanProperty var endTime: Int)
+final case class MutableRotationData(@BooleanBeanProperty var enabled: Boolean, @BeanProperty var rotationQuat: Quat, @BeanProperty var endTime: Int)
 	extends AbstractRotationData {
 
 	def setRotationVec(vector: Vector3): MutableRotationData = {

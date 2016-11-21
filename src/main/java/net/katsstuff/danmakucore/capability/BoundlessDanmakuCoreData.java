@@ -68,4 +68,9 @@ public class BoundlessDanmakuCoreData implements IDanmakuCoreData {
 	public void setBombs(int bombs) {
 		this.bombs = bombs;
 	}
+
+	@Override
+	public String toString() {
+		return "BoundlessDanmakuCoreData{" + "power=" + power + ", score=" + score + ", lives=" + lives + ", bombs=" + bombs + '}';
+	}
 }

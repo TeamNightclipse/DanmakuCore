@@ -19,8 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 @SuppressWarnings("UnusedParameters")
-public abstract class RegistryValueItemStack<T extends IForgeRegistryEntry<T>> extends RegistryValue<T>
-		implements Comparable<T>, ITranslatable {
+public abstract class RegistryValueItemStack<T extends IForgeRegistryEntry<T>> extends RegistryValue<T> implements Comparable<T>, ITranslatable {
 
 	/**
 	 * Called when a itemStack representing this is rightclicked.

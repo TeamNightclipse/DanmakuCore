@@ -60,8 +60,11 @@ public class ItemSpellcard extends ItemBase {
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(Item item, CreativeTabs creativeTabs, List<ItemStack> list) {
 		FMLControlledNamespacedRegistry<Spellcard> spellcard = DanmakuRegistry.SPELLCARD;
-		list.addAll(spellcard.getValues().stream().sorted()
-				.map(type -> new ItemStack(LibItems.SPELLCARD, 1, spellcard.getId(type))).collect(Collectors.toList()));
+		list.addAll(spellcard.getValues()
+				.stream()
+				.sorted()
+				.map(type -> new ItemStack(LibItems.SPELLCARD, 1, spellcard.getId(type)))
+				.collect(Collectors.toList()));
 	}
 
 	@Override
@@ -71,7 +74,7 @@ public class ItemSpellcard extends ItemBase {
 
 		Spellcard type = DanmakuRegistry.SPELLCARD.getObjectById(stack.getItemDamage());
 		String item = "item.spellcard";
-		list.add(I18n.format(item + ".level") + " " + type.getNeededLevel() + " " + I18n.format(item + ".spellcard"));
+		list.add(I18n.format(item + ".level") + " " + type.getLevel() + " " + I18n.format(item + ".spellcard"));
 		list.add(I18n.format(item + ".user") + " : " + I18n.format(item + ".userName." + type.getOriginalUser().getName()));
 		list.add(I18n.format(item + ".removeTime") + " : " + type.getRemoveTime());
 		list.add(I18n.format(item + ".endTime") + " : " + type.getEndTime());

@@ -13,8 +13,6 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import net.katsstuff.danmakucore.data.MutableVector3;
-import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
 import net.katsstuff.danmakucore.helper.NBTHelper;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
@@ -43,16 +41,13 @@ public class EntitySpellcard extends Entity {
 	public EntitySpellcard(World world) {
 		super(world);
 		preventEntitySpawning = true;
-		setSize(0.4F, 0.4F);
+		setSize(0.4F, 0.6F);
 	}
 
 	public EntitySpellcard(EntityLivingBase user, @Nullable EntityLivingBase target, Spellcard type) {
 		this(user.worldObj);
 
-		MutableVector3 pos = new MutableVector3(this)
-				.subtractMutable(Vector3.fromSpherical(user.rotationYaw + 30F, user.rotationPitch))
-				.addMutable(0, user.getEyeHeight() - 0.1D, 0);
-		setPosition(pos.x(), pos.y(), pos.z());
+		setPosition(user.posX, user.posY + user.getEyeHeight(), user.posZ);
 		setRotation(user.rotationYaw, user.rotationPitch);
 		this.user = user;
 		spellCard = type.instantiate(this, target);
@@ -70,10 +65,9 @@ public class EntitySpellcard extends Entity {
 
 		if(!worldObj.isRemote) {
 			spellCard.onUpdate();
-		}
-
-		if(user instanceof EntityPlayer && ticksExisted < spellCard.type.getRemoveTime()) {
-			DanmakuHelper.danmakuRemove(user, 40.0F, DanmakuHelper.DanmakuRemoveMode.OTHER, true);
+			if(user instanceof EntityPlayer && ticksExisted < spellCard.type.getRemoveTime()) {
+				DanmakuHelper.danmakuRemove(user, 40.0F, DanmakuHelper.DanmakuRemoveMode.OTHER, true);
+			}
 		}
 	}
 
@@ -92,13 +86,6 @@ public class EntitySpellcard extends Entity {
 
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound tag) {
-		tag.setString(NBT_SPELLCARD_TYPE, spellCard.type.getFullName().toString());
-		tag.setTag(NBT_SPELLCARD_DATA, spellCard.serializeNBT());
-		tag.setUniqueId(NBT_USER, user.getUniqueID());
-	}
-
-	@Override
-	protected void writeEntityToNBT(NBTTagCompound tag) {
 		EntityLivingBase user;
 		UUID userUuid = NBTUtil.getUUIDFromTag(tag.getCompoundTag(NBT_USER));
 
@@ -115,14 +102,27 @@ public class EntitySpellcard extends Entity {
 
 		if(user != null) {
 			this.user = user;
-			Spellcard type = DanmakuRegistry.SPELLCARD.getObject(new ResourceLocation(tag.getString(NBT_SPELLCARD_TYPE)));
-			setSpellcardId(DanmakuRegistry.SPELLCARD.getId(type));
-			spellCard = type.instantiate(this, user);
-			spellCard.deserializeNBT(tag.getCompoundTag(NBT_SPELLCARD_DATA));
+			Spellcard type = DanmakuRegistry.SPELLCARD.getValue(new ResourceLocation(tag.getString(NBT_SPELLCARD_TYPE)));
+
+			if(type == null) {
+				setDead();
+			}
+			else {
+				setSpellcardId(DanmakuRegistry.SPELLCARD.getId(type));
+				spellCard = type.instantiate(this, user);
+				spellCard.deserializeNBT(tag.getCompoundTag(NBT_SPELLCARD_DATA));
+			}
 		}
 		else {
 			setDead();
 		}
+	}
+
+	@Override
+	protected void writeEntityToNBT(NBTTagCompound tag) {
+		tag.setString(NBT_SPELLCARD_TYPE, spellCard.type.getFullName().toString());
+		tag.setTag(NBT_SPELLCARD_DATA, spellCard.serializeNBT());
+		tag.setUniqueId(NBT_USER, user.getUniqueID());
 	}
 
 	@Override

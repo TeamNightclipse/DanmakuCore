@@ -46,7 +46,6 @@ public class LibColor {
 
 	private static final List<Integer> VALID_COLOR = new ArrayList<>();
 
-	//TODO: Better place for this?
 	/**
 	 * Registers a color so that you can specify a custom localization for it.
 	 *

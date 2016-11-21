@@ -29,8 +29,8 @@ public class PhaseTypeFallback extends PhaseType {
 	public static class PhaseFallback extends Phase {
 
 		private final PhaseTypeFallback type;
-		private final DanmakuVariant variant = DanmakuRegistry.DANMAKU_VARIANT.getRandomObject(getManager().entity.getRNG());
-		private final int amount = getManager().entity.getRNG().nextInt(8);
+		private final DanmakuVariant variant = DanmakuRegistry.DANMAKU_VARIANT.getRandomObject(getEntity().getRNG());
+		private final int amount = getEntity().getRNG().nextInt(8);
 
 		public PhaseFallback(PhaseManager manager, PhaseTypeFallback type) {
 			super(manager);
@@ -41,7 +41,7 @@ public class PhaseTypeFallback extends PhaseType {
 		public void serverUpdate() {
 			super.serverUpdate();
 			if(counter == 0) {
-				EntityDanmakuMob user = getManager().entity;
+				EntityDanmakuMob user = getEntity();
 				LogHelper.warn("This is the fallback phase being used for" + user + ". If you are seeing this something broke");
 				Vector3 pos = user.pos();
 				Vector3 angle = Vector3.angleEntity(user);

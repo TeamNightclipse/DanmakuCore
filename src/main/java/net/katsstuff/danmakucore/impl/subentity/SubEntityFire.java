@@ -10,10 +10,11 @@ package net.katsstuff.danmakucore.impl.subentity;
 
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
+import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class SubEntityFire extends SubEntityTypeGeneric {
+public class SubEntityFire extends SubEntityType {
 
 	private final float multiplier;
 

@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import net.katsstuff.danmakucore.data.AbstractVector3;
+import net.katsstuff.danmakucore.data.Vector3;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagDouble;
@@ -25,7 +27,7 @@ public class NBTHelper {
 
 	public static final String NBT_VECTOR = "vector";
 
-	public static NBTTagCompound setVector(NBTTagCompound tag, String tagName, Vec3d vector) {
+	public static NBTTagCompound setVec3d(NBTTagCompound tag, String tagName, Vec3d vector) {
 		NBTTagList list = new NBTTagList();
 		list.appendTag(new NBTTagDouble(vector.xCoord));
 		list.appendTag(new NBTTagDouble(vector.yCoord));
@@ -34,9 +36,23 @@ public class NBTHelper {
 		return tag;
 	}
 
-	public static Vec3d getVector(NBTTagCompound tag, String tagName) {
+	public static NBTTagCompound setVector(NBTTagCompound tag, String tagName, AbstractVector3 vector) {
+		NBTTagList list = new NBTTagList();
+		list.appendTag(new NBTTagDouble(vector.x()));
+		list.appendTag(new NBTTagDouble(vector.y()));
+		list.appendTag(new NBTTagDouble(vector.z()));
+		tag.setTag(tagName, list);
+		return tag;
+	}
+
+	public static Vec3d getVec3d(NBTTagCompound tag, String tagName) {
 		NBTTagList list = tag.getTagList(tagName, Constants.NBT.TAG_DOUBLE);
 		return new Vec3d(list.getDoubleAt(0), list.getDoubleAt(1), list.getDoubleAt(2));
+	}
+
+	public static Vector3 getVector(NBTTagCompound tag, String tagName) {
+		NBTTagList list = tag.getTagList(tagName, Constants.NBT.TAG_DOUBLE);
+		return new Vector3(list.getDoubleAt(0), list.getDoubleAt(1), list.getDoubleAt(2));
 	}
 
 	public static Optional<Entity> getEntityByUUID(UUID uuid, World world) {

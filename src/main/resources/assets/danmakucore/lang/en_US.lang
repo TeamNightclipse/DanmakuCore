@@ -3,10 +3,12 @@ itemGroup.danmakucore.general=DanmakuCore
 itemGroup.danmakucore.danmaku=Danmaku
 itemGroup.danmakucore.spellcard=Spellcard
 
-#Normal Item names
-item.bomb.name=Bomb Item
-item.score.name=Score Item
-item.extend.name=Extend Item
+#Entity
+entity.danmakucore.danmaku.name=Danmaku
+
+#Death
+death.attack.danmaku=%s was killed with danmaku by %s
+death.attack.danmaku.item=%s was killed with danmaku by %s using %s
 
 #Spellcard item names
 item.spellcard.spellcard.danmakucore.delusionOfEnlightenment.name=Spellcard: Human Sword "Delusion of Enlightenment"
@@ -40,7 +42,7 @@ item.danmaku.end=End
 item.danmaku.subentity=Special
 item.danmaku.infinity=Infinity
 item.danmaku.custom=Custom
-item.danmaku.gFree=None
+item.danmaku.noGravity=None
 
 #Names normal
 item.danmaku.danmakuvariant.danmakucore.default.name=Medium Danmaku

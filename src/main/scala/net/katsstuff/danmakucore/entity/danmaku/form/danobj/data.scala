@@ -48,7 +48,7 @@ case class TriangleData(first: VertexData, second: VertexData, third: VertexData
 
 		val glowFirst = if(useGlow) optimizedFirst.copy(color = optimizedFirst.color.copy(alpha = 0.3F)) else optimizedFirst
 		val glowSecond = if(useGlow) optimizedSecond.copy(color = optimizedSecond.color.copy(alpha = 0.3F)) else optimizedSecond
-		val glowThird = if(useGlow) optimizedThird.copy(color = optimizedThird.color.copy(alpha = 0.3F)) else  optimizedThird
+		val glowThird = if(useGlow) optimizedThird.copy(color = optimizedThird.color.copy(alpha = 0.3F)) else optimizedThird
 
 		OptimizedTriangleData(glowFirst, glowSecond, glowThird, useGlow)
 	}

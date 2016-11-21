@@ -23,6 +23,7 @@ import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.katsstuff.danmakucore.helper.LogHelper;
+import net.katsstuff.danmakucore.helper.NBTHelper;
 import net.katsstuff.danmakucore.lib.data.LibSubEntities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -42,14 +43,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditionalSpawnData {
 
 	private static final String NBT_SHOT_DATA = "shotData";
-	private static final String NBT_ANGLE_Z = "angleZ";
-	private static final String NBT_ANGLE_Y = "angleY";
-	private static final String NBT_ANGLE_X = "angleX";
+	private static final String NBT_ANGLE = "angle";
 	private static final String NBT_ROTATION = "rotation";
 	private static final String NBT_MOVEMENT = "movement";
 	private static final String NBT_SOURCE_UUID = "sourceUUID";
 	private static final String NBT_USER_UUID = "userUUID";
-	public static final String NBT_SPEED = "speed";
+	private static final String NBT_ROLL = "roll";
 
 	private static final DataParameter<ShotData> SHOT_DATA = EntityDataManager.createKey(EntityDanmaku.class, CoreDataSerializers.SHOTDATA);
 	private static final DataParameter<Float> ROLL = EntityDataManager.createKey(EntityDanmaku.class, DataSerializers.FLOAT);
@@ -95,7 +94,8 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		resetMotion();
 	}
 
-	public EntityDanmaku(World world, @Nullable EntityLivingBase user, @Nullable Entity source, ShotData shot, Vector3 pos, Vector3 angle, float roll,
+	public EntityDanmaku(World world, @Nullable EntityLivingBase user, @Nullable Entity source, ShotData shot, Vector3 pos, Vector3 angle, float
+			roll,
 			MovementData movement, RotationData rotation) {
 		this(world, shot, pos, angle, movement);
 		this.user = user;
@@ -110,7 +110,8 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	}
 
 	private EntityDanmaku(EntityDanmaku old) {
-		this(old.worldObj, old.user, old.source, old.getShotData(), new Vector3(old), old.angle.asImmutable(), old.getRoll(), old.movement, old.rotation);
+		this(old.worldObj, old.user, old.source, old.getShotData(), new Vector3(old), old.angle.asImmutable(), old.getRoll(), old.movement,
+				old.rotation);
 	}
 
 	@Override
@@ -382,14 +383,11 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		setSize(width, height, width);
 	}
 
-	//TODO: Outdated
 	@Override
 	public void writeEntityToNBT(NBTTagCompound nbtTag) {
 		getUser().ifPresent(living -> nbtTag.setUniqueId(NBT_USER_UUID, living.getUniqueID()));
 		getSource().ifPresent(entity -> nbtTag.setUniqueId(NBT_SOURCE_UUID, entity.getUniqueID()));
-		nbtTag.setDouble(NBT_ANGLE_X, angle.x());
-		nbtTag.setDouble(NBT_ANGLE_Y, angle.y());
-		nbtTag.setDouble(NBT_ANGLE_Z, angle.z());
+		NBTHelper.setVector(nbtTag, NBT_ANGLE, angle);
 
 		nbtTag.setTag(NBT_MOVEMENT, movement.serializeNBT());
 		nbtTag.setTag(NBT_ROTATION, rotation.serializeNBT());
@@ -397,18 +395,20 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		ShotData shot = getShotData();
 		NBTTagCompound nbtShotData = shot.serializeNBT();
 		nbtTag.setTag(NBT_SHOT_DATA, nbtShotData);
+		nbtTag.setFloat(NBT_ROLL, getRoll());
 	}
 
-	//TODO: Outdated
 	@Override
 	public void readEntityFromNBT(NBTTagCompound nbtTag) {
-		angle = new MutableVector3(nbtTag.getDouble(NBT_ANGLE_X), nbtTag.getDouble(NBT_ANGLE_Y), nbtTag.getDouble(NBT_ANGLE_Z));
+		angle = NBTHelper.getVector(nbtTag, NBT_ANGLE).asMutable();
 		movement = MovementData.fromNBT(nbtTag.getCompoundTag(NBT_MOVEMENT));
 		rotation = RotationData.fromNBT(nbtTag.getCompoundTag(NBT_ROTATION));
 
 		NBTTagCompound nbtShotData = nbtTag.getCompoundTag(NBT_SHOT_DATA);
 		ShotData shot = new ShotData(nbtShotData);
 		setShotData(shot);
+
+		setRoll(nbtTag.getFloat(NBT_ROLL));
 
 		UUID userUUID = nbtTag.getUniqueId(NBT_USER_UUID);
 		if(userUUID != null) {

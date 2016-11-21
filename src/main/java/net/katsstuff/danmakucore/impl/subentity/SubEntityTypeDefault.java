@@ -18,7 +18,9 @@ import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
+import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.katsstuff.danmakucore.entity.living.IAllyDanmaku;
+import net.katsstuff.danmakucore.helper.DanmakuHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
@@ -30,7 +32,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class SubEntityTypeDefault extends SubEntityTypeGeneric {
+public class SubEntityTypeDefault extends SubEntityType {
 
 	public SubEntityTypeDefault(String name) {
 		super(name);
@@ -91,10 +93,11 @@ public class SubEntityTypeDefault extends SubEntityTypeGeneric {
 			if(optUser.isPresent()) indirect = optUser.get();
 			else indirect = danmaku.getSource().orElse(null);
 
-			if(hitEntity instanceof EntityLivingBase && !(hitEntity instanceof EntityAgeable)
-					&& !(optUser.orElse(null) instanceof IAllyDanmaku && hitEntity instanceof IAllyDanmaku)) {
+			if(hitEntity instanceof EntityLivingBase && !(hitEntity instanceof EntityAgeable) && !(optUser.orElse(null) instanceof IAllyDanmaku
+					&& hitEntity instanceof IAllyDanmaku)) {
 				EntityLivingBase living = (EntityLivingBase)hitEntity;
-				living.attackEntityFrom(DamageSourceDanmaku.causeDanmakuDamage(danmaku, indirect), danmaku.getShotData().damage());
+				living.attackEntityFrom(DamageSourceDanmaku.causeDanmakuDamage(danmaku, indirect),
+						DanmakuHelper.adjustDanmakuDamage(optUser.orElse(null), living, danmaku.getShotData().damage()));
 			}
 			else if(hitEntity instanceof EntityDragonPart) {
 				EntityDragonPart dragon = (EntityDragonPart)hitEntity;
@@ -161,7 +164,8 @@ public class SubEntityTypeDefault extends SubEntityTypeGeneric {
 
 			Entity entity = null;
 			List<Entity> list = world.getEntitiesInAABBexcluding(danEntity, danEntity.getEntityBoundingBox()
-					.addCoord(danEntity.motionX, danEntity.motionY, danEntity.motionZ).expand(shot.sizeX(), shot.sizeY(), shot.sizeZ()), exclude::test);
+					.addCoord(danEntity.motionX, danEntity.motionY, danEntity.motionZ)
+					.expand(shot.sizeX(), shot.sizeY(), shot.sizeZ()), exclude::test);
 			double d0 = 0.0D;
 
 			for(Entity entity1 : list) {

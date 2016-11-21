@@ -20,6 +20,8 @@ import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class FormScale extends FormGeneric {
 
@@ -28,6 +30,7 @@ public class FormScale extends FormGeneric {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks, RenderManager rendermanager) {
 		Tessellator tes = Tessellator.getInstance();
 		VertexBuffer vb = tes.getBuffer();
@@ -64,6 +67,7 @@ public class FormScale extends FormGeneric {
 		GlStateManager.disableBlend();
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void createHalfSphere(Tessellator tes, VertexBuffer vb, int color, float alpha) {
 		float r = (color >> 16 & 255) / 255.0F;
 		float g = (color >> 8 & 255) / 255.0F;

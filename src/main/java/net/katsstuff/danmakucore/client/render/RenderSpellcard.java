@@ -32,10 +32,10 @@ public class RenderSpellcard extends Render<EntitySpellcard> {
 		GL11.glPushMatrix();
 		Tessellator tes = Tessellator.getInstance();
 		VertexBuffer vb = tes.getBuffer();
-		float rvl = 14F / 128F;
-		float rul = 0F;
-		float rvr = 114F / 128F;
-		float rur = 1F;
+		float upperV = 14F / 128F;
+		float upperU = 0F;
+		float lowerV = 114F / 128F;
+		float lowerU = 1F;
 		float size = 1.0F;
 		bindEntityTexture(entity);
 		GL11.glTranslated(x, y, z);
@@ -44,33 +44,18 @@ public class RenderSpellcard extends Render<EntitySpellcard> {
 		GL11.glRotatef(30F, 0.0F, 0.0F, 1.0F);
 		GlStateManager.disableLighting();
 
-		//TODO: Are all four needed here?
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
-		vb.pos(0.2F, 0.3F, 0.0D).tex(rvl, rul).normal(0F, 1F, 0F).endVertex();
-		vb.pos(-0.2F, 0.3F, 0.0D).tex(rvr, rul).normal(0F, 1F, 0F).endVertex();
-		vb.pos(-0.2F, -0.3F, 0.0D).tex(rvr, rur).normal(0F, 1F, 0F).endVertex();
-		vb.pos(0.2F, -0.3F, 0.0D).tex(rvl, rur).normal(0F, 1F, 0F).endVertex();
+		vb.pos(0.2F, 0.3F, 0D).tex(upperV, upperU).normal(0F, 1F, 0F).endVertex();
+		vb.pos(-0.2F, 0.3F, 0D).tex(lowerV, upperU).normal(0F, 1F, 0F).endVertex();
+		vb.pos(-0.2F, -0.3F, 0D).tex(lowerV, lowerU).normal(0F, 1F, 0F).endVertex();
+		vb.pos(0.2F, -0.3F, 0D).tex(upperV, lowerU).normal(0F, 1F, 0F).endVertex();
 		tes.draw();
 
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
-		vb.pos(-0.2F, 0.3F, 0.0D).tex(rvl, rul).normal(0F, 1F, 0F).endVertex();
-		vb.pos(0.2F, 0.3F, 0.0D).tex(rvr, rul).normal(0F, 1F, 0F).endVertex();
-		vb.pos(0.2F, -0.3F, 0.0D).tex(rvr, rur).normal(0F, 1F, 0F).endVertex();
-		vb.pos(-0.2F, -0.3F, 0.0D).tex(rvl, rur).normal(0F, 1F, 0F).endVertex();
-		tes.draw();
-
-		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
-		vb.pos(0.2F, 0.3F, 0.001D).tex(rvl, rul).normal(0F, 1F, 0F).endVertex();
-		vb.pos(-0.2F, 0.3F, 0.001D).tex(rvr, rul).normal(0F, 1F, 0F).endVertex();
-		vb.pos(-0.2F, -0.3F, 0.001D).tex(rvr, rur).normal(0F, 1F, 0F).endVertex();
-		vb.pos(0.2F, -0.3F, 0.001D).tex(rvl, rur).normal(0F, 1F, 0F).endVertex();
-		tes.draw();
-
-		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
-		vb.pos(-0.2F, 0.3F, -0.001D).tex(rvl, rul).normal(0F, 1F, 0F).endVertex();
-		vb.pos(0.2F, 0.3F, -0.001D).tex(rvr, rul).normal(0F, 1F, 0F).endVertex();
-		vb.pos(0.2F, -0.3F, -0.001D).tex(rvr, rur).normal(0F, 1F, 0F).endVertex();
-		vb.pos(-0.2F, -0.3F, -0.001D).tex(rvl, rur).normal(0F, 1F, 0F).endVertex();
+		vb.pos(-0.2F, 0.3F, 0D).tex(upperV, upperU).normal(0F, -1F, 0F).endVertex();
+		vb.pos(0.2F, 0.3F, 0D).tex(lowerV, upperU).normal(0F, -1F, 0F).endVertex();
+		vb.pos(0.2F, -0.3F, 0D).tex(lowerV, lowerU).normal(0F, -1F, 0F).endVertex();
+		vb.pos(-0.2F, -0.3F, 0D).tex(upperV, lowerU).normal(0F, -1F, 0F).endVertex();
 		tes.draw();
 
 		GlStateManager.enableLighting();

@@ -23,8 +23,8 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 	protected int counter;
 	protected int interval;
 	@SuppressWarnings("unused")
-	protected EnumDanmakuLevel level = ConfigHandler.getDanmakuLevel();
-	private final PhaseManager manager;
+	protected EnumDanmakuLevel level = ConfigHandler.danmaku.danmakuLevel;
+	protected final PhaseManager manager;
 
 	public Phase(PhaseManager manager) {
 		this.manager = manager;
@@ -48,10 +48,6 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 
 	protected EntityDanmakuMob getEntity() {
 		return manager.entity;
-	}
-
-	protected PhaseManager getManager() {
-		return manager;
 	}
 
 	protected abstract PhaseType getType();

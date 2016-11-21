@@ -15,7 +15,6 @@ import net.katsstuff.danmakucore.data.RotationData;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
-import net.katsstuff.danmakucore.lib.LibMod;
 
 public class DanmakuVariantCoreGeneric extends DanmakuVariant {
 

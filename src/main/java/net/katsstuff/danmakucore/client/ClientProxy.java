@@ -19,14 +19,12 @@ import net.katsstuff.danmakucore.entity.danmaku.form.Form;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
-import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.item.ItemDanmaku;
+import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelBakery;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -74,28 +72,20 @@ public class ClientProxy extends CommonProxy {
 			if(!ItemNBTHelper.verifyExistance(stack, ShotData.NbtShotData()) || pass == 1) {
 				return 0xFFFFFF;
 			}
-
-			int color = ShotData.fromNBTItemStack(stack).color();
-
-			if(color == 0) {
-				return 0xFFFFFF;
-			}
-			else {
-				return color;
-			}
+			else return ShotData.fromNBTItemStack(stack).color();
 		}, LibItems.DANMAKU);
 	}
 
 	@SubscribeEvent
 	public static void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomMeshDefinition(LibItems.DANMAKU, stack -> {
-			if(ItemNBTHelper.getBoolean(stack, ItemDanmaku.NBT_CUSTOM, false)) {
+			if(ItemDanmaku.getCustom(stack)) {
 				Form form = ShotData.fromNBTItemStack(stack).form();
-				return new ModelResourceLocation(new ResourceLocation(form.getModId(), "danmaku/custom/" + form.getName()), "inventory");
+				return form.getItemModel();
 			}
 			else {
 				DanmakuVariant variant = DanmakuRegistry.DANMAKU_VARIANT.getObjectById(stack.getItemDamage());
-				return new ModelResourceLocation(new ResourceLocation(variant.getModId(), "danmaku/" + variant.getName()), "inventory");
+				return variant.getItemModel();
 			}
 		});
 	}

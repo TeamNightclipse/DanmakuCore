@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-import net.katsstuff.danmakucore.data.AbstractShotData;
+import javax.annotation.Nullable;
+
+import net.katsstuff.danmakucore.capability.IDanmakuCoreData;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
@@ -35,6 +37,13 @@ public class DanmakuHelper {
 	 */
 	public static void playShotSound(Entity entity) {
 		entity.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 2.0F, 1.2F);
+	}
+
+	/**
+	 * Plays the iconic shot sound
+	 */
+	public static void playShotSound(World world, Vector3 pos) {
+		world.playSound(null, pos.x(), pos.y(), pos.z(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 2F, 1.2F);
 	}
 
 	public static void explosionEffect(World world, Vector3 pos, float explosionSize) {
@@ -94,10 +103,10 @@ public class DanmakuHelper {
 	 * @param centerEntity Where to center the removal around
 	 * @param range The range to remove in
 	 * @param mode What should be removed and what should be left behind
-	 * @param isDropBonus Should the danmaku drop bonus when removed
+	 * @param dropBonus Should the danmaku drop bonus when removed
 	 * @return The amount of danmaku removed
 	 */
-	public static int danmakuRemove(Entity centerEntity, double range, DanmakuRemoveMode mode, boolean isDropBonus) {
+	public static int danmakuRemove(Entity centerEntity, double range, DanmakuRemoveMode mode, boolean dropBonus) {
 		int count = 0;
 		List<EntityDanmaku> list = centerEntity.worldObj.getEntitiesWithinAABB(EntityDanmaku.class,
 				centerEntity.getEntityBoundingBox().expandXyz(range), entity -> entity != centerEntity);
@@ -108,24 +117,24 @@ public class DanmakuHelper {
 				EntityLivingBase user = optUser.get();
 				switch(mode) {
 					case ALL:
-						finishOrKillDanmaku(entity, isDropBonus);
+						finishOrKillDanmaku(entity, dropBonus);
 						count++;
 						break;
 					case ENEMY:
 						if(!(user instanceof EntityPlayer)) {
-							finishOrKillDanmaku(entity, isDropBonus);
+							finishOrKillDanmaku(entity, dropBonus);
 							count++;
 						}
 						break;
 					case PLAYER:
 						if(user instanceof EntityPlayer) {
-							finishOrKillDanmaku(entity, isDropBonus);
+							finishOrKillDanmaku(entity, dropBonus);
 							count++;
 						}
 						break;
 					case OTHER:
 						if(user != centerEntity) {
-							finishOrKillDanmaku(entity, isDropBonus);
+							finishOrKillDanmaku(entity, dropBonus);
 							count++;
 						}
 						break;
@@ -149,23 +158,47 @@ public class DanmakuHelper {
 	/**
 	 * Adjust shot damage according to difficulty
 	 */
-	public static float adjustDamageToDifficulty(AbstractShotData shot, EntityLivingBase user) {
-		if(user instanceof EntityPlayer) return shot.damage();
+	public static float adjustDamageToDifficulty(float base, @Nullable EntityLivingBase user, World world) {
+		if(user instanceof EntityPlayer) return base;
 
-		if(ConfigHandler.isOneHitKill()) return 999999F;
+		if(ConfigHandler.danmaku.oneHitKill) return 999999F;
 
-		switch(user.worldObj.getDifficulty()) {
+		switch(world.getDifficulty()) {
 			case PEACEFUL:
-				return shot.damage() * 1.0F;
+				return base * 1.0F;
 			case EASY:
-				return shot.damage() * 0.7F;
+				return base * 0.7F;
 			case NORMAL:
-				return shot.damage();
+				return base;
 			case HARD:
-				return shot.damage() * 1.5F;
+				return base * 1.5F;
 			default:
-				return shot.damage();
+				return base;
 		}
+	}
+
+	public static float adjustDamageCoreData(@Nullable EntityLivingBase user, float base) {
+		if(user == null) return base;
+
+		Optional<IDanmakuCoreData> optCoreData = TouhouHelper.getDanmakuCoreData(user);
+		if(optCoreData.isPresent()) {
+			IDanmakuCoreData coreData = optCoreData.get();
+			float full = 4F;
+			float power = coreData.getPower();
+			float bonus = power / full;
+			return base + ((base / 2) * bonus);
+		}
+		else return base;
+	}
+
+	public static float adjustDamageTarget(float base, EntityLivingBase target) {
+		return target instanceof EntityPlayer ? base * 2F : base;
+	}
+
+	public static float adjustDanmakuDamage(@Nullable EntityLivingBase user, EntityLivingBase target, float base) {
+		float withData = adjustDamageCoreData(user, base);
+		float againstTarget = adjustDamageTarget(withData, target);
+		return adjustDamageToDifficulty(againstTarget, user, target.worldObj);
 	}
 
 	public static final double GRAVITY_DEFAULT = -0.03D;

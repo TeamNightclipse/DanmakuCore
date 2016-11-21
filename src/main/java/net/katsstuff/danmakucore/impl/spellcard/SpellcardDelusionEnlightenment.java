@@ -18,7 +18,6 @@ import net.katsstuff.danmakucore.entity.living.boss.EnumTouhouCharacters;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.entity.spellcard.SpellcardEntity;
-import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.helper.DanmakuCreationHelper;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
 import net.katsstuff.danmakucore.lib.LibColor;
@@ -39,7 +38,7 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 	}
 
 	@Override
-	public int getNeededLevel() {
+	public int getLevel() {
 		return 3;
 	}
 
@@ -67,7 +66,7 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 		@Override
 		public void onSpellcardUpdate() {
 			if(!getWorld().isRemote) {
-				int danmakuLevelMultiplier = ConfigHandler.getDanmakuLevel().getMultiplier();
+				int danmakuLevelMultiplier = danmakuLevel.getMultiplier();
 
 				DanmakuHelper.playShotSound(card);
 				for(int i = 0; i < danmakuLevelMultiplier; i++) {

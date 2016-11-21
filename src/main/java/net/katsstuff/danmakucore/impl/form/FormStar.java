@@ -36,6 +36,7 @@ public class FormStar extends FormGeneric {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks, RenderManager rendermanager) {
 		Tessellator tes = Tessellator.getInstance();
 		VertexBuffer buf = tes.getBuffer();

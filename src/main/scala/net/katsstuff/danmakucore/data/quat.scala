@@ -228,7 +228,8 @@ abstract sealed class AbstractQuat {
 	}
 }
 
-final case class MutableQuat(@BeanProperty var x: Double, @BeanProperty var y: Double, @BeanProperty var z: Double, @BeanProperty var w: Double) extends AbstractQuat {
+final case class MutableQuat(@BeanProperty var x: Double, @BeanProperty var y: Double, @BeanProperty var z: Double, @BeanProperty var w: Double)
+	extends AbstractQuat {
 
 	override type Self = MutableQuat
 
@@ -379,7 +380,7 @@ object Quat {
 	def fromVector(vec3: AbstractVector3, angle: Double): Quat = fromVectorRad(vec3, Math.toRadians(angle))
 
 	def eulerToQuat(yaw: Float, pitch: Float, roll: Float): Quat = {
-		eulerToQuatRad(Math.toRadians(yaw).toFloat, Math.toRadians(pitch).toFloat,Math.toRadians(roll).toFloat)
+		eulerToQuatRad(Math.toRadians(yaw).toFloat, Math.toRadians(pitch).toFloat, Math.toRadians(roll).toFloat)
 	}
 
 	def eulerToQuatRad(yaw: Float, pitch: Float, roll: Float): Quat = {

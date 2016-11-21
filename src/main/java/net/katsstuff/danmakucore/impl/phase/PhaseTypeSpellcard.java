@@ -35,6 +35,7 @@ public class PhaseTypeSpellcard extends PhaseType {
 	public static class PhaseSpellcard extends Phase implements IItemStackConvertible {
 
 		public static final String NBT_SPELLCARD = "spellcard";
+		public static final String NBT_FIRST_ATTACK = "firstAttack";
 
 		private Spellcard spellcard;
 		private final PhaseTypeSpellcard type;
@@ -76,6 +77,7 @@ public class PhaseTypeSpellcard extends PhaseType {
 		public NBTTagCompound serializeNBT() {
 			NBTTagCompound compound = super.serializeNBT();
 			compound.setString(NBT_SPELLCARD, spellcard.getFullName().toString());
+			compound.setBoolean(NBT_FIRST_ATTACK, firstAttack);
 			return compound;
 		}
 
@@ -83,6 +85,7 @@ public class PhaseTypeSpellcard extends PhaseType {
 		public void deserializeNBT(NBTTagCompound nbt) {
 			super.deserializeNBT(nbt);
 			spellcard = DanmakuRegistry.SPELLCARD.getObject(new ResourceLocation(nbt.getString(NBT_SPELLCARD)));
+			firstAttack = nbt.getBoolean(NBT_FIRST_ATTACK);
 		}
 
 		@Override

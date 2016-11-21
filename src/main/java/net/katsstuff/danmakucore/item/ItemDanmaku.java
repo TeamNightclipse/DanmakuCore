@@ -11,14 +11,13 @@ package net.katsstuff.danmakucore.item;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import net.katsstuff.danmakucore.DanmakuCore;
-import net.katsstuff.danmakucore.capability.IDanmakuCoreData;
-import net.katsstuff.danmakucore.data.MutableShotData;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuBuilder;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
-import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.helper.DanmakuCreationHelper;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
@@ -27,12 +26,13 @@ import net.katsstuff.danmakucore.lib.LibItemName;
 import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.lib.data.LibSubEntities;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
+import net.katsstuff.danmakucore.registry.RegistryValueItemStack;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -50,7 +50,7 @@ public class ItemDanmaku extends ItemBase {
 	private static final String NBT_PATTERN = "pattern";
 	private static final String NBT_INFINITY = "infinity";
 	private static final String NBT_AMOUNT = "amount";
-	public static final String NBT_CUSTOM = "custom";
+	private static final String NBT_CUSTOM = "custom";
 	private static final String NBT_SPEED = "speed";
 
 	public ItemDanmaku() {
@@ -76,12 +76,12 @@ public class ItemDanmaku extends ItemBase {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean hasEffect(ItemStack stack) {
-		return ItemNBTHelper.getBoolean(stack, NBT_INFINITY, false);
+		return getInfinity(stack);
 	}
 
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
-		String name = ItemNBTHelper.getBoolean(stack, NBT_CUSTOM, false) ?
+		String name = getCustom(stack) ?
 				ShotData.fromNBTItemStack(stack).form().getUnlocalizedName() :
 				DanmakuRegistry.DANMAKU_VARIANT.getObjectById(stack.getItemDamage()).getUnlocalizedName();
 		return this.getUnlocalizedName() + "." + name;
@@ -89,34 +89,27 @@ public class ItemDanmaku extends ItemBase {
 
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
-		if(ItemNBTHelper.getBoolean(stack, NBT_CUSTOM, false)) {
-			if(!DanmakuRegistry.FORM.getObjectById(stack.getItemDamage()).onRightClick(stack, world, player, hand)) {
-				return super.onItemRightClick(stack, world, player, hand);
-			}
-		}
-		else {
-			if(!DanmakuRegistry.DANMAKU_VARIANT.getObjectById(stack.getItemDamage()).onRightClick(stack, world, player, hand)) {
-				return super.onItemRightClick(stack, world, player, hand);
-			}
+		FMLControlledNamespacedRegistry<? extends RegistryValueItemStack<? extends RegistryValueItemStack<?>>> registry = getCustom(stack) ?
+				DanmakuRegistry.FORM : DanmakuRegistry.DANMAKU_VARIANT;
+
+		if(!registry.getObjectById(stack.getItemDamage()).onRightClick(stack, world, player, hand)) {
+			return super.onItemRightClick(stack, world, player, hand);
 		}
 
 		if(!world.isRemote) {
 			if(player.capabilities.isCreativeMode) {
-				ItemNBTHelper.setBoolean(stack, NBT_INFINITY, true);
+				setInfinity(stack, true);
 			}
 
-			boolean isInfinity = ItemNBTHelper.getBoolean(stack, NBT_INFINITY, false);
+			boolean isInfinity = getInfinity(stack);
 
 			if(!isInfinity) {
 				stack.stackSize--;
 			}
 
-			shootDanmaku(stack, player, player.isSneaking(), new Vector3(player), new Vector3(player.getLookVec()),
+			shootDanmaku(stack, player.worldObj, player, player.isSneaking(), new Vector3(player), new Vector3(player.getLookVec()),
 					ShotData.fromNBTItemStack(stack).sizeZ() / 4);
-		}
-		DanmakuHelper.playShotSound(player);
 
-		if(!world.isRemote) {
 			if(player.isSneaking()) {
 				TouhouHelper.changeAndSyncPlayerData(data -> {
 					data.setPower(0F);
@@ -134,66 +127,34 @@ public class ItemDanmaku extends ItemBase {
 				}, player);
 			}
 		}
-
-		/*
-		//ShapeWideShot shape = new ShapeWideShot(DanmakuBuilder.builder().setUser(player).setMovementData(0.4D).setShot(LibShotData.SHOT_SMALLSTAR).build(), 8, 45F, 0F, 0D);
-		//ShapeCircle shape = new ShapeCircle(DanmakuBuilder.builder().setUser(player).setMovementData(0.4D).setShot(LibShotData.SHOT_SMALLSTAR).build(), 16, 0F, 0D);
-		//ShapeArrow shape = new ShapeArrow(DanmakuBuilder.builder().setUser(player).setMovementData(0.4D).setShot(LibShotData.SHOT_SMALLSTAR).build(), 4, 1D, 0.5F);
-		//ShapeRandomRing shape = new ShapeRandomRing(DanmakuBuilder.builder().setUser(player).setMovementData(0.4D).setShot(LibShotData.SHOT_SMALLSTAR).build(), 8, 40F, 0D);
-		//ShapeRing shape = new ShapeRing(DanmakuBuilder.builder().setUser(player).setMovementData(0.4D).setShot(LibShotData.SHOT_SMALLSTAR).build(), 8, 10F, 0F, 0D);
-		//ShapeStar shape = new ShapeStar(DanmakuBuilder.builder().setUser(player).setMovementData(0.4D).setShot(LibShotData.SHOT_SMALLSTAR).build(), 32, 0F, 0F, 0D);
-		ShapeWideShot shape = new ShapeWideShot(DanmakuBuilder.builder().setUser(player).setMovementData(0.4D).setShot(LibShotData.SHOT_SMALLSTAR).build(), 8, 45F, 0F, 0D);
-		//ShapeSphere shape = new ShapeSphere(DanmakuBuilder.builder().setUser(player).setMovementData(0.4D).setShot(LibShotData.SHOT_SMALLSTAR).build(), 8, 8, 0F, 0D);
-		ShapeHandler.createShape(shape, player);
 		DanmakuHelper.playShotSound(player);
-		*/
-
-		/*
-		MutableShotData shot = new MutableShotData(LibForms.SPHERE_DARK, LibShotData.COLOR_SATURATED_RED, 0.5F, 0.5F, 0.5F, 0.5F, 0, 100, LibSubEntities.DEFAULT_TYPE);
-		//ShotData shot = new ShotData(LibForms.INSTANCE.circle, LibShotData.COLOR_SATURATED_RED, 0.5F, 0.5F, 0, 100);
-
-		Color color = new Color(shot.color());
-		float[] colorHSB = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
-		colorHSB[0] = world.getWorldTime() % 255 / 25F;
-		color = Color.getHSBColor(colorHSB[0], colorHSB[1], colorHSB[2]);
-		shot.setColor(color.getRGB());
-		DanmakuBuilder danmaku = DanmakuBuilder.builder().setUser(player).setShot(shot.asImmutable()).setMovementData(0.2D).build();
-
-		DanmakuHelper.playShotSound(player);
-		DanmakuCreationHelper.createWideShot(danmaku, 8, 45F, 0F, 0.1D);
-		*/
 
 		return new ActionResult<>(EnumActionResult.SUCCESS, stack);
 	}
 
-	private void shootDanmaku(ItemStack stack, EntityPlayer player, boolean alternateMode, Vector3 pos, Vector3 angle, double distance) {
-		if(ItemNBTHelper.getBoolean(stack, NBT_CUSTOM, false)) {
-			if(!DanmakuRegistry.FORM.getObjectById(stack.getItemDamage()).onShootDanmaku(player, alternateMode, pos, angle)) return;
+	public static boolean shootDanmaku(ItemStack stack, World world, @Nullable EntityLivingBase player, boolean alternateMode, Vector3 pos,
+			Vector3 angle, double offset) {
+		if(getCustom(stack)) {
+			if(!DanmakuRegistry.FORM.getObjectById(stack.getItemDamage()).onShootDanmaku(player, alternateMode, pos, angle)) return false;
 		}
 		else {
-			if(!DanmakuRegistry.DANMAKU_VARIANT.getObjectById(stack.getItemDamage()).onShootDanmaku(player, alternateMode, pos, angle)) return;
+			if(!DanmakuRegistry.DANMAKU_VARIANT.getObjectById(stack.getItemDamage()).onShootDanmaku(player, alternateMode, pos, angle)) return false;
 		}
 
-		int amount = ItemNBTHelper.getShort(stack, NBT_AMOUNT, (short)1);
-		double shotSpeed = ItemNBTHelper.getDouble(stack, NBT_SPEED, 0.5D);
-		int danmakuPattern = ItemNBTHelper.getByte(stack, NBT_PATTERN, (byte)0);
-		MutableShotData shot = ShotData.fromNBTItemStack(stack).asMutable();
+		int amount = getAmount(stack);
+		double shotSpeed = getSpeed(stack);
+		int danmakuPattern = getPattern(stack);
+		ShotData shot = ShotData.fromNBTItemStack(stack);
 		Vector3 gravity = getGravity(stack);
-		int maxNumber = ConfigHandler.getDanmakuMaxNumber();
-
-		if(amount > maxNumber) {
-			amount = maxNumber;
-		}
 
 		float wide;
-		shot.setDamage(shot.getDamage() + TouhouHelper.getDanmakuCoreData(player).map(IDanmakuCoreData::getPower).orElse(0F));
 		DanmakuBuilder.Builder danmaku = DanmakuBuilder.builder();
-		danmaku.setUser(player).setShot(shot.asImmutable()).setMovementData(shotSpeed, gravity).setAngle(new Vector3(player.getLookVec()));
+		danmaku.setUser(player).setShot(shot).setWorld(world).setMovementData(shotSpeed, gravity).setPos(pos).setAngle(angle);
 		DanmakuBuilder built = danmaku.build();
 
 		switch(danmakuPattern) {
 			case 0:
-				danmaku.setPos(pos.offset(angle, distance));
+				danmaku.setPos(pos.offset(angle, offset));
 
 				for(int i = 1; i <= amount; i++) {
 					danmaku.setMovementData(shotSpeed / amount * i);
@@ -205,32 +166,34 @@ public class ItemDanmaku extends ItemBase {
 				if(alternateMode) {
 					wide *= 0.5F;
 				}
-				DanmakuCreationHelper.createRandomRingShot(built, amount, wide, distance);
+				DanmakuCreationHelper.createRandomRingShot(built, amount, wide, offset);
 				break;
 			case 2:
 				wide = amount * 3F;
 				if(alternateMode) {
 					wide = wide * 0.5F;
 				}
-				DanmakuCreationHelper.createWideShot(built, amount, wide, 0F, distance);
+				DanmakuCreationHelper.createWideShot(built, amount, wide, 0F, offset);
 				break;
 			case 3:
-				DanmakuCreationHelper.createCircleShot(built, amount, 0F, distance);
+				DanmakuCreationHelper.createCircleShot(built, amount, 0F, offset);
 				break;
 			case 4:
 				danmaku.setMovementData(Vector3.GravityZero());
-				DanmakuCreationHelper.createSphereShot(danmaku.build(), amount, 0F, 0F, distance);
+				DanmakuCreationHelper.createStarShot(danmaku.build(), amount, 0F, 0F, offset);
 				break;
 			case 5:
 				wide = 15F;
 				if(alternateMode) {
 					wide *= 0.5F;
 				}
-				DanmakuCreationHelper.createRingShot(built, amount, wide, player.getRNG().nextFloat() * 360F, distance);
+				DanmakuCreationHelper.createRingShot(built, amount, wide, player.getRNG().nextFloat() * 360F, offset);
 				break;
 			default:
 				break;
 		}
+
+		return true;
 	}
 
 	@Override
@@ -238,14 +201,14 @@ public class ItemDanmaku extends ItemBase {
 	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean bool) {
 		super.addInformation(stack, player, list, bool);
 		ShotData shot = ShotData.fromNBTItemStack(stack);
-		int amount = ItemNBTHelper.getShort(stack, NBT_AMOUNT, (short)1);
-		double shotSpeed = ItemNBTHelper.getDouble(stack, NBT_SPEED, 0.5D);
-		int danmakuPattern = ItemNBTHelper.getByte(stack, NBT_PATTERN, (byte)0);
+		int amount = getAmount(stack);
+		double shotSpeed = getSpeed(stack);
+		int danmakuPattern = getPattern(stack);
 		Vector3 gravity = getGravity(stack);
-		boolean isInfinity = ItemNBTHelper.getBoolean(stack, NBT_INFINITY, false);
-		boolean custom = ItemNBTHelper.getBoolean(stack, NBT_CUSTOM, false);
+		boolean isInfinity = getInfinity(stack);
+		boolean custom = getCustom(stack);
 
-		float powerDamage = TouhouHelper.getDanmakuCoreData(player).map(IDanmakuCoreData::getPower).orElse(0F);
+		float powerDamage = DanmakuHelper.adjustDamageCoreData(player, shot.damage()) - shot.damage();
 		String item = "item.danmaku";
 
 		list.add(I18n.format(item + ".damage") + " : " + shot.damage() + " + " + powerDamage);
@@ -260,7 +223,7 @@ public class ItemDanmaku extends ItemBase {
 			list.add(I18n.format(item + ".gravity") + " : " + gravity.x() + " " + gravity.y() + " " + gravity.z());
 		}
 		else {
-			list.add(I18n.format(item + ".gravity") + " : " + I18n.format(item + ".gFree"));
+			list.add(I18n.format(item + ".gravity") + " : " + I18n.format(item + ".noGravity"));
 		}
 		if(DanmakuHelper.isNormalColor(shot.color())) {
 			list.add(I18n.format(item + ".color") + " : " + I18n.format(item + ".color." + shot.color()));
@@ -315,5 +278,21 @@ public class ItemDanmaku extends ItemBase {
 
 	public static void setSpeed(ItemStack stack, double speed) {
 		ItemNBTHelper.setDouble(stack, NBT_SPEED, speed);
+	}
+
+	public static boolean getCustom(ItemStack stack) {
+		return ItemNBTHelper.getBoolean(stack, ItemDanmaku.NBT_CUSTOM, false);
+	}
+
+	public static void setCustom(ItemStack stack, boolean custom) {
+		ItemNBTHelper.setBoolean(stack, NBT_CUSTOM, custom);
+	}
+
+	public static boolean getInfinity(ItemStack stack) {
+		return ItemNBTHelper.getBoolean(stack, ItemDanmaku.NBT_INFINITY, false);
+	}
+
+	public static void setInfinity(ItemStack stack, boolean infinity) {
+		ItemNBTHelper.setBoolean(stack, NBT_INFINITY, infinity);
 	}
 }

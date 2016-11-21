@@ -43,7 +43,7 @@ public class DanmakuCreationHelper {
 		return shape.drawForTick(danmaku.pos, danmaku.angle, 0).getSecond();
 	}
 
-	public static Set<EntityDanmaku> createSphereShot(DanmakuBuilder danmaku, int amount, float angleZ, float baseAngle, double distance) {
+	public static Set<EntityDanmaku> createStarShot(DanmakuBuilder danmaku, int amount, float angleZ, float baseAngle, double distance) {
 		ShapeStar shape = new ShapeStar(danmaku, amount, angleZ, baseAngle, distance);
 		return shape.drawForTick(danmaku.pos, danmaku.angle, 0).getSecond();
 	}

@@ -41,7 +41,7 @@ object DanOBJFormLoader {
 
 				val form: IRenderForm = new IRenderForm {
 					override def renderForm(danmaku: EntityDanmaku, x: Double, y: Double, z: Double, entityYaw: Float, partialTicks: Float,
-						renderManager: RenderManager): Unit = {
+							renderManager: RenderManager): Unit = {
 						val tes = Tessellator.getInstance
 						val vb = tes.getBuffer
 						val shotData = danmaku.getShotData

@@ -8,6 +8,10 @@
  */
 package net.katsstuff.danmakucore;
 
+import java.util.Arrays;
+
+import javax.annotation.Nullable;
+
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.Form;
@@ -39,15 +43,21 @@ import net.katsstuff.danmakucore.item.ItemSpellcard;
 import net.katsstuff.danmakucore.lib.LibColor;
 import net.katsstuff.danmakucore.lib.LibDanmakuVariantName;
 import net.katsstuff.danmakucore.lib.LibEntityName;
+import net.katsstuff.danmakucore.lib.LibFormName;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.katsstuff.danmakucore.lib.LibPhaseName;
+import net.katsstuff.danmakucore.lib.LibRegistryName;
 import net.katsstuff.danmakucore.lib.LibSubEntityName;
 import net.katsstuff.danmakucore.lib.data.LibShotData;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+import net.minecraftforge.fml.common.registry.PersistentRegistryManager;
 
 @Mod.EventBusSubscriber
 public class CommonProxy {
@@ -136,9 +146,13 @@ public class CommonProxy {
 
 	@SubscribeEvent
 	public static void registerSpellcards(RegistryEvent.Register<Spellcard> event) {
-		event.getRegistry().registerAll(
+		Spellcard[] toRegister = {
 				new SpellcardDelusionEnlightenment()
-		);
+		};
+
+		event.getRegistry().registerAll(toRegister);
+
+		Arrays.stream(toRegister).forEach(Spellcard::bakeModel);
 	}
 
 	@SubscribeEvent
@@ -170,5 +184,23 @@ public class CommonProxy {
 				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.LASER_SHORT, () -> LibShotData.SHOT_LASER_SHORT, 0.4D),
 				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.LASER_LONG, () -> LibShotData.SHOT_LASER_LONG, 0.4D)
 		);
+	}
+
+	@SubscribeEvent
+	public static void createRegistries(RegistryEvent.NewRegistry event) {
+		createRegistry(LibRegistryName.FORMS, Form.class, resource(LibFormName.DEFAULT));
+		createRegistry(LibRegistryName.SUB_ENTITIES, SubEntityType.class, resource(LibSubEntityName.DEFAULT));
+		createRegistry(LibRegistryName.VARIANTS, DanmakuVariant.class, resource(LibDanmakuVariantName.DEFAULT));
+		createRegistry(LibRegistryName.SPELLCARDS, Spellcard.class, null);
+		createRegistry(LibRegistryName.PHASES, PhaseType.class, resource(LibPhaseName.FALLBACK));
+	}
+
+	private static <I extends IForgeRegistryEntry<I>> FMLControlledNamespacedRegistry<I> createRegistry(ResourceLocation name, Class<I> clazz,
+			@Nullable ResourceLocation defaultValue) {
+		return PersistentRegistryManager.createRegistry(name, clazz, defaultValue, 0, Short.MAX_VALUE, false, null, null, null);
+	}
+
+	private static ResourceLocation resource(String path) {
+		return new ResourceLocation(LibMod.MODID, path);
 	}
 }

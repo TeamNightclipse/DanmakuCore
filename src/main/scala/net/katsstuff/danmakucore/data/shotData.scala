@@ -107,18 +107,18 @@ abstract sealed class AbstractShotData {
 }
 
 final case class MutableShotData(
-	@BeanProperty var form: Form = LibForms.SPHERE,
-	@BeanProperty var color: Int = LibColor.COLOR_SATURATED_RED,
-	@BeanProperty var damage: Float = 0.5F,
-	@BeanProperty var sizeX: Float = 0.5F,
-	@BeanProperty var sizeY: Float = 0.5F,
-	@BeanProperty var sizeZ: Float = 0.5F,
-	@BeanProperty var delay: Int = 0,
-	@BeanProperty var end: Int = 80,
-	@BeanProperty var subEntity: SubEntityType = LibSubEntities.DEFAULT_TYPE) extends AbstractShotData with INBTSerializable[NBTTagCompound] {
+		@BeanProperty var form: Form = LibForms.SPHERE,
+		@BeanProperty var color: Int = LibColor.COLOR_SATURATED_RED,
+		@BeanProperty var damage: Float = 0.5F,
+		@BeanProperty var sizeX: Float = 0.5F,
+		@BeanProperty var sizeY: Float = 0.5F,
+		@BeanProperty var sizeZ: Float = 0.5F,
+		@BeanProperty var delay: Int = 0,
+		@BeanProperty var end: Int = 80,
+		@BeanProperty var subEntity: SubEntityType = LibSubEntities.DEFAULT_TYPE) extends AbstractShotData with INBTSerializable[NBTTagCompound] {
 
 	def this(buf: ByteBuf) {
-		this (
+		this(
 			form = DanmakuRegistry.FORM.getObjectById(buf.readInt),
 			color = buf.readInt,
 			sizeX = buf.readFloat,
@@ -199,18 +199,18 @@ final case class MutableShotData(
 }
 
 final case class ShotData(
-	@BeanProperty form: Form = LibForms.SPHERE,
-	@BeanProperty color: Int = LibColor.COLOR_SATURATED_RED,
-	@BeanProperty damage: Float = 0.5F,
-	@BeanProperty sizeX: Float = 0.5F,
-	@BeanProperty sizeY: Float = 0.5F,
-	@BeanProperty sizeZ: Float = 0.5F,
-	@BeanProperty delay: Int = 0,
-	@BeanProperty end: Int = 80,
-	@BeanProperty subEntity: SubEntityType = LibSubEntities.DEFAULT_TYPE) extends AbstractShotData {
+		@BeanProperty form: Form = LibForms.SPHERE,
+		@BeanProperty color: Int = LibColor.COLOR_SATURATED_RED,
+		@BeanProperty damage: Float = 0.5F,
+		@BeanProperty sizeX: Float = 0.5F,
+		@BeanProperty sizeY: Float = 0.5F,
+		@BeanProperty sizeZ: Float = 0.5F,
+		@BeanProperty delay: Int = 0,
+		@BeanProperty end: Int = 80,
+		@BeanProperty subEntity: SubEntityType = LibSubEntities.DEFAULT_TYPE) extends AbstractShotData {
 
 	def this(buf: ByteBuf) {
-		this (
+		this(
 			form = DanmakuRegistry.FORM.getObjectById(buf.readInt),
 			color = buf.readInt,
 			sizeX = buf.readFloat,

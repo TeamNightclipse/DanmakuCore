@@ -1,7 +1,0 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "danmakucore:items/danmaku/KunaiShot",
-    "layer1": "danmakucore:items/danmaku/KunaiShot_2"
-  }
-}

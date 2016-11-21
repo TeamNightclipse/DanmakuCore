@@ -16,6 +16,8 @@ import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class FormSphereCircle extends FormGeneric {
 
@@ -24,6 +26,7 @@ public class FormSphereCircle extends FormGeneric {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks, RenderManager rendermanager) {
 		float pitch = danmaku.rotationPitch;
 		float yaw = danmaku.rotationYaw;

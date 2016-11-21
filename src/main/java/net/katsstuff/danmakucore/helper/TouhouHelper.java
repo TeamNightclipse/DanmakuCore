@@ -35,9 +35,8 @@ public class TouhouHelper {
 		World world = player.worldObj;
 
 		//Only allow spellcard if use user isn't already using a spellcard
-		@SuppressWarnings("ConstantConditions")
-		List<EntitySpellcard> spellcardList = world.getEntitiesWithinAABB(EntitySpellcard.class, player.getEntityBoundingBox().expandXyz(32D),
-				entitySpellcard -> player == entitySpellcard.getUser());
+		@SuppressWarnings("ConstantConditions") List<EntitySpellcard> spellcardList = world.getEntitiesWithinAABB(EntitySpellcard.class,
+				player.getEntityBoundingBox().expandXyz(32D), entitySpellcard -> player == entitySpellcard.getUser());
 		if(!spellcardList.isEmpty()) return false;
 
 		//Get the target
@@ -47,21 +46,16 @@ public class TouhouHelper {
 		if(!optTarget.isPresent()) return false;
 		EntityLivingBase target = (EntityLivingBase)optTarget.get();
 
-		//Checks if the user has levels + bombs to do spellcard and removes them if not simulated
-		int neededLevels = spellcard.getNeededLevel();
 
 		if(!player.capabilities.isCreativeMode) {
 
-			int bombs = getDanmakuCoreData(player).map(IDanmakuCoreData::getBombs).orElse(0);
+			int neededBombs = spellcard.getLevel();
+			int currentBombs = getDanmakuCoreData(player).map(IDanmakuCoreData::getBombs).orElse(0);
 
-			if(player.experienceLevel + bombs < neededLevels) return false;
+			if(currentBombs < neededBombs) return false;
 
 			if(!simulate) {
-				int clearedLevels = neededLevels - bombs;
-				clearedLevels = clearedLevels < 0 ? 0 : clearedLevels;
-				int clearedBombs = neededLevels - clearedLevels;
-				changeAndSyncPlayerData(data -> data.addBombs(clearedBombs), player);
-				player.addExperienceLevel(-clearedLevels);
+				changeAndSyncPlayerData(data -> data.addBombs(-neededBombs), player);
 			}
 		}
 
@@ -77,7 +71,6 @@ public class TouhouHelper {
 		World world = user.worldObj;
 		if(!world.isRemote) {
 			EntitySpellcard entitySpellCard = new EntitySpellcard(user, target, spellCard);
-			entitySpellCard.setPosition(user.posX, user.posY, user.posZ);
 			world.spawnEntityInWorld(entitySpellCard);
 		}
 

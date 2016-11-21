@@ -10,13 +10,19 @@ package net.katsstuff.danmakucore;
 
 import net.katsstuff.danmakucore.capability.CapabilityDanmakuCoreData;
 import net.katsstuff.danmakucore.capability.DanmakuCoreDataHandler;
-import net.katsstuff.danmakucore.handler.ConfigHandler;
-import net.katsstuff.danmakucore.lib.data.LibItems;
+import net.katsstuff.danmakucore.data.Vector3;
+import net.katsstuff.danmakucore.helper.DanmakuHelper;
+import net.katsstuff.danmakucore.item.ItemDanmaku;
 import net.katsstuff.danmakucore.lib.LibMod;
+import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.network.DanmakuCorePacketHandler;
 import net.katsstuff.danmakucore.shape.ShapeHandler;
+import net.minecraft.block.BlockDispenser;
+import net.minecraft.dispenser.IPosition;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Vec3i;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -25,7 +31,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 @Mod(modid = LibMod.MODID, name = LibMod.NAME, version = LibMod.VERSION)
-@Mod.EventBusSubscriber
 public class DanmakuCore {
 
 	public static final DanmakuCoreCreativeTab DANMAKU_CREATIVE_TAB = new DanmakuCoreCreativeTab("danmaku") {
@@ -51,8 +56,6 @@ public class DanmakuCore {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		ConfigHandler.setConfig(event.getSuggestedConfigurationFile());
-
 		DataSerializers.registerSerializer(CoreDataSerializers.SHOTDATA);
 		DataSerializers.registerSerializer(CoreDataSerializers.VECTOR_3);
 
@@ -68,6 +71,23 @@ public class DanmakuCore {
 		DanmakuCorePacketHandler.init();
 		MinecraftForge.EVENT_BUS.register(ShapeHandler.class);
 		MinecraftForge.EVENT_BUS.register(new DanmakuCoreDataHandler());
+
+		BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(LibItems.DANMAKU, ((source, stack) -> {
+			IPosition iposition = BlockDispenser.getDispensePosition(source);
+
+			EnumFacing facing = source.getBlockState().getValue(BlockDispenser.FACING);
+			Vec3i directionVec = facing.getDirectionVec();
+
+			Vector3 pos = new Vector3(iposition.getX(), iposition.getY(), iposition.getZ());
+			Vector3 angle = new Vector3(directionVec.getX(), directionVec.getY(), directionVec.getZ());
+
+			if(ItemDanmaku.shootDanmaku(stack, source.getWorld(), null, false, pos.asImmutable(), angle, 0D)) {
+				--stack.stackSize;
+			}
+			DanmakuHelper.playShotSound(source.getWorld(), pos);
+
+			return stack;
+		}));
 	}
 
 	@Mod.EventHandler

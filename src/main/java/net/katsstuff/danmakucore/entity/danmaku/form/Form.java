@@ -8,6 +8,8 @@
  */
 package net.katsstuff.danmakucore.entity.danmaku.form;
 
+import javax.annotation.Nullable;
+
 import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.data.MovementData;
 import net.katsstuff.danmakucore.data.RotationData;
@@ -64,7 +66,7 @@ public abstract class Form extends RegistryValueItemStack<Form> {
 	 *
 	 * @return If the danmaku should be allowed to fire.
 	 */
-	public boolean onShootDanmaku(EntityLivingBase user, boolean alternateMode, Vector3 pos, Vector3 angle) {
+	public boolean onShootDanmaku(@Nullable EntityLivingBase user, boolean alternateMode, Vector3 pos, Vector3 angle) {
 		return true;
 	}
 
@@ -115,6 +117,6 @@ public abstract class Form extends RegistryValueItemStack<Form> {
 	@Override
 	public ModelResourceLocation getItemModel() {
 		ResourceLocation name = getRegistryName();
-		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/" + name.getResourcePath()), "inventory");
+		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/form/" + name.getResourcePath()), "inventory");
 	}
 }

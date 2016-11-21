@@ -93,7 +93,7 @@ public abstract class EntityDanmakuMob extends EntityMob {
 
 	@Override
 	public void onUpdate() {
-		if(ConfigHandler.getDanmakuLevel() == EnumDanmakuLevel.PEACEFUL) {
+		if(ConfigHandler.danmaku.danmakuLevel == EnumDanmakuLevel.PEACEFUL) {
 			setAttackTarget(null);
 		}
 

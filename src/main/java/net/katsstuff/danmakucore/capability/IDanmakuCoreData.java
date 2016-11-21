@@ -44,6 +44,7 @@ public interface IDanmakuCoreData {
 	default void addLife() {
 		addLives(1);
 	}
+
 	default void removeLife() {
 		addLives(-1);
 	}

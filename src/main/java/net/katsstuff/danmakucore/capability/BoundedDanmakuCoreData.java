@@ -77,4 +77,10 @@ public class BoundedDanmakuCoreData implements IDanmakuCoreData {
 	public void setBombs(int bombs) {
 		this.bombs = MathHelper.clamp_int(bombs, 0, 9);
 	}
+
+	@Override
+	public String toString() {
+		return "BoundedDanmakuCoreData{" + "power=" + power + ", score=" + score + ", lives=" + lives + ", bombs=" + bombs + ", powerBound="
+				+ powerBound + '}';
+	}
 }

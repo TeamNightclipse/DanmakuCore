@@ -7,8 +7,7 @@
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
 
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault @MethodsReturnNonnullByDefault
 package net.katsstuff.danmakucore.impl.spellcard;
 
 import javax.annotation.ParametersAreNonnullByDefault;
