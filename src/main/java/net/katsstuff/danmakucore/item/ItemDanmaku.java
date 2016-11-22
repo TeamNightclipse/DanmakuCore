@@ -8,6 +8,7 @@
  */
 package net.katsstuff.danmakucore.item;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,6 @@ import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.helper.DanmakuCreationHelper;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
-import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.lib.LibItemName;
 import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.lib.data.LibSubEntities;
@@ -96,40 +96,22 @@ public class ItemDanmaku extends ItemBase {
 			return super.onItemRightClick(stack, world, player, hand);
 		}
 
+		boolean success = false;
 		if(!world.isRemote) {
 			if(player.capabilities.isCreativeMode) {
 				setInfinity(stack, true);
 			}
 
-			boolean isInfinity = getInfinity(stack);
-
-			if(!isInfinity) {
-				stack.stackSize--;
-			}
-
-			shootDanmaku(stack, player.worldObj, player, player.isSneaking(), new Vector3(player), new Vector3(player.getLookVec()),
+			success = shootDanmaku(stack, player.worldObj, player, player.isSneaking(), new Vector3(player), new Vector3(player.getLookVec()),
 					ShotData.fromNBTItemStack(stack).sizeZ() / 4);
 
-			if(player.isSneaking()) {
-				TouhouHelper.changeAndSyncPlayerData(data -> {
-					data.setPower(0F);
-					data.setScore(0);
-					data.setLives(0);
-					data.setBombs(0);
-				}, player);
-			}
-			else {
-				TouhouHelper.changeAndSyncPlayerData(data -> {
-					data.addPower(0.1F);
-					data.addScore(1000);
-					data.addLife();
-					data.addBomb();
-				}, player);
+			if(!getInfinity(stack) && success) {
+				stack.stackSize--;
 			}
 		}
 		DanmakuHelper.playShotSound(player);
 
-		return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+		return new ActionResult<>(success ? EnumActionResult.SUCCESS : EnumActionResult.FAIL, stack);
 	}
 
 	public static boolean shootDanmaku(ItemStack stack, World world, @Nullable EntityLivingBase player, boolean alternateMode, Vector3 pos,
@@ -187,7 +169,7 @@ public class ItemDanmaku extends ItemBase {
 				if(alternateMode) {
 					wide *= 0.5F;
 				}
-				DanmakuCreationHelper.createRingShot(built, amount, wide, player.getRNG().nextFloat() * 360F, offset);
+				DanmakuCreationHelper.createRingShot(built, amount, wide, world.rand.nextFloat() * 360F, offset);
 				break;
 			default:
 				break;
@@ -208,7 +190,8 @@ public class ItemDanmaku extends ItemBase {
 		boolean isInfinity = getInfinity(stack);
 		boolean custom = getCustom(stack);
 
-		float powerDamage = DanmakuHelper.adjustDamageCoreData(player, shot.damage()) - shot.damage();
+		float powerDamage = new BigDecimal(DanmakuHelper.adjustDamageCoreData(player, shot.damage()) - shot.damage())
+				.setScale(4, BigDecimal.ROUND_HALF_UP).floatValue();
 		String item = "item.danmaku";
 
 		list.add(I18n.format(item + ".damage") + " : " + shot.damage() + " + " + powerDamage);

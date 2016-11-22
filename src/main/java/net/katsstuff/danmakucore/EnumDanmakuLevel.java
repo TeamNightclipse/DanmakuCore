@@ -31,4 +31,21 @@ public enum EnumDanmakuLevel {
 	public int getMultiplier() {
 		return multiplier;
 	}
+
+	public static EnumDanmakuLevel cycle(EnumDanmakuLevel level) {
+		switch(level) {
+			case PEACEFUL:
+				return EnumDanmakuLevel.EASY;
+			case EASY:
+				return EnumDanmakuLevel.NORMAL;
+			case NORMAL:
+				return EnumDanmakuLevel.HARD;
+			case HARD:
+				return EnumDanmakuLevel.LUNATIC;
+			case LUNATIC:
+				return EnumDanmakuLevel.EXTRA;
+			default:
+				return EnumDanmakuLevel.EASY;
+		}
+	}
 }

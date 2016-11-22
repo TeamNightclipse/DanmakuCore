@@ -2,14 +2,14 @@
 {
   "modid": "danmakucore",
   "name": "DanmakuCore",
-  "description": "A mod that the underlying structures of danmaku stuff. Won't do much on it's own.",
+  "description": "A mod that adds the underlying structures of danmaku stuff. Won't do much on it's own.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
   "authorList": ["Katrix"],
-  "credits": "Kuroanko, Original creator of the Touhou Items mod, that this mod is based on.",
-  "logoFile": "",
+  "credits": "Kuroanko, Creator of the Touhou Items mod, that DanmakuCore is based on. Aya and Nick for help with textures.",
+  "logoFile": "assets/danmakucore/textures/logo.png",
   "screenshots": [],
   "dependencies": []
 }

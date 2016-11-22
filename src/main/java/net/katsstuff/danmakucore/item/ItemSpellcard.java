@@ -46,7 +46,7 @@ public class ItemSpellcard extends ItemBase {
 		Spellcard type = DanmakuRegistry.SPELLCARD.getObjectById(stack.getItemDamage());
 		if(type.onRightClick(stack, world, player, hand)) {
 			boolean result = TouhouHelper.declareSpellcardPlayer(player, type, true, false);
-			return result ? ActionResult.newResult(EnumActionResult.SUCCESS, stack) : ActionResult.newResult(EnumActionResult.FAIL, stack);
+			return result ? new ActionResult<>(EnumActionResult.SUCCESS, stack) : new ActionResult<>(EnumActionResult.FAIL, stack);
 		}
 		else return super.onItemRightClick(stack, world, player, hand);
 	}
