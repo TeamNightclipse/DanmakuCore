@@ -20,6 +20,7 @@ import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.katsstuff.danmakucore.entity.living.IAllyDanmaku;
+import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
@@ -96,8 +97,8 @@ public class SubEntityTypeDefault extends SubEntityType {
 			if(hitEntity instanceof EntityLivingBase && !(hitEntity instanceof EntityAgeable) && !(optUser.orElse(null) instanceof IAllyDanmaku
 					&& hitEntity instanceof IAllyDanmaku)) {
 				EntityLivingBase living = (EntityLivingBase)hitEntity;
-				living.attackEntityFrom(DamageSourceDanmaku.causeDanmakuDamage(danmaku, indirect),
-						DanmakuHelper.adjustDanmakuDamage(optUser.orElse(null), living, danmaku.getShotData().damage()));
+				living.attackEntityFrom(DamageSourceDanmaku.causeDanmakuDamage(danmaku, indirect), DanmakuHelper.adjustDanmakuDamage(
+						optUser.orElse(null), living, danmaku.getShotData().damage(), ConfigHandler.danmaku.danmakuLevel));
 			}
 			else if(hitEntity instanceof EntityDragonPart) {
 				EntityDragonPart dragon = (EntityDragonPart)hitEntity;

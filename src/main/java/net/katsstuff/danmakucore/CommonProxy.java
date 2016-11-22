@@ -166,23 +166,23 @@ public class CommonProxy {
 	@SubscribeEvent
 	public static void registerVariants(RegistryEvent.Register<DanmakuVariant> event) {
 		event.getRegistry().registerAll(
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.DEFAULT, () -> LibShotData.SHOT_MEDIUM, 0.4D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.CIRCLE, () -> LibShotData.SHOT_CIRCLE, 0.4D),
+				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.DEFAULT, () -> LibShotData.SHOT_MEDIUM, 0.3D),
+				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.CIRCLE, () -> LibShotData.SHOT_CIRCLE, 0.3D),
 				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.CRYSTAL1, () -> LibShotData.SHOT_CRYSTAL1, 0.4D),
 				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.CRYSTAL2, () -> LibShotData.SHOT_CRYSTAL2, 0.4D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.OVAL, () -> LibShotData.SHOT_OVAL, 0.4D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.SPHERE_DARK, () -> LibShotData.SHOT_SPHERE_DARK, 0.4D),
+				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.OVAL, () -> LibShotData.SHOT_OVAL, 0.2D),
+				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.SPHERE_DARK, () -> LibShotData.SHOT_SPHERE_DARK, 0.3D),
 				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.PELLET, () -> LibShotData.SHOT_PELLET, 0.4D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.STAR_SMALL, () -> LibShotData.SHOT_SMALLSTAR, 0.2D),
+				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.STAR_SMALL, () -> LibShotData.SHOT_SMALLSTAR, 0.3D),
 				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.STAR, () -> LibShotData.SHOT_STAR, 0.2D),
 				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.TINY, () -> LibShotData.SHOT_TINY, 0.4D),
 				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.SMALL, () -> LibShotData.SHOT_SMALL, 0.4D),
 				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.KUNAI, () -> LibShotData.SHOT_KUNAI, 0.4D),
 				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.SCALE, () -> LibShotData.SHOT_SCALE, 0.4D),
 				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.RICE, () -> LibShotData.SHOT_RICE, 0.4D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.LASER, () -> LibShotData.SHOT_LASER, 0.4D),
+				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.LASER, () -> LibShotData.SHOT_LASER, 0.35D),
 				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.LASER_SHORT, () -> LibShotData.SHOT_LASER_SHORT, 0.4D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.LASER_LONG, () -> LibShotData.SHOT_LASER_LONG, 0.4D)
+				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.LASER_LONG, () -> LibShotData.SHOT_LASER_LONG, 0.3D)
 		);
 	}
 

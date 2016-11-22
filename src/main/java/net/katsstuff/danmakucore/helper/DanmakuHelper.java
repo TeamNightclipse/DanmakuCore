@@ -14,6 +14,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import net.katsstuff.danmakucore.EnumDanmakuLevel;
 import net.katsstuff.danmakucore.capability.IDanmakuCoreData;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmaku;
@@ -158,20 +159,28 @@ public class DanmakuHelper {
 	/**
 	 * Adjust shot damage according to difficulty
 	 */
-	public static float adjustDamageToDifficulty(float base, @Nullable EntityLivingBase user, World world) {
+	public static float adjustDamageToDifficulty(float base, @Nullable EntityLivingBase user, EnumDanmakuLevel level) {
 		if(user instanceof EntityPlayer) return base;
 
 		if(ConfigHandler.danmaku.oneHitKill) return 999999F;
 
-		switch(world.getDifficulty()) {
+		switch(level) {
 			case PEACEFUL:
-				return base * 1.0F;
+				return base;
 			case EASY:
 				return base * 0.7F;
 			case NORMAL:
 				return base;
 			case HARD:
+				return base * 1.3F;
+			case LUNATIC:
 				return base * 1.5F;
+			case EXTRA:
+				return base * 2F;
+			case LAST_SPELL:
+				return base * 2.5F;
+			case LAST_WORD:
+				return base * 3F;
 			default:
 				return base;
 		}
@@ -195,10 +204,10 @@ public class DanmakuHelper {
 		return target instanceof EntityPlayer ? base * 2F : base;
 	}
 
-	public static float adjustDanmakuDamage(@Nullable EntityLivingBase user, EntityLivingBase target, float base) {
+	public static float adjustDanmakuDamage(@Nullable EntityLivingBase user, EntityLivingBase target, float base, EnumDanmakuLevel level) {
 		float withData = adjustDamageCoreData(user, base);
 		float againstTarget = adjustDamageTarget(withData, target);
-		return adjustDamageToDifficulty(againstTarget, user, target.worldObj);
+		return adjustDamageToDifficulty(againstTarget, user, level);
 	}
 
 	public static final double GRAVITY_DEFAULT = -0.03D;
