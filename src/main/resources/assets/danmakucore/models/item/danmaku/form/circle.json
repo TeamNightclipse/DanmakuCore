@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "danmakucore:items/danmaku/CircleShot",
-    "layer1": "danmakucore:items/danmaku/CircleShot_2"
+    "layer0": "danmakucore:items/danmaku/circle_shot",
+    "layer1": "danmakucore:items/danmaku/circle_shot_2"
   }
 }

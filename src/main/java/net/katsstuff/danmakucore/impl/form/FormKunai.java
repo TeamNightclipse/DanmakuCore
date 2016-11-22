@@ -25,7 +25,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class FormKunai extends FormGeneric {
 
-	private final ResourceLocation texture = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/Kunai.png");
+	private final ResourceLocation texture = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/kunai.png");
 
 	public FormKunai() {
 		super(LibFormName.KUNAI);

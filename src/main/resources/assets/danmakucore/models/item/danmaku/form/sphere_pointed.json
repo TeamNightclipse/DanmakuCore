@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "danmakucore:items/danmaku/sphere_pointed_shot",
+    "layer1": "danmakucore:items/danmaku/sphere_pointed_shot_2"
+  }
+}

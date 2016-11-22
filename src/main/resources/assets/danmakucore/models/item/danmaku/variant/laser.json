@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "danmakucore:items/danmaku/MiddleLaser",
-    "layer1": "danmakucore:items/danmaku/MiddleLaser_2"
+    "layer0": "danmakucore:items/danmaku/middle_laser",
+    "layer1": "danmakucore:items/danmaku/middle_laser_2"
   }
 }

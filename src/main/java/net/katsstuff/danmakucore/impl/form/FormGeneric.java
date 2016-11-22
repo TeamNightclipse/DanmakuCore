@@ -18,7 +18,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class FormGeneric extends Form implements IRenderForm {
 
-	private final ResourceLocation texture = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png");
+	private final ResourceLocation texture = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/white.png");
 
 	@SuppressWarnings("WeakerAccess")
 	public FormGeneric(String name) {

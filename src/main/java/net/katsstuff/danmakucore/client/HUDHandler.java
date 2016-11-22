@@ -27,11 +27,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class HUDHandler {
 
-	private static final ResourceLocation WHITE = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png");
-	private static final ResourceLocation LIFE_FULL = new ResourceLocation(LibMod.MODID, "textures/gui/lifeFull.png");
-	private static final ResourceLocation LIFE_EMPTY = new ResourceLocation(LibMod.MODID, "textures/gui/lifeEmpty.png");
-	private static final ResourceLocation BOMB_FULL = new ResourceLocation(LibMod.MODID, "textures/gui/bombFull.png");
-	private static final ResourceLocation BOMB_EMPTY = new ResourceLocation(LibMod.MODID, "textures/gui/bombEmpty.png");
+	private static final ResourceLocation LIFE_FULL = new ResourceLocation(LibMod.MODID, "textures/gui/hud/life_full.png");
+	private static final ResourceLocation LIFE_EMPTY = new ResourceLocation(LibMod.MODID, "textures/gui/hud/life_empty.png");
+	private static final ResourceLocation BOMB_FULL = new ResourceLocation(LibMod.MODID, "textures/gui/hud/bomb_full.png");
+	private static final ResourceLocation BOMB_EMPTY = new ResourceLocation(LibMod.MODID, "textures/gui/hud/bomb_empty.png");
+	private static final ResourceLocation POWER = new ResourceLocation(LibMod.MODID, "textures/gui/hud/power.png");
+	private static final ResourceLocation POWER_BACKGROUND = new ResourceLocation(LibMod.MODID, "textures/gui/hud/power_background.png");
 
 	@SubscribeEvent
 	public void onDraw(RenderGameOverlayEvent.Post event) {
@@ -59,16 +60,11 @@ public class HUDHandler {
 				int x = baseX - widthFilled - widthNotUsed;
 				int y = baseY - (height / 2);
 
-				mc.getTextureManager().bindTexture(WHITE);
+				mc.getTextureManager().bindTexture(POWER_BACKGROUND);
+				Gui.drawModalRectWithCustomSizedTexture(baseX - widthFull - 2, y - 2, 0F, 0F, widthUsed + 4, height + 4, widthUsed + 4, height + 4);
 
-				GlStateManager.color(1F, 1F, 1F);
-				Gui.drawModalRectWithCustomSizedTexture(baseX - widthFull - 2, y - 2, 0F, 0F, widthUsed + 4, height + 4, 8, 8);
-
-				GlStateManager.color(0F, 0F, 0F);
-				Gui.drawModalRectWithCustomSizedTexture(baseX - widthFull, y, 0F, 0F, widthUsed, height, 8, 8);
-
-				GlStateManager.color(1F, 0F, 0F);
-				Gui.drawModalRectWithCustomSizedTexture(x, y, 0F, 0F, widthFilled, height, 8, 8);
+				mc.getTextureManager().bindTexture(POWER);
+				Gui.drawModalRectWithCustomSizedTexture(x, y, widthFilled * -1, 0F, widthFilled, height, widthUsed, 10);
 
 				int lives = data.getLives();
 				mc.getTextureManager().bindTexture(LIFE_FULL);

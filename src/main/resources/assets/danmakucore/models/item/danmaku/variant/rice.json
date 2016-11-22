@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "danmakucore:items/danmaku/RiceShot",
-    "layer1": "danmakucore:items/danmaku/RiceShot_2"
+    "layer0": "danmakucore:items/danmaku/rice_shot",
+    "layer1": "danmakucore:items/danmaku/rice_shot_2"
   }
 }

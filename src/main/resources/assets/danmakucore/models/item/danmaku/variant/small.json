@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "danmakucore:items/danmaku/SmallShot",
-    "layer1": "danmakucore:items/danmaku/SmallShot_2"
+    "layer0": "danmakucore:items/danmaku/small_shot",
+    "layer1": "danmakucore:items/danmaku/small_shot_2"
   }
 }

@@ -10,6 +10,8 @@ package net.katsstuff.danmakucore.entity.spellcard;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.CaseFormat;
+
 import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.entity.living.boss.EnumTouhouCharacters;
 import net.katsstuff.danmakucore.registry.RegistryValueItemStack;
@@ -89,6 +91,7 @@ public abstract class Spellcard extends RegistryValueItemStack<Spellcard> {
 	@Override
 	public ModelResourceLocation getItemModel() {
 		ResourceLocation name = getRegistryName();
-		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/spellcard/" + name.getResourcePath()), "inventory");
+		String snakeCase = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name.getResourcePath());
+		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/spellcard/" + snakeCase), "inventory");
 	}
 }

@@ -16,7 +16,7 @@ public class FormDummy extends Form {
 
 	@Override
 	public ResourceLocation getTexture(EntityDanmaku danmaku) {
-		return new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/White.png");
+		return new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/white.png");
 	}
 
 	@Override

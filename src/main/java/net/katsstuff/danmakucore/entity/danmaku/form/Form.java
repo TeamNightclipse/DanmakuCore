@@ -10,6 +10,8 @@ package net.katsstuff.danmakucore.entity.danmaku.form;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.CaseFormat;
+
 import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.data.MovementData;
 import net.katsstuff.danmakucore.data.RotationData;
@@ -117,6 +119,7 @@ public abstract class Form extends RegistryValueItemStack<Form> {
 	@Override
 	public ModelResourceLocation getItemModel() {
 		ResourceLocation name = getRegistryName();
-		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/form/" + name.getResourcePath()), "inventory");
+		String snakeCase = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name.getResourcePath());
+		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/form/" + snakeCase), "inventory");
 	}
 }
