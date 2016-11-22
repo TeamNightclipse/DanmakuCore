@@ -94,4 +94,10 @@ public abstract class Spellcard extends RegistryValueItemStack<Spellcard> {
 		String snakeCase = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name.getResourcePath());
 		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/spellcard/" + snakeCase), "inventory");
 	}
+
+	public ResourceLocation getTexture() {
+		ResourceLocation name = getRegistryName();
+		String snakeCase = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name.getResourcePath());
+		return new ResourceLocation(name.getResourceDomain(), "textures/items/spellcard/" + snakeCase + ".png");
+	}
 }

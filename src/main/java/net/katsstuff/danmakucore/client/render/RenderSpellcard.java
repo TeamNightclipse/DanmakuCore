@@ -32,10 +32,10 @@ public class RenderSpellcard extends Render<EntitySpellcard> {
 		GL11.glPushMatrix();
 		Tessellator tes = Tessellator.getInstance();
 		VertexBuffer vb = tes.getBuffer();
-		float upperV = 14F / 128F;
-		float upperU = 0F;
-		float lowerV = 114F / 128F;
-		float lowerU = 1F;
+		float upperV = 0F;
+		float upperU = 1F;
+		float lowerV = 1F;
+		float lowerU = 0F;
 		float size = 1.0F;
 		bindEntityTexture(entity);
 		GL11.glTranslated(x, y, z);
@@ -45,17 +45,17 @@ public class RenderSpellcard extends Render<EntitySpellcard> {
 		GlStateManager.disableLighting();
 
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
-		vb.pos(0.2F, 0.3F, 0D).tex(upperV, upperU).normal(0F, 1F, 0F).endVertex();
-		vb.pos(-0.2F, 0.3F, 0D).tex(lowerV, upperU).normal(0F, 1F, 0F).endVertex();
-		vb.pos(-0.2F, -0.3F, 0D).tex(lowerV, lowerU).normal(0F, 1F, 0F).endVertex();
-		vb.pos(0.2F, -0.3F, 0D).tex(upperV, lowerU).normal(0F, 1F, 0F).endVertex();
+		vb.pos(0.5F, 0.5F, 0D).tex(upperU, upperV).normal(0F, 1F, 0F).endVertex();
+		vb.pos(-0.5F, 0.5F, 0D).tex(lowerU, upperV).normal(0F, 1F, 0F).endVertex();
+		vb.pos(-0.5F, -0.5F, 0D).tex(lowerU, lowerV).normal(0F, 1F, 0F).endVertex();
+		vb.pos(0.5F, -0.5F, 0D).tex(upperU, lowerV).normal(0F, 1F, 0F).endVertex();
 		tes.draw();
 
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
-		vb.pos(-0.2F, 0.3F, 0D).tex(upperV, upperU).normal(0F, -1F, 0F).endVertex();
-		vb.pos(0.2F, 0.3F, 0D).tex(lowerV, upperU).normal(0F, -1F, 0F).endVertex();
-		vb.pos(0.2F, -0.3F, 0D).tex(lowerV, lowerU).normal(0F, -1F, 0F).endVertex();
-		vb.pos(-0.2F, -0.3F, 0D).tex(upperV, lowerU).normal(0F, -1F, 0F).endVertex();
+		vb.pos(-0.5F, 0.5F, 0D).tex(upperU, upperV).normal(0F, -1F, 0F).endVertex();
+		vb.pos(0.5F, 0.5F, 0D).tex(lowerU, upperV).normal(0F, -1F, 0F).endVertex();
+		vb.pos(0.5F, -0.5F, 0D).tex(lowerU, lowerV).normal(0F, -1F, 0F).endVertex();
+		vb.pos(-0.5F, -0.5F, 0D).tex(upperU, lowerV).normal(0F, -1F, 0F).endVertex();
 		tes.draw();
 
 		GlStateManager.enableLighting();
@@ -64,7 +64,6 @@ public class RenderSpellcard extends Render<EntitySpellcard> {
 
 	@Override
 	protected ResourceLocation getEntityTexture(EntitySpellcard entity) {
-		Spellcard type = DanmakuRegistry.SPELLCARD.getObjectById(entity.getSpellcardId());
-		return new ResourceLocation(type.getModId(), "textures/items/spellcard/" + type.getName() + ".png");
+		return DanmakuRegistry.SPELLCARD.getObjectById(entity.getSpellcardId()).getTexture();
 	}
 }
