@@ -96,4 +96,8 @@ idea{
     }
 }
 
+jar {
+    exclude "**/*.psd"
+}
+
 defaultTasks 'build', 'incrementBuildNumber'
