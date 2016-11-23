@@ -17,25 +17,25 @@ import net.katsstuff.danmakucore.capability.IDanmakuCoreData;
 import net.katsstuff.danmakucore.helper.NBTHelper;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class CoreDataPacket {
 
-	public static class CoreDataMessage implements IMessage {
+	public static class Message implements IMessage {
 
 		private final IDanmakuCoreData data;
 		private UUID target;
 
-		public CoreDataMessage(IDanmakuCoreData data, Entity target) {
+		public Message(IDanmakuCoreData data, Entity target) {
 			this.data = data;
 			this.target = target.getUniqueID();
 		}
 
-		public CoreDataMessage() {
+		public Message() {
 			data = new BoundlessDanmakuCoreData();
 		}
 
@@ -61,15 +61,14 @@ public class CoreDataPacket {
 		}
 	}
 
-	public static class CoreDataMessageHandler implements IMessageHandler<CoreDataMessage, IMessage> {
+	public static class Handler implements IMessageHandler<Message, IMessage> {
 
 		@Override
-		public IMessage onMessage(CoreDataMessage message, MessageContext ctx) {
-			Runnable runnable = () -> {
-				WorldClient world = Minecraft.getMinecraft().theWorld;
-				Entity entityTarget = world.getPlayerEntityByUUID(message.target);
+		public IMessage onMessage(Message message, MessageContext ctx) {
+			Minecraft.getMinecraft().addScheduledTask(() -> {
+				Entity entityTarget = Minecraft.getMinecraft().theWorld.getPlayerEntityByUUID(message.target);
 				if(entityTarget == null) {
-					entityTarget = NBTHelper.getEntityByUUID(message.target, world).orElse(null);
+					entityTarget = NBTHelper.getEntityByUUID(message.target, Minecraft.getMinecraft().thePlayer.worldObj).orElse(null);
 				}
 
 				if(entityTarget != null) {
@@ -82,8 +81,7 @@ public class CoreDataPacket {
 						data.setBombs(message.data.getBombs());
 					}
 				}
-			};
-			Minecraft.getMinecraft().addScheduledTask(runnable);
+			});
 
 			return null;
 		}

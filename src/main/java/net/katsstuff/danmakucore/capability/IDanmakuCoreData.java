@@ -66,10 +66,10 @@ public interface IDanmakuCoreData {
 	}
 
 	default void syncTo(EntityPlayerMP playerMP, Entity target) {
-		DanmakuCorePacketHandler.INSTANCE.sendTo(new CoreDataPacket.CoreDataMessage(this, target), playerMP);
+		DanmakuCorePacketHandler.INSTANCE.sendTo(new CoreDataPacket.Message(this, target), playerMP);
 	}
 
 	default void syncToClose(NetworkRegistry.TargetPoint point, Entity target) {
-		DanmakuCorePacketHandler.INSTANCE.sendToAllAround(new CoreDataPacket.CoreDataMessage(this, target), point);
+		DanmakuCorePacketHandler.INSTANCE.sendToAllAround(new CoreDataPacket.Message(this, target), point);
 	}
 }

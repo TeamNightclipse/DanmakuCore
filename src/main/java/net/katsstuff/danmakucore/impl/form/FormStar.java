@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
+import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
 import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -23,74 +24,83 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class FormStar extends FormGeneric {
 
-	private final float[][] points = {
-		{1F, 1F, 1F},
-		{-1F, -1F, 1F},
-		{-1F, 1F, -1F},
-		{1F, -1F, -1}};
-
-	private final int[] tetraIndicies = {0, 1, 2, 3, 0, 1};
-
 	public FormStar() {
 		super(LibFormName.STAR);
 	}
 
+	@SuppressWarnings("Convert2Lambda")
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks, RenderManager rendermanager) {
-		Tessellator tes = Tessellator.getInstance();
-		VertexBuffer buf = tes.getBuffer();
-		ShotData shotData = danmaku.getShotData();
-		float sizeX = shotData.getSizeX();
-		float sizeY = shotData.getSizeY();
-		float sizeZ = shotData.getSizeZ();
-		int color = shotData.getColor();
-		float pitch = danmaku.rotationPitch;
-		float yaw = danmaku.rotationYaw;
-		float roll = danmaku.getRoll();
+	protected IRenderForm createRenderer() {
+		return new IRenderForm() {
 
-		GlStateManager.rotate((danmaku.ticksExisted + partialTicks) * 5F, 1F, 1F, 1F);
+			private final float[][] points = {
+					{1F, 1F, 1F},
+					{-1F, -1F, 1F},
+					{-1F, 1F, -1F},
+					{1F, -1F, -1}};
 
-		GlStateManager.scale(sizeX, sizeY, sizeZ);
-		GlStateManager.rotate(-yaw - 180, 0F, 1F, 0F);
-		GlStateManager.rotate(pitch, 1F, 0F, 0F);
-		GlStateManager.rotate(roll, 0F, 0F, 1F);
+			private final int[] tetraIndicies = {0, 1, 2, 3, 0, 1};
 
-		float red = 1F;
-		float green = 1F;
-		float blue = 1F;
-		float alpha = 1F;
+			@Override
+			@SideOnly(Side.CLIENT)
+			public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks,
+					RenderManager rendermanager) {
+				Tessellator tes = Tessellator.getInstance();
+				VertexBuffer buf = tes.getBuffer();
+				ShotData shotData = danmaku.getShotData();
+				float sizeX = shotData.getSizeX();
+				float sizeY = shotData.getSizeY();
+				float sizeZ = shotData.getSizeZ();
+				int color = shotData.getColor();
+				float pitch = danmaku.rotationPitch;
+				float yaw = danmaku.rotationYaw;
+				float roll = danmaku.getRoll();
 
-		renderTetrahedron(tes, buf, red, green, blue, alpha);
-		GlStateManager.rotate(90F, 1F, 0F, 0F);
-		renderTetrahedron(tes, buf, red, green, blue, alpha);
-		GlStateManager.rotate(-90F, 1F, 0F, 0F);
+				GlStateManager.rotate((danmaku.ticksExisted + partialTicks) * 5F, 1F, 1F, 1F);
 
-		red = (color >> 16 & 255) / 255.0F;
-		green = (color >> 8 & 255) / 255.0F;
-		blue = (color & 255) / 255.0F;
-		alpha = 0.3F;
+				GlStateManager.scale(sizeX, sizeY, sizeZ);
+				GlStateManager.rotate(-yaw - 180, 0F, 1F, 0F);
+				GlStateManager.rotate(pitch, 1F, 0F, 0F);
+				GlStateManager.rotate(roll, 0F, 0F, 1F);
 
-		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-		GlStateManager.depthMask(false);
-		GlStateManager.scale(1.2F, 1.2F, 1.2F);
+				float red = 1F;
+				float green = 1F;
+				float blue = 1F;
+				float alpha = 1F;
 
-		renderTetrahedron(tes, buf, red, green, blue, alpha);
-		GlStateManager.rotate(90F, 1F, 0F, 0F);
-		renderTetrahedron(tes, buf, red, green, blue, alpha);
+				renderTetrahedron(tes, buf, red, green, blue, alpha);
+				GlStateManager.rotate(90F, 1F, 0F, 0F);
+				renderTetrahedron(tes, buf, red, green, blue, alpha);
+				GlStateManager.rotate(-90F, 1F, 0F, 0F);
 
-		GlStateManager.depthMask(true);
-		GlStateManager.disableBlend();
-	}
+				red = (color >> 16 & 255) / 255.0F;
+				green = (color >> 8 & 255) / 255.0F;
+				blue = (color & 255) / 255.0F;
+				alpha = 0.3F;
 
-	@SideOnly(Side.CLIENT)
-	private void renderTetrahedron(Tessellator tes, VertexBuffer buf, float r, float g, float b, float a) {
-		buf.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-		for(int i = 0; i < 6; i++) {
-			buf.pos(points[tetraIndicies[i]][0], points[tetraIndicies[i]][1], points[tetraIndicies[i]][2]).color(r, g, b, a).endVertex();
-		}
+				GlStateManager.enableBlend();
+				GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+				GlStateManager.depthMask(false);
+				GlStateManager.scale(1.2F, 1.2F, 1.2F);
 
-		tes.draw();
+				renderTetrahedron(tes, buf, red, green, blue, alpha);
+				GlStateManager.rotate(90F, 1F, 0F, 0F);
+				renderTetrahedron(tes, buf, red, green, blue, alpha);
+
+				GlStateManager.depthMask(true);
+				GlStateManager.disableBlend();
+			}
+
+			@SideOnly(Side.CLIENT)
+			private void renderTetrahedron(Tessellator tes, VertexBuffer buf, float r, float g, float b, float a) {
+				buf.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+				for(int i = 0; i < 6; i++) {
+					buf.pos(points[tetraIndicies[i]][0], points[tetraIndicies[i]][1], points[tetraIndicies[i]][2]).color(r, g, b, a).endVertex();
+				}
+
+				tes.draw();
+			}
+		};
 	}
 }

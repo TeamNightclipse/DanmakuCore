@@ -10,8 +10,11 @@ package net.katsstuff.danmakucore.impl.form;
 
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
+import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
 import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class FormControl extends FormGeneric {
 
@@ -19,9 +22,19 @@ public class FormControl extends FormGeneric {
 		super(LibFormName.CONTROL);
 	}
 
+	@SuppressWarnings("Convert2Lambda")
 	@Override
-	public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks, RenderManager rendermanager) {
-		//NO-OP
+	@SideOnly(Side.CLIENT)
+	protected IRenderForm createRenderer() {
+		return new IRenderForm() {
+
+			@Override
+			@SideOnly(Side.CLIENT)
+			public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks,
+					RenderManager rendermanager) {
+				//NO-OP
+			}
+		};
 	}
 
 	@Override

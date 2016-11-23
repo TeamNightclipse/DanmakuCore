@@ -16,9 +16,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public abstract class FormGeneric extends Form implements IRenderForm {
+public abstract class FormGeneric extends Form {
 
 	private final ResourceLocation texture = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/white.png");
+
+	@SideOnly(Side.CLIENT)
+	protected IRenderForm renderer;
 
 	@SuppressWarnings("WeakerAccess")
 	public FormGeneric(String name) {
@@ -35,6 +38,11 @@ public abstract class FormGeneric extends Form implements IRenderForm {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IRenderForm getRenderer(EntityDanmaku danmaku) {
-		return this;
+		if(renderer == null) {
+			renderer = createRenderer();
+		}
+		return renderer;
 	}
+
+	protected abstract IRenderForm createRenderer();
 }

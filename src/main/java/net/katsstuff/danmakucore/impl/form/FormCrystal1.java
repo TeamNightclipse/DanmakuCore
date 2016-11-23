@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
+import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
 import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -31,86 +32,95 @@ public class FormCrystal1 extends FormGeneric {
 		super(LibFormName.CRYSTAL1);
 	}
 
+	@SuppressWarnings("Convert2Lambda")
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks, RenderManager rendermanager) {
-		Tessellator tes = Tessellator.getInstance();
-		VertexBuffer vb = tes.getBuffer();
-		float pitch = danmaku.rotationPitch;
-		float yaw = danmaku.rotationYaw;
-		float roll = danmaku.getRoll();
-		ShotData shotData = danmaku.getShotData();
-		float sizeX = shotData.getSizeX();
-		float sizeY = shotData.getSizeY();
-		float sizeZ = shotData.getSizeZ();
-		int color = shotData.getColor();
+	protected IRenderForm createRenderer() {
+		return new IRenderForm() {
 
-		GL11.glRotatef(-yaw - 180F, 0F, 1F, 0F);
-		GL11.glRotatef(pitch - 90F, 1F, 0F, 0F);
-		GL11.glRotatef(roll, 0F, 0F, 1F);
-		GL11.glScalef(sizeX, sizeY, sizeZ);
+			@Override
+			@SideOnly(Side.CLIENT)
+			public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks,
+					RenderManager rendermanager) {
+				Tessellator tes = Tessellator.getInstance();
+				VertexBuffer vb = tes.getBuffer();
+				float pitch = danmaku.rotationPitch;
+				float yaw = danmaku.rotationYaw;
+				float roll = danmaku.getRoll();
+				ShotData shotData = danmaku.getShotData();
+				float sizeX = shotData.getSizeX();
+				float sizeY = shotData.getSizeY();
+				float sizeZ = shotData.getSizeZ();
+				int color = shotData.getColor();
 
-		createShapeOneEnd(tes, vb, 0xFFFFFF, 1F, 0.5F, 1.25F);
-		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-		GlStateManager.depthMask(false);
-		createShapeOneEnd(tes, vb, color, 0.3F, 0.6F, 1.25F * 1.2F);
-		GlStateManager.depthMask(true);
-		GlStateManager.disableBlend();
-	}
+				GL11.glRotatef(-yaw - 180F, 0F, 1F, 0F);
+				GL11.glRotatef(pitch - 90F, 1F, 0F, 0F);
+				GL11.glRotatef(roll, 0F, 0F, 1F);
+				GL11.glScalef(sizeX, sizeY, sizeZ);
 
-	@SideOnly(Side.CLIENT)
-	private void createShapeOneEnd(Tessellator tes, VertexBuffer vb, int color, float alpha, float radius, float pointy) {
-		float r = (color >> 16 & 255) / 255.0F;
-		float g = (color >> 8 & 255) / 255.0F;
-		float b = (color & 255) / 255.0F;
-		float corner = (MathHelper.cos((float)Math.toRadians(45)) * radius);
+				createShapeOneEnd(tes, vb, 0xFFFFFF, 1F, 0.5F, 1.25F);
+				GlStateManager.enableBlend();
+				GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+				GlStateManager.depthMask(false);
+				createShapeOneEnd(tes, vb, color, 0.3F, 0.6F, 1.25F * 1.2F);
+				GlStateManager.depthMask(true);
+				GlStateManager.disableBlend();
+			}
 
-		vb.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
-		vb.pos(0F, -pointy, 0F).color(r, g, b, alpha).endVertex();
-		vb.pos(0F, -radius, radius).color(r, g, b, alpha).endVertex();
-		vb.pos(corner, -radius, corner).color(r, g, b, alpha).endVertex();
-		vb.pos(radius, -radius, 0F).color(r, g, b, alpha).endVertex();
-		vb.pos(corner, -radius, -corner).color(r, g, b, alpha).endVertex();
-		vb.pos(0F, -radius, -radius).color(r, g, b, alpha).endVertex();
-		vb.pos(-corner, -radius, -corner).color(r, g, b, alpha).endVertex();
-		vb.pos(-radius, -radius, 0F).color(r, g, b, alpha).endVertex();
-		vb.pos(-corner, -radius, corner).color(r, g, b, alpha).endVertex();
-		vb.pos(0F, -radius, radius).color(r, g, b, alpha).endVertex();
-		tes.draw();
+			@SideOnly(Side.CLIENT)
+			private void createShapeOneEnd(Tessellator tes, VertexBuffer vb, int color, float alpha, float radius, float pointy) {
+				float r = (color >> 16 & 255) / 255.0F;
+				float g = (color >> 8 & 255) / 255.0F;
+				float b = (color & 255) / 255.0F;
+				float corner = (MathHelper.cos((float)Math.toRadians(45)) * radius);
 
-		vb.begin(GL11.GL_QUAD_STRIP, DefaultVertexFormats.POSITION_COLOR);
-		vb.pos(0F, -radius, radius).color(r, g, b, alpha).endVertex();
-		vb.pos(0F, radius, radius).color(r, g, b, alpha).endVertex();
-		vb.pos(corner, -radius, corner).color(r, g, b, alpha).endVertex();
-		vb.pos(corner, radius, corner).color(r, g, b, alpha).endVertex();
-		vb.pos(radius, -radius, 0F).color(r, g, b, alpha).endVertex();
-		vb.pos(radius, radius, 0F).color(r, g, b, alpha).endVertex();
-		vb.pos(corner, -radius, -corner).color(r, g, b, alpha).endVertex();
-		vb.pos(corner, radius, -corner).color(r, g, b, alpha).endVertex();
-		vb.pos(0F, -radius, -radius).color(r, g, b, alpha).endVertex();
-		vb.pos(0F, radius, -radius).color(r, g, b, alpha).endVertex();
-		vb.pos(-corner, -radius, -corner).color(r, g, b, alpha).endVertex();
-		vb.pos(-corner, radius, -corner).color(r, g, b, alpha).endVertex();
-		vb.pos(-radius, -radius, 0F).color(r, g, b, alpha).endVertex();
-		vb.pos(-radius, radius, 0F).color(r, g, b, alpha).endVertex();
-		vb.pos(-corner, -radius, corner).color(r, g, b, alpha).endVertex();
-		vb.pos(-corner, radius, corner).color(r, g, b, alpha).endVertex();
-		vb.pos(0F, -radius, radius).color(r, g, b, alpha).endVertex();
-		vb.pos(0F, radius, radius).color(r, g, b, alpha).endVertex();
-		tes.draw();
+				vb.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
+				vb.pos(0F, -pointy, 0F).color(r, g, b, alpha).endVertex();
+				vb.pos(0F, -radius, radius).color(r, g, b, alpha).endVertex();
+				vb.pos(corner, -radius, corner).color(r, g, b, alpha).endVertex();
+				vb.pos(radius, -radius, 0F).color(r, g, b, alpha).endVertex();
+				vb.pos(corner, -radius, -corner).color(r, g, b, alpha).endVertex();
+				vb.pos(0F, -radius, -radius).color(r, g, b, alpha).endVertex();
+				vb.pos(-corner, -radius, -corner).color(r, g, b, alpha).endVertex();
+				vb.pos(-radius, -radius, 0F).color(r, g, b, alpha).endVertex();
+				vb.pos(-corner, -radius, corner).color(r, g, b, alpha).endVertex();
+				vb.pos(0F, -radius, radius).color(r, g, b, alpha).endVertex();
+				tes.draw();
 
-		vb.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
-		vb.pos(0F, pointy, 0F).color(r, g, b, alpha).endVertex();
-		vb.pos(0F, radius, radius).color(r, g, b, alpha).endVertex();
-		vb.pos(-corner, radius, corner).color(r, g, b, alpha).endVertex();
-		vb.pos(-radius, radius, 0F).color(r, g, b, alpha).endVertex();
-		vb.pos(-corner, radius, -corner).color(r, g, b, alpha).endVertex();
-		vb.pos(0F, radius, -radius).color(r, g, b, alpha).endVertex();
-		vb.pos(corner, radius, -corner).color(r, g, b, alpha).endVertex();
-		vb.pos(radius, radius, 0F).color(r, g, b, alpha).endVertex();
-		vb.pos(corner, radius, corner).color(r, g, b, alpha).endVertex();
-		vb.pos(0F, radius, radius).color(r, g, b, alpha).endVertex();
-		tes.draw();
+				vb.begin(GL11.GL_QUAD_STRIP, DefaultVertexFormats.POSITION_COLOR);
+				vb.pos(0F, -radius, radius).color(r, g, b, alpha).endVertex();
+				vb.pos(0F, radius, radius).color(r, g, b, alpha).endVertex();
+				vb.pos(corner, -radius, corner).color(r, g, b, alpha).endVertex();
+				vb.pos(corner, radius, corner).color(r, g, b, alpha).endVertex();
+				vb.pos(radius, -radius, 0F).color(r, g, b, alpha).endVertex();
+				vb.pos(radius, radius, 0F).color(r, g, b, alpha).endVertex();
+				vb.pos(corner, -radius, -corner).color(r, g, b, alpha).endVertex();
+				vb.pos(corner, radius, -corner).color(r, g, b, alpha).endVertex();
+				vb.pos(0F, -radius, -radius).color(r, g, b, alpha).endVertex();
+				vb.pos(0F, radius, -radius).color(r, g, b, alpha).endVertex();
+				vb.pos(-corner, -radius, -corner).color(r, g, b, alpha).endVertex();
+				vb.pos(-corner, radius, -corner).color(r, g, b, alpha).endVertex();
+				vb.pos(-radius, -radius, 0F).color(r, g, b, alpha).endVertex();
+				vb.pos(-radius, radius, 0F).color(r, g, b, alpha).endVertex();
+				vb.pos(-corner, -radius, corner).color(r, g, b, alpha).endVertex();
+				vb.pos(-corner, radius, corner).color(r, g, b, alpha).endVertex();
+				vb.pos(0F, -radius, radius).color(r, g, b, alpha).endVertex();
+				vb.pos(0F, radius, radius).color(r, g, b, alpha).endVertex();
+				tes.draw();
+
+				vb.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
+				vb.pos(0F, pointy, 0F).color(r, g, b, alpha).endVertex();
+				vb.pos(0F, radius, radius).color(r, g, b, alpha).endVertex();
+				vb.pos(-corner, radius, corner).color(r, g, b, alpha).endVertex();
+				vb.pos(-radius, radius, 0F).color(r, g, b, alpha).endVertex();
+				vb.pos(-corner, radius, -corner).color(r, g, b, alpha).endVertex();
+				vb.pos(0F, radius, -radius).color(r, g, b, alpha).endVertex();
+				vb.pos(corner, radius, -corner).color(r, g, b, alpha).endVertex();
+				vb.pos(radius, radius, 0F).color(r, g, b, alpha).endVertex();
+				vb.pos(corner, radius, corner).color(r, g, b, alpha).endVertex();
+				vb.pos(0F, radius, radius).color(r, g, b, alpha).endVertex();
+				tes.draw();
+			}
+		};
 	}
 }

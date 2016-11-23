@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
+import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
 import net.katsstuff.danmakucore.lib.LibFormName;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.minecraft.client.renderer.GlStateManager;
@@ -36,78 +37,87 @@ public class FormKunai extends FormGeneric {
 		return texture;
 	}
 
+	@SuppressWarnings("Convert2Lambda")
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks, RenderManager rendermanager) {
-		Tessellator tes = Tessellator.getInstance();
-		VertexBuffer vb = tes.getBuffer();
-		ShotData shotData = danmaku.getShotData();
-		float sizeX = shotData.getSizeX();
-		float sizeY = shotData.getSizeY();
-		float sizeZ = shotData.getSizeZ();
-		int color = shotData.getColor();
-		float pitch = danmaku.rotationPitch;
-		float yaw = danmaku.rotationYaw;
-		float roll = danmaku.getRoll();
+	protected IRenderForm createRenderer() {
+		return new IRenderForm() {
 
-		float red = (color >> 16 & 255) / 255.0F;
-		float green = (color >> 8 & 255) / 255.0F;
-		float blue = (color & 255) / 255.0F;
-		float alpha = 1.0F;
+			@Override
+			@SideOnly(Side.CLIENT)
+			public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks,
+					RenderManager rendermanager) {
+				Tessellator tes = Tessellator.getInstance();
+				VertexBuffer vb = tes.getBuffer();
+				ShotData shotData = danmaku.getShotData();
+				float sizeX = shotData.getSizeX();
+				float sizeY = shotData.getSizeY();
+				float sizeZ = shotData.getSizeZ();
+				int color = shotData.getColor();
+				float pitch = danmaku.rotationPitch;
+				float yaw = danmaku.rotationYaw;
+				float roll = danmaku.getRoll();
 
-		float u1 = 0F;
-		float u2 = 1F;
-		float v1 = 0F;
-		float v2 = 1F;
+				float red = (color >> 16 & 255) / 255.0F;
+				float green = (color >> 8 & 255) / 255.0F;
+				float blue = (color & 255) / 255.0F;
+				float alpha = 1.0F;
 
-		double width = 1.0D;
-		double length = 2.0D;
+				float u1 = 0F;
+				float u2 = 1F;
+				float v1 = 0F;
+				float v2 = 1F;
 
-		GL11.glScalef(sizeX, sizeY, sizeZ);
-		GL11.glRotatef(-yaw - 180, 0F, 1F, 0F); //TODO: Fix this in a better way?
-		GL11.glRotatef(pitch, 1F, 0F, 0F);
-		GL11.glRotatef(roll, 0F, 0F, 1F);
+				double width = 1.0D;
+				double length = 2.0D;
 
-		GlStateManager.disableCull();
-		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-		vb.pos(width, 0.0F, length).tex(u2, v1).endVertex();
-		vb.pos(-width, 0.0F, length).tex(u1, v1).endVertex();
-		vb.pos(-width, 0.0F, -length).tex(u1, v2).endVertex();
-		vb.pos(width, 0.0F, -length).tex(u2, v2).endVertex();
-		tes.draw();
+				GL11.glScalef(sizeX, sizeY, sizeZ);
+				GL11.glRotatef(-yaw - 180, 0F, 1F, 0F); //TODO: Fix this in a better way?
+				GL11.glRotatef(pitch, 1F, 0F, 0F);
+				GL11.glRotatef(roll, 0F, 0F, 1F);
 
-		//What we really want here is to use the luminance as the saturation, and set the luminance to 1 for the texture
-		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_COLOR);
-		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-		vb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
-		vb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();
-		vb.pos(-width, 0D, -length).tex(u1, v2).color(red, green, blue, alpha).endVertex();
-		vb.pos(width, 0D, -length).tex(u2, v2).color(red, green, blue, alpha).endVertex();
-		tes.draw();
+				GlStateManager.disableCull();
+				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+				vb.pos(width, 0.0F, length).tex(u2, v1).endVertex();
+				vb.pos(-width, 0.0F, length).tex(u1, v1).endVertex();
+				vb.pos(-width, 0.0F, -length).tex(u1, v2).endVertex();
+				vb.pos(width, 0.0F, -length).tex(u2, v2).endVertex();
+				tes.draw();
 
-		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-		vb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
-		vb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();
-		vb.pos(-width, 0D, -length).tex(u1, v2).color(red, green, blue, alpha).endVertex();
-		vb.pos(width, 0D, -length).tex(u2, v2).color(red, green, blue, alpha).endVertex();
-		tes.draw();
+				//What we really want here is to use the luminance as the saturation, and set the luminance to 1 for the texture
+				GlStateManager.enableBlend();
+				GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_COLOR);
+				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+				vb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
+				vb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();
+				vb.pos(-width, 0D, -length).tex(u1, v2).color(red, green, blue, alpha).endVertex();
+				vb.pos(width, 0D, -length).tex(u2, v2).color(red, green, blue, alpha).endVertex();
+				tes.draw();
 
-		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-		vb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
-		vb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();
-		vb.pos(-width, 0D, -length).tex(u1, v2).color(red, green, blue, alpha).endVertex();
-		vb.pos(width, 0D, -length).tex(u2, v2).color(red, green, blue, alpha).endVertex();
-		tes.draw();
+				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+				vb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
+				vb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();
+				vb.pos(-width, 0D, -length).tex(u1, v2).color(red, green, blue, alpha).endVertex();
+				vb.pos(width, 0D, -length).tex(u2, v2).color(red, green, blue, alpha).endVertex();
+				tes.draw();
 
-		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-		vb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
-		vb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();
-		vb.pos(-width, 0D, -length).tex(u1, v2).color(red, green, blue, alpha).endVertex();
-		vb.pos(width, 0D, -length).tex(u2, v2).color(red, green, blue, alpha).endVertex();
-		tes.draw();
+				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+				vb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
+				vb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();
+				vb.pos(-width, 0D, -length).tex(u1, v2).color(red, green, blue, alpha).endVertex();
+				vb.pos(width, 0D, -length).tex(u2, v2).color(red, green, blue, alpha).endVertex();
+				tes.draw();
 
-		GlStateManager.disableBlend();
-		GlStateManager.enableCull();
+				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+				vb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
+				vb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();
+				vb.pos(-width, 0D, -length).tex(u1, v2).color(red, green, blue, alpha).endVertex();
+				vb.pos(width, 0D, -length).tex(u2, v2).color(red, green, blue, alpha).endVertex();
+				tes.draw();
+
+				GlStateManager.disableBlend();
+				GlStateManager.enableCull();
+			}
+		};
 	}
 }

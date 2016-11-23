@@ -19,6 +19,6 @@ public class DanmakuCorePacketHandler {
 	private static int id = 0;
 
 	public static void init() {
-		INSTANCE.registerMessage(CoreDataPacket.CoreDataMessageHandler.class, CoreDataPacket.CoreDataMessage.class, id++, Side.CLIENT);
+		INSTANCE.registerMessage(CoreDataPacket.Handler.class, CoreDataPacket.Message.class, id++, Side.CLIENT);
 	}
 }
