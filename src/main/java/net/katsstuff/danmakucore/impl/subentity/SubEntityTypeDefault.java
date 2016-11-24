@@ -71,7 +71,9 @@ public class SubEntityTypeDefault extends SubEntityType {
 				hitCheck(entity -> entity != danmaku.getUser().orElse(null) && entity != danmaku.getSource().orElse(null));
 			}
 
-			ProjectileHelper.rotateTowardsMovement(danmaku, 1F);
+			if(danmaku.motionX != 0D && danmaku.motionY != 0D && danmaku.motionZ != 0D) {
+				ProjectileHelper.rotateTowardsMovement(danmaku, 1F);
+			}
 
 			if(danmaku.isInWater()) {
 				waterMovement();

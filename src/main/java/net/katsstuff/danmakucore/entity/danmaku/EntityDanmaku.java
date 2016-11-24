@@ -194,7 +194,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 		int delay = shot.delay();
 		if(delay > 0) {
-			ticksExisted = 0;
+			ticksExisted--;
 			shot = shot.setDelay(delay - 1);
 			motionX = 0;
 			motionY = 0;
