@@ -12,11 +12,10 @@ import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityTypeDummy;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.katsstuff.danmakucore.lib.LibSubEntityName;
-import net.katsstuff.danmakucore.misc.IInitNeeded;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
 @ObjectHolder(LibMod.MODID)
-public final class LibSubEntities implements IInitNeeded {
+public final class LibSubEntities {
 
 	@ObjectHolder(LibSubEntityName.DEFAULT)
 	public static final SubEntityType DEFAULT_TYPE = new SubEntityTypeDummy();

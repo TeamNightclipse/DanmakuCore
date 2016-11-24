@@ -12,11 +12,10 @@ import net.katsstuff.danmakucore.entity.danmaku.form.Form;
 import net.katsstuff.danmakucore.entity.danmaku.form.FormDummy;
 import net.katsstuff.danmakucore.lib.LibFormName;
 import net.katsstuff.danmakucore.lib.LibMod;
-import net.katsstuff.danmakucore.misc.IInitNeeded;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
 @ObjectHolder(LibMod.MODID)
-public final class LibForms implements IInitNeeded {
+public final class LibForms {
 
 	@ObjectHolder(LibFormName.DEFAULT)
 	public static final Form SPHERE = new FormDummy(); //Default
