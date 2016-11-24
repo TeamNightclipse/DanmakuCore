@@ -31,6 +31,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 public class TouhouHelper {
 
+	@SuppressWarnings("SameParameterValue")
 	public static boolean declareSpellcardPlayer(EntityPlayer player, Spellcard spellcard, boolean firstAttack, boolean simulate) {
 		World world = player.worldObj;
 

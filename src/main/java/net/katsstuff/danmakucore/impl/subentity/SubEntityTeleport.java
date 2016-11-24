@@ -31,7 +31,7 @@ public class SubEntityTeleport extends SubEntityType {
 	private static class Teleport extends SubEntityTypeDefault.SubEntityDefault {
 
 
-		public Teleport(World world, EntityDanmaku danmaku) {
+		private Teleport(World world, EntityDanmaku danmaku) {
 			super(world, danmaku);
 		}
 

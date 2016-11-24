@@ -36,7 +36,7 @@ public class SubEntityExplosion extends SubEntityType {
 
 		private final float strength;
 
-		public Explosion(World world, EntityDanmaku danmaku, float strength) {
+		private Explosion(World world, EntityDanmaku danmaku, float strength) {
 			super(world, danmaku);
 			this.strength = strength;
 		}
@@ -46,6 +46,7 @@ public class SubEntityExplosion extends SubEntityType {
 			super.impact(rayTrace);
 			Entity cause;
 			Optional<EntityLivingBase> optUser = danmaku.getUser();
+			//noinspection OptionalIsPresent Doesn't actually work as Optional is invariant
 			if(optUser.isPresent()) cause = optUser.get();
 			else cause = danmaku.getSource().orElse(null);
 

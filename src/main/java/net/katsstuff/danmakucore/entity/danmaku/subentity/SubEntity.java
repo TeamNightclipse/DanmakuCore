@@ -18,6 +18,7 @@ import net.minecraft.world.World;
  * Where you define special behavior for danmaku. The most used methods ones are provided already,
  * but it's entirely possible to create new ones, and then call those methods from elsewhere.
  */
+@SuppressWarnings("unused")
 public abstract class SubEntity {
 
 	protected final World world;

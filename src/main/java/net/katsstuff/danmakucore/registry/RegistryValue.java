@@ -23,6 +23,7 @@ public abstract class RegistryValue<T extends IForgeRegistryEntry<T>> extends IF
 	/**
 	 * Get the mod id for this value.
 	 */
+	@SuppressWarnings("WeakerAccess")
 	public String getModId() {
 		return getFullName().getResourceDomain();
 	}

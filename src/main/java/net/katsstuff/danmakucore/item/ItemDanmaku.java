@@ -239,6 +239,7 @@ public class ItemDanmaku extends ItemBase {
 		ItemNBTHelper.setDouble(stack, NBT_GRAVITYZ, gravity.z());
 	}
 
+	@SuppressWarnings("WeakerAccess")
 	public static int getPattern(ItemStack stack) {
 		return ItemNBTHelper.getInt(stack, NBT_PATTERN, 0);
 	}
@@ -247,6 +248,7 @@ public class ItemDanmaku extends ItemBase {
 		ItemNBTHelper.setInt(stack, NBT_PATTERN, pattern);
 	}
 
+	@SuppressWarnings("WeakerAccess")
 	public static int getAmount(ItemStack stack) {
 		return ItemNBTHelper.getInt(stack, NBT_AMOUNT, 1);
 	}
@@ -255,6 +257,7 @@ public class ItemDanmaku extends ItemBase {
 		ItemNBTHelper.setInt(stack, NBT_AMOUNT, amount);
 	}
 
+	@SuppressWarnings("WeakerAccess")
 	public static double getSpeed(ItemStack stack) {
 		return ItemNBTHelper.getDouble(stack, NBT_SPEED, 0.4D);
 	}
@@ -271,10 +274,12 @@ public class ItemDanmaku extends ItemBase {
 		ItemNBTHelper.setBoolean(stack, NBT_CUSTOM, custom);
 	}
 
+	@SuppressWarnings("WeakerAccess")
 	public static boolean getInfinity(ItemStack stack) {
 		return ItemNBTHelper.getBoolean(stack, ItemDanmaku.NBT_INFINITY, false);
 	}
 
+	@SuppressWarnings({"WeakerAccess", "SameParameterValue"})
 	public static void setInfinity(ItemStack stack, boolean infinity) {
 		ItemNBTHelper.setBoolean(stack, NBT_INFINITY, infinity);
 	}

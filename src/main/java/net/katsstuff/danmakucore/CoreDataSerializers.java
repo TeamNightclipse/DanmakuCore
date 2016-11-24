@@ -36,6 +36,7 @@ public class CoreDataSerializers {
 		}
 	};
 
+	@SuppressWarnings("WeakerAccess")
 	public static final DataSerializer<Vector3> VECTOR_3 = new DataSerializer<Vector3>() {
 
 		@Override

@@ -93,6 +93,7 @@ public class SubEntityTypeDefault extends SubEntityType {
 			Entity hitEntity = raytrace.entityHit;
 			Entity indirect;
 			Optional<EntityLivingBase> optUser = danmaku.getUser();
+			//noinspection OptionalIsPresent Doesn't work as Optional is invariant
 			if(optUser.isPresent()) indirect = optUser.get();
 			else indirect = danmaku.getSource().orElse(null);
 

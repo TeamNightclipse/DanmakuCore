@@ -72,6 +72,7 @@ public class DanmakuHelper {
 	/**
 	 * Create a chain explosion, damaging any {@link IAllyDanmaku} in the vicinity.
 	 */
+	@SuppressWarnings("SameParameterValue")
 	public static void chainExplosion(Entity deadEntity, double range, float maxDamage) {
 		List<EntityLivingBase> list = deadEntity.worldObj.getEntitiesWithinAABB(EntityLivingBase.class,
 				deadEntity.getEntityBoundingBox().expandXyz(range), e -> e != deadEntity && e instanceof IAllyDanmaku);
@@ -107,6 +108,7 @@ public class DanmakuHelper {
 	 * @param dropBonus Should the danmaku drop bonus when removed
 	 * @return The amount of danmaku removed
 	 */
+	@SuppressWarnings("SameParameterValue")
 	public static int danmakuRemove(Entity centerEntity, double range, DanmakuRemoveMode mode, boolean dropBonus) {
 		int count = 0;
 		List<EntityDanmaku> list = centerEntity.worldObj.getEntitiesWithinAABB(EntityDanmaku.class,

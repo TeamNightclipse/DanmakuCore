@@ -126,6 +126,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		setSize(shot.sizeX(), shot.sizeY(), shot.sizeZ());
 	}
 
+	@SuppressWarnings("unused")
 	public EntityDanmaku copy() {
 		return new EntityDanmaku(this);
 	}
@@ -266,6 +267,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		}
 	}
 
+	@SuppressWarnings("WeakerAccess")
 	public void resetMotion() {
 		if(!worldObj.isRemote) {
 			double speedOriginal = getMovementData().getSpeedOriginal();
@@ -335,6 +337,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		return movement;
 	}
 
+	@SuppressWarnings("unused")
 	public void setMovementData(MovementData movement) {
 		MovementData old = this.movement;
 		this.movement = subEntity.onMovementDataChange(old, getShotData().form().onMovementDataChange(old, movement), movement);
@@ -344,6 +347,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		return rotation;
 	}
 
+	@SuppressWarnings("unused")
 	public void setRotationData(RotationData rotation) {
 		RotationData old = this.rotation;
 		this.rotation = subEntity.onRotationDataChange(old, getShotData().form().onRotationDataChange(old, rotation), rotation);
@@ -452,6 +456,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	/**
 	 * Sets the subEntity of this Danmaku to the default.
 	 */
+	@SuppressWarnings("unused")
 	public void subEntityDefault() {
 		setSubEntity(LibSubEntities.DEFAULT_TYPE);
 	}
@@ -459,6 +464,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	/**
 	 * Tests if this shot will be removed because of the end time.
 	 */
+	@SuppressWarnings("unused")
 	public boolean isShotEndTime() {
 		return ticksExisted >= getShotData().end();
 	}
@@ -498,6 +504,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		return 0xf000f0;
 	}
 
+	@SuppressWarnings("unused")
 	public SubEntity getSubEntity() {
 		return subEntity;
 	}

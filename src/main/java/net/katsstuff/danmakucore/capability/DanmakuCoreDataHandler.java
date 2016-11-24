@@ -64,7 +64,7 @@ public class DanmakuCoreDataHandler {
 	public static class DanmakuCoreDataProvider implements ICapabilitySerializable<NBTTagCompound> {
 
 		@CapabilityInject(IDanmakuCoreData.class)
-		public static Capability<IDanmakuCoreData> CORE_DATA;
+		private static Capability<IDanmakuCoreData> CORE_DATA = null;
 
 
 		private final IDanmakuCoreData data = new BoundedDanmakuCoreData();

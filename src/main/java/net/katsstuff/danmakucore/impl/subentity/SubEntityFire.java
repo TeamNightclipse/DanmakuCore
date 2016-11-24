@@ -32,7 +32,7 @@ public class SubEntityFire extends SubEntityType {
 
 		private final float multiplier;
 
-		public Fire(World world, EntityDanmaku danmaku, float multiplier) {
+		private Fire(World world, EntityDanmaku danmaku, float multiplier) {
 			super(world, danmaku);
 			this.multiplier = multiplier;
 		}
