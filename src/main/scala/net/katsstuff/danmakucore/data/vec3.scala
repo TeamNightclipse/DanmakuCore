@@ -456,6 +456,9 @@ final case class Vector3(@BeanProperty x: Double, @BeanProperty y: Double, @Bean
 		this(living.posX, living.posY + living.getEyeHeight, living.posZ)
 	}
 
+	/**
+		* In most cases use [[Vector3.WrappedVec3d]] instead. Only use this if you actually need a [[Vector3]]
+		*/
 	def this(vec: Vec3d) {
 		this(vec.xCoord, vec.yCoord, vec.zCoord)
 	}
@@ -613,16 +616,46 @@ object Vector3 {
 	}
 
 	//Should I keep this as a AnyVal? Almost all uses requires instantiation
-	implicit class WrappedVec3d(val vec3d: Vec3d) extends AnyVal with AbstractVector3 {
+	implicit class WrappedVec3d(override val toVec3d: Vec3d) extends AnyVal with AbstractVector3 {
 
 		override type Self = WrappedVec3d
-		override def x: Double = vec3d.xCoord
-		override def y: Double = vec3d.yCoord
-		override def z: Double = vec3d.zCoord
+		override def x: Double = toVec3d.xCoord
+		override def y: Double = toVec3d.yCoord
+		override def z: Double = toVec3d.zCoord
 
 		override def create(x: Double, y: Double, z: Double): WrappedVec3d = new Vec3d(x, y, z)
 		override def asMutable: MutableVector3 = MutableVector3(x, y, z)
 		override def asImmutable: Vector3 = Vector3(x, y, z)
+
+		//These methods beyond this only call super, but don't have dependent type so they are java friendly
+
+		override def add(other: AbstractVector3): WrappedVec3d = super.add(other)
+		override def add(other: Double): WrappedVec3d = super.add(other)
+		override def add(x: Double, y: Double, z: Double): WrappedVec3d = super.add(x, y, z)
+
+		override def subtract(other: AbstractVector3): WrappedVec3d = super.subtract(other)
+		override def subtract(other: Double): WrappedVec3d = super.subtract(other)
+		override def subtract(x: Double, y: Double, z: Double): WrappedVec3d = super.subtract(x, y, z)
+
+		override def multiply(other: AbstractVector3): WrappedVec3d = super.multiply(other)
+		override def multiply(other: Double): WrappedVec3d = super.multiply(other)
+		override def multiply(x: Double, y: Double, z: Double): WrappedVec3d = super.multiply(x, y, z)
+
+		override def divide(other: AbstractVector3): WrappedVec3d = super.divide(other)
+		override def divide(other: Double): WrappedVec3d = super.divide(other)
+		override def divide(x: Double, y: Double, z: Double): WrappedVec3d = super.divide(x, y, z)
+
+		override def negate: WrappedVec3d = unary_-
+		override def normalize: WrappedVec3d = super.normalize
+
+		override def cross(other: AbstractVector3): WrappedVec3d = super.cross(other)
+		override def cross(x: Double, y: Double, z: Double): WrappedVec3d = super.cross(x, y, z)
+
+		override def offset(angle: AbstractVector3, distance: Double): WrappedVec3d = super.offset(angle, distance)
+
+		override def rotate(quat: Quat): WrappedVec3d = super.rotate(quat)
+		override def rotate(angle: Double, point: AbstractVector3): WrappedVec3d = super.rotate(angle, point)
+		override def rotateRad(angle: Double, point: AbstractVector3): WrappedVec3d = super.rotateRad(angle, point)
 	}
 
 	import scala.language.implicitConversions
@@ -631,18 +664,18 @@ object Vector3 {
 
 	//We only use java classes for return and entry to make it easier to call from java
 	//From Psi
-	def getEntityLookedAt(sourceEntity: Entity, filter: Predicate[Entity]): Optional[Entity] = {
-		val distanceReach = 32D
+	def getEntityLookedAt(sourceEntity: Entity, filter: Predicate[Entity] = _ => true, distanceReach: Double = 32D): Optional[Entity] = {
 		val posSource = sourceEntity match {
 			case living: EntityLivingBase => new Vector3(living)
 			case _ => new Vector3(sourceEntity)
 		}
+		val posSourceVec3d = posSource.toVec3d
 
 		val angle = sourceEntity.getLookVec
-		val posReach = posSource.offset(angle, distanceReach)
-		val rayTrace = sourceEntity.worldObj.rayTraceBlocks(posSource, posReach, false, false, true)
+		val posReach = posSource.offset(angle, distanceReach).toVec3d
+		val rayTrace = sourceEntity.worldObj.rayTraceBlocks(posSourceVec3d, posReach, false, false, true)
 
-		val distance = if(rayTrace != null) rayTrace.hitVec.distanceTo(posSource) else distanceReach
+		val distance = if(rayTrace != null) rayTrace.hitVec.distanceTo(posSourceVec3d) else distanceReach
 
 		val foundEntities: Seq[Entity] = sourceEntity.worldObj.getEntitiesInAABBexcluding(sourceEntity, sourceEntity.getEntityBoundingBox.addCoord(
 			angle.x * distanceReach, angle.y * distanceReach, angle.z * distanceReach).expandXyz(1F), (entity => filter.test(entity)): GPredicate[Entity])
@@ -651,13 +684,13 @@ object Vector3 {
 		val (foundEntity, distanceTo) = foundEntities.foldRight((None: Option[Entity], 0D)) {
 			case (potentialEntity, prev@(_, minDistance)) if potentialEntity.canBeCollidedWith && !potentialEntity.noClip =>
 				val hitbox = potentialEntity.getEntityBoundingBox.expandXyz(potentialEntity.getCollisionBorderSize)
-				val interceptPosition = hitbox.calculateIntercept(posSource, posReach)
+				val interceptPosition = hitbox.calculateIntercept(posSourceVec3d, posReach)
 
-				if(hitbox.isVecInside(posSource)) {
+				if(hitbox.isVecInside(posSourceVec3d)) {
 					if(minDistance >= 0.0D) (Some(potentialEntity), 0D) else prev
 				}
 				else if(interceptPosition != null) {
-					val distanceToEntity = posSource.distance(interceptPosition.hitVec)
+					val distanceToEntity = posSourceVec3d.distanceTo(interceptPosition.hitVec)
 					if(distanceToEntity < minDistance || minDistance == 0.0D) (Some(potentialEntity), distanceToEntity) else prev
 				}
 				else prev
