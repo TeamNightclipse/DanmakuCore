@@ -8,7 +8,6 @@
  */
 package net.katsstuff.danmakucore.lib.data;
 
-import net.katsstuff.danmakucore.item.ItemDanmaku;
 import net.katsstuff.danmakucore.lib.LibItemName;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.minecraft.item.Item;
@@ -18,7 +17,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 public class LibItems {
 
 	@ObjectHolder(LibItemName.DANMAKU)
-	public static final ItemDanmaku DANMAKU = new ItemDanmaku();
+	public static final Item DANMAKU = new Item();
 	@ObjectHolder(LibItemName.SPELLCARD)
 	public static final Item SPELLCARD = new Item();
 }

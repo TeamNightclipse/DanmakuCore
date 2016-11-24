@@ -19,7 +19,7 @@ import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
-import net.katsstuff.danmakucore.impl.DanmakuVariant.DanmakuVariantCoreGeneric;
+import net.katsstuff.danmakucore.impl.DanmakuVariant.DanmakuVariantGeneric;
 import net.katsstuff.danmakucore.impl.form.FormControl;
 import net.katsstuff.danmakucore.impl.form.FormCrystal1;
 import net.katsstuff.danmakucore.impl.form.FormCrystal2;
@@ -166,23 +166,23 @@ public class CommonProxy {
 	@SubscribeEvent
 	public static void registerVariants(RegistryEvent.Register<DanmakuVariant> event) {
 		event.getRegistry().registerAll(
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.DEFAULT, () -> LibShotData.SHOT_MEDIUM, 0.3D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.CIRCLE, () -> LibShotData.SHOT_CIRCLE, 0.3D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.CRYSTAL1, () -> LibShotData.SHOT_CRYSTAL1, 0.4D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.CRYSTAL2, () -> LibShotData.SHOT_CRYSTAL2, 0.4D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.OVAL, () -> LibShotData.SHOT_OVAL, 0.2D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.SPHERE_DARK, () -> LibShotData.SHOT_SPHERE_DARK, 0.3D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.PELLET, () -> LibShotData.SHOT_PELLET, 0.4D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.STAR_SMALL, () -> LibShotData.SHOT_SMALLSTAR, 0.3D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.STAR, () -> LibShotData.SHOT_STAR, 0.2D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.TINY, () -> LibShotData.SHOT_TINY, 0.4D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.SMALL, () -> LibShotData.SHOT_SMALL, 0.4D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.KUNAI, () -> LibShotData.SHOT_KUNAI, 0.4D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.SCALE, () -> LibShotData.SHOT_SCALE, 0.4D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.RICE, () -> LibShotData.SHOT_RICE, 0.4D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.LASER, () -> LibShotData.SHOT_LASER, 0.35D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.LASER_SHORT, () -> LibShotData.SHOT_LASER_SHORT, 0.4D),
-				new DanmakuVariantCoreGeneric(LibDanmakuVariantName.LASER_LONG, () -> LibShotData.SHOT_LASER_LONG, 0.3D)
+				new DanmakuVariantGeneric(LibDanmakuVariantName.DEFAULT, () -> LibShotData.SHOT_MEDIUM, 0.3D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.CIRCLE, () -> LibShotData.SHOT_CIRCLE, 0.3D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.CRYSTAL1, () -> LibShotData.SHOT_CRYSTAL1, 0.4D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.CRYSTAL2, () -> LibShotData.SHOT_CRYSTAL2, 0.4D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.OVAL, () -> LibShotData.SHOT_OVAL, 0.2D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.SPHERE_DARK, () -> LibShotData.SHOT_SPHERE_DARK, 0.3D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.PELLET, () -> LibShotData.SHOT_PELLET, 0.4D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.STAR_SMALL, () -> LibShotData.SHOT_SMALLSTAR, 0.3D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.STAR, () -> LibShotData.SHOT_STAR, 0.2D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.TINY, () -> LibShotData.SHOT_TINY, 0.4D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.SMALL, () -> LibShotData.SHOT_SMALL, 0.4D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.KUNAI, () -> LibShotData.SHOT_KUNAI, 0.4D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.SCALE, () -> LibShotData.SHOT_SCALE, 0.4D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.RICE, () -> LibShotData.SHOT_RICE, 0.4D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.LASER, () -> LibShotData.SHOT_LASER, 0.35D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.LASER_SHORT, () -> LibShotData.SHOT_LASER_SHORT, 0.4D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.LASER_LONG, () -> LibShotData.SHOT_LASER_LONG, 0.3D)
 		);
 	}
 
@@ -195,6 +195,7 @@ public class CommonProxy {
 		createRegistry(LibRegistryName.PHASES, PhaseType.class, resource(LibPhaseName.FALLBACK));
 	}
 
+	@SuppressWarnings("deprecation") //We need the default value
 	private static <I extends IForgeRegistryEntry<I>> FMLControlledNamespacedRegistry<I> createRegistry(ResourceLocation name, Class<I> clazz,
 			@Nullable ResourceLocation defaultValue) {
 		return PersistentRegistryManager.createRegistry(name, clazz, defaultValue, 0, Short.MAX_VALUE, false, null, null, null);

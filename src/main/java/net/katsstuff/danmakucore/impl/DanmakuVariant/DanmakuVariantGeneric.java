@@ -16,7 +16,7 @@ import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 
-public class DanmakuVariantCoreGeneric extends DanmakuVariant {
+public class DanmakuVariantGeneric extends DanmakuVariant {
 
 	private ShotData shotData = null;
 	private final MovementData movement;
@@ -25,19 +25,25 @@ public class DanmakuVariantCoreGeneric extends DanmakuVariant {
 	private final Supplier<ShotData> shotDataSupplier;
 
 	@SuppressWarnings("WeakerAccess")
-	public DanmakuVariantCoreGeneric(String name, Supplier<ShotData> shotData, MovementData movement) {
+	public DanmakuVariantGeneric(String name, Supplier<ShotData> shotData, MovementData movement) {
 		super(name);
 		shotDataSupplier = shotData;
 		this.movement = movement;
 	}
 
-	public DanmakuVariantCoreGeneric(String name, Supplier<ShotData> shotData, double speed) {
+	public DanmakuVariantGeneric(String name, Supplier<ShotData> shotData, double speed) {
 		this(name, shotData, new MovementData(speed, speed, 0.0D, Vector3.GravityZero()));
 	}
 
-	public DanmakuVariantCoreGeneric(MovementData movement, Supplier<ShotData> shotDataSupplier) {
+	@SuppressWarnings("WeakerAccess")
+	public DanmakuVariantGeneric(MovementData movement, Supplier<ShotData> shotDataSupplier) {
 		this.movement = movement;
 		this.shotDataSupplier = shotDataSupplier;
+	}
+
+	@SuppressWarnings("unused")
+	public DanmakuVariantGeneric(Supplier<ShotData> shotData, double speed) {
+		this(new MovementData(speed, speed, 0.0D, Vector3.GravityZero()), shotData);
 	}
 
 	@Override

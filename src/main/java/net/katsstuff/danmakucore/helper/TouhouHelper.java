@@ -42,7 +42,7 @@ public class TouhouHelper {
 
 		//Get the target
 		Optional<Entity> optTarget = Vector3.getEntityLookedAt(player,
-				targetEntity -> targetEntity instanceof EntityLivingBase && !(targetEntity instanceof EntityAgeable));
+				targetEntity -> targetEntity instanceof EntityLivingBase && !(targetEntity instanceof EntityAgeable), 32D);
 
 		if(!optTarget.isPresent()) return false;
 		EntityLivingBase target = (EntityLivingBase)optTarget.get();
