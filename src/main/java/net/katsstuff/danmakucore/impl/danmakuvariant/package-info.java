@@ -7,7 +7,7 @@
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
 @ParametersAreNonnullByDefault @MethodsReturnNonnullByDefault
-package net.katsstuff.danmakucore.impl.DanmakuVariant;
+package net.katsstuff.danmakucore.impl.danmakuvariant;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 

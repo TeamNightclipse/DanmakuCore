@@ -20,7 +20,7 @@ import net.katsstuff.danmakucore.entity.EntityFallingData;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
-import net.katsstuff.danmakucore.impl.DanmakuVariant.DanmakuVariantGeneric;
+import net.katsstuff.danmakucore.impl.danmakuvariant.DanmakuVariantGeneric;
 import net.katsstuff.danmakucore.impl.form.FormControl;
 import net.katsstuff.danmakucore.impl.form.FormCrystal1;
 import net.katsstuff.danmakucore.impl.form.FormCrystal2;
