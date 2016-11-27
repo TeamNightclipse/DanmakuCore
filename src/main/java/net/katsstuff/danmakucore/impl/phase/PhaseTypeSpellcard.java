@@ -57,7 +57,7 @@ public class PhaseTypeSpellcard extends PhaseType {
 		@Override
 		public void serverUpdate() {
 			super.serverUpdate();
-			if(counter == 0) {
+			if(isCounterStart()) {
 				EntityMob entity = getEntity();
 				TouhouHelper.declareSpellcard(entity, entity.getAttackTarget(), spellcard, firstAttack);
 				firstAttack = false;

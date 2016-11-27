@@ -40,7 +40,7 @@ public class PhaseTypeFallback extends PhaseType {
 		@Override
 		public void serverUpdate() {
 			super.serverUpdate();
-			if(counter == 0) {
+			if(isCounterStart()) {
 				EntityDanmakuMob user = getEntity();
 				LogHelper.warn("This is the fallback phase being used for" + user + ". If you are seeing this something broke");
 				Vector3 pos = user.pos();

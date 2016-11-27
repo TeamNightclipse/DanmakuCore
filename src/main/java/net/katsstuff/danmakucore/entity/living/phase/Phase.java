@@ -46,6 +46,10 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 		if(counter > interval) counter = 0;
 	}
 
+	protected boolean isCounterStart() {
+		return counter == 0;
+	}
+
 	protected EntityDanmakuMob getEntity() {
 		return manager.entity;
 	}
