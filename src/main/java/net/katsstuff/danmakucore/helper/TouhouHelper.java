@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 import net.katsstuff.danmakucore.capability.CapabilityDanmakuCoreData;
 import net.katsstuff.danmakucore.capability.IDanmakuCoreData;
 import net.katsstuff.danmakucore.data.Vector3;
+import net.katsstuff.danmakucore.entity.EntityFallingData;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.minecraft.entity.Entity;
@@ -114,5 +115,25 @@ public class TouhouHelper {
 				data.syncTo((EntityPlayerMP)player, player);
 			}
 		});
+	}
+
+	public static EntityFallingData createScore(World world, @Nullable Entity target, Vector3 pos, Vector3 angle) {
+		return new EntityFallingData(world, EntityFallingData.DataType.SCORE, pos, angle, target, 50);
+	}
+
+	public static EntityFallingData createPower(World world, Vector3 pos, Vector3 angle) {
+		return new EntityFallingData(world, EntityFallingData.DataType.POWER, pos, angle, null, 0.05F);
+	}
+
+	public static EntityFallingData createBigPower(World world, Vector3 pos, Vector3 angle) {
+		return new EntityFallingData(world, EntityFallingData.DataType.BIG_POWER, pos, angle, null, 1F);
+	}
+
+	public static EntityFallingData createLife(World world, Vector3 pos, Vector3 angle) {
+		return new EntityFallingData(world, EntityFallingData.DataType.LIFE, pos, angle, null, 1);
+	}
+
+	public static EntityFallingData createBomb(World world, Vector3 pos, Vector3 angle) {
+		return new EntityFallingData(world, EntityFallingData.DataType.BOMB, pos, angle, null, 1);
 	}
 }

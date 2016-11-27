@@ -6,11 +6,9 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danmakucore.lib;
+@ParametersAreNonnullByDefault @MethodsReturnNonnullByDefault
+package net.katsstuff.danmakucore.entity;
 
-public class LibEntityName {
+import javax.annotation.ParametersAreNonnullByDefault;
 
-	public static final String DANMAKU = "danmaku";
-	public static final String SPELLCARD = "spellcard";
-	public static final String FALLING_DATA = "fallingData";
-}
+import mcp.MethodsReturnNonnullByDefault;

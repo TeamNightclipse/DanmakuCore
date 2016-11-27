@@ -56,4 +56,28 @@ public class CoreDataSerializers {
 			return new DataParameter<>(id, this);
 		}
 	};
+
+	public static class EnumSerializer<T extends Enum<T>> implements DataSerializer<T> {
+
+		private final Class<T> enumClass;
+
+		public EnumSerializer(Class<T> enumClass) {
+			this.enumClass = enumClass;
+		}
+
+		@Override
+		public void write(PacketBuffer buf, T value) {
+			buf.writeEnumValue(value);
+		}
+
+		@Override
+		public T read(PacketBuffer buf) throws IOException {
+			return buf.readEnumValue(enumClass);
+		}
+
+		@Override
+		public DataParameter<T> createKey(int id) {
+			return new DataParameter<>(id, this);
+		}
+	}
 }

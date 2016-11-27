@@ -11,8 +11,10 @@ package net.katsstuff.danmakucore.client;
 import net.katsstuff.danmakucore.CommonProxy;
 import net.katsstuff.danmakucore.client.helper.RenderHelper;
 import net.katsstuff.danmakucore.client.render.RenderDanmaku;
+import net.katsstuff.danmakucore.client.render.RenderFallingData;
 import net.katsstuff.danmakucore.client.render.RenderSpellcard;
 import net.katsstuff.danmakucore.data.ShotData;
+import net.katsstuff.danmakucore.entity.EntityFallingData;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.Form;
@@ -55,6 +57,7 @@ public class ClientProxy extends CommonProxy {
 	public void registerRenderers() {
 		RenderingRegistry.registerEntityRenderingHandler(EntityDanmaku.class, RenderDanmaku::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntitySpellcard.class, RenderSpellcard::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityFallingData.class, RenderFallingData::new);
 
 		MinecraftForge.EVENT_BUS.register(new HUDHandler());
 	}
