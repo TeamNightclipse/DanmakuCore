@@ -122,7 +122,7 @@ public class TouhouHelper {
 	}
 
 	public static EntityFallingData createScoreBlue(World world, @Nullable Entity target, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_GREEN, pos, angle, target, 100);
+		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_BLUE, pos, angle, target, 100);
 	}
 
 	public static EntityFallingData createPower(World world, Vector3 pos, Vector3 angle) {
