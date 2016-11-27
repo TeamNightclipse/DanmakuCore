@@ -117,8 +117,12 @@ public class TouhouHelper {
 		});
 	}
 
-	public static EntityFallingData createScore(World world, @Nullable Entity target, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.SCORE, pos, angle, target, 50);
+	public static EntityFallingData createScoreGreen(World world, @Nullable Entity target, Vector3 pos, Vector3 angle) {
+		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_GREEN, pos, angle, target, 10);
+	}
+
+	public static EntityFallingData createScoreBlue(World world, @Nullable Entity target, Vector3 pos, Vector3 angle) {
+		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_GREEN, pos, angle, target, 100);
 	}
 
 	public static EntityFallingData createPower(World world, Vector3 pos, Vector3 angle) {

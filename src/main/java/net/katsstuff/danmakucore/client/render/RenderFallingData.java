@@ -27,7 +27,8 @@ public class RenderFallingData extends Render<EntityFallingData> {
 		super(renderManager);
 	}
 
-	private static final ResourceLocation SCORE_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/score.png");
+	private static final ResourceLocation SCORE_GREEN_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/score_green.png");
+	private static final ResourceLocation SCORE_BLUE_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/score_blue.png");
 	private static final ResourceLocation POWER_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/power.png");
 	private static final ResourceLocation BIG_POWER_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/power_big.png");
 	private static final ResourceLocation LIFE_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/life.png");
@@ -66,8 +67,10 @@ public class RenderFallingData extends Render<EntityFallingData> {
 	@Override
 	protected ResourceLocation getEntityTexture(EntityFallingData entity) {
 		switch(entity.getDataType()) {
-			case SCORE:
-				return SCORE_LOCATION;
+			case SCORE_GREEN:
+				return SCORE_GREEN_LOCATION;
+			case SCORE_BLUE:
+				return SCORE_BLUE_LOCATION;
 			case POWER:
 				return POWER_LOCATION;
 			case BIG_POWER:

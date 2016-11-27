@@ -27,7 +27,8 @@ import net.minecraft.world.World;
 public class EntityFallingData extends Entity {
 
 	public enum DataType {
-		SCORE,
+		SCORE_GREEN,
+		SCORE_BLUE,
 		POWER,
 		BIG_POWER,
 		LIFE,
@@ -58,7 +59,7 @@ public class EntityFallingData extends Entity {
 
 	@Override
 	protected void entityInit() {
-		dataManager.register(DATA_TYPE, DataType.SCORE);
+		dataManager.register(DATA_TYPE, DataType.SCORE_GREEN);
 	}
 
 	@Override
@@ -82,7 +83,8 @@ public class EntityFallingData extends Entity {
 	public void onCollideWithPlayer(EntityPlayer player) {
 		if(!worldObj.isRemote) {
 			switch(getDataType()) {
-				case SCORE:
+				case SCORE_GREEN:
+				case SCORE_BLUE:
 					TouhouHelper.changeAndSyncPlayerData(data -> data.addScore((int)amount), player);
 					break;
 				case POWER:
