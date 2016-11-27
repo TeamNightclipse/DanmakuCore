@@ -46,7 +46,9 @@ public class HUDHandler {
 
 				GlStateManager.pushMatrix();
 
-				float filled = data.getPower() / 4F;
+				float power = data.getPower();
+
+				float filled = power > 4F ? 1F : power / 4F;
 				int widthFull = 128;
 				int widthNotUsed = 32;
 				int height = 10;
@@ -68,24 +70,37 @@ public class HUDHandler {
 
 				int lives = data.getLives();
 				mc.getTextureManager().bindTexture(LIFE_FULL);
-				GlStateManager.color(1F, 1F, 1F);
-				for(int i = 0; i < 9; i++) {
-					if(i == lives) {
-						mc.getTextureManager().bindTexture(LIFE_EMPTY);
+
+				if(lives > 9) {
+					Gui.drawModalRectWithCustomSizedTexture(8, baseY - 13, 0F, 0F, 8, 8, 8, 8);
+					mc.fontRendererObj.drawStringWithShadow(lives + "x", 20, baseY - 13, 0xFFFFFF);
+				}
+				else {
+					for(int i = 0; i < 9; i++) {
+						if(i == lives) {
+							mc.getTextureManager().bindTexture(LIFE_EMPTY);
+						}
+						Gui.drawModalRectWithCustomSizedTexture(8 + (i * 11), baseY - 13, 0F, 0F, 8, 8, 8, 8);
 					}
-					Gui.drawModalRectWithCustomSizedTexture(8 + (i * 11), baseY - 13, 0F, 0F, 8, 8, 8, 8);
 				}
 
 				int bombs = data.getBombs();
 				mc.getTextureManager().bindTexture(BOMB_FULL);
-				for(int i = 0; i < 9; i++) {
-					if(i == bombs) {
-						mc.getTextureManager().bindTexture(BOMB_EMPTY);
+
+				if(bombs > 9) {
+					Gui.drawModalRectWithCustomSizedTexture(8, baseY, 0F, 0F, 8, 8, 8, 8);
+					mc.fontRendererObj.drawStringWithShadow(bombs + "x", 20, baseY, 0xFFFFFF);
+				}
+				else {
+					for(int i = 0; i < 9; i++) {
+						if(i == bombs) {
+							mc.getTextureManager().bindTexture(BOMB_EMPTY);
+						}
+						Gui.drawModalRectWithCustomSizedTexture(8 + (i * 11), baseY, 0F, 0F, 8, 8, 8, 8);
 					}
-					Gui.drawModalRectWithCustomSizedTexture(8 + (i * 11), baseY, 0F, 0F, 8, 8, 8, 8);
 				}
 
-				mc.fontRendererObj.drawStringWithShadow("Power: " + data.getPower(), baseX - widthFull, baseY - 30, 0xFFFFFF);
+				mc.fontRendererObj.drawStringWithShadow("Power: " + power, baseX - widthFull, baseY - 30, 0xFFFFFF);
 				mc.fontRendererObj.drawStringWithShadow("Score: " + data.getScore(), baseX - widthFull, baseY - 20, 0xFFFFFF);
 
 				GlStateManager.popMatrix();

@@ -10,6 +10,10 @@ package net.katsstuff.danmakucore.capability;
 
 import java.math.BigDecimal;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import com.google.common.base.Objects;
+
 import net.minecraft.util.math.MathHelper;
 
 @SuppressWarnings("WeakerAccess")
@@ -20,22 +24,24 @@ public class BoundedDanmakuCoreData implements IDanmakuCoreData {
 	private int lives;
 	private int bombs;
 	private final float powerBound;
+	private final int lifeBombBound;
 
-	public BoundedDanmakuCoreData(float power, int score, int lives, int bombs, float powerBound) {
+	public BoundedDanmakuCoreData(float power, int score, int lives, int bombs, float powerBound, int lifeBombBound) {
 		this.power = power;
 		this.score = score;
 		this.lives = lives;
 		this.bombs = bombs;
 
 		this.powerBound = powerBound;
+		this.lifeBombBound = lifeBombBound;
 	}
 
-	public BoundedDanmakuCoreData(float powerBound) {
-		this(0F, 0, 0, 0, powerBound);
+	public BoundedDanmakuCoreData(float powerBound, int lifeBombBound) {
+		this(0F, 0, 0, 0, powerBound, lifeBombBound);
 	}
 
 	public BoundedDanmakuCoreData() {
-		this(4F);
+		this(4F, 9);
 	}
 
 	@Override
@@ -65,7 +71,7 @@ public class BoundedDanmakuCoreData implements IDanmakuCoreData {
 
 	@Override
 	public void setLives(int lives) {
-		this.lives = MathHelper.clamp_int(lives, 0, 9);
+		this.lives = MathHelper.clamp_int(lives, 0, lifeBombBound);
 	}
 
 	@Override
@@ -75,12 +81,12 @@ public class BoundedDanmakuCoreData implements IDanmakuCoreData {
 
 	@Override
 	public void setBombs(int bombs) {
-		this.bombs = MathHelper.clamp_int(bombs, 0, 9);
+		this.bombs = MathHelper.clamp_int(bombs, 0, lifeBombBound);
 	}
 
 	@Override
 	public String toString() {
-		return "BoundedDanmakuCoreData{" + "power=" + power + ", score=" + score + ", lives=" + lives + ", bombs=" + bombs + ", powerBound="
-				+ powerBound + '}';
+		return Objects.toStringHelper(this).add("power", power).add("score", score).add("lives", lives).add("bombs", bombs).add("powerBound",
+				powerBound).add("lifeBombBound", lifeBombBound).toString();
 	}
 }
