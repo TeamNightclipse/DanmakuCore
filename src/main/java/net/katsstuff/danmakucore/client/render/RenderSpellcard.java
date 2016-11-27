@@ -36,7 +36,7 @@ public class RenderSpellcard extends Render<EntitySpellcard> {
 		float upperU = 1F;
 		float lowerV = 1F;
 		float lowerU = 0F;
-		float size = 1.0F;
+		float size = 0.5F;
 		bindEntityTexture(entity);
 		GL11.glTranslated(x, y, z);
 		GL11.glScalef(size, size, size);
@@ -45,17 +45,17 @@ public class RenderSpellcard extends Render<EntitySpellcard> {
 		GlStateManager.disableLighting();
 
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
-		vb.pos(0.5F, 0.5F, 0D).tex(upperU, upperV).normal(0F, 1F, 0F).endVertex();
-		vb.pos(-0.5F, 0.5F, 0D).tex(lowerU, upperV).normal(0F, 1F, 0F).endVertex();
-		vb.pos(-0.5F, -0.5F, 0D).tex(lowerU, lowerV).normal(0F, 1F, 0F).endVertex();
-		vb.pos(0.5F, -0.5F, 0D).tex(upperU, lowerV).normal(0F, 1F, 0F).endVertex();
+		vb.pos(size, size, 0D).tex(upperU, upperV).normal(0F, 1F, 0F).endVertex();
+		vb.pos(-size, size, 0D).tex(lowerU, upperV).normal(0F, 1F, 0F).endVertex();
+		vb.pos(-size, -size, 0D).tex(lowerU, lowerV).normal(0F, 1F, 0F).endVertex();
+		vb.pos(size, -size, 0D).tex(upperU, lowerV).normal(0F, 1F, 0F).endVertex();
 		tes.draw();
 
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
-		vb.pos(-0.5F, 0.5F, 0D).tex(upperU, upperV).normal(0F, -1F, 0F).endVertex();
-		vb.pos(0.5F, 0.5F, 0D).tex(lowerU, upperV).normal(0F, -1F, 0F).endVertex();
-		vb.pos(0.5F, -0.5F, 0D).tex(lowerU, lowerV).normal(0F, -1F, 0F).endVertex();
-		vb.pos(-0.5F, -0.5F, 0D).tex(upperU, lowerV).normal(0F, -1F, 0F).endVertex();
+		vb.pos(-size, size, 0D).tex(upperU, upperV).normal(0F, -1F, 0F).endVertex();
+		vb.pos(size, size, 0D).tex(lowerU, upperV).normal(0F, -1F, 0F).endVertex();
+		vb.pos(size, -size, 0D).tex(lowerU, lowerV).normal(0F, -1F, 0F).endVertex();
+		vb.pos(-size, -size, 0D).tex(upperU, lowerV).normal(0F, -1F, 0F).endVertex();
 		tes.draw();
 
 		GlStateManager.enableLighting();
