@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
+
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,6 +22,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
+@SuppressWarnings("unused")
 public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 
 	private static final String NBT_PHASES = "phases";
@@ -50,9 +53,6 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 	 * The phase that us currently in use.
 	 */
 	public Phase getCurrentPhase() {
-		if(phaseList.get(currentPhaseIndex) == null) {
-			throw new IndexOutOfBoundsException(entity.getName() + " tried to execute a non-existent attack");
-		}
 		return phaseList.get(currentPhaseIndex);
 	}
 
@@ -144,6 +144,18 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 		currentPhaseIndex = newPhase;
 	}
 
+	public boolean hasNextPhase() {
+		return currentPhaseIndex < phaseList.size() - 1;
+	}
+
+	public List<Phase> getPhaseList() {
+		return ImmutableList.copyOf(phaseList);
+	}
+
+	public int getCurrentPhaseIndex() {
+		return currentPhaseIndex;
+	}
+
 	@Override
 	public NBTTagCompound serializeNBT() {
 		NBTTagCompound tag = new NBTTagCompound();
@@ -159,6 +171,7 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 	public void deserializeNBT(NBTTagCompound tag) {
 		NBTTagList list = tag.getTagList(NBT_PHASES, Constants.NBT.TAG_COMPOUND);
 		int size = list.tagCount();
+		phaseList.clear();
 		for(int i = 0; i < size; i++) {
 			NBTTagCompound tagPhase = list.getCompoundTagAt(i);
 			PhaseType type = DanmakuRegistry.PHASE.getObject(new ResourceLocation(tagPhase.getString(Phase.NBT_NAME)));

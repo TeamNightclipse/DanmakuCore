@@ -52,7 +52,7 @@ public class PhaseTypeFallback extends PhaseType {
 		}
 
 		@Override
-		protected PhaseType getType() {
+		public PhaseType getType() {
 			return type;
 		}
 	}

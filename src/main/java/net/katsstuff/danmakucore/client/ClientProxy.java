@@ -9,6 +9,8 @@
 package net.katsstuff.danmakucore.client;
 
 import net.katsstuff.danmakucore.CommonProxy;
+import net.katsstuff.danmakucore.client.handler.BossBarHandler;
+import net.katsstuff.danmakucore.client.handler.HUDHandler;
 import net.katsstuff.danmakucore.client.helper.RenderHelper;
 import net.katsstuff.danmakucore.client.render.RenderDanmaku;
 import net.katsstuff.danmakucore.client.render.RenderFallingData;
@@ -18,6 +20,7 @@ import net.katsstuff.danmakucore.entity.EntityFallingData;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.Form;
+import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
@@ -37,6 +40,8 @@ import net.minecraftforge.fml.relauncher.Side;
 
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
+
+	private final BossBarHandler bossBarHandler = new BossBarHandler();
 
 	@Override
 	public void bakeDanmakuVariant(DanmakuVariant variant) {
@@ -60,6 +65,7 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityFallingData.class, RenderFallingData::new);
 
 		MinecraftForge.EVENT_BUS.register(new HUDHandler());
+		MinecraftForge.EVENT_BUS.register(bossBarHandler);
 	}
 
 	@Override
@@ -91,5 +97,15 @@ public class ClientProxy extends CommonProxy {
 				return variant.getItemModel();
 			}
 		});
+	}
+
+	@Override
+	public void addDanmakuBoss(EntityDanmakuBoss boss) {
+		bossBarHandler.danmakuBosses.add(boss);
+	}
+
+	@Override
+	public void removeDanmakuBoss(EntityDanmakuBoss boss) {
+		bossBarHandler.danmakuBosses.remove(boss);
 	}
 }

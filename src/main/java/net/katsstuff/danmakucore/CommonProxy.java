@@ -12,11 +12,12 @@ import java.util.Arrays;
 
 import javax.annotation.Nullable;
 
+import net.katsstuff.danmakucore.entity.EntityFallingData;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.Form;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
-import net.katsstuff.danmakucore.entity.EntityFallingData;
+import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
@@ -196,6 +197,16 @@ public class CommonProxy {
 		createRegistry(LibRegistryName.SPELLCARDS, Spellcard.class, null);
 		createRegistry(LibRegistryName.PHASES, PhaseType.class, resource(LibPhaseName.FALLBACK));
 	}
+
+	/**
+	 * Add a {@link EntityDanmakuBoss} to the boss bar render handler.
+	 */
+	public void addDanmakuBoss(EntityDanmakuBoss boss) {}
+
+	/**
+	 * Removes a {@link EntityDanmakuBoss} from the boss bar render handler.
+	 */
+	public void removeDanmakuBoss(EntityDanmakuBoss boss) {}
 
 	@SuppressWarnings("deprecation") //We need the default value
 	private static <I extends IForgeRegistryEntry<I>> FMLControlledNamespacedRegistry<I> createRegistry(ResourceLocation name, Class<I> clazz,

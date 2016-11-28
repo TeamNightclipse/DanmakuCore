@@ -8,10 +8,14 @@
  */
 package net.katsstuff.danmakucore.entity.living.phase;
 
+import java.util.Optional;
+
 import net.katsstuff.danmakucore.EnumDanmakuLevel;
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
+import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public abstract class Phase implements INBTSerializable<NBTTagCompound> {
@@ -24,12 +28,16 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 	protected int interval;
 	@SuppressWarnings("unused")
 	protected EnumDanmakuLevel level = ConfigHandler.danmaku.danmakuLevel;
+	@SuppressWarnings("WeakerAccess")
 	protected final PhaseManager manager;
 
 	public Phase(PhaseManager manager) {
 		this.manager = manager;
 	}
 
+	/**
+	 * Initiate the state of this {@link Phase}
+	 */
 	public void init() {
 		counter = 0;
 		interval = 40;
@@ -46,6 +54,11 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 		if(counter > interval) counter = 0;
 	}
 
+	/**
+	 * Check if the counter is zero.
+	 * If you want to do some action every x ticks, set
+	 * the interval to x and test for this.
+	 */
 	protected boolean isCounterStart() {
 		return counter == 0;
 	}
@@ -54,7 +67,33 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 		return manager.entity;
 	}
 
-	protected abstract PhaseType getType();
+	public abstract PhaseType getType();
+
+	public int getCounter() {
+		return counter;
+	}
+
+	/**
+	 * Check if this is a spellcard. Used to get the amount of starts to show for bosses.
+	 */
+	public boolean isSpellcard() {
+		return false;
+	}
+
+	/**
+	 * Returns the name to render in spellcard like fashion.
+	 * Doesn't actually need to be a real spellcard.
+	 */
+	public Optional<ITextComponent> getSpellcardName() {
+		return Optional.empty();
+	}
+
+	/**
+	 * If this {@link Phase} represents a spellcard, returns the spellcard.
+	 */
+	public Optional<Spellcard> getSpellcard() {
+		return Optional.empty();
+	}
 
 	@Override
 	public NBTTagCompound serializeNBT() {

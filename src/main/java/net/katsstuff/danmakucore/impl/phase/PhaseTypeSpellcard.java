@@ -8,6 +8,8 @@
  */
 package net.katsstuff.danmakucore.impl.phase;
 
+import java.util.Optional;
+
 import net.katsstuff.danmakucore.entity.living.phase.Phase;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseManager;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
@@ -16,10 +18,13 @@ import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.misc.IItemStackConvertible;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class PhaseTypeSpellcard extends PhaseType {
 
@@ -59,18 +64,31 @@ public class PhaseTypeSpellcard extends PhaseType {
 			super.serverUpdate();
 			if(isCounterStart()) {
 				EntityMob entity = getEntity();
-				TouhouHelper.declareSpellcard(entity, entity.getAttackTarget(), spellcard, firstAttack);
-				firstAttack = false;
+				EntityLivingBase target = entity.getAttackTarget();
+				if(target != null) {
+					TouhouHelper.declareSpellcard(entity, target, spellcard, firstAttack);
+					firstAttack = false;
+				}
 			}
 		}
 
 		@Override
-		protected PhaseType getType() {
+		public PhaseType getType() {
 			return type;
 		}
 
-		public Spellcard getSpellcard() {
-			return spellcard;
+		public Optional<Spellcard> getSpellcard() {
+			return Optional.of(spellcard);
+		}
+
+		@Override
+		public boolean isSpellcard() {
+			return true;
+		}
+
+		@Override
+		public Optional<ITextComponent> getSpellcardName() {
+			return Optional.of(new TextComponentTranslation(spellcard.getUnlocalizedName()));
 		}
 
 		@Override

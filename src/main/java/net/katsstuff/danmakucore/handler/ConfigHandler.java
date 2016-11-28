@@ -24,4 +24,11 @@ public class ConfigHandler {
 		public boolean oneHitKill = false;
 		public EnumDanmakuLevel danmakuLevel = EnumDanmakuLevel.NORMAL;
 	}
+
+	public static Entities entities = new Entities();
+
+	public static class Entities {
+
+		public boolean circleBossBar = false;
+	}
 }
