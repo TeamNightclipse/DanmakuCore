@@ -78,6 +78,7 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 					int place = Math.max(0, 10 - time40);
 					DanmakuBuilder danmaku = DanmakuBuilder.builder()
 							.setUser(getUser())
+							.setSource(card)
 							.setMovementData(1D / (place + 1))
 							.setShot(LibShotData.SHOT_MEDIUM.setColor(LibColor.COLOR_SATURATED_RED).setDelay(place))
 							.build();
@@ -92,6 +93,7 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 					for(int i = 1; i < 11; i++) {
 						DanmakuBuilder danmaku = DanmakuBuilder.builder()
 								.setUser(getUser())
+								.setSource(card)
 								.setMovementData(1D / i)
 								.setShot(LibShotData.SHOT_MEDIUM.setColor(LibColor.COLOR_SATURATED_RED))
 								.build();
@@ -116,6 +118,7 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 
 			EntityDanmaku danmaku = DanmakuBuilder.builder()
 					.setUser(getUser())
+					.setSource(card)
 					.setAngle(Vector3.Up())
 					.setMovementData(0.2D)
 					.setPos(spawnPos)
