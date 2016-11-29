@@ -30,25 +30,27 @@ object DanOBJFormLoader {
 	@throws[IOException]
 	def createIRenderForm(location: ResourceLocation): (IRenderForm, ResourceLocation) = {
 		val url = getClass.getResource(s"assets/${location.getResourceDomain}/${location.getResourcePath}")
-		val textFromFile = Try(Source.fromURL(url).mkString)
+		val source = Source.fromURL(url)
+		val textFromFile = source.getLines().mkString
+		source.close()
 
-		val res = textFromFile
-			.flatMap(DanOBJParser.read(_)
+		val res = DanOBJParser.read(textFromFile)
 				.left.map(msg => Failure(new DanmakuParseException(msg)))
 				.right.map { case (triangleData, texture) =>
 
 				val (glowTriangles, noGlowTriangles) = triangleData.partition(_.useGlow)
 
+				//noinspection ConvertExpressionToSAM
 				val form: IRenderForm = new IRenderForm {
 					override def renderForm(danmaku: EntityDanmaku, x: Double, y: Double, z: Double, entityYaw: Float, partialTicks: Float,
 							renderManager: RenderManager): Unit = {
 						val tes = Tessellator.getInstance
 						val vb = tes.getBuffer
 						val shotData = danmaku.getShotData
-						val sizeX = shotData.getSizeX
-						val sizeY = shotData.getSizeY
-						val sizeZ = shotData.getSizeZ
-						val color = shotData.getColor
+						val sizeX = shotData.sizeX
+						val sizeY = shotData.sizeY
+						val sizeZ = shotData.sizeZ
+						val color = shotData.color
 						val pitch = danmaku.rotationPitch
 						val yaw = danmaku.rotationYaw
 						val roll = danmaku.getRoll
@@ -79,7 +81,7 @@ object DanOBJFormLoader {
 				}
 
 				Success((form, texture))
-			}.merge)
+			}.merge
 
 		res match {
 			case Success(ret) => ret
