@@ -465,6 +465,11 @@ final case class Vector3(@BeanProperty x: Double, @BeanProperty y: Double, @Bean
 
 	def create(x: Double, y: Double, z: Double): Vector3 = Vector3(x, y, z)
 
+	override lazy val length: Double = super.length
+	override lazy val normalize: Vector3 = super.normalize
+	override lazy val yawRad: Double = super.yawRad
+	override lazy val pitchRad: Double = super.pitchRad
+
 	override def asMutable: MutableVector3 = MutableVector3(x, y, z)
 
 	override def asImmutable: Vector3 = this
@@ -488,7 +493,6 @@ final case class Vector3(@BeanProperty x: Double, @BeanProperty y: Double, @Bean
 	override def divide(x: Double, y: Double, z: Double): Vector3 = super.divide(x, y, z)
 
 	override def negate: Vector3 = unary_-
-	override def normalize: Vector3 = super.normalize
 
 	override def cross(other: AbstractVector3): Vector3 = super.cross(other)
 	override def cross(x: Double, y: Double, z: Double): Vector3 = super.cross(x, y, z)

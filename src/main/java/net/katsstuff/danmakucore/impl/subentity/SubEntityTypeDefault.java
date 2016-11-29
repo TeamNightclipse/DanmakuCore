@@ -60,11 +60,12 @@ public class SubEntityTypeDefault extends SubEntityType {
 					rotate();
 				}
 
-				if(!(Math.abs(danmaku.getCurrentSpeed() - danmaku.getMovementData().getSpeedLimit()) <= 0.0001)) {
-					danmaku.accelerate();
+				double currentSpeed = danmaku.getCurrentSpeed();
+				if(!(Math.abs(currentSpeed - danmaku.getMovementData().getSpeedLimit()) <= 0.0001)) {
+					danmaku.accelerate(currentSpeed);
 				}
 				else {
-					danmaku.updateMotion();
+					danmaku.updateMotion(currentSpeed);
 				}
 
 				updateMotionWithGravity();

@@ -59,7 +59,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	@LogicalSideOnly(Side.SERVER)
 	private Entity source;
 	@LogicalSideOnly(Side.SERVER)
-	private MutableVector3 angle;
+	private Vector3 angle;
 	@LogicalSideOnly(Side.SERVER)
 	private MovementData movement;
 	@LogicalSideOnly(Side.SERVER)
@@ -88,22 +88,21 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		posZ -= MathHelper.sin((float)Math.toRadians(rotationYaw)) * 0.16F;
 		setPosition(posX, posY, posZ);
 
-		angle = new MutableVector3(user.getLookVec());
+		angle = new Vector3(user.getLookVec());
 		resetMotion();
 	}
 
 	public EntityDanmaku(World world, ShotData shot, Vector3 pos, Vector3 angle, MovementData movement) {
 		this(world, shot);
-		this.angle = angle.asMutable();
+		this.angle = angle;
 		this.movement = movement;
 		rotation = RotationData.none();
 		setPosition(pos.x(), pos.y(), pos.z());
 		resetMotion();
 	}
 
-	public EntityDanmaku(World world, @Nullable EntityLivingBase user, @Nullable Entity source, ShotData shot, Vector3 pos, Vector3 angle, float
-			roll,
-			MovementData movement, RotationData rotation) {
+	public EntityDanmaku(World world, @Nullable EntityLivingBase user, @Nullable Entity source, ShotData shot, Vector3 pos, Vector3 angle,
+			float roll, MovementData movement, RotationData rotation) {
 		this(world, shot, pos, angle, movement);
 		this.user = user;
 		this.source = source;
@@ -112,13 +111,12 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	}
 
 	private EntityDanmaku(World world, ShotData shot) {
-		super(world);
+		this(world);
 		setShotData(shot);
 	}
 
 	private EntityDanmaku(EntityDanmaku old) {
-		this(old.worldObj, old.user, old.source, old.getShotData(), new Vector3(old), old.angle.asImmutable(), old.getRoll(), old.movement,
-				old.rotation);
+		this(old.worldObj, old.user, old.source, old.getShotData(), new Vector3(old), old.angle, old.getRoll(), old.movement, old.rotation);
 	}
 
 	@Override
@@ -153,21 +151,20 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 	@Override
 	public void setThrowableHeading(double x, double y, double z, float velocity, float inaccuracy) {
-		float length = MathHelper.sqrt_double(x * x + y * y + z * z);
+		Vector3 vec = new Vector3(x, y, z);
+		double length = vec.length();
 		x = x / length;
 		y = y / length;
 		z = z / length;
-		x = x + rand.nextGaussian() * 0.0075D * inaccuracy;
-		y = y + rand.nextGaussian() * 0.0075D * inaccuracy;
-		z = z + rand.nextGaussian() * 0.0075D * inaccuracy;
-		x = x * velocity;
-		y = y * velocity;
-		z = z * velocity;
+		x += rand.nextGaussian() * 0.0075D * inaccuracy;
+		y += rand.nextGaussian() * 0.0075D * inaccuracy;
+		z += rand.nextGaussian() * 0.0075D * inaccuracy;
+		x *= velocity;
+		y *= velocity;
+		z *= velocity;
 		motionX = x;
 		motionY = y;
 		motionZ = z;
-
-		MutableVector3 vec = new MutableVector3(x, y, z);
 
 		prevRotationYaw = rotationYaw = (float)vec.yaw();
 		prevRotationPitch = rotationPitch = (float)vec.pitch();
@@ -190,8 +187,8 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		}
 
 		if(subEntity == null) {
-			LogHelper.error("For some reason the danmaku entity is missing it's subEntity. Will try to create a new subEntity");
-			setSubEntity(getShotData().getSubEntity());
+			LogHelper.warn("For some reason the danmaku entity is missing it's subEntity. Will try to create a new subEntity");
+			setShotData(shot, true);
 			if(subEntity == null) {
 				LogHelper.error("Failed to create new subEntity. Killing entity");
 				setDead(); //We intentionally don't check side here. It's bad, but don't want to deal with bad stuff flying around either
@@ -207,15 +204,16 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		int delay = shot.delay();
 		if(delay > 0) {
 			ticksExisted--;
-			shot = shot.setDelay(delay - 1);
+			delay--;
 			motionX = 0;
 			motionY = 0;
 			motionZ = 0;
 
 			//Do a new check to see if the shot is still delayed, and if it isn't. Start it's movement
-			if(shot.delay() <= 0) {
+			if(delay <= 0 && !worldObj.isRemote) {
 				resetMotion();
 			}
+			shot = shot.setDelay(delay);
 			setShotData(shot);
 		}
 		else {
@@ -224,18 +222,14 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			subEntity.subEntityTick();
 		}
 
-		posX += motionX;
-		posY += motionY;
-		posZ += motionZ;
-		setPosition(posX, posY, posZ);
+		setPosition(posX + motionX, posY + motionY, posZ + motionZ);
 	}
 
-	//TODO: This method calculates the speed(expensive method because of square root) 1-2 times per call, any better way?
-	public void accelerate() {
+	public void accelerate(double currentSpeed) {
 		double speedAccel = movement.getSpeedAcceleration();
 		double speedLimit = movement.getSpeedLimit();
 		if(speedAccel > 0D) {
-			if(getCurrentSpeed() < speedLimit) {
+			if(currentSpeed < speedLimit) {
 				motionX += angle.x() * speedAccel;
 				motionY += angle.y() * speedAccel;
 				motionZ += angle.z() * speedAccel;
@@ -249,8 +243,8 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			}
 		}
 		//TODO: Rewrite this so that speedLimit can work as both top and bottom speed. In general just rewrite this
-		else if(speedAccel < 0D && getCurrentSpeed() > speedLimit) {
-			if(Math.abs(speedAccel) > getCurrentSpeed() - speedLimit) {
+		else if(speedAccel < 0D && currentSpeed > speedLimit) {
+			if(Math.abs(speedAccel) > currentSpeed - speedLimit) {
 				motionX = angle.x() * speedLimit;
 				motionY = angle.y() * speedLimit;
 				motionZ = angle.z() * speedLimit;
@@ -267,11 +261,10 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	/**
 	 * Updates the motion to the current angle.
 	 */
-	public void updateMotion() {
-		double speed = getCurrentSpeed();
-		motionX = angle.x() * speed;
-		motionY = angle.y() * speed;
-		motionZ = angle.z() * speed;
+	public void updateMotion(double currentSpeed) {
+		motionX = angle.x() * currentSpeed;
+		motionY = angle.y() * currentSpeed;
+		motionZ = angle.z() * currentSpeed;
 	}
 
 	@SuppressWarnings("WeakerAccess")
@@ -296,13 +289,17 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	}
 
 	public void setShotData(ShotData shot) {
+		setShotData(shot, false);
+	}
+
+	public void setShotData(ShotData shot, boolean forceNewSubentity) {
 		ShotData oldShot = getShotData();
 		boolean first = subEntity == null; //The first time we call this the subentity isn't created yet
 		ShotData toUse = first ? shot : subEntity.onShotDataChange(oldShot, oldShot.form().onShotDataChange(oldShot, shot), shot);
 
 		SubEntityType oldSubEntity = getShotData().subEntity();
 		dataManager.set(SHOT_DATA, toUse);
-		if(toUse.subEntity() != oldSubEntity || first) {
+		if(toUse.subEntity() != oldSubEntity || first || forceNewSubentity) {
 			subEntity = toUse.subEntity().instantiate(worldObj, this);
 		}
 	}
@@ -331,11 +328,11 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	}
 
 	public Vector3 getAngle() {
-		return angle.asImmutable();
+		return angle;
 	}
 
 	public void setAngle(Vector3 angle) {
-		this.angle = angle.asMutable();
+		this.angle = angle;
 	}
 
 	public MovementData getMovementData() {
@@ -409,7 +406,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 	@Override
 	public void readEntityFromNBT(NBTTagCompound nbtTag) {
-		angle = NBTHelper.getVector(nbtTag, NBT_ANGLE).asMutable();
+		angle = NBTHelper.getVector(nbtTag, NBT_ANGLE);
 		movement = MovementData.fromNBT(nbtTag.getCompoundTag(NBT_MOVEMENT));
 		rotation = RotationData.fromNBT(nbtTag.getCompoundTag(NBT_ROTATION));
 
