@@ -13,6 +13,7 @@ import java.util.Optional;
 import net.katsstuff.danmakucore.entity.living.phase.Phase;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseManager;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
+import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.lib.data.LibItems;
@@ -66,8 +67,12 @@ public class PhaseTypeSpellcard extends PhaseType {
 				EntityMob entity = getEntity();
 				EntityLivingBase target = entity.getAttackTarget();
 				if(target != null) {
-					TouhouHelper.declareSpellcard(entity, target, spellcard, firstAttack);
-					firstAttack = false;
+					Optional<EntitySpellcard> optSpellcard = TouhouHelper.declareSpellcard(entity, target, spellcard, firstAttack);
+					if(optSpellcard.isPresent()) {
+						EntitySpellcard spellcard = optSpellcard.get();
+						firstAttack = false;
+						spellcard.getSpellCard().setDanmakuLevel(level);
+					}
 				}
 			}
 		}

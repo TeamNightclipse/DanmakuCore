@@ -9,9 +9,11 @@
 package net.katsstuff.danmakucore.item;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import net.katsstuff.danmakucore.DanmakuCore;
+import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.lib.LibItemName;
@@ -44,9 +46,9 @@ public class ItemSpellcard extends ItemBase {
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
 		Spellcard type = DanmakuRegistry.SPELLCARD.getObjectById(stack.getItemDamage());
-		if(type.onRightClick(stack, world, player, hand)) {
-			boolean result = TouhouHelper.declareSpellcardPlayer(player, type, true, false);
-			return result ? new ActionResult<>(EnumActionResult.SUCCESS, stack) : new ActionResult<>(EnumActionResult.FAIL, stack);
+		if(!world.isRemote && type.onRightClick(stack, world, player, hand)) {
+			Optional<EntitySpellcard> result = TouhouHelper.declareSpellcardPlayer(player, type, true);
+			return result.isPresent() ? new ActionResult<>(EnumActionResult.SUCCESS, stack) : new ActionResult<>(EnumActionResult.FAIL, stack);
 		}
 		else return super.onItemRightClick(stack, world, player, hand);
 	}

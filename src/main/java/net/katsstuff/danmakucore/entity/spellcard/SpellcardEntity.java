@@ -67,6 +67,14 @@ public abstract class SpellcardEntity implements INBTSerializable<NBTTagCompound
 		return rand;
 	}
 
+	public EnumDanmakuLevel getDanmakuLevel() {
+		return danmakuLevel;
+	}
+
+	public void setDanmakuLevel(EnumDanmakuLevel danmakuLevel) {
+		this.danmakuLevel = danmakuLevel;
+	}
+
 	public World getWorld() {
 		return card.worldObj;
 	}

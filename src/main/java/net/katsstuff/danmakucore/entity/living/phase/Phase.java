@@ -24,8 +24,23 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 	private static final String NBT_INTERVAL = "interval";
 	static final String NBT_NAME = "name";
 
+	/**
+	 * The counter for this {@link Phase}. By default it is incremented each
+	 * tick. If this is less than 0, it will signal that the entity using
+	 * this phase is invulnerable, and provided data that can be used on the
+	 * client.
+	 */
 	protected int counter;
+	/**
+	 * The set amount of time that this phase will use to reset the counter.
+	 */
 	protected int interval;
+
+	/**
+	 * The level to use for this {@link Phase}. Use this instead of getting
+	 * it from the config as it can be changes without changing the global
+	 * difficulty.
+	 */
 	@SuppressWarnings("unused")
 	protected EnumDanmakuLevel level = ConfigHandler.danmaku.danmakuLevel;
 	@SuppressWarnings("WeakerAccess")

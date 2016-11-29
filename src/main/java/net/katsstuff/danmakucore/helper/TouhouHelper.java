@@ -22,6 +22,7 @@ import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -32,62 +33,93 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 public class TouhouHelper {
 
-	@SuppressWarnings("SameParameterValue")
-	public static boolean declareSpellcardPlayer(EntityPlayer player, Spellcard spellcard, boolean firstAttack, boolean simulate) {
+	/**
+	 * Checks if a player can declare a given spellcard.
+	 *
+	 * @return The target for the spellcard, if a spellcard can be declared.
+	 * Note that this can return some and the declaration can still fail, if
+	 * it does, it's because the spellcard denied it.
+	 */
+	public static Optional<EntityLivingBase> canPlayerDeclareSpellcard(EntityPlayer player, Spellcard spellcard) {
 		World world = player.worldObj;
 
 		//Only allow spellcard if use user isn't already using a spellcard
 		@SuppressWarnings("ConstantConditions") List<EntitySpellcard> spellcardList = world.getEntitiesWithinAABB(EntitySpellcard.class,
 				player.getEntityBoundingBox().expandXyz(32D), entitySpellcard -> player == entitySpellcard.getUser());
-		if(!spellcardList.isEmpty()) return false;
 
-		//Get the target
-		Optional<Entity> optTarget = Vector3.getEntityLookedAt(player,
-				targetEntity -> targetEntity instanceof EntityLivingBase && !(targetEntity instanceof EntityAgeable), 32D);
+		if(spellcardList.isEmpty()) {
+			Optional<Entity> optTarget = Vector3.getEntityLookedAt(player,
+					targetEntity -> targetEntity instanceof EntityLivingBase && !(targetEntity instanceof EntityAgeable), 32D);
 
-		if(!optTarget.isPresent()) return false;
-		EntityLivingBase target = (EntityLivingBase)optTarget.get();
+			if(optTarget.isPresent()) {
+				EntityLivingBase target = (EntityLivingBase)optTarget.get();
 
+				if(!player.capabilities.isCreativeMode) {
 
-		if(!player.capabilities.isCreativeMode) {
+					int neededBombs = spellcard.getLevel();
+					int currentBombs = getDanmakuCoreData(player).map(IDanmakuCoreData::getBombs).orElse(0);
 
-			int neededBombs = spellcard.getLevel();
-			int currentBombs = getDanmakuCoreData(player).map(IDanmakuCoreData::getBombs).orElse(0);
-
-			if(currentBombs < neededBombs) return false;
-
-			if(!simulate) {
-				changeAndSyncPlayerData(data -> data.addBombs(-neededBombs), player);
+					if(currentBombs >= neededBombs) {
+						return Optional.of(target);
+					}
+				}
+				else return Optional.of(target);
 			}
 		}
 
-		if(!simulate) {
-			declareSpellcard(player, target, spellcard, firstAttack);
-		}
-		return true;
+		return Optional.empty();
 	}
 
-	public static void declareSpellcard(EntityLivingBase user, @Nullable EntityLivingBase target, Spellcard spellCard, boolean firstAttack) {
-		if(!spellCard.onDeclare(user, target, firstAttack)) return;
+	/**
+	 * Declares a spellcard as a player, doing the necessary checks and
+	 * changes according to the player.
+	 *
+	 * @return The Spellcard if it was spawned.
+	 */
+	@SuppressWarnings("SameParameterValue")
+	public static Optional<EntitySpellcard> declareSpellcardPlayer(EntityPlayer player, Spellcard spellcard, boolean firstAttack) {
+		Optional<EntityLivingBase> canDeclareSpellcard = canPlayerDeclareSpellcard(player, spellcard);
 
-		World world = user.worldObj;
-		if(!world.isRemote) {
-			EntitySpellcard entitySpellCard = new EntitySpellcard(user, target, spellCard);
-			world.spawnEntityInWorld(entitySpellCard);
-		}
-
-		//Does chat
-		if(!world.isRemote && user instanceof EntityPlayer) {
-			user.addChatMessage(new TextComponentTranslation(spellCard.getUnlocalizedName()));
-		}
-
-		if(firstAttack) {
-			if(!world.isRemote && target instanceof EntityPlayer) {
-				target.addChatMessage(new TextComponentTranslation(spellCard.getUnlocalizedName()));
+		if(canDeclareSpellcard.isPresent()) {
+			if(!player.capabilities.isCreativeMode) {
+				changeAndSyncPlayerData(data -> data.addBombs(-spellcard.getLevel()), player);
 			}
 
-			DanmakuHelper.danmakuRemove(user, 40.0F, DanmakuHelper.DanmakuRemoveMode.ENEMY, true);
+			return declareSpellcard(player, canDeclareSpellcard.get(), spellcard, firstAttack);
 		}
+
+		return Optional.empty();
+	}
+
+	/**
+	 * Declares a spellcard. If you are declaring a spellcard for a player,
+	 * user {@link TouhouHelper#declareSpellcardPlayer(EntityPlayer, Spellcard, boolean)}.
+	 *
+	 * @return The Spellcard if it was spawned.
+	 */
+	public static Optional<EntitySpellcard> declareSpellcard(EntityLivingBase user, @Nullable EntityLivingBase target, Spellcard spellCard,
+			boolean firstAttack) {
+		if(spellCard.onDeclare(user, target, firstAttack)) {
+			EntitySpellcard entitySpellCard = new EntitySpellcard(user, target, spellCard);
+			user.worldObj.spawnEntityInWorld(entitySpellCard);
+
+			//Does chat
+			if(user instanceof EntityPlayer) {
+				user.addChatMessage(new TextComponentTranslation(spellCard.getUnlocalizedName()));
+			}
+
+			if(firstAttack) {
+				if(target instanceof EntityPlayer) {
+					target.addChatMessage(new TextComponentTranslation(spellCard.getUnlocalizedName()));
+				}
+
+				DanmakuHelper.danmakuRemove(user, 40.0F, DanmakuHelper.DanmakuRemoveMode.ENEMY, true);
+			}
+
+			return Optional.of(entitySpellCard);
+		}
+
+		return Optional.empty();
 	}
 
 	public static Optional<IDanmakuCoreData> getDanmakuCoreData(ICapabilityProvider provider) {
