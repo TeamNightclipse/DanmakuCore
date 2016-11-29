@@ -16,12 +16,15 @@ import javax.annotation.Nullable;
 import net.katsstuff.danmakucore.EnumDanmakuLevel;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
+import net.katsstuff.danmakucore.misc.LogicalSideOnly;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.fml.relauncher.Side;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
+@LogicalSideOnly(Side.SERVER)
 public abstract class SpellcardEntity implements INBTSerializable<NBTTagCompound> {
 
 	private static final String NBT_TIME = "time";

@@ -14,9 +14,11 @@ import net.katsstuff.danmakucore.EnumDanmakuLevel;
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
+import net.katsstuff.danmakucore.misc.LogicalSideOnly;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.fml.relauncher.Side;
 
 public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 
@@ -59,11 +61,13 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 	}
 
 	@SuppressWarnings("WeakerAccess")
+	@LogicalSideOnly(Side.CLIENT)
 	public void clientUpdate() {
 		counter++;
 		if(counter > interval) counter = 0;
 	}
 
+	@LogicalSideOnly(Side.SERVER)
 	public void serverUpdate() {
 		counter++;
 		if(counter > interval) counter = 0;

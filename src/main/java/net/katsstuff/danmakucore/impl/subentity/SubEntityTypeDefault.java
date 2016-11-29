@@ -145,13 +145,11 @@ public class SubEntityTypeDefault extends SubEntityType {
 		 * Add the gravity to the motion.
 		 */
 		protected void updateMotionWithGravity() {
-			if(!world.isRemote) {
-				Entity entity = danmaku;
-				Vector3 gravity = danmaku.getMovementData().getGravity();
-				entity.motionX += gravity.x();
-				entity.motionY += gravity.y();
-				entity.motionZ += gravity.z();
-			}
+			Entity entity = danmaku;
+			Vector3 gravity = danmaku.getMovementData().getGravity();
+			entity.motionX += gravity.x();
+			entity.motionY += gravity.y();
+			entity.motionZ += gravity.z();
 		}
 
 		protected void hitCheck(Predicate<Entity> exclude) {
@@ -210,9 +208,7 @@ public class SubEntityTypeDefault extends SubEntityType {
 		 * Sets the angle based on the rotation.
 		 */
 		protected void rotate() {
-			if(!world.isRemote) {
-				danmaku.setAngle(danmaku.getAngle().rotate(danmaku.getRotationData().getRotationQuat()));
-			}
+			danmaku.setAngle(danmaku.getAngle().rotate(danmaku.getRotationData().getRotationQuat()));
 		}
 	}
 }

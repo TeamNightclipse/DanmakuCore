@@ -20,6 +20,7 @@ import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.EntityFallingData;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
+import net.katsstuff.danmakucore.misc.LogicalSideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLiving;
@@ -30,6 +31,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class TouhouHelper {
 
@@ -130,6 +132,7 @@ public class TouhouHelper {
 	}
 
 	@SuppressWarnings("unused")
+	@LogicalSideOnly(Side.SERVER)
 	public static void changeAndSyncEntityData(Consumer<IDanmakuCoreData> dataRunnable, Entity target, double radius) {
 		getDanmakuCoreData(target).ifPresent(data -> {
 			dataRunnable.accept(data);
@@ -139,6 +142,7 @@ public class TouhouHelper {
 		});
 	}
 
+	@LogicalSideOnly(Side.SERVER)
 	public static void changeAndSyncPlayerData(Consumer<IDanmakuCoreData> dataRunnable, EntityPlayer player) {
 		getDanmakuCoreData(player).ifPresent(data -> {
 			dataRunnable.accept(data);

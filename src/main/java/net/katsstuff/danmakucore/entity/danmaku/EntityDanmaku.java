@@ -25,6 +25,7 @@ import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.helper.NBTHelper;
 import net.katsstuff.danmakucore.lib.data.LibSubEntities;
+import net.katsstuff.danmakucore.misc.LogicalSideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
@@ -53,11 +54,17 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	private static final DataParameter<ShotData> SHOT_DATA = EntityDataManager.createKey(EntityDanmaku.class, CoreDataSerializers.SHOTDATA);
 	private static final DataParameter<Float> ROLL = EntityDataManager.createKey(EntityDanmaku.class, DataSerializers.FLOAT);
 
+	@LogicalSideOnly(Side.SERVER)
 	private EntityLivingBase user;
+	@LogicalSideOnly(Side.SERVER)
 	private Entity source;
+	@LogicalSideOnly(Side.SERVER)
 	private MutableVector3 angle;
+	@LogicalSideOnly(Side.SERVER)
 	private MovementData movement;
+	@LogicalSideOnly(Side.SERVER)
 	private RotationData rotation;
+
 	private SubEntity subEntity;
 
 	public EntityDanmaku(World world) {
@@ -160,10 +167,14 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		motionY = y;
 		motionZ = z;
 
-		Vector3 vec = new Vector3(x, y, z);
+		MutableVector3 vec = new MutableVector3(x, y, z);
 
 		prevRotationYaw = rotationYaw = (float)vec.yaw();
 		prevRotationPitch = rotationPitch = (float)vec.pitch();
+
+		if(!worldObj.isRemote) {
+			angle = vec;
+		}
 	}
 
 	/**
@@ -202,7 +213,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			motionZ = 0;
 
 			//Do a new check to see if the shot is still delayed, and if it isn't. Start it's movement
-			if(!worldObj.isRemote && shot.delay() <= 0) {
+			if(shot.delay() <= 0) {
 				resetMotion();
 			}
 			setShotData(shot);
@@ -221,36 +232,34 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 	//TODO: This method calculates the speed(expensive method because of square root) 1-2 times per call, any better way?
 	public void accelerate() {
-		if(!worldObj.isRemote) {
-			double speedAccel = movement.getSpeedAcceleration();
-			double speedLimit = movement.getSpeedLimit();
-			if(speedAccel > 0D) {
-				if(getCurrentSpeed() < speedLimit) {
-					motionX += angle.x() * speedAccel;
-					motionY += angle.y() * speedAccel;
-					motionZ += angle.z() * speedAccel;
-				}
-
-				//We check if we reached the speed limit. Not an if else check as we might have added speed just previously.
-				if(getCurrentSpeed() > speedLimit) {
-					motionX = angle.x() * speedLimit;
-					motionY = angle.y() * speedLimit;
-					motionZ = angle.z() * speedLimit;
-				}
+		double speedAccel = movement.getSpeedAcceleration();
+		double speedLimit = movement.getSpeedLimit();
+		if(speedAccel > 0D) {
+			if(getCurrentSpeed() < speedLimit) {
+				motionX += angle.x() * speedAccel;
+				motionY += angle.y() * speedAccel;
+				motionZ += angle.z() * speedAccel;
 			}
-			//TODO: Rewrite this so that speedLimit can work as both top and bottom speed. In general just rewrite this
-			else if(speedAccel < 0D && getCurrentSpeed() > speedLimit) {
-				if(Math.abs(speedAccel) > getCurrentSpeed() - speedLimit) {
-					motionX = angle.x() * speedLimit;
-					motionY = angle.y() * speedLimit;
-					motionZ = angle.z() * speedLimit;
-				}
-				else {
-					//This is really subtracting because the acceleration is negative
-					motionX += angle.x() * speedAccel;
-					motionY += angle.y() * speedAccel;
-					motionZ += angle.z() * speedAccel;
-				}
+
+			//We check if we reached the speed limit. Not an if else check as we might have added speed just previously.
+			if(getCurrentSpeed() > speedLimit) {
+				motionX = angle.x() * speedLimit;
+				motionY = angle.y() * speedLimit;
+				motionZ = angle.z() * speedLimit;
+			}
+		}
+		//TODO: Rewrite this so that speedLimit can work as both top and bottom speed. In general just rewrite this
+		else if(speedAccel < 0D && getCurrentSpeed() > speedLimit) {
+			if(Math.abs(speedAccel) > getCurrentSpeed() - speedLimit) {
+				motionX = angle.x() * speedLimit;
+				motionY = angle.y() * speedLimit;
+				motionZ = angle.z() * speedLimit;
+			}
+			else {
+				//This is really subtracting because the acceleration is negative
+				motionX += angle.x() * speedAccel;
+				motionY += angle.y() * speedAccel;
+				motionZ += angle.z() * speedAccel;
 			}
 		}
 	}
@@ -259,25 +268,21 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	 * Updates the motion to the current angle.
 	 */
 	public void updateMotion() {
-		if(!worldObj.isRemote) {
-			double speed = getCurrentSpeed();
-			motionX = angle.x() * speed;
-			motionY = angle.y() * speed;
-			motionZ = angle.z() * speed;
-		}
+		double speed = getCurrentSpeed();
+		motionX = angle.x() * speed;
+		motionY = angle.y() * speed;
+		motionZ = angle.z() * speed;
 	}
 
 	@SuppressWarnings("WeakerAccess")
 	public void resetMotion() {
-		if(!worldObj.isRemote) {
-			double speedOriginal = getMovementData().getSpeedOriginal();
-			motionX = angle.x() * speedOriginal;
-			motionY = angle.y() * speedOriginal;
-			motionZ = angle.z() * speedOriginal;
+		double speedOriginal = getMovementData().getSpeedOriginal();
+		motionX = angle.x() * speedOriginal;
+		motionY = angle.y() * speedOriginal;
+		motionZ = angle.z() * speedOriginal;
 
-			prevRotationYaw = rotationYaw = (float)angle.yaw();
-			prevRotationPitch = rotationPitch = (float)angle.pitch();
-		}
+		prevRotationYaw = rotationYaw = (float)angle.yaw();
+		prevRotationPitch = rotationPitch = (float)angle.pitch();
 	}
 
 	@Override
@@ -470,21 +475,19 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	}
 
 	public void danmakuFinishBonus() {
-		if(!worldObj.isRemote) {
-			ShotData shot = getShotData();
-			if(shot.sizeZ() * 1.5 < shot.sizeX()) {
-				double zPos = 0.0D;
-				while(zPos < shot.sizeZ()) {
-					//MutableVector3 position = angle.copyObj().multiplyMutable(zPos).addMutable(posX, posY, posZ);
-					//TODO: Give score here
-					zPos += 1.5D;
-				}
-				setDead();
-			}
-			else {
+		ShotData shot = getShotData();
+		if(shot.sizeZ() * 1.5 < shot.sizeX()) {
+			double zPos = 0.0D;
+			while(zPos < shot.sizeZ()) {
+				//MutableVector3 position = angle.copyObj().multiplyMutable(zPos).addMutable(posX, posY, posZ);
 				//TODO: Give score here
-				setDead();
+				zPos += 1.5D;
 			}
+			setDead();
+		}
+		else {
+			//TODO: Give score here
+			setDead();
 		}
 	}
 

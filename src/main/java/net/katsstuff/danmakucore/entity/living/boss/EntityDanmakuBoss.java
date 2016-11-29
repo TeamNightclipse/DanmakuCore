@@ -16,6 +16,7 @@ import com.google.common.base.Optional;
 import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
 import net.katsstuff.danmakucore.entity.living.phase.Phase;
+import net.katsstuff.danmakucore.misc.LogicalSideOnly;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -25,6 +26,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
 
 public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 
@@ -122,6 +124,7 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 	}
 
 	@SuppressWarnings("WeakerAccess")
+	@LogicalSideOnly(Side.SERVER)
 	protected void updateBossName() {
 		java.util.Optional<ITextComponent> spellcardName = phaseManager.getCurrentPhase().getSpellcardName();
 		spellcardName.ifPresent(iTextComponent -> bossInfo.setName(this.getDisplayName().appendText(" ").appendSibling(iTextComponent)));
