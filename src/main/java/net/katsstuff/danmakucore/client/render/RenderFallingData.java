@@ -28,8 +28,8 @@ public class RenderFallingData extends Render<EntityFallingData> {
 	}
 
 	private static final ResourceLocation SCORE_GREEN_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/score_green.png");
-	private static final ResourceLocation SCORE_BLUE_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/score_blue.png");
-	private static final ResourceLocation POWER_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/power.png");
+	private static final ResourceLocation SCORE_BLUE_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/point_blue.png");
+	private static final ResourceLocation POWER_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/power_small.png");
 	private static final ResourceLocation BIG_POWER_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/power_big.png");
 	private static final ResourceLocation LIFE_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/life.png");
 	private static final ResourceLocation BOMB_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/bomb.png");

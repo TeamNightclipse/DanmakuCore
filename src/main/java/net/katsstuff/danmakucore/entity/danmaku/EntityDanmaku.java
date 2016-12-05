@@ -24,6 +24,7 @@ import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.helper.NBTHelper;
+import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.lib.data.LibSubEntities;
 import net.katsstuff.danmakucore.misc.LogicalSideOnly;
 import net.minecraft.entity.Entity;
@@ -33,6 +34,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -473,17 +475,34 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 	public void danmakuFinishBonus() {
 		ShotData shot = getShotData();
+		Vector3 pos = new Vector3(this);
+		//noinspection ConstantConditions
+		Optional<EntityLivingBase> target = getUser().flatMap(u -> {
+			DamageSource lastDamageSource = u.getLastDamageSource();
+
+			if(lastDamageSource != null) {
+				Entity sourceOfDamage = lastDamageSource.getEntity();
+				if(sourceOfDamage instanceof EntityLivingBase) {
+					return Optional.of((EntityLivingBase)sourceOfDamage);
+				}
+			}
+
+			return Optional.empty();
+		});
+		Vector3 angle = target.map(to -> Vector3.angleToEntity(this, to)).orElse(Vector3.Down());
+
 		if(shot.sizeZ() * 1.5 < shot.sizeX()) {
 			double zPos = 0.0D;
 			while(zPos < shot.sizeZ()) {
-				//MutableVector3 position = angle.copyObj().multiplyMutable(zPos).addMutable(posX, posY, posZ);
-				//TODO: Give score here
+				Vector3 realPos = pos.offset(angle, zPos);
+
+				worldObj.spawnEntityInWorld(TouhouHelper.createScoreGreen(worldObj, target.orElse(null), realPos, angle));
 				zPos += 1.5D;
 			}
 			setDead();
 		}
 		else {
-			//TODO: Give score here
+			worldObj.spawnEntityInWorld(TouhouHelper.createScoreGreen(worldObj, target.orElse(null), pos, angle));
 			setDead();
 		}
 	}

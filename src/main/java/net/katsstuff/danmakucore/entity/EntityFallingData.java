@@ -18,9 +18,11 @@ import net.katsstuff.danmakucore.helper.NBTHelper;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializer;
+import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.world.World;
 
@@ -38,6 +40,10 @@ public class EntityFallingData extends Entity {
 	private static final DataSerializer<DataType> DATA_TYPE_SERIALIZER = new CoreDataSerializers.EnumSerializer<>(DataType.class);
 
 	private static final DataParameter<DataType> DATA_TYPE = EntityDataManager.createKey(EntityFallingData.class, DATA_TYPE_SERIALIZER);
+
+	static {
+		DataSerializers.registerSerializer(DATA_TYPE_SERIALIZER);
+	}
 
 	@Nullable
 	private Entity target;
@@ -66,17 +72,20 @@ public class EntityFallingData extends Entity {
 	public void onUpdate() {
 		super.onUpdate();
 
-		Vector3 motion;
-		if(target != null) {
-			motion = Vector3.angleToEntity(this, target);
-		}
-		else {
-			motion = angle;
-		}
+		if(!worldObj.isRemote) {
+			Vector3 motion;
+			if(target != null) {
+				motion = Vector3.angleToEntity(this, target);
+			}
+			else {
+				motion = angle;
+			}
 
-		motionX = motion.x();
-		motionY = motion.y();
-		motionZ = motion.z();
+			motionX = motion.x();
+			motionY = motion.y();
+			motionZ = motion.z();
+			setPosition(posX + motionX, posY + motionY, posZ + motionZ);
+		}
 	}
 
 	@Override
@@ -100,6 +109,8 @@ public class EntityFallingData extends Entity {
 				default:
 					break;
 			}
+			this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 0.75F, 1.3F);
+			setDead();
 		}
 	}
 
