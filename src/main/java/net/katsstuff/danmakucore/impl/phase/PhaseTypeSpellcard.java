@@ -10,6 +10,7 @@ package net.katsstuff.danmakucore.impl.phase;
 
 import java.util.Optional;
 
+import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
 import net.katsstuff.danmakucore.entity.living.phase.Phase;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseManager;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
@@ -48,6 +49,8 @@ public class PhaseTypeSpellcard extends PhaseType {
 		private final PhaseTypeSpellcard type;
 		private boolean firstAttack;
 
+		private boolean freezeCounter = false;
+
 		public PhaseSpellcard(PhaseManager manager, PhaseTypeSpellcard type, Spellcard spellcard) {
 			super(manager);
 			this.type = type;
@@ -64,16 +67,26 @@ public class PhaseTypeSpellcard extends PhaseType {
 		@Override
 		public void serverUpdate() {
 			super.serverUpdate();
-			if(isCounterStart()) {
-				EntityMob entity = getEntity();
-				EntityLivingBase target = entity.getAttackTarget();
-				if(target != null) {
-					Optional<EntitySpellcard> optSpellcard = TouhouHelper.declareSpellcard(entity, target, spellcard, firstAttack);
-					if(optSpellcard.isPresent()) {
-						EntitySpellcard spellcard = optSpellcard.get();
-						firstAttack = false;
-						spellcard.getSpellCard().setDanmakuLevel(level);
-					}
+
+			EntityDanmakuMob entity = getEntity();
+			EntityLivingBase target = entity.getAttackTarget();
+
+			if((target == null || !entity.getEntitySenses().canSee(target)) && isCounterStart()) {
+				freezeCounter = true;
+			}
+
+			if(freezeCounter) {
+				counter = 0;
+			}
+
+			if(isCounterStart() && target != null && entity.getEntitySenses().canSee(target)) {
+				freezeCounter = false;
+
+				Optional<EntitySpellcard> optSpellcard = TouhouHelper.declareSpellcard(entity, target, spellcard, firstAttack);
+				if(optSpellcard.isPresent()) {
+					EntitySpellcard spellcard = optSpellcard.get();
+					firstAttack = false;
+					spellcard.getSpellCard().setDanmakuLevel(level);
 				}
 			}
 		}
