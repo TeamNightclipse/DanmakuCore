@@ -60,6 +60,7 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 	 * Sets a phase as the one in use, overriding the previous one. This also initiates the new phase.
 	 */
 	public void setCurrentPhase(Phase phase) {
+		getCurrentPhase().deconstruct();
 		phaseList.set(currentPhaseIndex, phase);
 		phase.init();
 	}
@@ -68,6 +69,7 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 	 * Sets the current phase to the next one and initiates it.
 	 */
 	public void nextPhase() {
+		getCurrentPhase().deconstruct();
 		currentPhaseIndex++;
 		getCurrentPhase().init();
 	}
@@ -76,6 +78,7 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 	 * Sets the current phase to the previous one and initiates it.
 	 */
 	public void previousPhase() {
+		getCurrentPhase().deconstruct();
 		currentPhaseIndex--;
 		getCurrentPhase().init();
 	}

@@ -86,7 +86,7 @@ public class TouhouHelper {
 				changeAndSyncPlayerData(data -> data.addBombs(-spellcard.getLevel()), player);
 			}
 
-			return declareSpellcard(player, canDeclareSpellcard.get(), spellcard, firstAttack);
+			return declareSpellcard(player, canDeclareSpellcard.get(), spellcard, firstAttack, true);
 		}
 
 		return Optional.empty();
@@ -99,21 +99,12 @@ public class TouhouHelper {
 	 * @return The Spellcard if it was spawned.
 	 */
 	public static Optional<EntitySpellcard> declareSpellcard(EntityLivingBase user, @Nullable EntityLivingBase target, Spellcard spellCard,
-			boolean firstAttack) {
+			boolean firstAttack, boolean addSpellcardName) {
 		if(spellCard.onDeclare(user, target, firstAttack)) {
-			EntitySpellcard entitySpellCard = new EntitySpellcard(user, target, spellCard);
+			EntitySpellcard entitySpellCard = new EntitySpellcard(user, target, spellCard, addSpellcardName);
 			user.worldObj.spawnEntityInWorld(entitySpellCard);
 
-			//Does chat
-			if(user instanceof EntityPlayer) {
-				user.addChatMessage(new TextComponentTranslation(spellCard.getUnlocalizedName()));
-			}
-
 			if(firstAttack) {
-				if(target instanceof EntityPlayer) {
-					target.addChatMessage(new TextComponentTranslation(spellCard.getUnlocalizedName()));
-				}
-
 				DanmakuHelper.danmakuRemove(user, 40.0F, DanmakuHelper.DanmakuRemoveMode.ENEMY, true);
 			}
 

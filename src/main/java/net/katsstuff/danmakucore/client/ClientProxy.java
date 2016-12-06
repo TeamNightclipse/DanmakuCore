@@ -11,6 +11,7 @@ package net.katsstuff.danmakucore.client;
 import net.katsstuff.danmakucore.CommonProxy;
 import net.katsstuff.danmakucore.client.handler.BossBarHandler;
 import net.katsstuff.danmakucore.client.handler.HUDHandler;
+import net.katsstuff.danmakucore.client.handler.SpellcardHandler;
 import net.katsstuff.danmakucore.client.helper.RenderHelper;
 import net.katsstuff.danmakucore.client.render.RenderDanmaku;
 import net.katsstuff.danmakucore.client.render.RenderFallingData;
@@ -30,6 +31,7 @@ import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -42,6 +44,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class ClientProxy extends CommonProxy {
 
 	private final BossBarHandler bossBarHandler = new BossBarHandler();
+	private final SpellcardHandler spellcardHandler = new SpellcardHandler();
 
 	@Override
 	public void bakeDanmakuVariant(DanmakuVariant variant) {
@@ -66,6 +69,7 @@ public class ClientProxy extends CommonProxy {
 
 		MinecraftForge.EVENT_BUS.register(new HUDHandler());
 		MinecraftForge.EVENT_BUS.register(bossBarHandler);
+		MinecraftForge.EVENT_BUS.register(spellcardHandler);
 	}
 
 	@Override
@@ -107,5 +111,15 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void removeDanmakuBoss(EntityDanmakuBoss boss) {
 		bossBarHandler.danmakuBosses.remove(boss);
+	}
+
+	@Override
+	public void addSpellcard(ITextComponent name) {
+		spellcardHandler.addSpellcard(name);
+	}
+
+	@Override
+	public void removeSpellcard(ITextComponent name) {
+		spellcardHandler.removeSpellcard(name);
 	}
 }

@@ -10,6 +10,7 @@ package net.katsstuff.danmakucore.entity.living.phase;
 
 import java.util.Optional;
 
+import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.EnumDanmakuLevel;
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
@@ -49,6 +50,8 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 	@SuppressWarnings("WeakerAccess")
 	protected final PhaseManager manager;
 
+	private ITextComponent addedName = null;
+
 	public Phase(PhaseManager manager) {
 		this.manager = manager;
 	}
@@ -59,6 +62,22 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 	public void init() {
 		counter = 0;
 		interval = 40;
+
+		Optional<ITextComponent> spellcardName = getSpellcardName();
+		if(spellcardName.isPresent()) {
+			addedName = spellcardName.get();
+			DanmakuCore.proxy.addSpellcard(addedName);
+		}
+	}
+
+	/**
+	 * Deconstruct this {@link Phase}.
+	 */
+	public void deconstruct() {
+		if(addedName != null) {
+			DanmakuCore.proxy.removeSpellcard(addedName);
+			addedName = null;
+		}
 	}
 
 	@SuppressWarnings("WeakerAccess")

@@ -59,15 +59,6 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 		this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
 	}
 
-	@Override
-	public void onUpdate() {
-		if(firstUpdate && !worldObj.isRemote) {
-			updateBossName();
-		}
-
-		super.onUpdate();
-	}
-
 	@SuppressWarnings("Guava")
 	@Override
 	public void onLivingUpdate() {
@@ -83,7 +74,6 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 			Phase currentPhase = phaseManager.getCurrentPhase();
 			phaseManager.nextPhase();
 			if(!worldObj.isRemote) {
-				updateBossName();
 				setHealth(getMaxHealth());
 				dropPhaseLoot(cause);
 				currentPhase.dropLoot(cause);
@@ -93,6 +83,7 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 		}
 		else {
 			super.onDeath(cause);
+			phaseManager.getCurrentPhase().deconstruct();
 			DanmakuCore.proxy.removeDanmakuBoss(this);
 		}
 	}
@@ -121,13 +112,6 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 
 	private void setupPhases() {
 		phaseManager.addPhases(getPhaseList());
-	}
-
-	@SuppressWarnings("WeakerAccess")
-	@LogicalSideOnly(Side.SERVER)
-	protected void updateBossName() {
-		java.util.Optional<ITextComponent> spellcardName = phaseManager.getCurrentPhase().getSpellcardName();
-		spellcardName.ifPresent(iTextComponent -> bossInfo.setName(this.getDisplayName().appendText(" ").appendSibling(iTextComponent)));
 	}
 
 	public int remainingSpellcards() {

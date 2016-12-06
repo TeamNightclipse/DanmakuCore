@@ -82,7 +82,7 @@ public class PhaseTypeSpellcard extends PhaseType {
 			if(isCounterStart() && target != null && entity.getEntitySenses().canSee(target)) {
 				freezeCounter = false;
 
-				Optional<EntitySpellcard> optSpellcard = TouhouHelper.declareSpellcard(entity, target, spellcard, firstAttack);
+				Optional<EntitySpellcard> optSpellcard = TouhouHelper.declareSpellcard(entity, target, spellcard, firstAttack, false);
 				if(optSpellcard.isPresent()) {
 					EntitySpellcard spellcard = optSpellcard.get();
 					firstAttack = false;

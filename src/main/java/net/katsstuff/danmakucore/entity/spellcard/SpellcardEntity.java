@@ -19,6 +19,8 @@ import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.misc.LogicalSideOnly;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.relauncher.Side;
@@ -76,6 +78,14 @@ public abstract class SpellcardEntity implements INBTSerializable<NBTTagCompound
 
 	public void setDanmakuLevel(EnumDanmakuLevel danmakuLevel) {
 		this.danmakuLevel = danmakuLevel;
+	}
+
+	public Spellcard getType() {
+		return type;
+	}
+
+	public ITextComponent getName() {
+		return new TextComponentTranslation(type.getUnlocalizedName());
 	}
 
 	public World getWorld() {

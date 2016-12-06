@@ -53,6 +53,7 @@ import net.katsstuff.danmakucore.lib.LibSubEntityName;
 import net.katsstuff.danmakucore.lib.data.LibShotData;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -207,6 +208,16 @@ public class CommonProxy {
 	 * Removes a {@link EntityDanmakuBoss} from the boss bar render handler.
 	 */
 	public void removeDanmakuBoss(EntityDanmakuBoss boss) {}
+
+	/**
+	 * Adds a spellcard name to the spellcard renderer
+	 */
+	public void addSpellcard(ITextComponent name) {}
+
+	/**
+	 * Removes a spellcard from the spellcard renderer
+	 */
+	public void removeSpellcard(ITextComponent name) {}
 
 	@SuppressWarnings("deprecation") //We need the default value
 	private static <I extends IForgeRegistryEntry<I>> FMLControlledNamespacedRegistry<I> createRegistry(ResourceLocation name, Class<I> clazz,
