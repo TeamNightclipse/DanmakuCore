@@ -18,7 +18,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class FormGeneric extends Form {
 
-	private final ResourceLocation texture = new ResourceLocation(LibMod.MODID, "textures/entity/danmaku/white.png");
+	private final ResourceLocation texture = new ResourceLocation(LibMod.MODID, "textures/white.png");
 
 	@SideOnly(Side.CLIENT)
 	protected IRenderForm renderer;
