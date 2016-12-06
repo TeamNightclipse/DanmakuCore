@@ -14,8 +14,10 @@ import java.util.UUID;
 import com.google.common.base.Optional;
 
 import net.katsstuff.danmakucore.DanmakuCore;
+import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
 import net.katsstuff.danmakucore.entity.living.phase.Phase;
+import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.misc.LogicalSideOnly;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.datasync.DataParameter;
@@ -76,24 +78,22 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 	}
 
 	@Override
-	public void setDead() {
-		super.setDead();
-		DanmakuCore.proxy.removeDanmakuBoss(this);
-	}
-
-	@Override
-	protected void onDeathUpdate() {
+	public void onDeath(DamageSource cause) {
 		if(phaseManager.hasNextPhase()) {
+			Phase currentPhase = phaseManager.getCurrentPhase();
 			phaseManager.nextPhase();
 			if(!worldObj.isRemote) {
 				updateBossName();
 				setHealth(getMaxHealth());
+				dropPhaseLoot(cause);
+				currentPhase.dropLoot(cause);
 			}
 			isDead = false;
 			deathTime = 0;
 		}
 		else {
-			super.onDeathUpdate();
+			super.onDeath(cause);
+			DanmakuCore.proxy.removeDanmakuBoss(this);
 		}
 	}
 
@@ -138,4 +138,41 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 
 	@SuppressWarnings("unused")
 	public abstract EnumTouhouCharacters getCharacter();
+
+	@Override
+	protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
+		super.dropLoot(wasRecentlyHit, lootingModifier, source);
+		phaseManager.getCurrentPhase().dropLoot(source);
+	}
+
+	@Override
+	protected void dropPhaseLoot(DamageSource source) {
+		super.dropPhaseLoot(source);
+
+		int powerSpawns = rand.nextInt(6);
+		Vector3 pos = new Vector3(this);
+		Vector3 angle;
+		if(source.getEntity() != null) {
+			angle = Vector3.angleToEntity(this, source.getEntity());
+		} else {
+			angle = Vector3.Down();
+		}
+
+		for(int i = 0; i < powerSpawns; i++) {
+			worldObj.spawnEntityInWorld(TouhouHelper.createPower(worldObj, pos, angle));
+		}
+
+		int pointSpawns = rand.nextInt(8);
+		for(int i = 0; i < pointSpawns; i++) {
+			worldObj.spawnEntityInWorld(TouhouHelper.createScoreBlue(worldObj, null, pos, angle));
+		}
+
+		if(rand.nextInt(100) < 10) {
+			worldObj.spawnEntityInWorld(TouhouHelper.createBomb(worldObj, pos, angle));
+		}
+
+		if(rand.nextInt(100) < 2) {
+			worldObj.spawnEntityInWorld(TouhouHelper.createLife(worldObj, pos, angle));
+		}
+	}
 }

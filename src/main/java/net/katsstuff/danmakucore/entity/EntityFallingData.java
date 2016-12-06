@@ -24,6 +24,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializer;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class EntityFallingData extends Entity {
@@ -73,17 +74,24 @@ public class EntityFallingData extends Entity {
 		super.onUpdate();
 
 		if(!worldObj.isRemote) {
+
 			Vector3 motion;
 			if(target != null) {
 				motion = Vector3.angleToEntity(this, target);
 			}
 			else {
-				motion = angle;
+				motion = angle.multiply(0.25);
 			}
 
 			motionX = motion.x();
 			motionY = motion.y();
 			motionZ = motion.z();
+
+			if(!worldObj.isAirBlock(new BlockPos(posX + motionX, posY + motionY, posZ + motionZ))) {
+				setDead();
+				return;
+			}
+
 			setPosition(posX + motionX, posY + motionY, posZ + motionZ);
 		}
 	}

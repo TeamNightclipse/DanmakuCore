@@ -23,7 +23,6 @@ import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.misc.LogicalSideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -153,27 +152,37 @@ public class TouhouHelper {
 		});
 	}
 
+	public static Vector3 fuzzPosition(Vector3 pos) {
+		return pos.add(Vector3.randomVector());
+	}
+
 	public static EntityFallingData createScoreGreen(World world, @Nullable Entity target, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_GREEN, pos, angle, target, 10);
+		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_GREEN,
+				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), target, 10);
 	}
 
 	public static EntityFallingData createScoreBlue(World world, @Nullable Entity target, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_BLUE, pos, angle, target, 100);
+		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_BLUE,
+				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), target, 100);
 	}
 
 	public static EntityFallingData createPower(World world, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.POWER, pos, angle, null, 0.05F);
+		return new EntityFallingData(world, EntityFallingData.DataType.POWER,
+				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 0.05F);
 	}
 
 	public static EntityFallingData createBigPower(World world, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.BIG_POWER, pos, angle, null, 1F);
+		return new EntityFallingData(world, EntityFallingData.DataType.BIG_POWER,
+				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 1F);
 	}
 
 	public static EntityFallingData createLife(World world, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.LIFE, pos, angle, null, 1);
+		return new EntityFallingData(world, EntityFallingData.DataType.LIFE,
+				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 1);
 	}
 
 	public static EntityFallingData createBomb(World world, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.BOMB, pos, angle, null, 1);
+		return new EntityFallingData(world, EntityFallingData.DataType.BOMB,
+				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 1);
 	}
 }

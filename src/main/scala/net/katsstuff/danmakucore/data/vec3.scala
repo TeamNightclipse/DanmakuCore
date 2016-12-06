@@ -506,6 +506,8 @@ final case class Vector3(@BeanProperty x: Double, @BeanProperty y: Double, @Bean
 
 object Vector3 {
 
+	private val rand = new Random
+
 	/* ============================== Constants ============================== */
 
 	final val Zero   = Vector3(0D, 0D, 0D)
@@ -572,13 +574,12 @@ object Vector3 {
 	def angleRandom: Vector3 = randomVector
 
 	def angleLimitRandom(angle: Vector3, limitAngle: Float): Vector3 = {
-		val rotate = rotate_Random
-		val rand = new Random
+		val rotate = rotateRandom
 		angle.rotate(rand.nextFloat * limitAngle - limitAngle / 2.0F, rotate)
 	}
 
 	/* ============================== Misc ============================== */
-	def rotate_Random: Vector3 = randomVector
+	def rotateRandom: Vector3 = randomVector
 
 	def gravity(gravityY: Double): Vector3 = Vector3(0.0D, gravityY, 0.0D)
 
@@ -615,7 +616,6 @@ object Vector3 {
 	}
 
 	def randomVector: Vector3 = {
-		val rand = new Random
 		fromSpherical(rand.nextFloat * 360F, rand.nextFloat * 180F - 90F)
 	}
 

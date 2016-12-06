@@ -23,6 +23,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -38,7 +39,7 @@ public class PhaseTypeSpellcard extends PhaseType {
 		return new PhaseSpellcard(manager, this, spellcard);
 	}
 
-	public static class PhaseSpellcard extends Phase implements IItemStackConvertible {
+	public static class PhaseSpellcard extends Phase {
 
 		public static final String NBT_SPELLCARD = "spellcard";
 		public static final String NBT_FIRST_ATTACK = "firstAttack";
@@ -112,8 +113,8 @@ public class PhaseTypeSpellcard extends PhaseType {
 		}
 
 		@Override
-		public ItemStack getItemStack() {
-			return new ItemStack(LibItems.SPELLCARD, 1, DanmakuRegistry.SPELLCARD.getId(spellcard));
+		public void dropLoot(DamageSource source) {
+			getEntity().entityDropItem(new ItemStack(LibItems.SPELLCARD, 1, DanmakuRegistry.SPELLCARD.getId(spellcard)), 0F);
 		}
 	}
 }

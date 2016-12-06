@@ -16,6 +16,7 @@ import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.misc.LogicalSideOnly;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.relauncher.Side;
@@ -113,6 +114,8 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 	public Optional<Spellcard> getSpellcard() {
 		return Optional.empty();
 	}
+
+	public void dropLoot(DamageSource source) {}
 
 	@Override
 	public NBTTagCompound serializeNBT() {

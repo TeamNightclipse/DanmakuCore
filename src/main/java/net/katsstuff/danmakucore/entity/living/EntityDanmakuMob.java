@@ -16,6 +16,7 @@ import net.katsstuff.danmakucore.entity.living.ai.pathfinding.PathNavigateFlyer;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseManager;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
+import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.EntityMob;
@@ -213,5 +214,34 @@ public abstract class EntityDanmakuMob extends EntityMob {
 		super.writeEntityToNBT(tag);
 		tag.setByte(NBT_FLYINGHEIGHT, (byte)getFlyingHeight());
 		tag.setTag(NBT_PHASE_MANAGER, phaseManager.serializeNBT());
+	}
+
+	/**
+	 * Loot that is dropped every phase.
+	 */
+	protected void dropPhaseLoot(DamageSource source) {
+		int powerSpawns = rand.nextInt(3);
+		Vector3 pos = new Vector3(this);
+		Vector3 angle;
+		if(source.getEntity() != null) {
+			angle = Vector3.angleToEntity(this, source.getEntity());
+		} else {
+			angle = Vector3.Down();
+		}
+
+		for(int i = 1; i < powerSpawns; i++) {
+			worldObj.spawnEntityInWorld(TouhouHelper.createPower(worldObj, pos, angle));
+		}
+
+		int pointSpawns = rand.nextInt(4);
+		for(int i = 1; i < pointSpawns; i++) {
+			worldObj.spawnEntityInWorld(TouhouHelper.createScoreBlue(worldObj, null, pos, angle));
+		}
+	}
+
+	@Override
+	protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
+		dropPhaseLoot(source);
+		super.dropLoot(wasRecentlyHit, lootingModifier, source);
 	}
 }
