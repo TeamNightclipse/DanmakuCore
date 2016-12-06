@@ -52,6 +52,13 @@ public class RenderFallingData extends Render<EntityFallingData> {
 		float lowerU = 0F;
 		float size = 0.35F;
 
+		boolean alpha = entity.getDataType() == EntityFallingData.DataType.SCORE_GREEN;
+
+		if(alpha) {
+			GlStateManager.enableBlend();
+			GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+		}
+
 		Tessellator tes = Tessellator.getInstance();
 		VertexBuffer vb = tes.getBuffer();
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
@@ -60,6 +67,10 @@ public class RenderFallingData extends Render<EntityFallingData> {
 		vb.pos(-size, -size, 0D).tex(lowerU, lowerV).normal(0F, 1F, 0F).endVertex();
 		vb.pos(size, -size, 0D).tex(upperU, lowerV).normal(0F, 1F, 0F).endVertex();
 		tes.draw();
+
+		if(alpha) {
+			GlStateManager.disableBlend();
+		}
 
 		GlStateManager.popMatrix();
 	}
