@@ -1,0 +1,47 @@
+{
+  "textures": {
+	"0": "danmakucore:items/spellcard/spellcard_back",
+	"-1": "danmakucore:gray"
+  },
+  "elements": [
+	{
+	  "from": [ 2.5, 0.0, 8.0 ],
+	  "to": [ 13.5, 16.0, 9.0 ],
+	  "faces": {
+		"north": { "texture": "#0", "uv": [ 2.5, 0.0, 13.5, 16.0 ] },
+		"east": { "texture": "#-1", "uv": [ 0.0, 0.0, 1.0, 16.0 ] },
+		"south": { "texture": "#1", "uv": [ 2.5, 0.0, 13.5, 16.0 ] },
+		"west": { "texture": "#-1", "uv": [ 0.0, 0.0, 1.0, 16.0 ] },
+		"up": { "texture": "#-1", "uv": [ 0.0, 0.0, 11.0, 1.0 ] },
+		"down": { "texture": "#-1", "uv": [ 0.0, 0.0, 11.0, 1.0 ] }
+	  }
+	}
+  ],
+  "display": {
+	"ground": {
+	  "rotation": [ 0, 0, 0 ],
+	  "translation": [ 0, 2, 0],
+	  "scale":[ 0.5, 0.5, 0.5 ]
+	},
+	"head": {
+	  "rotation": [ 0, 180, 0 ],
+	  "translation": [ 0, 13, 7],
+	  "scale":[ 1, 1, 1]
+	},
+	"thirdperson_righthand": {
+	  "rotation": [ 0, 0, 0 ],
+	  "translation": [ 0, 3, 1 ],
+	  "scale": [ 0.55, 0.55, 0.55 ]
+	},
+	"firstperson_righthand": {
+	  "rotation": [ 0, -90, 25 ],
+	  "translation": [ 1.13, 3.2, 1.13],
+	  "scale": [ 0.68, 0.68, 0.68 ]
+	},
+	"fixed": {
+	  "rotation": [ 0, 180, 0 ],
+	  "translation": [ 0, 0, 0],
+	  "scale":[ 1, 1, 1]
+	}
+  }
+}

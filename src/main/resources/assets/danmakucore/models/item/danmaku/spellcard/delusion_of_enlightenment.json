@@ -1,6 +1,6 @@
 {
-  "parent": "item/generated",
+  "parent": "danmakucore:item/danmaku/spellcard/spellcard_base",
   "textures": {
-    "layer0": "danmakucore:items/spellcard/delusion_of_enlightenment"
+    "1": "danmakucore:items/spellcard/delusion_of_enlightenment"
   }
 }
