@@ -19,6 +19,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -26,6 +27,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class SpellcardHandler {
 
 	private Map<UUID, SpellcardInfoClient> spellcards = new HashMap<>();
+
+	@SubscribeEvent
+	public void onLeave(PlayerEvent.PlayerLoggedOutEvent event) {
+		spellcards.clear();
+	}
 
 	@SubscribeEvent
 	public void renderSpellcard(RenderGameOverlayEvent.Post event) {

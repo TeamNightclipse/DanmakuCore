@@ -8,6 +8,7 @@
  */
 package net.katsstuff.danmakucore.entity.living.phase;
 
+import java.util.List;
 import java.util.Optional;
 
 import net.katsstuff.danmakucore.EnumDanmakuLevel;
@@ -15,7 +16,9 @@ import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.entity.spellcard.spellcardbar.SpellcardInfoServer;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
+import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.misc.LogicalSideOnly;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
@@ -27,6 +30,7 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 
 	private static final String NBT_COUNTER = "counter";
 	private static final String NBT_INTERVAL = "interval";
+	private static final String NBT_OLD_INTERVAL = "oldInterval";
 	static final String NBT_NAME = "name";
 
 	/**
@@ -40,6 +44,7 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 	 * The set amount of time that this phase will use to reset the counter.
 	 */
 	protected int interval;
+	private int oldInterval = -1;
 
 	/**
 	 * The level to use for this {@link Phase}. Use this instead of getting
@@ -67,9 +72,13 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 		counter = 0;
 		interval = 40;
 
+		EntityDanmakuMob entity = getEntity();
 		Optional<ITextComponent> spellcardName = getSpellcardName();
-		if(!getEntity().worldObj.isRemote && spellcardName.isPresent()) {
+		if(!entity.worldObj.isRemote && spellcardName.isPresent()) {
 			spellcardInfo = new SpellcardInfoServer(spellcardName.get());
+
+			List<EntityPlayerMP> toAdd = entity.worldObj.getEntitiesWithinAABB(EntityPlayerMP.class, entity.getEntityBoundingBox().expandXyz(32D));
+			toAdd.forEach(this::addTrackingPlayer);
 		}
 	}
 
@@ -102,6 +111,20 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 			spellcardInfo.tick();
 		}
 
+		if(useFreeze() && isCounterStart()) {
+			EntityDanmakuMob entity = getEntity();
+			EntityLivingBase target = entity.getAttackTarget();
+
+			if(!isFrozen() && (target == null || !entity.getEntitySenses().canSee(target))) {
+				oldInterval = interval;
+				interval = 0;
+			}
+			else if(isFrozen() && target != null && entity.getEntitySenses().canSee(target)) {
+				interval = oldInterval;
+				oldInterval = -1;
+			}
+		}
+
 		if(counter % 10 == 0 || interval < 10) {
 			Optional<ITextComponent> spellcardName = getSpellcardName();
 			if((spellcardInfo == null && spellcardName.isPresent()) || spellcardName.map(t -> !t.equals(spellcardInfo.getName())).orElse(false)) {
@@ -119,6 +142,14 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 
 	public boolean isActive() {
 		return isActive;
+	}
+
+	protected boolean useFreeze() {
+		return true;
+	}
+
+	protected boolean isFrozen() {
+		return oldInterval != -1;
 	}
 
 	public void addTrackingPlayer(EntityPlayerMP player) {
@@ -182,6 +213,7 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 		tag.setString(NBT_NAME, getType().getFullName().toString());
 		tag.setInteger(NBT_COUNTER, counter);
 		tag.setInteger(NBT_INTERVAL, interval);
+		tag.setInteger(NBT_OLD_INTERVAL, oldInterval);
 
 		return tag;
 	}
@@ -190,5 +222,6 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 	public void deserializeNBT(NBTTagCompound nbt) {
 		counter = nbt.getInteger(NBT_COUNTER);
 		interval = nbt.getInteger(NBT_INTERVAL);
+		oldInterval = nbt.getInteger(NBT_OLD_INTERVAL);
 	}
 }

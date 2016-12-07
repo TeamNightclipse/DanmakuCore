@@ -67,20 +67,37 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 
 	@Override
 	public void onDeath(DamageSource cause) {
+		if(!phaseManager.hasNextPhase()) {
+			super.onDeath(cause);
+		}
+	}
+
+	@Override
+	protected void onDeathUpdate() {
+		Phase oldCurrentPhase = phaseManager.getCurrentPhase();
 		if(phaseManager.hasNextPhase()) {
-			Phase currentPhase = phaseManager.getCurrentPhase();
 			phaseManager.nextPhase();
 			if(!worldObj.isRemote) {
 				setHealth(getMaxHealth());
-				dropPhaseLoot(cause);
-				currentPhase.dropLoot(cause);
+
+				DamageSource source = getLastDamageSource();
+				if(source != null) {
+					dropPhaseLoot(source);
+					oldCurrentPhase.dropLoot(source);
+				}
+				if(phaseManager.getCurrentPhase().isSpellcard()) {
+					bossInfo.setColor(BossInfo.Color.RED);
+				}
+				else {
+					bossInfo.setColor(BossInfo.Color.WHITE);
+				}
 			}
-			isDead = false;
-			deathTime = 0;
 		}
 		else {
-			super.onDeath(cause);
-			phaseManager.getCurrentPhase().deconstruct();
+			super.onDeathUpdate();
+			if(oldCurrentPhase.isActive()) {
+				oldCurrentPhase.deconstruct();
+			}
 			DanmakuCore.proxy.removeDanmakuBoss(this);
 		}
 	}
@@ -120,12 +137,6 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 
 	@SuppressWarnings("unused")
 	public abstract EnumTouhouCharacters getCharacter();
-
-	@Override
-	protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
-		super.dropLoot(wasRecentlyHit, lootingModifier, source);
-		phaseManager.getCurrentPhase().dropLoot(source);
-	}
 
 	@Override
 	protected void dropPhaseLoot(DamageSource source) {

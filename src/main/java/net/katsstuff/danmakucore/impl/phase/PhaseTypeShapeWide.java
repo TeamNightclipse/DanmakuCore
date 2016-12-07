@@ -17,8 +17,10 @@ import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
 import net.katsstuff.danmakucore.entity.living.phase.Phase;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseManager;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
+import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.impl.shape.ShapeRing;
 import net.katsstuff.danmakucore.impl.shape.ShapeWideShot;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class PhaseTypeShapeWide extends PhaseType {
@@ -89,9 +91,12 @@ public class PhaseTypeShapeWide extends PhaseType {
 		@Override
 		public void serverUpdate() {
 			super.serverUpdate();
-			if(isCounterStart()) {
-				EntityDanmakuMob entity = getEntity();
-				shape.drawForTick(new Vector3(entity), Vector3.angleEntity(entity), 0);
+
+			EntityDanmakuMob entity = getEntity();
+			EntityLivingBase target = entity.getAttackTarget();
+
+			if(!isFrozen() && isCounterStart() && target != null && entity.getEntitySenses().canSee(target)) {
+				shape.drawForTick(new Vector3(entity), Vector3.angleToEntity(entity, target), 0);
 			}
 		}
 

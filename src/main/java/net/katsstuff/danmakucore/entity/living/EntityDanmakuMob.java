@@ -249,6 +249,7 @@ public abstract class EntityDanmakuMob extends EntityMob {
 	@Override
 	protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
 		dropPhaseLoot(source);
+		phaseManager.getCurrentPhase().dropLoot(source);
 		super.dropLoot(wasRecentlyHit, lootingModifier, source);
 	}
 }

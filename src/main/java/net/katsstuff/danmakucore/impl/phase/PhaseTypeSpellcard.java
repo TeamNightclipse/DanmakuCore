@@ -58,6 +58,8 @@ public class PhaseTypeSpellcard extends PhaseType {
 			super.init();
 			interval = spellcard.getEndTime();
 			firstAttack = true;
+
+			getEntity().hurtResistantTime = 40;
 		}
 
 		@Override
@@ -67,13 +69,7 @@ public class PhaseTypeSpellcard extends PhaseType {
 			EntityDanmakuMob entity = getEntity();
 			EntityLivingBase target = entity.getAttackTarget();
 
-			if((target == null || !entity.getEntitySenses().canSee(target)) && isCounterStart()) {
-				interval = 0;
-			}
-
-			if(isCounterStart() && target != null && entity.getEntitySenses().canSee(target)) {
-				interval = spellcard.getEndTime();
-
+			if(!isFrozen() && (isCounterStart() || firstAttack) && target != null && entity.getEntitySenses().canSee(target)) {
 				Optional<EntitySpellcard> optSpellcard = TouhouHelper.declareSpellcard(entity, target, spellcard, firstAttack, false);
 				if(optSpellcard.isPresent()) {
 					EntitySpellcard spellcard = optSpellcard.get();
