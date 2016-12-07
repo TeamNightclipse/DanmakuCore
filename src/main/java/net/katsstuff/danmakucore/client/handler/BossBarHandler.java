@@ -34,7 +34,11 @@ public class BossBarHandler {
 	public void onBossBar(RenderGameOverlayEvent.BossInfo event) {
 		BossInfoLerping bossInfo = event.getBossInfo();
 		Minecraft mc = Minecraft.getMinecraft();
-		for(EntityDanmakuBoss boss : danmakuBosses) {
+
+		//ConcurrentModificationException
+		//noinspection ForLoopReplaceableByForEach
+		for(int i = 0; i < danmakuBosses.size(); i++) {
+			EntityDanmakuBoss boss = danmakuBosses.get(i);
 			if(bossInfo.getUniqueId().equals(boss.getBossInfoUUID())) {
 
 				GlStateManager.pushMatrix();
@@ -51,8 +55,8 @@ public class BossBarHandler {
 						mc.fontRendererObj.drawStringWithShadow("x" + remainingSpellcards, baseX + 14, baseY + 4, 0xFFFFFF);
 					}
 					else {
-						for(int i = 0; i < remainingSpellcards; i++) {
-							Gui.drawModalRectWithCustomSizedTexture(baseX + (i * 14), baseY, 0F, 0F, 12, 12, 12F, 12F);
+						for(int j = 0; j < remainingSpellcards; j++) {
+							Gui.drawModalRectWithCustomSizedTexture(baseX + (j * 14), baseY, 0F, 0F, 12, 12, 12F, 12F);
 						}
 					}
 				}
