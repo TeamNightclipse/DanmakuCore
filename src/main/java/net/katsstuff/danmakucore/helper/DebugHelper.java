@@ -11,6 +11,7 @@ package net.katsstuff.danmakucore.helper;
 import java.lang.reflect.Field;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.client.renderer.debug.DebugRendererPathfinding;
 import net.minecraft.pathfinding.Path;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
@@ -36,5 +37,11 @@ public class DebugHelper {
 			e.printStackTrace();
 		}
 		((DebugRendererPathfinding)Minecraft.getMinecraft().debugRenderer.debugRendererPathfinding).addPath(entityId, path, 0.1F);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void setPathfinding(boolean enabled) {
+		ReflectionHelper.setPrivateValue(DebugRenderer.class, Minecraft.getMinecraft().debugRenderer, true, "pathfindingEnabled");
+		LogHelper.info(ReflectionHelper.getPrivateValue(DebugRenderer.class, Minecraft.getMinecraft().debugRenderer, "pathfindingEnabled"));
 	}
 }
