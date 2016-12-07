@@ -111,7 +111,7 @@ public class ItemDanmaku extends ItemBase {
 		}
 		DanmakuHelper.playShotSound(player);
 
-		return new ActionResult<>(success ? EnumActionResult.SUCCESS : EnumActionResult.FAIL, stack);
+		return new ActionResult<>(success | world.isRemote ? EnumActionResult.SUCCESS : EnumActionResult.FAIL, stack);
 	}
 
 	public static boolean shootDanmaku(ItemStack stack, World world, @Nullable EntityLivingBase player, boolean alternateMode, Vector3 pos,
