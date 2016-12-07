@@ -203,7 +203,7 @@ public class DanmakuHelper {
 	}
 
 	public static float adjustDamageTarget(float base, EntityLivingBase target) {
-		return target instanceof EntityPlayer ? base * 2F : base;
+		return target instanceof EntityPlayer ? base * 3.5F : base;
 	}
 
 	public static float adjustDanmakuDamage(@Nullable EntityLivingBase user, EntityLivingBase target, float base, EnumDanmakuLevel level) {

@@ -37,7 +37,6 @@ public class SubEntityFire extends SubEntityType {
 			this.multiplier = multiplier;
 		}
 
-		//TODO: Longer?
 		@Override
 		public void impactEntity(RayTraceResult rayTrace) {
 			super.impactEntity(rayTrace);

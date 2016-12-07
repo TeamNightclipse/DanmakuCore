@@ -29,6 +29,7 @@ public class ConfigHandler {
 
 	public static class Entities {
 
+		@Config.Comment("Currently not implemented")
 		public boolean circleBossBar = false;
 	}
 }

@@ -35,7 +35,7 @@ public class RenderSpellcard extends Render<EntitySpellcard> {
 	public void doRender(EntitySpellcard entity, double x, double y, double z, float entityYaw, float partialTicks) {
 		GL11.glPushMatrix();
 
-		float size = 2F;
+		float size = 1.5F;
 
 		GL11.glTranslated(x, y, z);
 		GL11.glScalef(size, size, size);

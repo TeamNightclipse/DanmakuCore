@@ -39,7 +39,7 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 
 	@Override
 	public int getLevel() {
-		return 3;
+		return 1;
 	}
 
 	@Override
