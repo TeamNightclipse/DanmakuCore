@@ -20,6 +20,7 @@ import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathNavigate;
@@ -73,12 +74,18 @@ public abstract class EntityDanmakuMob extends EntityMob {
 			setAttackTarget(null);
 		}
 
-		if(firstUpdate) {
-			phaseManager.getCurrentPhase().init();
-		}
-
 		super.onUpdate();
 		phaseManager.tick();
+	}
+
+	@Override
+	public void addTrackingPlayer(EntityPlayerMP player) {
+		phaseManager.getCurrentPhase().addTrackingPlayer(player);
+	}
+
+	@Override
+	public void removeTrackingPlayer(EntityPlayerMP player) {
+		phaseManager.getCurrentPhase().removeTrackingPlayer(player);
 	}
 
 	@Override

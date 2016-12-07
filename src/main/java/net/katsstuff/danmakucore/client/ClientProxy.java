@@ -27,11 +27,11 @@ import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
 import net.katsstuff.danmakucore.item.ItemDanmaku;
 import net.katsstuff.danmakucore.lib.data.LibItems;
+import net.katsstuff.danmakucore.network.SpellcardInfoPacket;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -114,12 +114,8 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
-	public void addSpellcard(ITextComponent name) {
-		spellcardHandler.addSpellcard(name);
+	public void handleSpellcardInfo(SpellcardInfoPacket.Message packet) {
+		spellcardHandler.handlePacket(packet);
 	}
 
-	@Override
-	public void removeSpellcard(ITextComponent name) {
-		spellcardHandler.removeSpellcard(name);
-	}
 }

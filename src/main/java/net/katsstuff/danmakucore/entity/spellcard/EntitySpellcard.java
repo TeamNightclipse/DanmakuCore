@@ -8,16 +8,14 @@
  */
 package net.katsstuff.danmakucore.entity.spellcard;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import net.katsstuff.danmakucore.entity.spellcard.spellcardbar.SpellcardInfoServer;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
 import net.katsstuff.danmakucore.helper.NBTHelper;
-import net.katsstuff.danmakucore.network.DanmakuCorePacketHandler;
-import net.katsstuff.danmakucore.network.SpellcardNamePacket;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -29,7 +27,6 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 public class EntitySpellcard extends Entity {
@@ -41,8 +38,7 @@ public class EntitySpellcard extends Entity {
 	private static final String NBT_USER = "user";
 
 	private boolean sendNamePacket = false;
-	private ITextComponent name = null;
-	private List<EntityPlayerMP> sentTo;
+	private SpellcardInfoServer spellcardInfo;
 
 	private EntityLivingBase user;
 	private SpellcardEntity spellCard;
@@ -53,7 +49,7 @@ public class EntitySpellcard extends Entity {
 		setSize(0.4F, 0.6F);
 	}
 
-	public EntitySpellcard(EntityLivingBase user, @Nullable EntityLivingBase target, Spellcard type, boolean sendNamePacket) {
+	public EntitySpellcard(EntityLivingBase user, @Nullable EntityLivingBase target, Spellcard type, boolean sendInfoPacket) {
 		this(user.worldObj);
 
 		setPosition(user.posX, user.posY + user.getEyeHeight(), user.posZ);
@@ -61,35 +57,43 @@ public class EntitySpellcard extends Entity {
 		this.user = user;
 		spellCard = type.instantiate(this, target);
 		setSpellcardId(DanmakuRegistry.SPELLCARD.getId(type));
-		this.sendNamePacket = sendNamePacket;
+		this.sendNamePacket = sendInfoPacket;
+
+		if(sendInfoPacket) {
+			spellcardInfo = new SpellcardInfoServer(spellCard.getName());
+		}
 	}
 
 	@Override
 	public void onUpdate() {
 		if(!worldObj.isRemote && (spellCard == null || ticksExisted >= spellCard.type.getEndTime() || user == null || user.isDead)) {
-			if(sendNamePacket && name != null && sentTo != null) {
-				SpellcardNamePacket.Message message = new SpellcardNamePacket.Message(name, false);
-				sentTo.forEach(p -> DanmakuCorePacketHandler.INSTANCE.sendTo(message, p));
-			}
-
 			setDead();
 			return;
 		}
 
-		if(!worldObj.isRemote && firstUpdate && sendNamePacket) {
-			name = spellCard.getName();
-			sentTo = worldObj.getEntitiesWithinAABB(EntityPlayerMP.class, getEntityBoundingBox().expandXyz(32D));
-			SpellcardNamePacket.Message message = new SpellcardNamePacket.Message(name, true);
-			sentTo.forEach(p -> DanmakuCorePacketHandler.INSTANCE.sendTo(message, p));
-		}
-
 		super.onUpdate();
+
+		if(spellcardInfo != null) {
+			spellcardInfo.tick();
+		}
 
 		if(!worldObj.isRemote) {
 			spellCard.onUpdate();
 			if(user instanceof EntityPlayer && ticksExisted < spellCard.type.getRemoveTime()) {
 				DanmakuHelper.danmakuRemove(user, 40.0F, DanmakuHelper.DanmakuRemoveMode.OTHER, true);
 			}
+		}
+	}
+
+	public void addTrackingPlayer(EntityPlayerMP player) {
+		if(sendNamePacket) {
+			spellcardInfo.addPlayer(player);
+		}
+	}
+
+	public void removeTrackingPlayer(EntityPlayerMP player) {
+		if(sendNamePacket) {
+			spellcardInfo.removePlayer(player);
 		}
 	}
 
@@ -104,6 +108,12 @@ public class EntitySpellcard extends Entity {
 
 	public int getSpellcardId() {
 		return dataManager.get(SPELLCARD_ID);
+	}
+
+	public void updateName() {
+		if(spellcardInfo != null) {
+			spellcardInfo.setName(spellCard.getName());
+		}
 	}
 
 	@Override

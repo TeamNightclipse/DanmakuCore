@@ -10,12 +10,13 @@ package net.katsstuff.danmakucore.entity.living.phase;
 
 import java.util.Optional;
 
-import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.EnumDanmakuLevel;
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
+import net.katsstuff.danmakucore.entity.spellcard.spellcardbar.SpellcardInfoServer;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.misc.LogicalSideOnly;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.text.ITextComponent;
@@ -50,7 +51,9 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 	@SuppressWarnings("WeakerAccess")
 	protected final PhaseManager manager;
 
-	private ITextComponent addedName = null;
+	private boolean isActive;
+
+	private SpellcardInfoServer spellcardInfo;
 
 	public Phase(PhaseManager manager) {
 		this.manager = manager;
@@ -60,13 +63,13 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 	 * Initiate the state of this {@link Phase}
 	 */
 	public void init() {
+		isActive = true;
 		counter = 0;
 		interval = 40;
 
 		Optional<ITextComponent> spellcardName = getSpellcardName();
-		if(spellcardName.isPresent()) {
-			addedName = spellcardName.get();
-			DanmakuCore.proxy.addSpellcard(addedName);
+		if(!getEntity().worldObj.isRemote && spellcardName.isPresent()) {
+			spellcardInfo = new SpellcardInfoServer(spellcardName.get());
 		}
 	}
 
@@ -74,9 +77,12 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 	 * Deconstruct this {@link Phase}.
 	 */
 	public void deconstruct() {
-		if(addedName != null) {
-			DanmakuCore.proxy.removeSpellcard(addedName);
-			addedName = null;
+		isActive = false;
+
+		if(spellcardInfo != null) {
+			//Due to us setting spellcardInfo to null here, the remove tracking code never gets called. As such we need to send the packet here
+			spellcardInfo.clear();
+			spellcardInfo = null;
 		}
 	}
 
@@ -91,6 +97,40 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 	public void serverUpdate() {
 		counter++;
 		if(counter > interval) counter = 0;
+
+		if(spellcardInfo != null) {
+			spellcardInfo.tick();
+		}
+
+		if(counter % 10 == 0 || interval < 10) {
+			Optional<ITextComponent> spellcardName = getSpellcardName();
+			if((spellcardInfo == null && spellcardName.isPresent()) || spellcardName.map(t -> !t.equals(spellcardInfo.getName())).orElse(false)) {
+				if(spellcardInfo == null) {
+					//noinspection OptionalGetWithoutIsPresent
+					spellcardInfo = new SpellcardInfoServer(spellcardName.get());
+				}
+				else {
+					//noinspection OptionalGetWithoutIsPresent
+					spellcardInfo.setName(spellcardName.get());
+				}
+			}
+		}
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void addTrackingPlayer(EntityPlayerMP player) {
+		if(spellcardInfo != null) {
+			spellcardInfo.addPlayer(player);
+		}
+	}
+
+	public void removeTrackingPlayer(EntityPlayerMP player) {
+		if(spellcardInfo != null) {
+			spellcardInfo.removePlayer(player);
+		}
 	}
 
 	/**
@@ -142,6 +182,7 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 		tag.setString(NBT_NAME, getType().getFullName().toString());
 		tag.setInteger(NBT_COUNTER, counter);
 		tag.setInteger(NBT_INTERVAL, interval);
+
 		return tag;
 	}
 

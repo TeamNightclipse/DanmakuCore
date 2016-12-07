@@ -18,10 +18,8 @@ import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.lib.data.LibItems;
-import net.katsstuff.danmakucore.misc.IItemStackConvertible;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
@@ -49,8 +47,6 @@ public class PhaseTypeSpellcard extends PhaseType {
 		private final PhaseTypeSpellcard type;
 		private boolean firstAttack;
 
-		private boolean freezeCounter = false;
-
 		public PhaseSpellcard(PhaseManager manager, PhaseTypeSpellcard type, Spellcard spellcard) {
 			super(manager);
 			this.type = type;
@@ -72,15 +68,11 @@ public class PhaseTypeSpellcard extends PhaseType {
 			EntityLivingBase target = entity.getAttackTarget();
 
 			if((target == null || !entity.getEntitySenses().canSee(target)) && isCounterStart()) {
-				freezeCounter = true;
-			}
-
-			if(freezeCounter) {
-				counter = 0;
+				interval = 0;
 			}
 
 			if(isCounterStart() && target != null && entity.getEntitySenses().canSee(target)) {
-				freezeCounter = false;
+				interval = spellcard.getEndTime();
 
 				Optional<EntitySpellcard> optSpellcard = TouhouHelper.declareSpellcard(entity, target, spellcard, firstAttack, false);
 				if(optSpellcard.isPresent()) {

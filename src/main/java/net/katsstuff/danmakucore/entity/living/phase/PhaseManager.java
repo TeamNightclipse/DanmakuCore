@@ -11,8 +11,11 @@ package net.katsstuff.danmakucore.entity.living.phase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.MultimapBuilder;
 
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
@@ -41,16 +44,18 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 	 */
 	public void tick() {
 		Phase phase = getCurrentPhase();
-		if(!entity.worldObj.isRemote) {
-			phase.serverUpdate();
-		}
-		else {
-			phase.clientUpdate();
+		if(phase.isActive()) {
+			if(!entity.worldObj.isRemote) {
+				phase.serverUpdate();
+			}
+			else {
+				phase.clientUpdate();
+			}
 		}
 	}
 
 	/**
-	 * The phase that us currently in use.
+	 * The phase that is currently in use.
 	 */
 	public Phase getCurrentPhase() {
 		return phaseList.get(currentPhaseIndex);
@@ -174,13 +179,30 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 	public void deserializeNBT(NBTTagCompound tag) {
 		NBTTagList list = tag.getTagList(NBT_PHASES, Constants.NBT.TAG_COMPOUND);
 		int size = list.tagCount();
-		phaseList.clear();
+
+		List<Phase> deseralized = new ArrayList<>();
+		ListMultimap<PhaseType, Phase> multimap = MultimapBuilder.hashKeys().linkedListValues().build();
+
+		phaseList.stream().collect(Collectors.groupingBy(Phase::getType)).forEach(multimap::putAll);
+
 		for(int i = 0; i < size; i++) {
 			NBTTagCompound tagPhase = list.getCompoundTagAt(i);
 			PhaseType type = DanmakuRegistry.PHASE.getObject(new ResourceLocation(tagPhase.getString(Phase.NBT_NAME)));
-			Phase phase = type.instantiate(this);
+
+			Phase phase;
+			if(multimap.containsKey(type)) {
+				phase = multimap.get(type).get(0);
+				multimap.remove(type, phase);
+			}
+			else {
+				phase = type.instantiate(this);
+			}
+
 			phase.deserializeNBT(tagPhase);
-			phaseList.add(phase);
+			deseralized.add(phase);
 		}
+
+		phaseList.clear();
+		phaseList.addAll(deseralized);
 	}
 }

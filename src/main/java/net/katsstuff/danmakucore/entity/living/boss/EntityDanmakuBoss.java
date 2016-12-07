@@ -18,17 +18,14 @@ import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
 import net.katsstuff.danmakucore.entity.living.phase.Phase;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
-import net.katsstuff.danmakucore.misc.LogicalSideOnly;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
 
 public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 
@@ -112,6 +109,7 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 
 	private void setupPhases() {
 		phaseManager.addPhases(getPhaseList());
+		phaseManager.getCurrentPhase().init();
 	}
 
 	public int remainingSpellcards() {
