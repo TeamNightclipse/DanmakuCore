@@ -53,6 +53,7 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 	@Override
 	protected void updateAITasks() {
 		super.updateAITasks();
+		this.bossInfo.setColor(phaseManager.getCurrentPhase().isSpellcard() ? BossInfo.Color.RED : BossInfo.Color.WHITE);
 		this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
 	}
 
@@ -84,12 +85,6 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 				if(source != null) {
 					dropPhaseLoot(source);
 					oldCurrentPhase.dropLoot(source);
-				}
-				if(phaseManager.getCurrentPhase().isSpellcard()) {
-					bossInfo.setColor(BossInfo.Color.RED);
-				}
-				else {
-					bossInfo.setColor(BossInfo.Color.WHITE);
 				}
 			}
 		}
