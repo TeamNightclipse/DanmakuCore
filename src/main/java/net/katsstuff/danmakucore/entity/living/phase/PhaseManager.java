@@ -29,6 +29,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 
 	private static final String NBT_PHASES = "phases";
+	private static final String NBT_INDEX = "index";
 
 	private final List<Phase> phaseList = new ArrayList<>();
 	private int currentPhaseIndex = 0;
@@ -167,6 +168,8 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 	@Override
 	public NBTTagCompound serializeNBT() {
 		NBTTagCompound tag = new NBTTagCompound();
+		tag.setInteger(NBT_INDEX, currentPhaseIndex);
+
 		NBTTagList list = new NBTTagList();
 		for(Phase phase : phaseList) {
 			list.appendTag(phase.serializeNBT());
@@ -177,6 +180,8 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 
 	@Override
 	public void deserializeNBT(NBTTagCompound tag) {
+		currentPhaseIndex = tag.getInteger(NBT_INDEX);
+
 		NBTTagList list = tag.getTagList(NBT_PHASES, Constants.NBT.TAG_COMPOUND);
 		int size = list.tagCount();
 
@@ -204,5 +209,11 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 
 		phaseList.clear();
 		phaseList.addAll(deseralized);
+
+		if(currentPhaseIndex != 0 && phaseList.get(0).isActive()) {
+			phaseList.get(0).deconstruct();
+		}
+
+		getCurrentPhase().init();
 	}
 }
