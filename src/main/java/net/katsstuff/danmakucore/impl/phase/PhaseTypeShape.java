@@ -50,6 +50,9 @@ public class PhaseTypeShape {
 			if(continuous) {
 				interval = 99999;
 			}
+			else {
+				interval = 0;
+			}
 		}
 
 		@Override
@@ -57,9 +60,8 @@ public class PhaseTypeShape {
 			super.serverUpdate();
 			if(isCounterStart()) {
 				EntityDanmakuMob danmakuMob = getEntity();
-				int tickToUse = continuous ? counter : 0;
 
-				Tuple<Boolean, Set<EntityDanmaku>> done = shape.drawForTick(new Vector3(danmakuMob), Vector3.angleEntity(danmakuMob), tickToUse);
+				Tuple<Boolean, Set<EntityDanmaku>> done = shape.drawForTick(new Vector3(danmakuMob), Vector3.angleEntity(danmakuMob), counter);
 
 				if(continuous && done.getFirst()) {
 					counter = 0;

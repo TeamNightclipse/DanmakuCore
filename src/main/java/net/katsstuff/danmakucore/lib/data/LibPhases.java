@@ -10,6 +10,9 @@ package net.katsstuff.danmakucore.lib.data;
 
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseTypeDummy;
+import net.katsstuff.danmakucore.impl.phase.PhaseTypeShapeCircle;
+import net.katsstuff.danmakucore.impl.phase.PhaseTypeShapeRing;
+import net.katsstuff.danmakucore.impl.phase.PhaseTypeShapeWide;
 import net.katsstuff.danmakucore.impl.phase.PhaseTypeSpellcard;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.katsstuff.danmakucore.lib.LibPhaseName;
@@ -22,4 +25,11 @@ public class LibPhases {
 	public static final PhaseType FALLBACK = new PhaseTypeDummy(); //Default
 	@ObjectHolder(LibPhaseName.SPELLCARD)
 	public static final PhaseTypeSpellcard SPELLCARD = null;
+
+	@ObjectHolder(LibPhaseName.SHAPE_CIRCLE)
+	public static final PhaseTypeShapeCircle SHAPE_CIRCLE = null;
+	@ObjectHolder(LibPhaseName.SHAPE_RING)
+	public static final PhaseTypeShapeRing SHAPE_RING = null;
+	@ObjectHolder(LibPhaseName.SHAPE_WIDE)
+	public static final PhaseTypeShapeWide SHAPE_WIDE = null;
 }

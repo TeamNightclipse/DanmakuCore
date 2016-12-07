@@ -34,6 +34,9 @@ import net.katsstuff.danmakucore.impl.form.FormSphereCircle;
 import net.katsstuff.danmakucore.impl.form.FormSphereDark;
 import net.katsstuff.danmakucore.impl.form.FormStar;
 import net.katsstuff.danmakucore.impl.phase.PhaseTypeFallback;
+import net.katsstuff.danmakucore.impl.phase.PhaseTypeShapeCircle;
+import net.katsstuff.danmakucore.impl.phase.PhaseTypeShapeRing;
+import net.katsstuff.danmakucore.impl.phase.PhaseTypeShapeWide;
 import net.katsstuff.danmakucore.impl.phase.PhaseTypeSpellcard;
 import net.katsstuff.danmakucore.impl.spellcard.SpellcardDelusionEnlightenment;
 import net.katsstuff.danmakucore.impl.subentity.SubEntityExplosion;
@@ -163,7 +166,10 @@ public class CommonProxy {
 	public static void registerPhases(RegistryEvent.Register<PhaseType> event) {
 		event.getRegistry().registerAll(
 				new PhaseTypeFallback().setRegistryName(LibPhaseName.FALLBACK),
-				new PhaseTypeSpellcard().setRegistryName(LibPhaseName.SPELLCARD)
+				new PhaseTypeSpellcard().setRegistryName(LibPhaseName.SPELLCARD),
+				new PhaseTypeShapeCircle().setRegistryName(LibPhaseName.SHAPE_CIRCLE),
+				new PhaseTypeShapeRing().setRegistryName(LibPhaseName.SHAPE_RING),
+				new PhaseTypeShapeWide().setRegistryName(LibPhaseName.SHAPE_WIDE)
 		);
 	}
 

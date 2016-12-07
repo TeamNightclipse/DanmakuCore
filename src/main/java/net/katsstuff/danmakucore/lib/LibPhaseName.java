@@ -12,4 +12,8 @@ public class LibPhaseName {
 
 	public static final String FALLBACK = "default";
 	public static final String SPELLCARD = "spellcard";
+
+	public static final String SHAPE_CIRCLE = "shapeCircle";
+	public static final String SHAPE_RING = "shapeRing";
+	public static final String SHAPE_WIDE = "shapeWide";
 }
