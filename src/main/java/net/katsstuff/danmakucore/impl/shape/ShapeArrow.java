@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.katsstuff.danmakucore.data.Vector3;
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuBuilder;
+import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
 import net.minecraft.util.Tuple;
@@ -23,7 +23,7 @@ public class ShapeArrow implements IShape {
 	private final int amount;
 	private final double distance;
 	private final double width;
-	private final DanmakuBuilder danmaku;
+	private final DanmakuTemplate danmaku;
 	private final Set<EntityDanmaku> set = new HashSet<>();
 
 	/**
@@ -33,7 +33,7 @@ public class ShapeArrow implements IShape {
 	 * @param distance How much depth should be between each wave of danmaku.
 	 * @param width How much width should there be between two waves of danmaku.
 	 */
-	public ShapeArrow(DanmakuBuilder danmaku, int amount, double distance, double width) {
+	public ShapeArrow(DanmakuTemplate danmaku, int amount, double distance, double width) {
 		this.danmaku = danmaku;
 		this.amount = amount;
 		this.distance = distance;

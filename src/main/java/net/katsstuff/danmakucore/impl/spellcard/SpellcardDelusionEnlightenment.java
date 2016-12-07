@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 
 import net.katsstuff.danmakucore.data.AbstractVector3;
 import net.katsstuff.danmakucore.data.Vector3;
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuBuilder;
+import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.living.boss.EnumTouhouCharacters;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
@@ -76,7 +76,7 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 				int time40 = time % 40;
 				if(time40 < 10) {
 					int place = Math.max(0, 10 - time40);
-					DanmakuBuilder danmaku = DanmakuBuilder.builder()
+					DanmakuTemplate danmaku = DanmakuTemplate.builder()
 							.setUser(getUser())
 							.setSource(card)
 							.setMovementData(1D / (place + 1))
@@ -91,7 +91,7 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 
 					DanmakuHelper.playShotSound(card);
 					for(int i = 1; i < 11; i++) {
-						DanmakuBuilder danmaku = DanmakuBuilder.builder()
+						DanmakuTemplate danmaku = DanmakuTemplate.builder()
 								.setUser(getUser())
 								.setSource(card)
 								.setMovementData(1D / i)
@@ -116,7 +116,7 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 					new Vector3(ray.hitVec) :
 					posReach; //Can I multiply the vectors here?
 
-			EntityDanmaku danmaku = DanmakuBuilder.builder()
+			EntityDanmaku danmaku = DanmakuTemplate.builder()
 					.setUser(getUser())
 					.setSource(card)
 					.setAngle(Vector3.Up())

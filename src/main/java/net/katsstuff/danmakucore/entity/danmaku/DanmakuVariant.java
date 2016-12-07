@@ -50,8 +50,8 @@ public abstract class DanmakuVariant extends RegistryValueItemStack<DanmakuVaria
 
 	public abstract RotationData getRotationData();
 
-	public DanmakuBuilder.Builder toBuilder() {
-		DanmakuBuilder.Builder builder = DanmakuBuilder.builder();
+	public DanmakuTemplate.Builder toBuilder() {
+		DanmakuTemplate.Builder builder = DanmakuTemplate.builder();
 		builder.setShot(getShotData());
 		builder.setMovementData(getMovementData());
 		builder.setRotationData(getRotationData());

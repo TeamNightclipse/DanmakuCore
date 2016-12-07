@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.katsstuff.danmakucore.data.Vector3;
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuBuilder;
+import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
 import net.minecraft.util.Tuple;
@@ -35,14 +35,14 @@ public class ShapeStar implements IShape {
 
 	};
 
-	private final DanmakuBuilder danmaku;
+	private final DanmakuTemplate danmaku;
 	private final int amount;
 	private final float angleZ;
 	private final float baseAngle;
 	private final double distance;
 	private final Set<EntityDanmaku> set = new HashSet<>();
 
-	public ShapeStar(DanmakuBuilder danmaku, int amount, float angleZ, float baseAngle, double distance) {
+	public ShapeStar(DanmakuTemplate danmaku, int amount, float angleZ, float baseAngle, double distance) {
 		this.danmaku = danmaku;
 		this.amount = amount;
 		this.angleZ = angleZ;

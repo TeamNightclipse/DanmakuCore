@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.katsstuff.danmakucore.data.Vector3;
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuBuilder;
+import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
 import net.minecraft.util.Tuple;
@@ -21,10 +21,10 @@ import net.minecraft.util.Tuple;
 @SuppressWarnings("unused")
 public class ShapeSingle implements IShape {
 
-	private final DanmakuBuilder danmaku;
+	private final DanmakuTemplate danmaku;
 	private final Set<EntityDanmaku> set = new HashSet<>(1);
 
-	public ShapeSingle(DanmakuBuilder danmaku) {
+	public ShapeSingle(DanmakuTemplate danmaku) {
 		this.danmaku = danmaku;
 	}
 

@@ -12,21 +12,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.katsstuff.danmakucore.data.Vector3;
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuBuilder;
+import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
 import net.minecraft.util.Tuple;
 
 public class ShapeSphere implements IShape {
 
-	private final DanmakuBuilder danmaku;
+	private final DanmakuTemplate danmaku;
 	private final int rings;
 	private final int bands;
 	private final float baseAngle;
 	private final double distance;
 	private final Set<EntityDanmaku> set = new HashSet<>();
 
-	public ShapeSphere(DanmakuBuilder danmaku, int rings, int bands, float baseAngle, double distance) {
+	public ShapeSphere(DanmakuTemplate danmaku, int rings, int bands, float baseAngle, double distance) {
 		this.danmaku = danmaku;
 		this.rings = rings;
 		this.bands = bands;

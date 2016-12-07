@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuBuilder;
+import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.helper.DanmakuCreationHelper;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
@@ -130,9 +130,9 @@ public class ItemDanmaku extends ItemBase {
 		Vector3 gravity = getGravity(stack);
 
 		float wide;
-		DanmakuBuilder.Builder danmaku = DanmakuBuilder.builder();
+		DanmakuTemplate.Builder danmaku = DanmakuTemplate.builder();
 		danmaku.setUser(player).setShot(shot).setWorld(world).setMovementData(shotSpeed, gravity).setPos(pos).setAngle(angle);
-		DanmakuBuilder built = danmaku.build();
+		DanmakuTemplate built = danmaku.build();
 
 		switch(danmakuPattern) {
 			case 0:

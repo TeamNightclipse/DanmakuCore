@@ -20,7 +20,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 
 @SuppressWarnings({"WeakerAccess", "CanBeFinal"})
-public final class DanmakuBuilder {
+public final class DanmakuTemplate {
 
 	public World world;
 	@Nullable
@@ -34,7 +34,7 @@ public final class DanmakuBuilder {
 	public MovementData movement = MovementData.constant(0.4D);
 	public RotationData rotation = RotationData.none();
 
-	private DanmakuBuilder(World world, @Nullable EntityLivingBase user, @Nullable Entity source, ShotData shot, Vector3 pos, Vector3 angle,
+	private DanmakuTemplate(World world, @Nullable EntityLivingBase user, @Nullable Entity source, ShotData shot, Vector3 pos, Vector3 angle,
 			float roll, MovementData movement, RotationData rotation) {
 		this.world = world;
 		this.user = user;
@@ -47,8 +47,8 @@ public final class DanmakuBuilder {
 		this.rotation = rotation;
 	}
 
-	public DanmakuBuilder copy() {
-		return new DanmakuBuilder(world, user, source, shot, pos, angle, roll, movement, rotation);
+	public DanmakuTemplate copy() {
+		return new DanmakuTemplate(world, user, source, shot, pos, angle, roll, movement, rotation);
 	}
 
 	public EntityDanmaku asEntity() {
@@ -74,7 +74,7 @@ public final class DanmakuBuilder {
 		public MovementData movement = MovementData.constant(0.4D);
 		public RotationData rotation = RotationData.none();
 
-		public DanmakuBuilder build() {
+		public DanmakuTemplate build() {
 
 			if(source == null && user != null) {
 				source = user;
@@ -106,7 +106,7 @@ public final class DanmakuBuilder {
 
 			if(shot == null) throw new IllegalArgumentException("Make sure that shot is set");
 
-			return new DanmakuBuilder(world, user, source, shot, pos, angle, roll, movement, rotation);
+			return new DanmakuTemplate(world, user, source, shot, pos, angle, roll, movement, rotation);
 		}
 
 		public Builder setWorld(World world) {
