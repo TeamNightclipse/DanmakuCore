@@ -82,7 +82,7 @@ public abstract class PhaseShapeConcrete extends Phase {
 	public void deserializeNBT(NBTTagCompound tag) {
 		super.deserializeNBT(tag);
 		amount = tag.getInteger(NBT_AMOUNT);
-		baseAngle = tag.getInteger(NBT_BASE_ANGLE);
+		baseAngle = tag.getFloat(NBT_BASE_ANGLE);
 		distance = tag.getDouble(NBT_DISTANCE);
 		shotData = new ShotData(tag.getCompoundTag(NBT_SHOT_DATA));
 		movementData = MovementData.fromNBT(tag.getCompoundTag(NBT_MOVEMENT_DATA));
