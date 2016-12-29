@@ -11,10 +11,10 @@ death.attack.danmaku=%s was killed with danmaku by %s
 death.attack.danmaku.item=%s was killed with danmaku by %s using %s
 
 #Spellcard item names
-item.spellcard.spellcard.danmakucore.delusionOfEnlightenment.name=Spellcard: Human Sword "Delusion of Enlightenment"
+item.spellcard.spellcard.danmakucore.delusion_of_enlightenment.name=Spellcard: Human Sword "Delusion of Enlightenment"
 
 #Spellcard names
-spellcard.danmakucore.delusionOfEnlightenment=Human Sword "Delusion of Enlightenment"
+spellcard.danmakucore.delusion_of_enlightenment=Human Sword "Delusion of Enlightenment"
 
 #Spellcard Parameters
 item.spellcard.level=Lv.
@@ -50,7 +50,7 @@ item.danmaku.danmakuvariant.danmakucore.tiny.name=Tiny Danmaku
 item.danmaku.danmakuvariant.danmakucore.small.name=Small Danmaku
 item.danmaku.danmakuvariant.danmakucore.circle.name=Circle Danmaku
 item.danmaku.danmakuvariant.danmakucore.scale.name=Scale Danmaku
-item.danmaku.danmakuvariant.danmakucore.starSmall.name=Small Star Danmaku
+item.danmaku.danmakuvariant.danmakucore.star_small.name=Small Star Danmaku
 item.danmaku.danmakuvariant.danmakucore.star.name=Star Danmaku
 item.danmaku.danmakuvariant.danmakucore.rice.name=Rice Danmaku
 item.danmaku.danmakuvariant.danmakucore.crystal1.name=Pointed Crystal Danmaku
@@ -58,10 +58,10 @@ item.danmaku.danmakuvariant.danmakucore.crystal2.name=Blunt Crystal Danmaku
 item.danmaku.danmakuvariant.danmakucore.kunai.name=Kunai Danmaku
 item.danmaku.danmakuvariant.danmakucore.oval.name=Oval Danmaku
 item.danmaku.danmakuvariant.danmakucore.laser.name=Laser Danmaku
-item.danmaku.danmakuvariant.danmakucore.laserShort.name=Short Laser Danmaku
-item.danmaku.danmakuvariant.danmakucore.laserLong.name=Long Laser Danmaku
+item.danmaku.danmakuvariant.danmakucore.laser_short.name=Short Laser Danmaku
+item.danmaku.danmakuvariant.danmakucore.laser_long.name=Long Laser Danmaku
 item.danmaku.danmakuvariant.danmakucore.pellet.name=Pellet Danmaku
-item.danmaku.danmakuvariant.danmakucore.sphereDark.name=Dark Sphere Danmaku
+item.danmaku.danmakuvariant.danmakucore.sphere_dark.name=Dark Sphere Danmaku
 
 #Forms
 item.danmaku.form.danmakucore.normal=Normal Shape
@@ -74,7 +74,7 @@ item.danmaku.form.danmakucore.crystal2=Blunt Crystal Shape
 item.danmaku.form.danmakucore.kunai=Kunai Shape
 item.danmaku.form.danmakucore.laser=Laser Shape
 item.danmaku.form.danmakucore.pellet=Pellet Shape
-item.danmaku.form.danmakucore.sphereDark=Dark Sphere Shape
+item.danmaku.form.danmakucore.sphere_dark=Dark Sphere Shape
 
 #Custom Names
 item.danmaku.custom.form.danmakucore.normal=Custom Normal Danmaku
@@ -87,7 +87,7 @@ item.danmaku.custom.form.danmakucore.crystal2=Custom Blunt Crystal Danmaku
 item.danmaku.custom.form.danmakucore.kunai=Custom Kunai Danmaku
 item.danmaku.custom.form.danmakucore.laser=Custom Laser Danmaku
 item.danmaku.custom.form.danmakucore.pellet=Custom Pellet Danmaku
-item.danmaku.custom.form.danmakucore.sphereDark=Custom Dark Sphere Danmaku
+item.danmaku.custom.form.danmakucore.sphere_dark=Custom Dark Sphere Danmaku
 
 #Vibrant colors
 item.danmaku.color.16711680=Strong Red

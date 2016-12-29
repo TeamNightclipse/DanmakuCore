@@ -15,7 +15,7 @@ public class LibDanmakuVariantName {
 	public static final String SMALL = "small";
 	public static final String CIRCLE = "circle";
 	public static final String SCALE = "scale";
-	public static final String STAR_SMALL = "starSmall";
+	public static final String STAR_SMALL = "star_small";
 	public static final String STAR = "star";
 	public static final String RICE = "rice";
 	public static final String CRYSTAL1 = "crystal1";
@@ -23,8 +23,8 @@ public class LibDanmakuVariantName {
 	public static final String KUNAI = "kunai";
 	public static final String OVAL = "oval";
 	public static final String LASER = "laser";
-	public static final String LASER_SHORT = "laserShort";
-	public static final String LASER_LONG = "laserLong";
-	public static final String SPHERE_DARK = "sphereDark";
+	public static final String LASER_SHORT = "laser_short";
+	public static final String LASER_LONG = "laser_long";
+	public static final String SPHERE_DARK = "sphere_dark";
 	public static final String PELLET = "pellet";
 }

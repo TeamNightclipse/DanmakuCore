@@ -17,8 +17,8 @@ public class LibFormName {
 	public static final String CRYSTAL1 = "crystal1";
 	public static final String CRYSTAL2 = "crystal2";
 	public static final String KUNAI = "kunai";
-	public static final String SPHERE_POINTED = "spherePointed";
+	public static final String SPHERE_POINTED = "sphere_pointed";
 	public static final String PELLET = "pellet";
-	public static final String SPHERE_DARK = "sphereDark";
+	public static final String SPHERE_DARK = "sphere_dark";
 	public static final String CONTROL = "control";
 }

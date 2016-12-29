@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
+import net.katsstuff.danmakucore.lib.LibMod;
 import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.client.Minecraft;
@@ -50,6 +51,6 @@ public class RenderSpellcard extends Render<EntitySpellcard> {
 
 	@Override
 	protected ResourceLocation getEntityTexture(EntitySpellcard entity) {
-		return DanmakuRegistry.SPELLCARD.getObjectById(entity.getSpellcardId()).getTexture();
+		return new ResourceLocation(LibMod.MODID, "textures/white.png");
 	}
 }

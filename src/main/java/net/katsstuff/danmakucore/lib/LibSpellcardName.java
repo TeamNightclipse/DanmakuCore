@@ -10,6 +10,6 @@ package net.katsstuff.danmakucore.lib;
 
 public class LibSpellcardName {
 
-	public static final String DELUSION_OF_ENLIGHTENMENT = "delusionOfEnlightenment";
+	public static final String DELUSION_OF_ENLIGHTENMENT = "delusion_of_enlightenment";
 
 }

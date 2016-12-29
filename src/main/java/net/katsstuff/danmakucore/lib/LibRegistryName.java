@@ -13,8 +13,8 @@ import net.minecraft.util.ResourceLocation;
 public class LibRegistryName {
 
 	public static final ResourceLocation FORMS = resource("form");
-	public static final ResourceLocation SUB_ENTITIES = resource("subEntity");
-	public static final ResourceLocation VARIANTS = resource("danmakuVariant");
+	public static final ResourceLocation SUB_ENTITIES = resource("sub_entity");
+	public static final ResourceLocation VARIANTS = resource("danmaku_variant");
 	public static final ResourceLocation SPELLCARDS = resource("spellcard");
 	public static final ResourceLocation PHASES = resource("phase");
 

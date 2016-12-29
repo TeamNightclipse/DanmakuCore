@@ -82,7 +82,6 @@ public abstract class DanmakuVariant extends RegistryValueItemStack<DanmakuVaria
 	@Override
 	public ModelResourceLocation getItemModel() {
 		ResourceLocation name = getRegistryName();
-		String snakeCase = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name.getResourcePath());
-		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/variant/" + snakeCase), "inventory");
+		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/variant/" + name.getResourcePath()), "inventory");
 	}
 }
