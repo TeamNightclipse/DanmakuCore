@@ -9,8 +9,9 @@
 package net.katsstuff.danmakucore.item;
 
 import net.katsstuff.danmakucore.entity.living.boss.EnumTouhouCharacters;
+import net.minecraft.item.ItemStack;
 
 public interface IOwnedBy {
 
-	EnumTouhouCharacters character();
+	EnumTouhouCharacters character(ItemStack stack);
 }

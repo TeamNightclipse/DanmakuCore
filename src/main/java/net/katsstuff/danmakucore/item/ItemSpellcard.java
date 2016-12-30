@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import net.katsstuff.danmakucore.DanmakuCore;
+import net.katsstuff.danmakucore.entity.living.boss.EnumTouhouCharacters;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
@@ -33,7 +34,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SuppressWarnings("WeakerAccess")
-public class ItemSpellcard extends ItemBase {
+public class ItemSpellcard extends ItemBase implements IOwnedBy {
 
 	public ItemSpellcard() {
 		super(LibItemName.SPELLCARD);
@@ -80,5 +81,10 @@ public class ItemSpellcard extends ItemBase {
 		list.add(I18n.format(item + ".user") + " : " + I18n.format(item + ".userName." + type.getOriginalUser().getName()));
 		list.add(I18n.format(item + ".removeTime") + " : " + type.getRemoveTime());
 		list.add(I18n.format(item + ".endTime") + " : " + type.getEndTime());
+	}
+
+	@Override
+	public EnumTouhouCharacters character(ItemStack stack) {
+		return DanmakuRegistry.SPELLCARD.getObjectById(stack.getItemDamage()).getOriginalUser();
 	}
 }
