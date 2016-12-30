@@ -55,6 +55,11 @@ public class PhaseTypeSpellcard extends PhaseType {
 
 		@Override
 		public void init() {
+			if(spellcard == null) {
+				getEntity().setDead();
+				return;
+			}
+
 			super.init();
 			interval = spellcard.getEndTime();
 			firstAttack = true;
@@ -65,6 +70,11 @@ public class PhaseTypeSpellcard extends PhaseType {
 		@Override
 		public void serverUpdate() {
 			super.serverUpdate();
+
+			if(spellcard == null) {
+				getEntity().setDead();
+				return;
+			}
 
 			EntityDanmakuMob entity = getEntity();
 			EntityLivingBase target = entity.getAttackTarget();
