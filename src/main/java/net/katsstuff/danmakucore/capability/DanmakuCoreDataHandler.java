@@ -8,6 +8,8 @@
  */
 package net.katsstuff.danmakucore.capability;
 
+import java.util.Optional;
+
 import javax.annotation.Nullable;
 
 import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmaku;
@@ -40,6 +42,15 @@ public class DanmakuCoreDataHandler {
 	}
 
 	@SubscribeEvent
+	public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+		TouhouHelper.getDanmakuCoreData(event.player).ifPresent(data -> {
+			if(event.player instanceof EntityPlayerMP) {
+				data.syncTo((EntityPlayerMP)event.player, event.player);
+			}
+		});
+	}
+
+	@SubscribeEvent
 	public void attachPlayer(AttachCapabilitiesEvent<Entity> event) {
 		if(event.getObject() instanceof EntityPlayer) {
 			event.addCapability(new ResourceLocation(LibMod.MODID, "DanmakuCoreData"), new DanmakuCoreDataProvider());
@@ -58,6 +69,25 @@ public class DanmakuCoreDataHandler {
 			player.hurtResistantTime = 50;
 			//TODO: Fancy sound and animation
 			event.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public void onPlayerClone(net.minecraftforge.event.entity.player.PlayerEvent.Clone event) {
+		if(!event.isWasDeath()) {
+			EntityPlayer oldPlayer = event.getOriginal();
+			EntityPlayer newPlayer = event.getEntityPlayer();
+
+			Optional<IDanmakuCoreData> optOldData = TouhouHelper.getDanmakuCoreData(oldPlayer);
+			if(optOldData.isPresent()) {
+				IDanmakuCoreData oldData = optOldData.get();
+				TouhouHelper.changeAndSyncPlayerData(newData -> {
+					newData.setPower(oldData.getPower());
+					newData.setScore(oldData.getScore());
+					newData.setBombs(oldData.getBombs());
+					newData.setLives(oldData.getLives());
+				}, newPlayer);
+			}
 		}
 	}
 
