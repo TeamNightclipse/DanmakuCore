@@ -53,11 +53,6 @@ public abstract class EntityDanmakuMob extends EntityMob {
 	}
 
 	@Override
-	public void onLivingUpdate() {
-		super.onLivingUpdate();
-	}
-
-	@Override
 	protected void onDeathUpdate() {
 		super.onDeathUpdate();
 
@@ -176,7 +171,7 @@ public abstract class EntityDanmakuMob extends EntityMob {
 	@Override
 	public int getMaxFallHeight() {
 		if(isFlying()) return getFlyingHeight() * 4;
-		return super.getMaxFallHeight();
+		else return super.getMaxFallHeight();
 	}
 
 	@Override
