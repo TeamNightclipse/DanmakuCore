@@ -16,12 +16,14 @@ import net.katsstuff.danmakucore.client.helper.RenderHelper;
 import net.katsstuff.danmakucore.client.render.RenderDanmaku;
 import net.katsstuff.danmakucore.client.render.RenderFallingData;
 import net.katsstuff.danmakucore.client.render.RenderSpellcard;
+import net.katsstuff.danmakucore.client.render.RenderTenguTest;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.EntityFallingData;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.Form;
 import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss;
+import net.katsstuff.danmakucore.entity.living.boss.EntityTenguTest;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
@@ -66,6 +68,7 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityDanmaku.class, RenderDanmaku::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntitySpellcard.class, RenderSpellcard::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityFallingData.class, RenderFallingData::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityTenguTest.class, RenderTenguTest::new);
 
 		MinecraftForge.EVENT_BUS.register(new HUDHandler());
 		MinecraftForge.EVENT_BUS.register(bossBarHandler);

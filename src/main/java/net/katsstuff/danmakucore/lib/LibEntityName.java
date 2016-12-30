@@ -13,4 +13,5 @@ public class LibEntityName {
 	public static final String DANMAKU = "danmaku";
 	public static final String SPELLCARD = "spellcard";
 	public static final String FALLING_DATA = "fallingData";
+	public static final String TENGU_TEST = "tenguTest";
 }

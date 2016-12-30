@@ -18,6 +18,7 @@ import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.Form;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss;
+import net.katsstuff.danmakucore.entity.living.boss.EntityTenguTest;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
@@ -112,6 +113,7 @@ public class CommonProxy {
 		EntityRegistry.registerModEntity(EntityDanmaku.class, LibEntityName.DANMAKU, 0, LibMod.MODID, 64, 1, true);
 		EntityRegistry.registerModEntity(EntitySpellcard.class, LibEntityName.SPELLCARD, 1, LibMod.MODID, 64, 1, true);
 		EntityRegistry.registerModEntity(EntityFallingData.class, LibEntityName.FALLING_DATA, 2, LibMod.MODID, 40, 1, true);
+		EntityRegistry.registerModEntity(EntityTenguTest.class, LibEntityName.TENGU_TEST, 3, LibMod.MODID, 64, 1, true, 0xFFFFFF, 0x000000);
 	}
 
 	public void registerItemColors() {} //NO-OP
