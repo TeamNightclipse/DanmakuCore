@@ -60,7 +60,7 @@ public class FormCrystal2 extends FormGeneric {
 
 				createShapeOneEnd(tes, vb, 0xFFFFFF, 1F, 0.5F, 1.25F);
 				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+				GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 				GlStateManager.depthMask(false);
 				createShapeOneEnd(tes, vb, color, 0.3F, 0.6F, 1.25F * 1.2F);
 				GlStateManager.depthMask(true);

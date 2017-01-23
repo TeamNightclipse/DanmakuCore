@@ -64,7 +64,7 @@ public class FormPointedSphere extends FormGeneric {
 				GlStateManager.scale(1.2F, 1.2F, 1.2F);
 				GlStateManager.depthMask(false);
 				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_COLOR);
+				GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 
 				createPointedSphere(tes, vb, color, 0.6F, 0.0F, sizeZ);
 

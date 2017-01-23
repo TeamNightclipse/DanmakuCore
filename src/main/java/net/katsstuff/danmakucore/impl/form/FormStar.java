@@ -80,7 +80,7 @@ public class FormStar extends FormGeneric {
 				alpha = 0.3F;
 
 				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+				GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 				GlStateManager.depthMask(false);
 				GlStateManager.scale(1.2F, 1.2F, 1.2F);
 

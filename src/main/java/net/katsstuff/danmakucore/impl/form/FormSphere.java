@@ -14,6 +14,7 @@ import net.katsstuff.danmakucore.client.helper.RenderHelper;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
+import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -52,8 +53,9 @@ public class FormSphere extends FormGeneric {
 				GL11.glScalef(sizeX, sizeY, sizeZ);
 
 				RenderHelper.drawSphere(0xFFFFFF, 1F);
+
 				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+				GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 				GlStateManager.depthMask(false);
 				GlStateManager.scale(1.2F, 1.2F, 1.2F);
 				RenderHelper.drawSphere(color, alpha);

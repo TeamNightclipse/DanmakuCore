@@ -44,5 +44,6 @@ public abstract class FormGeneric extends Form {
 		return renderer;
 	}
 
+	@SideOnly(Side.CLIENT)
 	protected abstract IRenderForm createRenderer();
 }

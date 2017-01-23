@@ -86,7 +86,7 @@ public class FormKunai extends FormGeneric {
 
 				//What we really want here is to use the luminance as the saturation, and set the luminance to 1 for the texture
 				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_COLOR);
+				GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 				vb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
 				vb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();

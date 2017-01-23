@@ -62,7 +62,7 @@ public class FormPellet extends FormGeneric {
 
 				RenderHelper.drawSphere(Color.getHSBColor(hsb[0], hsb[1], hsb[2]).getRGB(), 1F);
 				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+				GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 				GlStateManager.depthMask(false);
 				GlStateManager.scale(1.075F, 1.075F, 1.075F);
 				RenderHelper.drawSphere(color, alpha);
