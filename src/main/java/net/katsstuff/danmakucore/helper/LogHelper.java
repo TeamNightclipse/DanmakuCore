@@ -20,12 +20,20 @@ public class LogHelper {
 		FMLLog.log(LibMod.NAME, logLevel, String.valueOf(obj));
 	}
 
+	private static void log(Level logLevel, Exception e, Object obj) {
+		FMLLog.log(LibMod.NAME, logLevel, e, String.valueOf(obj));
+	}
+
 	public static void debug(Object obj) {
 		log(Level.DEBUG, obj);
 	}
 
 	public static void error(Object obj) {
 		log(Level.ERROR, obj);
+	}
+
+	public static void error(Object obj, Exception e) {
+		log(Level.ERROR, e, obj);
 	}
 
 	public static void fatal(Object obj) {
@@ -42,5 +50,9 @@ public class LogHelper {
 
 	public static void warn(Object obj) {
 		log(Level.WARN, obj);
+	}
+
+	public static void warn(Object obj, Exception e) {
+		log(Level.WARN, e, obj);
 	}
 }
