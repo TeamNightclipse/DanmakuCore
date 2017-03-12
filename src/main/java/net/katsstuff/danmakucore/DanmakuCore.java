@@ -16,6 +16,7 @@ import net.katsstuff.danmakucore.item.ItemDanmaku;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.network.DanmakuCorePacketHandler;
+import net.katsstuff.danmakucore.server.commands.DanmakuCoreCmd;
 import net.katsstuff.danmakucore.shape.ShapeHandler;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.dispenser.IPosition;
@@ -29,6 +30,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
 @Mod(modid = LibMod.MODID, name = LibMod.NAME, version = LibMod.VERSION)
 public class DanmakuCore {
@@ -94,5 +96,10 @@ public class DanmakuCore {
 	public void postInit(FMLPostInitializationEvent event) {
 		proxy.registerEntities();
 		proxy.registerItemColors();
+	}
+
+	@Mod.EventHandler
+	public void serverLoad(FMLServerStartingEvent event) {
+		event.registerServerCommand(new DanmakuCoreCmd());
 	}
 }

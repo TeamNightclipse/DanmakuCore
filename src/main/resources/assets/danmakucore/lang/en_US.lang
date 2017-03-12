@@ -133,3 +133,13 @@ item.danmaku.subentity.danmakucore.teleport=Teleport
 item.danmaku.subentity.danmakucore.default=No Special
 item.danmaku.color.16777215=White
 item.danmaku.color.custom=Custom color
+
+#Commands
+commands.danmakucore.usage=/danmakucore <bombs|lives|power> <amount>
+commands.danmakucore.bombs.usage=/danmakucore bombs <amount>
+commands.danmakucore.lives.usage=/danmakucore lives <amount>
+commands.danmakucore.power.usage=/danmakucore power <amount>
+
+commands.danmakucore.bombs.success=Set bombs to %d for %s
+commands.danmakucore.lives.success=Set lives to %d for %s
+commands.danmakucore.power.success=Set power to %d for %s
