@@ -219,11 +219,24 @@ public abstract class EntityDanmakuMob extends EntityMob {
 	}
 
 	/**
+	 * How many power entities to spawn when this entity dies.
+	 */
+	public int powerSpawns() {
+		return rand.nextInt(3);
+	}
+
+	/**
+	 * How many point entities to spawn when this entity dies.
+	 */
+	public int pointSpawns() {
+		return rand.nextInt(4);
+	}
+
+	/**
 	 * Loot that is dropped every phase.
 	 */
 	protected void dropPhaseLoot(DamageSource source) {
-		int powerSpawns = rand.nextInt(3);
-		Vector3 pos = new Vector3(this);
+		Vector3 pos = pos();
 		Vector3 angle;
 		if(source.getEntity() != null) {
 			angle = Vector3.angleToEntity(this, source.getEntity());
@@ -231,11 +244,12 @@ public abstract class EntityDanmakuMob extends EntityMob {
 			angle = Vector3.Down();
 		}
 
+		int powerSpawns = powerSpawns();
 		for(int i = 1; i < powerSpawns; i++) {
 			worldObj.spawnEntityInWorld(TouhouHelper.createPower(worldObj, pos, angle));
 		}
 
-		int pointSpawns = rand.nextInt(4);
+		int pointSpawns = pointSpawns();
 		for(int i = 1; i < pointSpawns; i++) {
 			worldObj.spawnEntityInWorld(TouhouHelper.createScoreBlue(worldObj, null, pos, angle));
 		}
