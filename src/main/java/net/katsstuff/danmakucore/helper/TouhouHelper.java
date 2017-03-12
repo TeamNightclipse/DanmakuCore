@@ -114,6 +114,10 @@ public class TouhouHelper {
 		return Optional.empty();
 	}
 
+	/**
+	 * Tries to get the {@link IDanmakuCoreData} if the provider
+	 * has the data.
+	 */
 	public static Optional<IDanmakuCoreData> getDanmakuCoreData(ICapabilityProvider provider) {
 		if(provider.hasCapability(CapabilityDanmakuCoreData.DANMAKUCORE_DATA_CAPABILITY, null)) {
 			return Optional.of(provider.getCapability(CapabilityDanmakuCoreData.DANMAKUCORE_DATA_CAPABILITY, null));
@@ -121,6 +125,13 @@ public class TouhouHelper {
 		else return Optional.empty();
 	}
 
+	/**
+	 * Changes the {@link IDanmakuCoreData} for an entity if it has the data,
+	 * and then syncs it to players withing range.
+	 * @param dataRunnable Consumer that changes the data
+	 * @param target The target entity
+	 * @param radius The radius to sync in
+	 */
 	@SuppressWarnings("unused")
 	@LogicalSideOnly(Side.SERVER)
 	public static void changeAndSyncEntityData(Consumer<IDanmakuCoreData> dataRunnable, Entity target, double radius) {
@@ -132,6 +143,12 @@ public class TouhouHelper {
 		});
 	}
 
+	/**
+	 * Changes the {@link IDanmakuCoreData} for a player if the player has
+	 * the data,and then syncs it to to the player.
+	 * @param dataRunnable Consumer that changes the data
+	 * @param player The player to change the data for
+	 */
 	@LogicalSideOnly(Side.SERVER)
 	public static void changeAndSyncPlayerData(Consumer<IDanmakuCoreData> dataRunnable, EntityPlayer player) {
 		getDanmakuCoreData(player).ifPresent(data -> {
@@ -143,35 +160,95 @@ public class TouhouHelper {
 		});
 	}
 
+
+	/**
+	 * Offsets a vector in a random direction by one.
+	 * @param pos The vector to offset
+	 * @return The new vector
+	 */
 	public static Vector3 fuzzPosition(Vector3 pos) {
-		return pos.add(Vector3.randomVector());
+		return fuzzPosition(pos, 1D);
 	}
 
+	/**
+	 * Adds some random offset to a vector.
+	 * @param pos The vector to offset
+	 * @param amount The amount to offset
+	 * @return The new vector
+	 */
+	public static Vector3 fuzzPosition(Vector3 pos, double amount) {
+		return pos.offset(Vector3.randomVector(), amount);
+	}
+
+	/**
+	 * Creates a green score entity.
+	 * @param world The world
+	 * @param target The target if the entity should home in on the target
+	 * @param pos The position for the entity. Will be fuzzed.
+	 * @param angle The angle that the entity will go in.
+	 * @return The score entity
+	 */
 	public static EntityFallingData createScoreGreen(World world, @Nullable Entity target, Vector3 pos, Vector3 angle) {
 		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_GREEN,
 				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), target, 10);
 	}
 
+	/**
+	 * Creates a blue score entity.
+	 * @param world The world
+	 * @param target The target if the entity should home in on the target
+	 * @param pos The position for the entity. Will be fuzzed.
+	 * @param angle The angle that the entity will go in.
+	 * @return The score entity
+	 */
 	public static EntityFallingData createScoreBlue(World world, @Nullable Entity target, Vector3 pos, Vector3 angle) {
 		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_BLUE,
 				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), target, 100);
 	}
 
+	/**
+	 * Creates a power entity.
+	 * @param world The world
+	 * @param pos The position for the entity. Will be fuzzed.
+	 * @param angle The angle that the entity will go in.
+	 * @return The score entity
+	 */
 	public static EntityFallingData createPower(World world, Vector3 pos, Vector3 angle) {
 		return new EntityFallingData(world, EntityFallingData.DataType.POWER,
 				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 0.05F);
 	}
 
+	/**
+	 * Creates a big power entity.
+	 * @param world The world
+	 * @param pos The position for the entity. Will be fuzzed.
+	 * @param angle The angle that the entity will go in.
+	 * @return The score entity
+	 */
 	public static EntityFallingData createBigPower(World world, Vector3 pos, Vector3 angle) {
 		return new EntityFallingData(world, EntityFallingData.DataType.BIG_POWER,
 				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 1F);
 	}
 
+	/**
+	 * Creates a life entity.
+	 * @param world The world
+	 * @param pos The position for the entity. Will be fuzzed.
+	 * @param angle The angle that the entity will go in.
+	 * @return The score entity
+	 */
 	public static EntityFallingData createLife(World world, Vector3 pos, Vector3 angle) {
 		return new EntityFallingData(world, EntityFallingData.DataType.LIFE,
 				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 1);
 	}
 
+	/**
+	 * Creates a bomb entity.
+	 * @param world The world
+	 * @param pos The position for the entity. Will be fuzzed.
+	 * @param angle The angle that the entity will go in.
+	 * @return The score entity
+	 */
 	public static EntityFallingData createBomb(World world, Vector3 pos, Vector3 angle) {
 		return new EntityFallingData(world, EntityFallingData.DataType.BOMB,
 				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 1);
