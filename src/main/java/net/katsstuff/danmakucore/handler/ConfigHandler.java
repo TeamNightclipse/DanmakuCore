@@ -11,17 +11,20 @@ package net.katsstuff.danmakucore.handler;
 import net.katsstuff.danmakucore.EnumDanmakuLevel;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.Config.Comment;
 
 @Config(modid = LibMod.MODID)
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class ConfigHandler {
 
 	public static Danmaku danmaku = new Danmaku();
+	public static HUD hud = new HUD();
 
 	public static class Danmaku {
 
 		public int danmakuMaxNumber = 32;
 		public boolean oneHitKill = false;
+		@Comment({"Allowed values:", "PEACEFUL, EASY, NORMAL, HARD, LUNATIC, EXTRA, LAST_SPELL, LAST_WORD", "Anything above EXTRA is not guaranteed to work as well"})
 		public EnumDanmakuLevel danmakuLevel = EnumDanmakuLevel.NORMAL;
 	}
 
@@ -29,7 +32,36 @@ public class ConfigHandler {
 
 	public static class Entities {
 
-		@Config.Comment("Currently not implemented")
+		@Comment("Currently not implemented")
 		public boolean circleBossBar = false;
+	}
+
+	public static class HUD {
+
+		public Power power = new Power();
+		public Stars stars = new Stars();
+
+		public static class Power {
+			@Comment({"How many pixels before the power bar starts", "The size of the power bar is widthEnd - widthStart"})
+			public int widthStart = 32;
+			@Comment({"How many pixels before the power bar ends", "The size of the power bar is widthEnd - widthStart"})
+			public int widthEnd = 128;
+
+			public int posX = 27;
+			public int posY = 29;
+
+			@Comment("If the power (and score) bar should be hidden if it's full")
+			public boolean hideIfFull = false;
+		}
+
+		public static class Stars {
+			public int posX = 8;
+			public int posY = 24;
+
+			@Comment({"If the bomb/star bar should be hidden if", "both bombs and lives are above their high amounts (specified bellow)"})
+			public boolean hideIfAboveHigh = false;
+			public int livesHigh = 5;
+			public int bombsHigh = 5;
+		}
 	}
 }
