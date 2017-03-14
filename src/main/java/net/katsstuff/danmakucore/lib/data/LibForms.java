@@ -39,4 +39,6 @@ public final class LibForms {
 	public static final Form SPHERE_POINTED = new FormDummy();
 	@ObjectHolder(LibFormName.CONTROL)
 	public static final Form CONTROL = new FormDummy();
+	@ObjectHolder(LibFormName.FIRE)
+	public static final Form FIRE = new FormDummy();
 }

@@ -27,6 +27,7 @@ import net.katsstuff.danmakucore.impl.danmakuvariant.DanmakuVariantGeneric;
 import net.katsstuff.danmakucore.impl.form.FormControl;
 import net.katsstuff.danmakucore.impl.form.FormCrystal1;
 import net.katsstuff.danmakucore.impl.form.FormCrystal2;
+import net.katsstuff.danmakucore.impl.form.FormFire;
 import net.katsstuff.danmakucore.impl.form.FormKunai;
 import net.katsstuff.danmakucore.impl.form.FormPellet;
 import net.katsstuff.danmakucore.impl.form.FormPointedSphere;
@@ -141,7 +142,8 @@ public class CommonProxy {
 				new FormSphereCircle(),
 				new FormSphereDark(),
 				new FormStar(),
-				new FormControl()
+				new FormControl(),
+				new FormFire()
 		);
 	}
 
@@ -196,7 +198,8 @@ public class CommonProxy {
 				new DanmakuVariantGeneric(LibDanmakuVariantName.RICE, () -> LibShotData.SHOT_RICE, 0.4D),
 				new DanmakuVariantGeneric(LibDanmakuVariantName.LASER, () -> LibShotData.SHOT_LASER, 0.35D),
 				new DanmakuVariantGeneric(LibDanmakuVariantName.LASER_SHORT, () -> LibShotData.SHOT_LASER_SHORT, 0.4D),
-				new DanmakuVariantGeneric(LibDanmakuVariantName.LASER_LONG, () -> LibShotData.SHOT_LASER_LONG, 0.3D)
+				new DanmakuVariantGeneric(LibDanmakuVariantName.LASER_LONG, () -> LibShotData.SHOT_LASER_LONG, 0.3D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.FIRE, () -> LibShotData.FIRE, 0.4D)
 		);
 	}
 

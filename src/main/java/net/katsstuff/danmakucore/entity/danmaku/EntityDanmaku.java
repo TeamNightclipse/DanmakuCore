@@ -9,6 +9,7 @@
 package net.katsstuff.danmakucore.entity.danmaku;
 
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -526,5 +527,9 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	@SuppressWarnings("unused")
 	public SubEntity getSubEntity() {
 		return subEntity;
+	}
+
+	public Random getRNG() {
+		return rand;
 	}
 }
