@@ -13,6 +13,8 @@ import net.katsstuff.danmakucore.client.handler.BossBarHandler;
 import net.katsstuff.danmakucore.client.handler.HUDHandler;
 import net.katsstuff.danmakucore.client.handler.SpellcardHandler;
 import net.katsstuff.danmakucore.client.helper.RenderHelper;
+import net.katsstuff.danmakucore.client.particle.IGlowParticle;
+import net.katsstuff.danmakucore.client.particle.ParticleRenderer;
 import net.katsstuff.danmakucore.client.render.RenderDanmaku;
 import net.katsstuff.danmakucore.client.render.RenderFallingData;
 import net.katsstuff.danmakucore.client.render.RenderSpellcard;
@@ -32,6 +34,7 @@ import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.network.SpellcardInfoPacket;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -47,6 +50,7 @@ public class ClientProxy extends CommonProxy {
 
 	private final BossBarHandler bossBarHandler = new BossBarHandler();
 	private final SpellcardHandler spellcardHandler = new SpellcardHandler();
+	public final ParticleRenderer particleRenderer = new ParticleRenderer();
 
 	@Override
 	public void bakeDanmakuVariant(DanmakuVariant variant) {
@@ -73,6 +77,7 @@ public class ClientProxy extends CommonProxy {
 		MinecraftForge.EVENT_BUS.register(new HUDHandler());
 		MinecraftForge.EVENT_BUS.register(bossBarHandler);
 		MinecraftForge.EVENT_BUS.register(spellcardHandler);
+		MinecraftForge.EVENT_BUS.register(particleRenderer);
 	}
 
 	@Override
@@ -121,4 +126,8 @@ public class ClientProxy extends CommonProxy {
 		spellcardHandler.handlePacket(packet);
 	}
 
+	@Override
+	public <T extends Particle & IGlowParticle> void addParticle(T particle) {
+		particleRenderer.addParticle(particle);
+	}
 }

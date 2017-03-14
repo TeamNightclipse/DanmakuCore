@@ -12,6 +12,7 @@ import java.util.Arrays;
 
 import javax.annotation.Nullable;
 
+import net.katsstuff.danmakucore.client.particle.IGlowParticle;
 import net.katsstuff.danmakucore.entity.EntityFallingData;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
@@ -56,6 +57,7 @@ import net.katsstuff.danmakucore.lib.LibRegistryName;
 import net.katsstuff.danmakucore.lib.LibSubEntityName;
 import net.katsstuff.danmakucore.lib.data.LibShotData;
 import net.katsstuff.danmakucore.network.SpellcardInfoPacket;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
@@ -221,6 +223,8 @@ public class CommonProxy {
 	 * Adds a spellcard name to the spellcard renderer
 	 */
 	public void handleSpellcardInfo(SpellcardInfoPacket.Message packet) {}
+
+	public <T extends Particle & IGlowParticle> void addParticle(T particle) {}
 
 	@SuppressWarnings("deprecation") //We need the default value
 	private static <I extends IForgeRegistryEntry<I>> FMLControlledNamespacedRegistry<I> createRegistry(ResourceLocation name, Class<I> clazz,

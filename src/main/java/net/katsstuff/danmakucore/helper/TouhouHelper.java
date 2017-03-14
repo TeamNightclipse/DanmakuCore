@@ -10,12 +10,15 @@ package net.katsstuff.danmakucore.helper;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
 import net.katsstuff.danmakucore.capability.CapabilityDanmakuCoreData;
 import net.katsstuff.danmakucore.capability.IDanmakuCoreData;
+import net.katsstuff.danmakucore.client.particle.GlowTexture;
+import net.katsstuff.danmakucore.client.particle.ParticleUtil;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.EntityFallingData;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
@@ -31,6 +34,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TouhouHelper {
 
@@ -252,5 +256,28 @@ public class TouhouHelper {
 	public static EntityFallingData createBomb(World world, Vector3 pos, Vector3 angle) {
 		return new EntityFallingData(world, EntityFallingData.DataType.BOMB,
 				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 1);
+	}
+
+	/**
+	 * Creates a charge circle at the center of the specified entity.
+	 * You might have to play with some of the parameters to make it look cool.
+	 * @param entity The entity at the center
+	 * @param amount The amount of particles to spawn
+	 * @param offset The amount of offset where the particles will start
+	 * @param divSpeed The amount to divide the initial speed with
+	 * @param r The red component
+	 * @param g The green component
+	 * @param b The blue component
+	 * @param lifetime The lifetime of the particles
+	 */
+	@SideOnly(Side.CLIENT)
+	public static void createChargeSphere(Entity entity, int amount, double offset, double divSpeed, float r, float g, float b, int lifetime) {
+		Vector3 center = new Vector3(entity.posX, entity.posY + (entity.height / 2), entity.posZ);
+		for(int i = 0; i < amount; i++) {
+			Vector3 offsetPos = center.offset(Vector3.randomVector(), offset);
+			Vector3 angleToCenter = ((Vector3)Vector3.angleToPos(offsetPos, center)).divide(divSpeed);
+
+			ParticleUtil.spawnParticleGlow(entity.world, offsetPos, angleToCenter, 1F, r, g, b, lifetime, GlowTexture.MOTE);
+		}
 	}
 }
