@@ -17,6 +17,7 @@ public class DanmakuCoreCmd extends CommandTreeBase {
 		addSubcommand(new DanLivesCmd());
 		addSubcommand(new DanBombsCmd());
 		addSubcommand(new DanPowerCmd());
+		addSubcommand(new DanScoreCmd());
 	}
 
 	@Override

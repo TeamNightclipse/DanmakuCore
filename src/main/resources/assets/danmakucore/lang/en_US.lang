@@ -143,3 +143,4 @@ commands.danmakucore.power.usage=/danmakucore power <amount>
 commands.danmakucore.bombs.success=Set bombs to %d for %s
 commands.danmakucore.lives.success=Set lives to %d for %s
 commands.danmakucore.power.success=Set power to %d for %s
+commands.danmakucore.score.success=Set score to %d for %s
