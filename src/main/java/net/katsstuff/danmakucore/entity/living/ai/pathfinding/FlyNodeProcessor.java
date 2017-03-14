@@ -25,15 +25,15 @@ public class FlyNodeProcessor extends NodeProcessor {
 
 	@Override
 	public PathPoint getStart() {
-		return this.openPoint(MathHelper.floor_double(this.entity.getEntityBoundingBox().minX),
-				MathHelper.floor_double(this.entity.getEntityBoundingBox().minY + 0.5D),
-				MathHelper.floor_double(this.entity.getEntityBoundingBox().minZ));
+		return this.openPoint(MathHelper.floor(this.entity.getEntityBoundingBox().minX),
+				MathHelper.floor(this.entity.getEntityBoundingBox().minY + 0.5D),
+				MathHelper.floor(this.entity.getEntityBoundingBox().minZ));
 	}
 
 	@Override
 	public PathPoint getPathPointToCoords(double x, double y, double z) {
-		return this.openPoint(MathHelper.floor_double(x - this.entity.width / 2.0F), MathHelper.floor_double(y + 0.5D),
-				MathHelper.floor_double(z - this.entity.width / 2.0F));
+		return this.openPoint(MathHelper.floor(x - this.entity.width / 2.0F), MathHelper.floor(y + 0.5D),
+				MathHelper.floor(z - this.entity.width / 2.0F));
 	}
 
 	@Override

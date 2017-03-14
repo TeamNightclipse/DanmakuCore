@@ -74,10 +74,10 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 
 		EntityDanmakuMob entity = getEntity();
 		Optional<ITextComponent> spellcardName = getSpellcardName();
-		if(!entity.worldObj.isRemote && spellcardName.isPresent()) {
+		if(!entity.world.isRemote && spellcardName.isPresent()) {
 			spellcardInfo = new SpellcardInfoServer(spellcardName.get());
 
-			List<EntityPlayerMP> toAdd = entity.worldObj.getEntitiesWithinAABB(EntityPlayerMP.class, entity.getEntityBoundingBox().expandXyz(32D));
+			List<EntityPlayerMP> toAdd = entity.world.getEntitiesWithinAABB(EntityPlayerMP.class, entity.getEntityBoundingBox().expandXyz(32D));
 			toAdd.forEach(this::addTrackingPlayer);
 		}
 	}

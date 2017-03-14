@@ -89,7 +89,7 @@ public abstract class SpellcardEntity implements INBTSerializable<NBTTagCompound
 	}
 
 	public World getWorld() {
-		return card.worldObj;
+		return card.world;
 	}
 
 	public Vector3 posUser() {

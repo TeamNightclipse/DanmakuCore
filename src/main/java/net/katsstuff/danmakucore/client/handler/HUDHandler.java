@@ -43,7 +43,7 @@ public class HUDHandler {
 	public void onDraw(RenderGameOverlayEvent.Post event) {
 		if(event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
 			Minecraft mc = Minecraft.getMinecraft();
-			EntityPlayerSP player = mc.thePlayer;
+			EntityPlayerSP player = mc.player;
 			Optional<IDanmakuCoreData> optData = TouhouHelper.getDanmakuCoreData(player);
 			if(optData.isPresent()) {
 				IDanmakuCoreData data = optData.get();
@@ -76,7 +76,7 @@ public class HUDHandler {
 						else {
 							powerBarVisible += 0.1F;
 						}
-						powerBarVisible = MathHelper.clamp_float(powerBarVisible, 0F, 1F);
+						powerBarVisible = MathHelper.clamp(powerBarVisible, 0F, 1F);
 
 						GlStateManager.color(1F, 1F, 1F, powerBarVisible);
 					}
@@ -120,7 +120,7 @@ public class HUDHandler {
 						else {
 							starsVisible += 0.1F;
 						}
-						starsVisible = MathHelper.clamp_float(starsVisible, 0F, 1F);
+						starsVisible = MathHelper.clamp(starsVisible, 0F, 1F);
 
 						GlStateManager.color(1F, 1F, 1F, starsVisible);
 					}

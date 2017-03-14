@@ -51,7 +51,7 @@ public class BoundedDanmakuCoreData implements IDanmakuCoreData {
 
 	@Override
 	public void setPower(float power) {
-		this.power = new BigDecimal(MathHelper.clamp_float(power, 0F, powerBound)).setScale(4, BigDecimal.ROUND_HALF_UP).floatValue();
+		this.power = new BigDecimal(MathHelper.clamp(power, 0F, powerBound)).setScale(4, BigDecimal.ROUND_HALF_UP).floatValue();
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class BoundedDanmakuCoreData implements IDanmakuCoreData {
 
 	@Override
 	public void setLives(int lives) {
-		this.lives = MathHelper.clamp_int(lives, 0, lifeBombBound);
+		this.lives = MathHelper.clamp(lives, 0, lifeBombBound);
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class BoundedDanmakuCoreData implements IDanmakuCoreData {
 
 	@Override
 	public void setBombs(int bombs) {
-		this.bombs = MathHelper.clamp_int(bombs, 0, lifeBombBound);
+		this.bombs = MathHelper.clamp(bombs, 0, lifeBombBound);
 	}
 
 	@Override

@@ -677,11 +677,11 @@ object Vector3 {
 
 		val angle = sourceEntity.getLookVec
 		val posReach = posSource.offset(angle, distanceReach).toVec3d
-		val rayTrace = sourceEntity.worldObj.rayTraceBlocks(posSourceVec3d, posReach, false, false, true)
+		val rayTrace = sourceEntity.world.rayTraceBlocks(posSourceVec3d, posReach, false, false, true)
 
 		val distance = if(rayTrace != null) rayTrace.hitVec.distanceTo(posSourceVec3d) else distanceReach
 
-		val foundEntities: Seq[Entity] = sourceEntity.worldObj.getEntitiesInAABBexcluding(sourceEntity, sourceEntity.getEntityBoundingBox.addCoord(
+		val foundEntities: Seq[Entity] = sourceEntity.world.getEntitiesInAABBexcluding(sourceEntity, sourceEntity.getEntityBoundingBox.addCoord(
 			angle.x * distanceReach, angle.y * distanceReach, angle.z * distanceReach).expandXyz(1F), (entity => filter.test(entity)): GPredicate[Entity])
 			.asScala
 

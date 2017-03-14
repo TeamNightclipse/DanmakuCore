@@ -57,7 +57,7 @@ public abstract class EntityDanmakuMob extends EntityMob {
 		super.onDeathUpdate();
 
 		if(deathTime == 7) {
-			DanmakuHelper.explosionEffect2(worldObj, pos(), 1.0F + deathTime * 0.1F);
+			DanmakuHelper.explosionEffect2(world, pos(), 1.0F + deathTime * 0.1F);
 			DanmakuHelper.chainExplosion(this, 5.0F, 5.0F);
 		}
 
@@ -246,12 +246,12 @@ public abstract class EntityDanmakuMob extends EntityMob {
 
 		int powerSpawns = powerSpawns();
 		for(int i = 1; i < powerSpawns; i++) {
-			worldObj.spawnEntityInWorld(TouhouHelper.createPower(worldObj, pos, angle));
+			world.spawnEntityInWorld(TouhouHelper.createPower(world, pos, angle));
 		}
 
 		int pointSpawns = pointSpawns();
 		for(int i = 1; i < pointSpawns; i++) {
-			worldObj.spawnEntityInWorld(TouhouHelper.createScoreBlue(worldObj, null, pos, angle));
+			world.spawnEntityInWorld(TouhouHelper.createScoreBlue(world, null, pos, angle));
 		}
 	}
 

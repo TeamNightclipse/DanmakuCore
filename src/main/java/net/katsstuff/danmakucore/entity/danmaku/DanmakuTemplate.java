@@ -82,7 +82,7 @@ public final class DanmakuTemplate {
 
 			if(world == null) {
 				if(source != null) {
-					world = source.worldObj;
+					world = source.world;
 				}
 				else throw new IllegalArgumentException("Could not find a world for builder, and neither source or user is set");
 			}

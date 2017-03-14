@@ -61,7 +61,7 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 	@Override
 	public void onLivingUpdate() {
 		super.onLivingUpdate();
-		if(!worldObj.isRemote) {
+		if(!world.isRemote) {
 			dataManager.set(BOSS_INFO_UUID, Optional.of(bossInfo.getUniqueId()));
 		}
 	}
@@ -78,7 +78,7 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 		Phase oldCurrentPhase = phaseManager.getCurrentPhase();
 		if(phaseManager.hasNextPhase()) {
 			phaseManager.nextPhase();
-			if(!worldObj.isRemote) {
+			if(!world.isRemote) {
 				setHealth(getMaxHealth());
 
 				DamageSource source = getLastDamageSource();
@@ -147,20 +147,20 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 		}
 
 		for(int i = 0; i < powerSpawns; i++) {
-			worldObj.spawnEntityInWorld(TouhouHelper.createPower(worldObj, pos, angle));
+			world.spawnEntityInWorld(TouhouHelper.createPower(world, pos, angle));
 		}
 
 		int pointSpawns = rand.nextInt(8);
 		for(int i = 0; i < pointSpawns; i++) {
-			worldObj.spawnEntityInWorld(TouhouHelper.createScoreBlue(worldObj, null, pos, angle));
+			world.spawnEntityInWorld(TouhouHelper.createScoreBlue(world, null, pos, angle));
 		}
 
 		if(rand.nextInt(100) < 10) {
-			worldObj.spawnEntityInWorld(TouhouHelper.createBomb(worldObj, pos, angle));
+			world.spawnEntityInWorld(TouhouHelper.createBomb(world, pos, angle));
 		}
 
 		if(rand.nextInt(100) < 2) {
-			worldObj.spawnEntityInWorld(TouhouHelper.createLife(worldObj, pos, angle));
+			world.spawnEntityInWorld(TouhouHelper.createLife(world, pos, angle));
 		}
 	}
 }

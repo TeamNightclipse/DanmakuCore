@@ -46,7 +46,7 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 	public void tick() {
 		Phase phase = getCurrentPhase();
 		if(phase.isActive()) {
-			if(!entity.worldObj.isRemote) {
+			if(!entity.world.isRemote) {
 				phase.serverUpdate();
 			}
 			else {

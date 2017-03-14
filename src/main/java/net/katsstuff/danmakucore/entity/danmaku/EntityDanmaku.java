@@ -118,7 +118,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	}
 
 	private EntityDanmaku(EntityDanmaku old) {
-		this(old.worldObj, old.user, old.source, old.getShotData(), new Vector3(old), old.angle, old.getRoll(), old.movement, old.rotation);
+		this(old.world, old.user, old.source, old.getShotData(), new Vector3(old), old.angle, old.getRoll(), old.movement, old.rotation);
 	}
 
 	@Override
@@ -171,7 +171,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		prevRotationYaw = rotationYaw = (float)vec.yaw();
 		prevRotationPitch = rotationPitch = (float)vec.pitch();
 
-		if(!worldObj.isRemote) {
+		if(!world.isRemote) {
 			angle = vec;
 		}
 	}
@@ -183,7 +183,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	public void onUpdate() {
 		ShotData shot = getShotData();
 
-		if(!worldObj.isRemote && ticksExisted > shot.end()) {
+		if(!world.isRemote && ticksExisted > shot.end()) {
 			setDead();
 			return;
 		}
@@ -198,7 +198,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			}
 		}
 
-		if(!worldObj.isRemote && user != null && user.isDead) {
+		if(!world.isRemote && user != null && user.isDead) {
 			danmakuFinishBonus();
 			return;
 		}
@@ -212,7 +212,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			motionZ = 0;
 
 			//Do a new check to see if the shot is still delayed, and if it isn't. Start it's movement
-			if(delay <= 0 && !worldObj.isRemote) {
+			if(delay <= 0 && !world.isRemote) {
 				resetMotion();
 			}
 			shot = shot.setDelay(delay);
@@ -302,7 +302,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		SubEntityType oldSubEntity = getShotData().subEntity();
 		dataManager.set(SHOT_DATA, toUse);
 		if(toUse.subEntity() != oldSubEntity || first || forceNewSubentity) {
-			subEntity = toUse.subEntity().instantiate(worldObj, this);
+			subEntity = toUse.subEntity().instantiate(world, this);
 		}
 	}
 
@@ -381,7 +381,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		setEntityBoundingBox(new AxisAlignedBB(getEntityBoundingBox().minX, getEntityBoundingBox().minY, getEntityBoundingBox().minZ,
 				getEntityBoundingBox().minX + width, getEntityBoundingBox().minY + height, getEntityBoundingBox().minZ + length));
 
-		if(this.width > f && !firstUpdate && !worldObj.isRemote) {
+		if(this.width > f && !firstUpdate && !world.isRemote) {
 			moveEntity(f - width, 0.0D, f - length);
 		}
 	}
@@ -420,7 +420,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 		UUID userUUID = nbtTag.getUniqueId(NBT_USER_UUID);
 		if(userUUID != null) {
-			user = worldObj.getPlayerEntityByUUID(userUUID);
+			user = world.getPlayerEntityByUUID(userUUID);
 
 			if(user == null) {
 				Entity entity = getEntityByUUID(userUUID);
@@ -432,7 +432,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 		UUID sourceUUID = nbtTag.getUniqueId(NBT_SOURCE_UUID);
 		if(sourceUUID != null) {
-			source = worldObj.getPlayerEntityByUUID(sourceUUID);
+			source = world.getPlayerEntityByUUID(sourceUUID);
 
 			if(source == null) {
 				source = getEntityByUUID(sourceUUID);
@@ -442,7 +442,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 	@Nullable
 	private Entity getEntityByUUID(UUID uuid) {
-		for(Entity entity : worldObj.loadedEntityList) {
+		for(Entity entity : world.loadedEntityList) {
 			if(uuid.equals(entity.getUniqueID())) return entity;
 		}
 		return null;
@@ -452,7 +452,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	 * Side safe way to remove danmaku.
 	 */
 	public void delete() {
-		if(!worldObj.isRemote) {
+		if(!world.isRemote) {
 			setDead();
 		}
 	}
@@ -496,13 +496,13 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			while(zPos < shot.sizeZ()) {
 				Vector3 realPos = pos.offset(angle, zPos);
 
-				worldObj.spawnEntityInWorld(TouhouHelper.createScoreGreen(worldObj, target.orElse(null), realPos, angle));
+				world.spawnEntityInWorld(TouhouHelper.createScoreGreen(world, target.orElse(null), realPos, angle));
 				zPos += 1.5D;
 			}
 			setDead();
 		}
 		else {
-			worldObj.spawnEntityInWorld(TouhouHelper.createScoreGreen(worldObj, target.orElse(null), pos, angle));
+			world.spawnEntityInWorld(TouhouHelper.createScoreGreen(world, target.orElse(null), pos, angle));
 			setDead();
 		}
 	}

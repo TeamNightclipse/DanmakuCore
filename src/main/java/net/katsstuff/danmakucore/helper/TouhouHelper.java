@@ -42,7 +42,7 @@ public class TouhouHelper {
 	 * it does, it's because the spellcard denied it.
 	 */
 	public static Optional<EntityLivingBase> canPlayerDeclareSpellcard(EntityPlayer player, Spellcard spellcard) {
-		World world = player.worldObj;
+		World world = player.world;
 
 		//Only allow spellcard if use user isn't already using a spellcard
 		@SuppressWarnings("ConstantConditions") List<EntitySpellcard> spellcardList = world.getEntitiesWithinAABB(EntitySpellcard.class,
@@ -102,7 +102,7 @@ public class TouhouHelper {
 			boolean firstAttack, boolean addSpellcardName) {
 		if(spellCard.onDeclare(user, target, firstAttack)) {
 			EntitySpellcard entitySpellCard = new EntitySpellcard(user, target, spellCard, addSpellcardName);
-			user.worldObj.spawnEntityInWorld(entitySpellCard);
+			user.world.spawnEntityInWorld(entitySpellCard);
 
 			if(firstAttack) {
 				DanmakuHelper.danmakuRemove(user, 40.0F, DanmakuHelper.DanmakuRemoveMode.ENEMY, true);

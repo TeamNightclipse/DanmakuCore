@@ -73,7 +73,7 @@ public class EntityFallingData extends Entity {
 	public void onUpdate() {
 		super.onUpdate();
 
-		if(!worldObj.isRemote) {
+		if(!world.isRemote) {
 
 			Vector3 motion;
 			if(target != null) {
@@ -87,7 +87,7 @@ public class EntityFallingData extends Entity {
 			motionY = motion.y();
 			motionZ = motion.z();
 
-			if(!worldObj.isAirBlock(new BlockPos(posX + motionX, posY + motionY, posZ + motionZ))) {
+			if(!world.isAirBlock(new BlockPos(posX + motionX, posY + motionY, posZ + motionZ))) {
 				setDead();
 				return;
 			}
@@ -98,7 +98,7 @@ public class EntityFallingData extends Entity {
 
 	@Override
 	public void onCollideWithPlayer(EntityPlayer player) {
-		if(!worldObj.isRemote) {
+		if(!world.isRemote) {
 			switch(getDataType()) {
 				case SCORE_GREEN:
 				case SCORE_BLUE:
@@ -134,9 +134,9 @@ public class EntityFallingData extends Entity {
 	protected void readEntityFromNBT(NBTTagCompound compound) {
 		UUID target = compound.getUniqueId("target");
 		if(target != null) {
-			Entity targetEntity = worldObj.getPlayerEntityByUUID(target);
+			Entity targetEntity = world.getPlayerEntityByUUID(target);
 			if(targetEntity == null) {
-				NBTHelper.getEntityByUUID(target, worldObj);
+				NBTHelper.getEntityByUUID(target, world);
 			}
 			this.target = targetEntity;
 		}

@@ -60,7 +60,7 @@ public class DanmakuCoreDataHandler {
 	@SubscribeEvent
 	public void onDeath(LivingDeathEvent event) {
 		EntityLivingBase living = event.getEntityLiving();
-		if(!living.worldObj.isRemote && event.getSource() instanceof DamageSourceDanmaku && living instanceof EntityPlayer
+		if(!living.world.isRemote && event.getSource() instanceof DamageSourceDanmaku && living instanceof EntityPlayer
 				&& TouhouHelper.getDanmakuCoreData(living).map(IDanmakuCoreData::getLives).orElse(0) >= 1) {
 			EntityPlayer player = (EntityPlayer)living;
 			TouhouHelper.changeAndSyncPlayerData(IDanmakuCoreData::removeLife, player);

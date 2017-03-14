@@ -31,7 +31,7 @@ public class FlyMoveHelper extends EntityMoveHelper {
 				double d1 = this.posY - this.danmakuMob.posY;
 				double d2 = this.posZ - this.danmakuMob.posZ;
 				double d3 = d0 * d0 + d1 * d1 + d2 * d2;
-				d3 = MathHelper.sqrt_double(d3);
+				d3 = MathHelper.sqrt(d3);
 				d1 = d1 / d3;
 				float f = (float)(MathHelper.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
 				this.danmakuMob.rotationYaw = this.limitAngle(this.danmakuMob.rotationYaw, f, 90.0F);

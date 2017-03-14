@@ -50,7 +50,7 @@ public class EntitySpellcard extends Entity {
 	}
 
 	public EntitySpellcard(EntityLivingBase user, @Nullable EntityLivingBase target, Spellcard type, boolean sendInfoPacket) {
-		this(user.worldObj);
+		this(user.world);
 
 		setPosition(user.posX, user.posY + user.getEyeHeight(), user.posZ);
 		setRotation(user.rotationYaw, user.rotationPitch);
@@ -66,7 +66,7 @@ public class EntitySpellcard extends Entity {
 
 	@Override
 	public void onUpdate() {
-		if(!worldObj.isRemote && (spellCard == null || ticksExisted >= spellCard.type.getEndTime() || user == null || user.isDead)) {
+		if(!world.isRemote && (spellCard == null || ticksExisted >= spellCard.type.getEndTime() || user == null || user.isDead)) {
 			setDead();
 			return;
 		}
@@ -77,7 +77,7 @@ public class EntitySpellcard extends Entity {
 			spellcardInfo.tick();
 		}
 
-		if(!worldObj.isRemote) {
+		if(!world.isRemote) {
 			spellCard.onUpdate();
 			if(user instanceof EntityPlayer && ticksExisted < spellCard.type.getRemoveTime()) {
 				DanmakuHelper.danmakuRemove(user, 40.0F, DanmakuHelper.DanmakuRemoveMode.OTHER, true);
@@ -121,9 +121,9 @@ public class EntitySpellcard extends Entity {
 		EntityLivingBase user;
 		UUID userUuid = NBTUtil.getUUIDFromTag(tag.getCompoundTag(NBT_USER));
 
-		user = worldObj.getPlayerEntityByUUID(userUuid);
+		user = world.getPlayerEntityByUUID(userUuid);
 		if(user == null) {
-			Optional<Entity> optUser = NBTHelper.getEntityByUUID(userUuid, worldObj);
+			Optional<Entity> optUser = NBTHelper.getEntityByUUID(userUuid, world);
 			if(optUser.isPresent()) {
 				Entity foundUser = optUser.get();
 				if(foundUser instanceof EntityLivingBase) {

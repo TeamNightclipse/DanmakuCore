@@ -66,9 +66,9 @@ public class CoreDataPacket {
 		@Override
 		public IMessage onMessage(Message message, MessageContext ctx) {
 			Minecraft.getMinecraft().addScheduledTask(() -> {
-				Entity entityTarget = Minecraft.getMinecraft().theWorld.getPlayerEntityByUUID(message.target);
+				Entity entityTarget = Minecraft.getMinecraft().world.getPlayerEntityByUUID(message.target);
 				if(entityTarget == null) {
-					entityTarget = NBTHelper.getEntityByUUID(message.target, Minecraft.getMinecraft().thePlayer.worldObj).orElse(null);
+					entityTarget = NBTHelper.getEntityByUUID(message.target, Minecraft.getMinecraft().player.world).orElse(null);
 				}
 
 				if(entityTarget != null) {
