@@ -21,5 +21,6 @@ public class DanmakuCorePacketHandler {
 	public static void init() {
 		INSTANCE.registerMessage(CoreDataPacket.Handler.class, CoreDataPacket.Message.class, id++, Side.CLIENT);
 		INSTANCE.registerMessage(SpellcardInfoPacket.Handler.class, SpellcardInfoPacket.Message.class, id++, Side.CLIENT);
+		INSTANCE.registerMessage(ParticlePacket.Handler.class, ParticlePacket.Message.class, id++, Side.CLIENT);
 	}
 }

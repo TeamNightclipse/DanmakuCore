@@ -4,8 +4,11 @@ import java.util.Random;
 
 import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.data.Vector3;
+import net.katsstuff.danmakucore.network.DanmakuCorePacketHandler;
+import net.katsstuff.danmakucore.network.ParticlePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -27,5 +30,13 @@ public class ParticleUtil {
 				== 0) {
 			DanmakuCore.proxy.addParticle(new ParticleGlow(world, pos, motion, r, g, b, scale, lifetime, type));
 		}
+	}
+
+	public static void spawnParticleGlowPacket(World world, Vector3 pos, Vector3 motion, float r, float g, float b, float scale, int lifetime,
+			GlowTexture type, int range) {
+		ParticlePacket.Message message = new ParticlePacket.Message(pos, motion, r, g, b, scale, lifetime, type);
+		NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.x(), pos.y(), pos.z(), range);
+
+		DanmakuCorePacketHandler.INSTANCE.sendToAllAround(message, point);
 	}
 }
