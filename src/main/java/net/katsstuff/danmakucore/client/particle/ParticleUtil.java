@@ -19,6 +19,7 @@ public class ParticleUtil {
 	}
 	*/
 
+	@SideOnly(Side.CLIENT)
 	public static void spawnParticleGlow(World world, Vector3 pos, Vector3 motion, float r, float g, float b, float scale, int lifetime,
 			GlowTexture type) {
 		counter += random.nextInt(3);

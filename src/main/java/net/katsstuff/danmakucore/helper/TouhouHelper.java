@@ -277,7 +277,7 @@ public class TouhouHelper {
 			Vector3 offsetPos = center.offset(Vector3.randomVector(), offset);
 			Vector3 angleToCenter = ((Vector3)Vector3.angleToPos(offsetPos, center)).divide(divSpeed);
 
-			ParticleUtil.spawnParticleGlow(entity.world, offsetPos, angleToCenter, 1F, r, g, b, lifetime, GlowTexture.MOTE);
+			ParticleUtil.spawnParticleGlow(entity.world, offsetPos, angleToCenter, r, g, b, 1F, lifetime, GlowTexture.MOTE);
 		}
 	}
 }
