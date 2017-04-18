@@ -127,7 +127,7 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
-	public <T extends Particle & IGlowParticle> void addParticle(T particle) {
+	public <T extends IGlowParticle> void addParticle(T particle) {
 		particleRenderer.addParticle(particle);
 	}
 }

@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.Form;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
@@ -35,10 +36,11 @@ public class RenderDanmaku extends Render<EntityDanmaku> {
 	public void doRender(EntityDanmaku entity, double x, double y, double z, float entityYaw, float partialTicks) {
 		GL11.glPushMatrix();
 		bindEntityTexture(entity);
-		GL11.glTranslated(x, y, z);
+		ShotData shotData = entity.getShotData();
+		GL11.glTranslated(x, y + shotData.sizeY() / 2, z);
 		GlStateManager.disableLighting();
 
-		Form form = entity.getShotData().form();
+		Form form = shotData.form();
 		IRenderForm renderForm = form.getRenderer(entity);
 		if(renderForm != null) {
 			renderForm.renderForm(entity, x, y, z, entityYaw, partialTicks, renderManager);

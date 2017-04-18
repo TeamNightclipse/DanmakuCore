@@ -227,7 +227,7 @@ public class CommonProxy {
 	 */
 	public void handleSpellcardInfo(SpellcardInfoPacket.Message packet) {}
 
-	public <T extends Particle & IGlowParticle> void addParticle(T particle) {}
+	public <T extends IGlowParticle> void addParticle(T particle) {}
 
 	@SuppressWarnings("deprecation") //We need the default value
 	private static <I extends IForgeRegistryEntry<I>> FMLControlledNamespacedRegistry<I> createRegistry(ResourceLocation name, Class<I> clazz,

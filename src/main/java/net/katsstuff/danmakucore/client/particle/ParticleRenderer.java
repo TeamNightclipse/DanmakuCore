@@ -124,7 +124,7 @@ public class ParticleRenderer {
 		}
 	}
 
-	public <T extends Particle & IGlowParticle> void addParticle(T particle) {
-		particles.add(particle);
+	public <T extends IGlowParticle> void addParticle(T particle) {
+		particles.add((Particle)particle);
 	}
 }
