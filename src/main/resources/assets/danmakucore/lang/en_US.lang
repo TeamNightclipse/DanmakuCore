@@ -63,6 +63,7 @@ item.danmaku.danmakuvariant.danmakucore.laser_short.name=Short Laser Danmaku
 item.danmaku.danmakuvariant.danmakucore.laser_long.name=Long Laser Danmaku
 item.danmaku.danmakuvariant.danmakucore.pellet.name=Pellet Danmaku
 item.danmaku.danmakuvariant.danmakucore.sphere_dark.name=Dark Sphere Danmaku
+item.danmaku.danmakuvariant.danmakucore.fire.name=Fire Danmaku
 
 #Forms
 item.danmaku.form.danmakucore.normal=Normal Shape
@@ -76,6 +77,7 @@ item.danmaku.form.danmakucore.kunai=Kunai Shape
 item.danmaku.form.danmakucore.laser=Laser Shape
 item.danmaku.form.danmakucore.pellet=Pellet Shape
 item.danmaku.form.danmakucore.sphere_dark=Dark Sphere Shape
+item.danmaku.form.danmakucore.fire=Fire Shape
 
 #Custom Names
 item.danmaku.custom.form.danmakucore.normal=Custom Normal Danmaku
@@ -89,6 +91,7 @@ item.danmaku.custom.form.danmakucore.kunai=Custom Kunai Danmaku
 item.danmaku.custom.form.danmakucore.laser=Custom Laser Danmaku
 item.danmaku.custom.form.danmakucore.pellet=Custom Pellet Danmaku
 item.danmaku.custom.form.danmakucore.sphere_dark=Custom Dark Sphere Danmaku
+item.danmaku.custom.form.danmakucore.fire=Custom Fire Danmaku
 
 #Vibrant colors
 item.danmaku.color.16711680=Strong Red
