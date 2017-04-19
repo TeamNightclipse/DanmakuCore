@@ -151,7 +151,7 @@ public class ItemDanmaku extends ItemBase {
 				DanmakuCreationHelper.createRandomRingShot(built, amount, wide, offset);
 				break;
 			case 2:
-				wide = amount * 3F;
+				wide = amount * 8F;
 				if(alternateMode) {
 					wide = wide * 0.5F;
 				}
