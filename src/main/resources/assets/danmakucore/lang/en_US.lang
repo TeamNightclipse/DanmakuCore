@@ -45,7 +45,42 @@ item.danmaku.infinity=Infinity
 item.danmaku.custom=Custom
 item.danmaku.noGravity=None
 
-#Names normal
+#Variants
+danmakuvariant.danmakucore.default.name=Medium Danmaku
+danmakuvariant.danmakucore.tiny.name=Tiny Danmaku
+danmakuvariant.danmakucore.small.name=Small Danmaku
+danmakuvariant.danmakucore.circle.name=Circle Danmaku
+danmakuvariant.danmakucore.scale.name=Scale Danmaku
+danmakuvariant.danmakucore.star_small.name=Small Star Danmaku
+danmakuvariant.danmakucore.star.name=Star Danmaku
+danmakuvariant.danmakucore.rice.name=Rice Danmaku
+danmakuvariant.danmakucore.crystal1.name=Pointed Crystal Danmaku
+danmakuvariant.danmakucore.crystal2.name=Blunt Crystal Danmaku
+danmakuvariant.danmakucore.kunai.name=Kunai Danmaku
+danmakuvariant.danmakucore.oval.name=Oval Danmaku
+danmakuvariant.danmakucore.laser.name=Laser Danmaku
+danmakuvariant.danmakucore.laser_short.name=Short Laser Danmaku
+danmakuvariant.danmakucore.laser_long.name=Long Laser Danmaku
+danmakuvariant.danmakucore.pellet.name=Pellet Danmaku
+danmakuvariant.danmakucore.sphere_dark.name=Dark Sphere Danmaku
+danmakuvariant.danmakucore.fire.name=Fire Danmaku
+
+#Forms
+form.danmakucore.normal=Normal Shape
+form.danmakucore.circle=Circle Shape
+form.danmakucore.scale=Scale Shape
+form.danmakucore.star=Star Shape
+form.danmakucore.rice=Rice Shape
+form.danmakucore.crystal1=Pointed Crystal Shape
+form.danmakucore.crystal2=Blunt Crystal Shape
+form.danmakucore.kunai=Kunai Shape
+form.danmakucore.laser=Laser Shape
+form.danmakucore.pellet=Pellet Shape
+form.danmakucore.sphere_dark=Dark Sphere Shape
+form.danmakucore.fire=Fire Shape
+
+
+#Stack Names normal
 item.danmaku.danmakuvariant.danmakucore.default.name=Medium Danmaku
 item.danmaku.danmakuvariant.danmakucore.tiny.name=Tiny Danmaku
 item.danmaku.danmakuvariant.danmakucore.small.name=Small Danmaku
@@ -65,33 +100,19 @@ item.danmaku.danmakuvariant.danmakucore.pellet.name=Pellet Danmaku
 item.danmaku.danmakuvariant.danmakucore.sphere_dark.name=Dark Sphere Danmaku
 item.danmaku.danmakuvariant.danmakucore.fire.name=Fire Danmaku
 
-#Forms
-item.danmaku.form.danmakucore.normal=Normal Shape
-item.danmaku.form.danmakucore.circle=Circle Shape
-item.danmaku.form.danmakucore.scale=Scale Shape
-item.danmaku.form.danmakucore.star=Star Shape
-item.danmaku.form.danmakucore.rice=Rice Shape
-item.danmaku.form.danmakucore.crystal1=Pointed Crystal Shape
-item.danmaku.form.danmakucore.crystal2=Blunt Crystal Shape
-item.danmaku.form.danmakucore.kunai=Kunai Shape
-item.danmaku.form.danmakucore.laser=Laser Shape
-item.danmaku.form.danmakucore.pellet=Pellet Shape
-item.danmaku.form.danmakucore.sphere_dark=Dark Sphere Shape
-item.danmaku.form.danmakucore.fire=Fire Shape
-
-#Custom Names
-item.danmaku.custom.form.danmakucore.normal=Custom Normal Danmaku
-item.danmaku.custom.form.danmakucore.circle=Custom Circle Danmaku
-item.danmaku.custom.form.danmakucore.scale=Custom Scale Danmaku
-item.danmaku.custom.form.danmakucore.star=Custom Star Danmaku
-item.danmaku.custom.form.danmakucore.rice=Custom Rice Danmaku
-item.danmaku.custom.form.danmakucore.crystal1=Custom Pointed Crystal Danmaku
-item.danmaku.custom.form.danmakucore.crystal2=Custom Blunt Crystal Danmaku
-item.danmaku.custom.form.danmakucore.kunai=Custom Kunai Danmaku
-item.danmaku.custom.form.danmakucore.laser=Custom Laser Danmaku
-item.danmaku.custom.form.danmakucore.pellet=Custom Pellet Danmaku
-item.danmaku.custom.form.danmakucore.sphere_dark=Custom Dark Sphere Danmaku
-item.danmaku.custom.form.danmakucore.fire=Custom Fire Danmaku
+#Stack names custom
+item.danmaku.form.danmakucore.normal.name=Custom Normal Danmaku
+item.danmaku.form.danmakucore.circle.name=Custom Circle Danmaku
+item.danmaku.form.danmakucore.scale.name=Custom Scale Danmaku
+item.danmaku.form.danmakucore.star.name=Custom Star Danmaku
+item.danmaku.form.danmakucore.rice.name=Custom Rice Danmaku
+item.danmaku.form.danmakucore.crystal1.name=Custom Pointed Crystal Danmaku
+item.danmaku.form.danmakucore.crystal2.name=Custom Blunt Crystal Danmaku
+item.danmaku.form.danmakucore.kunai.name=Custom Kunai Danmaku
+item.danmaku.form.danmakucore.laser.name=Custom Laser Danmaku
+item.danmaku.form.danmakucore.pellet.name=Custom Pellet Danmaku
+item.danmaku.form.danmakucore.sphere_dark.name=Custom Dark Sphere Danmaku
+item.danmaku.form.danmakucore.fire.name=Custom Fire Danmaku
 
 #Vibrant colors
 item.danmaku.color.16711680=Strong Red
@@ -128,12 +149,12 @@ item.danmaku.pattern.4=Sphere Shot
 item.danmaku.pattern.5=Ring Shot
 
 #Shot subentity
-item.danmaku.subentity.danmakucore.fire=Fire
-item.danmaku.subentity.danmakucore.explosion=Explosion
-item.danmaku.subentity.danmakucore.teleport=Teleport
+subentity.danmakucore.default=No Special
+subentity.danmakucore.fire=Fire
+subentity.danmakucore.explosion=Explosion
+subentity.danmakucore.teleport=Teleport
 
 #Defaults
-item.danmaku.subentity.danmakucore.default=No Special
 item.danmaku.color.16777215=White
 item.danmaku.color.custom=Custom color
 
