@@ -38,13 +38,9 @@ public class EntityFallingData extends Entity {
 		BOMB
 	}
 
-	private static final DataSerializer<DataType> DATA_TYPE_SERIALIZER = new CoreDataSerializers.EnumSerializer<>(DataType.class);
+	public static final DataSerializer<DataType> DATA_TYPE_SERIALIZER = new CoreDataSerializers.EnumSerializer<>(DataType.class);
 
 	private static final DataParameter<DataType> DATA_TYPE = EntityDataManager.createKey(EntityFallingData.class, DATA_TYPE_SERIALIZER);
-
-	static {
-		DataSerializers.registerSerializer(DATA_TYPE_SERIALIZER);
-	}
 
 	@Nullable
 	private Entity target;

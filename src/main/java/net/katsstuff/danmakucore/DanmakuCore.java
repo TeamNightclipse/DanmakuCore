@@ -11,6 +11,7 @@ package net.katsstuff.danmakucore;
 import net.katsstuff.danmakucore.capability.CapabilityDanmakuCoreData;
 import net.katsstuff.danmakucore.capability.DanmakuCoreDataHandler;
 import net.katsstuff.danmakucore.data.Vector3;
+import net.katsstuff.danmakucore.entity.EntityFallingData;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
 import net.katsstuff.danmakucore.item.ItemDanmaku;
 import net.katsstuff.danmakucore.lib.LibMod;
@@ -60,6 +61,7 @@ public class DanmakuCore {
 	public void preInit(FMLPreInitializationEvent event) {
 		DataSerializers.registerSerializer(CoreDataSerializers.SHOTDATA);
 		DataSerializers.registerSerializer(CoreDataSerializers.VECTOR_3);
+		DataSerializers.registerSerializer(EntityFallingData.DATA_TYPE_SERIALIZER);
 
 		proxy.registerColors();
 		proxy.registerRenderers();
