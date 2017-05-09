@@ -14,6 +14,8 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import com.google.common.math.DoubleMath;
+
 import io.netty.buffer.ByteBuf;
 import net.katsstuff.danmakucore.CoreDataSerializers;
 import net.katsstuff.danmakucore.data.MovementData;
@@ -208,14 +210,18 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		if(delay > 0) {
 			ticksExisted--;
 			delay--;
-			motionX = 0;
-			motionY = 0;
-			motionZ = 0;
 
-			//Do a new check to see if the shot is still delayed, and if it isn't. Start it's movement
-			if(delay <= 0 && !world.isRemote) {
-				resetMotion();
+			if(!world.isRemote) {
+				if(delay <= 0) {
+					resetMotion();
+				}
+				else {
+					motionX = 0;
+					motionY = 0;
+					motionZ = 0;
+				}
 			}
+
 			shot = shot.setDelay(delay);
 			setShotData(shot);
 		}
@@ -230,33 +236,26 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 	public void accelerate(double currentSpeed) {
 		double speedAccel = movement.getSpeedAcceleration();
-		double speedLimit = movement.getSpeedLimit();
-		if(speedAccel > 0D) {
-			if(currentSpeed < speedLimit) {
-				motionX += angle.x() * speedAccel;
-				motionY += angle.y() * speedAccel;
-				motionZ += angle.z() * speedAccel;
-			}
+		double upperSpeedLimit = movement.getUpperSpeedLimit();
+		double lowerSpeedLimit = movement.getLowerSpeedLimit();
 
-			//We check if we reached the speed limit. Not an if else check as we might have added speed just previously.
-			if(getCurrentSpeed() > speedLimit) {
-				motionX = angle.x() * speedLimit;
-				motionY = angle.y() * speedLimit;
-				motionZ = angle.z() * speedLimit;
-			}
+		if(DoubleMath.fuzzyCompare(currentSpeed, upperSpeedLimit, 0.001) > 0) {
+			updateMotion(upperSpeedLimit);
 		}
-		//TODO: Rewrite this so that speedLimit can work as both top and bottom speed. In general just rewrite this
-		else if(speedAccel < 0D && currentSpeed > speedLimit) {
-			if(Math.abs(speedAccel) > currentSpeed - speedLimit) {
-				motionX = angle.x() * speedLimit;
-				motionY = angle.y() * speedLimit;
-				motionZ = angle.z() * speedLimit;
+		else if(DoubleMath.fuzzyCompare(currentSpeed, lowerSpeedLimit, 0.001) < 0) {
+			updateMotion(lowerSpeedLimit);
+		}
+		else {
+			motionX += angle.x() * speedAccel;
+			motionY += angle.y() * speedAccel;
+			motionZ += angle.z() * speedAccel;
+
+			double newCurrentSpeed = getCurrentSpeed();
+			if(DoubleMath.fuzzyCompare(newCurrentSpeed, upperSpeedLimit, 0.001) > 0) {
+				updateMotion(upperSpeedLimit);
 			}
-			else {
-				//This is really subtracting because the acceleration is negative
-				motionX += angle.x() * speedAccel;
-				motionY += angle.y() * speedAccel;
-				motionZ += angle.z() * speedAccel;
+			else if(DoubleMath.fuzzyCompare(newCurrentSpeed, lowerSpeedLimit, 0.001) < 0) {
+				updateMotion(lowerSpeedLimit);
 			}
 		}
 	}

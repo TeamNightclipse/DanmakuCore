@@ -32,7 +32,7 @@ public class DanmakuVariantGeneric extends DanmakuVariant {
 	}
 
 	public DanmakuVariantGeneric(String name, Supplier<ShotData> shotData, double speed) {
-		this(name, shotData, new MovementData(speed, speed, 0.0D, Vector3.GravityZero()));
+		this(name, shotData, new MovementData(speed, speed, speed, 0.0D, Vector3.GravityZero()));
 	}
 
 	@SuppressWarnings("WeakerAccess")
@@ -43,7 +43,7 @@ public class DanmakuVariantGeneric extends DanmakuVariant {
 
 	@SuppressWarnings("unused")
 	public DanmakuVariantGeneric(Supplier<ShotData> shotData, double speed) {
-		this(new MovementData(speed, speed, 0.0D, Vector3.GravityZero()), shotData);
+		this(new MovementData(speed, speed, speed, 0.0D, Vector3.GravityZero()), shotData);
 	}
 
 	@Override

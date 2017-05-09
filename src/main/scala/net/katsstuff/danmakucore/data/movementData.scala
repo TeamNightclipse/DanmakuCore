@@ -20,21 +20,21 @@ abstract sealed class AbstractMovementData {
 
 	/**
 		* The speed that the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]] starts with.
-		* This can be higher than the [[speedLimit]]
 		*/
 	def speedOriginal: Double
 
 	/**
-		* The limit of the speed of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]].
-		* Once it has reached this, it will not continue to change speed.
+		* The upper limit of the speed of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]].
 		*/
-	def speedLimit: Double
+	def upperSpeedLimit: Double
 
 	/**
-		* The change in speed each tick. If this is negative, and
-		* the [[speedLimit]] is lower than the [[speedOriginal]], the
-		* [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]] will slow down,
-		* if else it will speed up.
+		* The lower limit of the speed of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]].
+		*/
+	def lowerSpeedLimit: Double
+
+	/**
+		* The change in speed each tick.
 		*/
 	def speedAcceleration: Double
 
@@ -47,7 +47,8 @@ abstract sealed class AbstractMovementData {
 	def serializeNBT: NBTTagCompound = {
 		val tag = new NBTTagCompound
 		tag.setDouble(MovementData.NbtOriginal, speedOriginal)
-		tag.setDouble(MovementData.NbtLimit, speedLimit)
+		tag.setDouble(MovementData.NbtUpperLimit, upperSpeedLimit)
+		tag.setDouble(MovementData.NbtLowerLimit, lowerSpeedLimit)
 		tag.setDouble(MovementData.NbtAcceleration, speedAcceleration)
 
 		NBTHelper.setVector(tag, MovementData.NbtGravity, gravity)
@@ -57,7 +58,8 @@ abstract sealed class AbstractMovementData {
 
 final case class MutableMovementData(
 		@BeanProperty var speedOriginal: Double,
-		@BeanProperty var speedLimit: Double,
+		@BeanProperty var upperSpeedLimit: Double,
+		@BeanProperty var lowerSpeedLimit: Double,
 		@BeanProperty var speedAcceleration: Double,
 		@BeanProperty var gravity: Vector3) extends AbstractMovementData {
 
@@ -66,40 +68,43 @@ final case class MutableMovementData(
 
 final case class MovementData(
 		@BeanProperty speedOriginal: Double,
-		@BeanProperty speedLimit: Double,
+		@BeanProperty upperSpeedLimit: Double,
+		@BeanProperty lowerSpeedLimit: Double,
 		@BeanProperty speedAcceleration: Double,
 		@BeanProperty gravity: Vector3) extends AbstractMovementData {
 
 	def setSpeedOriginal(speedOriginal: Double): MovementData = copy(speedOriginal = speedOriginal)
-	def setSpeedLimit(speedLimit: Double): MovementData = copy(speedLimit = speedLimit)
+	def setSpeedLimit(speedLimit: Double): MovementData = copy(upperSpeedLimit = speedLimit)
 	def setSpeedAcceleration(speedAcceleration: Double): MovementData = copy(speedAcceleration = speedAcceleration)
 	def setGravity(gravity: Vector3): MovementData = copy(gravity = gravity)
 
-	def setConstant(speed: Double): MovementData = copy(speedOriginal = speed, speedLimit = speed, speedAcceleration = 0D)
+	def setConstant(speed: Double): MovementData = copy(speedOriginal = speed, upperSpeedLimit = speed, speedAcceleration = 0D)
 }
 
 object MovementData {
 
 	final val NbtOriginal     = "original"
-	final val NbtLimit        = "limit"
+	final val NbtUpperLimit   = "upperLimit"
+	final val NbtLowerLimit   = "lowerLimit"
 	final val NbtAcceleration = "acceleration"
 	final val NbtGravity      = "gravity"
 
 	/**
 		* Creates a [[MovementData]] with constant speed and no gravity.
 		*/
-	def constant(speed: Double): MovementData = MovementData(speed, speed, 0D, Vector3.Zero)
+	def constant(speed: Double): MovementData = MovementData(speed, speed, speed, 0D, Vector3.Zero)
 
 	/**
 		* Creates a [[MovementData]] with no gravity.
 		*/
-	def noGravity(start: Double, limit: Double, acceleration: Double): MovementData = MovementData(start, limit, acceleration, Vector3.Zero)
+	def noGravity(start: Double, upperLimit: Double, lowerLimit: Double, acceleration: Double): MovementData = MovementData(start, upperLimit, lowerLimit, acceleration, Vector3.Zero)
 
 	def fromNBT(tag: NBTTagCompound): MovementData = {
 		val speedOriginal = tag.getDouble(NbtOriginal)
-		val speedLimit = tag.getDouble(NbtLimit)
+		val upperSpeedLimit = tag.getDouble(NbtUpperLimit)
+		val lowerSpeedLimit = tag.getDouble(NbtLowerLimit)
 		val speedAcceleration = tag.getDouble(NbtAcceleration)
 		val gravity = NBTHelper.getVector(tag, MovementData.NbtGravity)
-		MovementData(speedOriginal, speedLimit, speedAcceleration, gravity)
+		MovementData(speedOriginal, upperSpeedLimit, lowerSpeedLimit, speedAcceleration, gravity)
 	}
 }

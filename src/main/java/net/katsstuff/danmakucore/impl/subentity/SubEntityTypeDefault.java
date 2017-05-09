@@ -61,12 +61,7 @@ public class SubEntityTypeDefault extends SubEntityType {
 				}
 
 				double currentSpeed = danmaku.getCurrentSpeed();
-				if(!(Math.abs(currentSpeed - danmaku.getMovementData().getSpeedLimit()) <= 0.0001)) {
-					danmaku.accelerate(currentSpeed);
-				}
-				else {
-					danmaku.updateMotion(currentSpeed);
-				}
+				danmaku.accelerate(currentSpeed);
 
 				updateMotionWithGravity();
 				hitCheck(entity -> entity != danmaku.getUser().orElse(null) && entity != danmaku.getSource().orElse(null));

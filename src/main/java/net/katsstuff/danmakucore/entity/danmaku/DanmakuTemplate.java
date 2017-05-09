@@ -157,23 +157,29 @@ public final class DanmakuTemplate {
 		}
 
 		public Builder setMovementData(Vector3 gravity) {
-			return setMovementData(movement.copy(movement.speedOriginal(), movement.speedLimit(), movement.speedAcceleration(), gravity));
+			return setMovementData(
+					movement.copy(movement.speedOriginal(), movement.upperSpeedLimit(), movement.lowerSpeedLimit(), movement.speedAcceleration(),
+							gravity));
 		}
 
 		public Builder setMovementData(double speed) {
-			return setMovementData(new MovementData(speed, speed, 0D, movement.getGravity()));
+			return setMovementData(new MovementData(speed, speed, speed, 0D, movement.getGravity()));
 		}
 
 		public Builder setMovementData(double speed, Vector3 gravity) {
-			return setMovementData(new MovementData(speed, speed, 0D, gravity));
+			return setMovementData(new MovementData(speed, speed, speed, 0D, gravity));
 		}
 
 		public Builder setMovementData(double speed, double speedLimit, double speedAcceleration) {
-			return setMovementData(new MovementData(speed, speedLimit, speedAcceleration, movement.getGravity()));
+			return setMovementData(new MovementData(speed, speedLimit, 0F, speedAcceleration, movement.getGravity()));
 		}
 
-		public Builder setMovementData(double speed, double speedLimit, double speedAcceleration, Vector3 gravity) {
-			return setMovementData(new MovementData(speed, speedLimit, speedAcceleration, gravity));
+		public Builder setMovementData(double speed, double upperSpeedLimit, double lowerSpeedLimit, double speedAcceleration) {
+			return setMovementData(new MovementData(speed, upperSpeedLimit, lowerSpeedLimit, speedAcceleration, movement.getGravity()));
+		}
+
+		public Builder setMovementData(double speed, double upperSpeedLimit, double lowerSpeedLimit, double speedAcceleration, Vector3 gravity) {
+			return setMovementData(new MovementData(speed, upperSpeedLimit, lowerSpeedLimit, speedAcceleration, gravity));
 		}
 
 		public Builder setRotationData(RotationData rotationData) {
