@@ -19,7 +19,6 @@ import com.google.common.math.DoubleMath;
 import io.netty.buffer.ByteBuf;
 import net.katsstuff.danmakucore.CoreDataSerializers;
 import net.katsstuff.danmakucore.data.MovementData;
-import net.katsstuff.danmakucore.data.MutableVector3;
 import net.katsstuff.danmakucore.data.RotationData;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
@@ -47,6 +46,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditionalSpawnData {
+
+	private static final double EPSILON = 1E-5;
 
 	private static final String NBT_SHOT_DATA = "shotData";
 	private static final String NBT_ANGLE = "angle";
@@ -239,11 +240,11 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		double upperSpeedLimit = movement.getUpperSpeedLimit();
 		double lowerSpeedLimit = movement.getLowerSpeedLimit();
 
-		if(DoubleMath.fuzzyCompare(currentSpeed, upperSpeedLimit, 0.001) > 0) {
-			updateMotion(upperSpeedLimit);
+		if(DoubleMath.fuzzyCompare(currentSpeed, upperSpeedLimit, EPSILON) >= 0 && speedAccel >= 0D) {
+			setSpeed(upperSpeedLimit);
 		}
-		else if(DoubleMath.fuzzyCompare(currentSpeed, lowerSpeedLimit, 0.001) < 0) {
-			updateMotion(lowerSpeedLimit);
+		else if(DoubleMath.fuzzyCompare(currentSpeed, lowerSpeedLimit, EPSILON) <= 0 && speedAccel <= 0D) {
+			setSpeed(lowerSpeedLimit);
 		}
 		else {
 			motionX += angle.x() * speedAccel;
@@ -251,11 +252,11 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			motionZ += angle.z() * speedAccel;
 
 			double newCurrentSpeed = getCurrentSpeed();
-			if(DoubleMath.fuzzyCompare(newCurrentSpeed, upperSpeedLimit, 0.001) > 0) {
-				updateMotion(upperSpeedLimit);
+			if(DoubleMath.fuzzyCompare(newCurrentSpeed, upperSpeedLimit, EPSILON) > 0) {
+				setSpeed(upperSpeedLimit);
 			}
-			else if(DoubleMath.fuzzyCompare(newCurrentSpeed, lowerSpeedLimit, 0.001) < 0) {
-				updateMotion(lowerSpeedLimit);
+			else if(DoubleMath.fuzzyCompare(newCurrentSpeed, lowerSpeedLimit, EPSILON) < 0) {
+				setSpeed(lowerSpeedLimit);
 			}
 		}
 	}
@@ -263,10 +264,10 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	/**
 	 * Updates the motion to the current angle.
 	 */
-	public void updateMotion(double currentSpeed) {
-		motionX = angle.x() * currentSpeed;
-		motionY = angle.y() * currentSpeed;
-		motionZ = angle.z() * currentSpeed;
+	public void setSpeed(double speed) {
+		motionX = angle.x() * speed;
+		motionY = angle.y() * speed;
+		motionZ = angle.z() * speed;
 	}
 
 	@SuppressWarnings("WeakerAccess")
