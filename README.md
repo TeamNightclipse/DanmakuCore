@@ -1,4 +1,5 @@
 # DanmakuCore
+[![Discord](https://discordapp.com/api/guilds/310865601566343170/widget.png)](https://discord.gg/tahK54V)
 
 DanmakuCore is a mod to help make danmaku stuff without setting up all the tedious stuff like the Danmaku Entity, spellcards, rendering, and so on. Everything here comes prepackaged in an easy to use form. Just plug in in, and start using it.
 
