@@ -48,6 +48,7 @@ public enum EnumTouhouCharacters {
 	YOUMU_KONPAKU("youmu", EnumSpecies.HUMAN_HALF, EnumSpecies.PHANTOM_HALF),
 	YUYUKO_SAIGYOJI("yuyuko", EnumSpecies.PHANTOM_GHOST),
 	RAN_YAKUMO("ran", EnumSpecies.YOUKAI_BEAST_FOX, EnumSpecies.SHIKIGAMI_FAMILIAR),
+	YUKARI_YAKUMO("yukari", EnumSpecies.YOUKAI),
 
 	LAYLA_PRIMSRIVER("layla", EnumSpecies.HUMAN),
 	YOUKI_KONPAKU("youki", EnumSpecies.HUMAN_HALF, EnumSpecies.PHANTOM_HALF),
