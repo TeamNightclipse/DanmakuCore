@@ -13,6 +13,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmaku;
+import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.minecraft.entity.Entity;
@@ -63,7 +64,12 @@ public class DanmakuCoreDataHandler {
 		if(!living.world.isRemote && event.getSource() instanceof DamageSourceDanmaku && living instanceof EntityPlayer
 				&& TouhouHelper.getDanmakuCoreData(living).map(IDanmakuCoreData::getLives).orElse(0) >= 1) {
 			EntityPlayer player = (EntityPlayer)living;
-			TouhouHelper.changeAndSyncPlayerData(IDanmakuCoreData::removeLife, player);
+			TouhouHelper.changeAndSyncPlayerData(data -> {
+				if(ConfigHandler.gameplay.resetBombsOnDeath) {
+					data.setBombs(ConfigHandler.gameplay.defaultBombsAmount);
+				}
+				data.removeLife();
+			}, player);
 			player.isDead = false;
 			player.setHealth(player.getMaxHealth());
 			player.hurtResistantTime = 50;
@@ -97,7 +103,8 @@ public class DanmakuCoreDataHandler {
 		private static Capability<IDanmakuCoreData> CORE_DATA = null;
 
 
-		private final IDanmakuCoreData data = new BoundedDanmakuCoreData();
+		private final IDanmakuCoreData data = new BoundedDanmakuCoreData(0F, 0, ConfigHandler.gameplay.defaultLivesAmount,
+				ConfigHandler.gameplay.defaultBombsAmount, 4F, 9);
 
 		@Override
 		public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {

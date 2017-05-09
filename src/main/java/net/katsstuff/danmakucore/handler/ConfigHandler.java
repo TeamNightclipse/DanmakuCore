@@ -19,6 +19,7 @@ public class ConfigHandler {
 
 	public static Danmaku danmaku = new Danmaku();
 	public static HUD hud = new HUD();
+	public static Gameplay gameplay = new Gameplay();
 
 	public static class Danmaku {
 
@@ -63,5 +64,13 @@ public class ConfigHandler {
 			public int livesHigh = 5;
 			public int bombsHigh = 5;
 		}
+	}
+
+	public static class Gameplay {
+
+		@Comment("If the bombs should be reset to the default amount each time the player looses a life")
+		public boolean resetBombsOnDeath = true;
+		public int defaultLivesAmount = 2;
+		public int defaultBombsAmount = 2;
 	}
 }
