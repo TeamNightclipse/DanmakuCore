@@ -12,6 +12,7 @@ import scala.beans.BeanProperty
 
 import net.katsstuff.danmakucore.helper.NBTHelper
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraftforge.common.util.Constants
 
 /**
 	* Defines how a [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]] will move.
@@ -24,14 +25,14 @@ abstract sealed class AbstractMovementData {
 	def speedOriginal: Double
 
 	/**
-		* The upper limit of the speed of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]].
-		*/
-	def upperSpeedLimit: Double
-
-	/**
 		* The lower limit of the speed of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]].
 		*/
 	def lowerSpeedLimit: Double
+
+	/**
+		* The upper limit of the speed of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]].
+		*/
+	def upperSpeedLimit: Double
 
 	/**
 		* The change in speed each tick.
@@ -47,8 +48,8 @@ abstract sealed class AbstractMovementData {
 	def serializeNBT: NBTTagCompound = {
 		val tag = new NBTTagCompound
 		tag.setDouble(MovementData.NbtOriginal, speedOriginal)
-		tag.setDouble(MovementData.NbtUpperLimit, upperSpeedLimit)
 		tag.setDouble(MovementData.NbtLowerLimit, lowerSpeedLimit)
+		tag.setDouble(MovementData.NbtUpperLimit, upperSpeedLimit)
 		tag.setDouble(MovementData.NbtAcceleration, speedAcceleration)
 
 		NBTHelper.setVector(tag, MovementData.NbtGravity, gravity)
@@ -58,8 +59,8 @@ abstract sealed class AbstractMovementData {
 
 final case class MutableMovementData(
 		@BeanProperty var speedOriginal: Double,
-		@BeanProperty var upperSpeedLimit: Double,
 		@BeanProperty var lowerSpeedLimit: Double,
+		@BeanProperty var upperSpeedLimit: Double,
 		@BeanProperty var speedAcceleration: Double,
 		@BeanProperty var gravity: Vector3) extends AbstractMovementData {
 
@@ -68,8 +69,8 @@ final case class MutableMovementData(
 
 final case class MovementData(
 		@BeanProperty speedOriginal: Double,
-		@BeanProperty upperSpeedLimit: Double,
 		@BeanProperty lowerSpeedLimit: Double,
+		@BeanProperty upperSpeedLimit: Double,
 		@BeanProperty speedAcceleration: Double,
 		@BeanProperty gravity: Vector3) extends AbstractMovementData {
 
@@ -84,8 +85,9 @@ final case class MovementData(
 object MovementData {
 
 	final val NbtOriginal     = "original"
-	final val NbtUpperLimit   = "upperLimit"
+	final val OldNbtLimit     = "limit"
 	final val NbtLowerLimit   = "lowerLimit"
+	final val NbtUpperLimit   = "upperLimit"
 	final val NbtAcceleration = "acceleration"
 	final val NbtGravity      = "gravity"
 
@@ -97,14 +99,26 @@ object MovementData {
 	/**
 		* Creates a [[MovementData]] with no gravity.
 		*/
-	def noGravity(start: Double, upperLimit: Double, lowerLimit: Double, acceleration: Double): MovementData = MovementData(start, upperLimit, lowerLimit, acceleration, Vector3.Zero)
+	def noGravity(start: Double, lowerLimit: Double, upperLimit: Double, acceleration: Double): MovementData = MovementData(start, lowerLimit, upperLimit, acceleration, Vector3.Zero)
 
 	def fromNBT(tag: NBTTagCompound): MovementData = {
 		val speedOriginal = tag.getDouble(NbtOriginal)
-		val upperSpeedLimit = tag.getDouble(NbtUpperLimit)
-		val lowerSpeedLimit = tag.getDouble(NbtLowerLimit)
 		val speedAcceleration = tag.getDouble(NbtAcceleration)
+
 		val gravity = NBTHelper.getVector(tag, MovementData.NbtGravity)
-		MovementData(speedOriginal, upperSpeedLimit, lowerSpeedLimit, speedAcceleration, gravity)
+		if(tag.hasKey(OldNbtLimit, Constants.NBT.TAG_DOUBLE)) {
+			val limit = tag.getDouble(OldNbtLimit)
+			if(speedAcceleration < 0D && limit < speedOriginal) {
+				MovementData(speedOriginal = speedOriginal, lowerSpeedLimit = limit, upperSpeedLimit = speedOriginal, speedAcceleration = speedAcceleration, gravity = gravity)
+			}
+			else {
+				MovementData(speedOriginal = speedOriginal, lowerSpeedLimit = 0D, upperSpeedLimit = limit, speedAcceleration = speedAcceleration, gravity = gravity)
+			}
+		}
+		else {
+			val lowerSpeedLimit = tag.getDouble(NbtLowerLimit)
+			val upperSpeedLimit = tag.getDouble(NbtUpperLimit)
+			MovementData(speedOriginal = speedOriginal, lowerSpeedLimit = upperSpeedLimit, upperSpeedLimit = lowerSpeedLimit, speedAcceleration = speedAcceleration, gravity = gravity)
+		}
 	}
 }
