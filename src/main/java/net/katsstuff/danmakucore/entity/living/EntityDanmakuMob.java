@@ -86,7 +86,7 @@ public abstract class EntityDanmakuMob extends EntityMob {
 	@Override
 	public boolean attackEntityFrom(DamageSource damageSource, float damage) {
 		if(!(damageSource instanceof DamageSourceDanmaku)) {
-			damage *= 0.25F;
+			damage *= 0.4F;
 		}
 
 		return super.attackEntityFrom(damageSource, damage);
