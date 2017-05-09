@@ -80,7 +80,9 @@ public class SubEntityTypeDefault extends SubEntityType {
 		 * Called when the danmaku hits a block.
 		 */
 		@SuppressWarnings("UnusedParameters")
-		protected void impactBlock(RayTraceResult raytrace) {}
+		protected void impactBlock(RayTraceResult raytrace) {
+			danmaku.delete();
+		}
 
 		/**
 		 * Called when the danmaku hits an entity.
@@ -103,14 +105,19 @@ public class SubEntityTypeDefault extends SubEntityType {
 				EntityDragonPart dragon = (EntityDragonPart)hitEntity;
 				dragon.attackEntityFrom(DamageSourceDanmaku.causeDanmakuDamage(danmaku, indirect), danmaku.getShotData().damage());
 			}
+
+			ShotData shot = danmaku.getShotData();
+			float v = (shot.sizeY() * shot.sizeX() * shot.sizeZ()) / 3;
+			if(v < 1F) {
+				danmaku.delete();
+			}
 		}
 
 		/**
-		 * Called on any impact. Called after special_ImpactBlock and special_ImpactEntity.
+		 * Called on any impact. Called after {@link SubEntityDefault#impactBlock(RayTraceResult)}
+		 * and {@link SubEntityDefault#impactEntity(RayTraceResult)}.
 		 */
-		protected void impact(RayTraceResult raytrace) {
-			danmaku.delete();
-		}
+		protected void impact(RayTraceResult raytrace) {}
 
 		/**
 		 * Called when the danmaku is in water.
