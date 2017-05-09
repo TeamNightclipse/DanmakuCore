@@ -72,7 +72,6 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityDanmaku.class, RenderDanmaku::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntitySpellcard.class, RenderSpellcard::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityFallingData.class, RenderFallingData::new);
-		RenderingRegistry.registerEntityRenderingHandler(EntityTenguTest.class, RenderTenguTest::new);
 
 		MinecraftForge.EVENT_BUS.register(new HUDHandler());
 		MinecraftForge.EVENT_BUS.register(bossBarHandler);
