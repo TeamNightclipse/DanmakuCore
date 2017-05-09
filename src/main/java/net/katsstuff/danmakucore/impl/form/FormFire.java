@@ -42,7 +42,8 @@ public class FormFire extends FormGeneric {
 			for(double i = 0; i < 15; i++) {
 				double coeff = i / 15D;
 				Vector3 pos = new Vector3(danmaku.prevPosX + (danmaku.posX - danmaku.prevPosX) * coeff,
-						danmaku.prevPosY + (danmaku.posY - danmaku.prevPosY) * coeff, danmaku.prevPosZ + (danmaku.posZ - danmaku.prevPosZ) * coeff);
+						danmaku.prevPosY + shot.sizeY() / 2 + (danmaku.posY - danmaku.prevPosY) * coeff,
+						danmaku.prevPosZ + (danmaku.posZ - danmaku.prevPosZ) * coeff);
 				Vector3 motion = new Vector3(0.0125f * (danmaku.getRNG().nextFloat() - 0.5f), 0.0125f * (danmaku.getRNG().nextFloat() - 0.5f),
 						0.0125f * (danmaku.getRNG().nextFloat() - 0.5f));
 
