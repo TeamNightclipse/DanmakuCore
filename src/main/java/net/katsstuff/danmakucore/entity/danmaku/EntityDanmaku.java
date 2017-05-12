@@ -19,11 +19,13 @@ import com.google.common.math.DoubleMath;
 import io.netty.buffer.ByteBuf;
 import net.katsstuff.danmakucore.CoreDataSerializers;
 import net.katsstuff.danmakucore.data.MovementData;
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.RotationData;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
+import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.helper.NBTHelper;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
@@ -390,6 +392,29 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	@Override
 	protected void setSize(float width, float height) {
 		setSize(width, height, width);
+	}
+
+	@Override
+	public void setPosition(double x, double y, double z) {
+		if(dataManager != null && ConfigHandler.danmaku.useComplexHitbox) {
+			this.posX = x;
+			this.posY = y;
+			this.posZ = z;
+			ShotData shot = getShotData();
+			Vector3 size = new Vector3(shot.sizeX(), shot.sizeY(), shot.sizeZ()).rotate(Quat.eulerToQuat(rotationYaw + 180, rotationPitch, getRoll()));
+			double xSize = size.x() / 2F;
+			double zSize = size.z() / 2F;
+			double ySize = size.y();
+			if(ySize < 0) {
+				this.setEntityBoundingBox(new AxisAlignedBB(x - xSize, y - ySize, z - zSize, x + xSize, y, z + zSize));
+			}
+			else {
+				this.setEntityBoundingBox(new AxisAlignedBB(x - xSize, y, z - zSize, x + xSize, y + ySize, z + zSize));
+			}
+		}
+		else {
+			super.setPosition(x, y, z);
+		}
 	}
 
 	@Override

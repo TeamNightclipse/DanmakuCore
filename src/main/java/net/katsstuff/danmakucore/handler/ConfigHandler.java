@@ -27,6 +27,7 @@ public class ConfigHandler {
 		public boolean oneHitKill = false;
 		@Comment({"Allowed values:", "PEACEFUL, EASY, NORMAL, HARD, LUNATIC, EXTRA, LAST_SPELL, LAST_WORD", "Anything above EXTRA is not guaranteed to work as well"})
 		public EnumDanmakuLevel danmakuLevel = EnumDanmakuLevel.NORMAL;
+		public boolean useComplexHitbox = true;
 	}
 
 	public static Entities entities = new Entities();
