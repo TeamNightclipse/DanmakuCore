@@ -102,8 +102,9 @@ public class ItemDanmaku extends ItemBase {
 				setInfinity(stack, true);
 			}
 
-			success = shootDanmaku(stack, player.world, player, player.isSneaking(), new Vector3(player), new Vector3(player.getLookVec()),
-					ShotData.fromNBTItemStack(stack).sizeZ() / 4);
+			success = shootDanmaku(stack, player.world, player, player.isSneaking(),
+					new Vector3(player.posX, player.posY + player.eyeHeight - ShotData.fromNBTItemStack(stack).sizeY() / 2, player.posZ),
+					new Vector3(player.getLookVec()), ShotData.fromNBTItemStack(stack).sizeZ() / 4);
 
 			if(!getInfinity(stack) && success) {
 				stack.stackSize--;
