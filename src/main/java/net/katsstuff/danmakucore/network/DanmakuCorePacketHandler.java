@@ -8,8 +8,10 @@
  */
 package net.katsstuff.danmakucore.network;
 
+import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -22,5 +24,10 @@ public class DanmakuCorePacketHandler {
 		INSTANCE.registerMessage(CoreDataPacket.Handler.class, CoreDataPacket.Message.class, id++, Side.CLIENT);
 		INSTANCE.registerMessage(SpellcardInfoPacket.Handler.class, SpellcardInfoPacket.Message.class, id++, Side.CLIENT);
 		INSTANCE.registerMessage(ParticlePacket.Handler.class, ParticlePacket.Message.class, id++, Side.CLIENT);
+		INSTANCE.registerMessage(ChargeSpherePacket.Handler.class, ChargeSpherePacket.Message.class, id++, Side.CLIENT);
+	}
+
+	public static void sendToAllAround(IMessage message, Vector3 pos, double distance, int dim) {
+		INSTANCE.sendToAllAround(message, new NetworkRegistry.TargetPoint(dim, pos.x(), pos.y(), pos.z(), distance));
 	}
 }

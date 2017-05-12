@@ -17,11 +17,6 @@ public class ParticleUtil {
 	private static Random random = new Random();
 	private static int counter = 0;
 
-	/*
-	public static void spawnParticlesFromPacket(MessageParticle message, World world){
-	}
-	*/
-
 	@SideOnly(Side.CLIENT)
 	public static void spawnParticleGlow(World world, Vector3 pos, Vector3 motion, float r, float g, float b, float scale, int lifetime,
 			GlowTexture type) {

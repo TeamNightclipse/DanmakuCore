@@ -24,6 +24,8 @@ import net.katsstuff.danmakucore.entity.EntityFallingData;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.misc.LogicalSideOnly;
+import net.katsstuff.danmakucore.network.ChargeSpherePacket;
+import net.katsstuff.danmakucore.network.DanmakuCorePacketHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
@@ -273,11 +275,17 @@ public class TouhouHelper {
 	@SideOnly(Side.CLIENT)
 	public static void createChargeSphere(Entity entity, int amount, double offset, double divSpeed, float r, float g, float b, int lifetime) {
 		Vector3 center = new Vector3(entity.posX, entity.posY + (entity.height / 2), entity.posZ);
-		for(int i = 0; i < amount; i++) {
-			Vector3 offsetPos = center.offset(Vector3.randomVector(), offset);
-			Vector3 angleToCenter = ((Vector3)Vector3.angleToPos(offsetPos, center)).divide(divSpeed);
+		Vector3 offsetPos = center.offset(Vector3.randomVector(), offset);
+		Vector3 angleToCenter = ((Vector3)Vector3.angleToPos(offsetPos, center)).divide(divSpeed);
 
+		for(int i = 0; i < amount; i++) {
 			ParticleUtil.spawnParticleGlow(entity.world, offsetPos, angleToCenter, r, g, b, 1F, lifetime, GlowTexture.MOTE);
 		}
+	}
+
+	public static void creatChargeSpherePacket(Vector3 packetCenter, Entity entity, int amount, double offset, double divSpeed, float r, float g,
+			float b, int lifetime) {
+		DanmakuCorePacketHandler.sendToAllAround(new ChargeSpherePacket.Message(entity, amount, offset, divSpeed, r, g, b, lifetime), packetCenter,
+				32D, entity.dimension);
 	}
 }
