@@ -47,7 +47,8 @@ public class ItemSpellcard extends ItemBase implements IOwnedBy {
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
 		Spellcard type = DanmakuRegistry.SPELLCARD.getObjectById(stack.getItemDamage());
-		if(!world.isRemote && type.onRightClick(stack, world, player, hand)) {
+		//noinspection ConstantConditions
+		if(!world.isRemote && type != null && type.onRightClick(stack, world, player, hand)) {
 			Optional<EntitySpellcard> result = TouhouHelper.declareSpellcardPlayer(player, type, true);
 			return result.isPresent() ? new ActionResult<>(EnumActionResult.SUCCESS, stack) : new ActionResult<>(EnumActionResult.FAIL, stack);
 		}

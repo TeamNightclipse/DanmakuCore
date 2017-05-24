@@ -28,6 +28,8 @@ import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
 import net.katsstuff.danmakucore.item.ItemDanmaku;
+import net.katsstuff.danmakucore.lib.data.LibDanmakuVariants;
+import net.katsstuff.danmakucore.lib.data.LibForms;
 import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.network.SpellcardInfoPacket;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
@@ -102,6 +104,10 @@ public class ClientProxy extends CommonProxy {
 			}
 			else {
 				DanmakuVariant variant = DanmakuRegistry.DANMAKU_VARIANT.getObjectById(stack.getItemDamage());
+				//noinspection ConstantConditions
+				if(variant == null) {
+					variant = LibDanmakuVariants.DEFAULT_TYPE;
+				}
 				return variant.getItemModel();
 			}
 		});

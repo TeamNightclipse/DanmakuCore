@@ -18,6 +18,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
+import net.katsstuff.danmakucore.lib.data.LibPhases;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -193,6 +194,10 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 		for(int i = 0; i < size; i++) {
 			NBTTagCompound tagPhase = list.getCompoundTagAt(i);
 			PhaseType type = DanmakuRegistry.PHASE.getObject(new ResourceLocation(tagPhase.getString(Phase.NBT_NAME)));
+			//noinspection ConstantConditions
+			if(type == null) {
+				type = LibPhases.FALLBACK;
+			}
 
 			Phase phase;
 			if(multimap.containsKey(type)) {

@@ -13,6 +13,7 @@ import scala.beans.BeanProperty
 import io.netty.buffer.ByteBuf
 import net.katsstuff.danmakucore.entity.danmaku.form.Form
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType
+import net.katsstuff.danmakucore.helper.LogHelper
 import net.katsstuff.danmakucore.lib.LibColor
 import net.katsstuff.danmakucore.lib.data.{LibForms, LibSubEntities}
 import net.katsstuff.danmakucore.registry.DanmakuRegistry
@@ -117,19 +118,6 @@ final case class MutableShotData(
 		@BeanProperty var end: Int = 80,
 		@BeanProperty var subEntity: SubEntityType = LibSubEntities.DEFAULT_TYPE) extends AbstractShotData with INBTSerializable[NBTTagCompound] {
 
-	def this(buf: ByteBuf) {
-		this(
-			form = DanmakuRegistry.FORM.getObjectById(buf.readInt),
-			color = buf.readInt,
-			sizeX = buf.readFloat,
-			sizeY = buf.readFloat,
-			sizeZ = buf.readFloat,
-			delay = buf.readInt,
-			end = buf.readInt,
-			subEntity = DanmakuRegistry.SUB_ENTITY.getObjectById(buf.readInt)
-		)
-	}
-
 	//For better java interaction
 	def this(form: Form, color: Int) {
 		this(form, color, 0.5F, 0.5F, 0.5F, 0.5F)
@@ -169,18 +157,27 @@ final case class MutableShotData(
 		copy(sizeX = sizeX * scaleX, sizeY = sizeY * scaleY, sizeZ = sizeZ * scaleZ)
 
 	def deserializeByteBuf(buf: ByteBuf) {
-		form = DanmakuRegistry.FORM.getObjectById(buf.readInt)
+		form = Option(DanmakuRegistry.FORM.getObjectById(buf.readInt)).getOrElse {
+			LogHelper.warn("Found null form. Setting to default")
+			LibForms.SPHERE
+		}
 		color = buf.readInt
 		sizeX = buf.readFloat
 		sizeY = buf.readFloat
 		sizeZ = buf.readFloat
 		delay = buf.readInt
 		end = buf.readInt
-		subEntity = DanmakuRegistry.SUB_ENTITY.getObjectById(buf.readInt)
+		subEntity = Option(DanmakuRegistry.SUB_ENTITY.getObjectById(buf.readInt)).getOrElse {
+			LogHelper.warn("Found null subEntity type. Setting to default")
+			LibSubEntities.DEFAULT_TYPE
+		}
 	}
 
 	override def deserializeNBT(tag: NBTTagCompound): Unit = {
-		form = DanmakuRegistry.FORM.getObject(new ResourceLocation(tag.getString(ShotData.NbtForm)))
+		form = Option(DanmakuRegistry.FORM.getObject(new ResourceLocation(tag.getString(ShotData.NbtForm)))).getOrElse {
+			LogHelper.warn("Found null form. Setting to default")
+			LibForms.SPHERE
+		}
 		color = tag.getInteger(ShotData.NbtColor)
 		damage = tag.getFloat(ShotData.NbtDamage)
 		sizeX = tag.getFloat(ShotData.NbtSizeX)
@@ -188,7 +185,10 @@ final case class MutableShotData(
 		sizeZ = tag.getFloat(ShotData.NbtSizeZ)
 		delay = tag.getInteger(ShotData.NbtDelay)
 		end = tag.getInteger(ShotData.NbtEnd)
-		subEntity = DanmakuRegistry.SUB_ENTITY.getObject(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))
+		subEntity = Option(DanmakuRegistry.SUB_ENTITY.getObject(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))).getOrElse {
+			LogHelper.warn("Found null subEntity type. Setting to default")
+			LibSubEntities.DEFAULT_TYPE
+		}
 	}
 
 	def copyObj: MutableShotData = copy()
@@ -211,20 +211,29 @@ final case class ShotData(
 
 	def this(buf: ByteBuf) {
 		this(
-			form = DanmakuRegistry.FORM.getObjectById(buf.readInt),
+			form = Option(DanmakuRegistry.FORM.getObjectById(buf.readInt)).getOrElse {
+				LogHelper.warn("Found null form. Setting to default")
+				LibForms.SPHERE
+			},
 			color = buf.readInt,
 			sizeX = buf.readFloat,
 			sizeY = buf.readFloat,
 			sizeZ = buf.readFloat,
 			delay = buf.readInt,
 			end = buf.readInt,
-			subEntity = DanmakuRegistry.SUB_ENTITY.getObjectById(buf.readInt)
+			subEntity = Option(DanmakuRegistry.SUB_ENTITY.getObjectById(buf.readInt)).getOrElse {
+				LogHelper.warn("Found null subEntity type. Setting to default")
+				LibSubEntities.DEFAULT_TYPE
+			}
 		)
 	}
 
 	def this(tag: NBTTagCompound) {
 		this(
-			form = DanmakuRegistry.FORM.getObject(new ResourceLocation(tag.getString(ShotData.NbtForm))),
+			form = Option(DanmakuRegistry.FORM.getObject(new ResourceLocation(tag.getString(ShotData.NbtForm)))).getOrElse {
+				LogHelper.warn("Found null form. Setting to default")
+				LibForms.SPHERE
+			},
 			color = tag.getInteger(ShotData.NbtColor),
 			damage = tag.getFloat(ShotData.NbtDamage),
 			sizeX = tag.getFloat(ShotData.NbtSizeX),
@@ -232,7 +241,10 @@ final case class ShotData(
 			sizeZ = tag.getFloat(ShotData.NbtSizeZ),
 			delay = tag.getInteger(ShotData.NbtDelay),
 			end = tag.getInteger(ShotData.NbtEnd),
-			subEntity = DanmakuRegistry.SUB_ENTITY.getObject(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))
+			subEntity = Option(DanmakuRegistry.SUB_ENTITY.getObject(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))).getOrElse {
+				LogHelper.warn("Found null subEntity type. Setting to default")
+				LibSubEntities.DEFAULT_TYPE
+			}
 		)
 	}
 

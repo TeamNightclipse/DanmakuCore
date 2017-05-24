@@ -135,7 +135,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	@Override
 	public void readSpawnData(ByteBuf buf) {
 		ShotData shot = new ShotData(buf);
-		setSubEntity(shot.subEntity());
+		setShotData(shot);
 		setSize(shot.sizeX(), shot.sizeY(), shot.sizeZ());
 	}
 

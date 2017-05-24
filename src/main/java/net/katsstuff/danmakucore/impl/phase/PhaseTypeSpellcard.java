@@ -120,6 +120,10 @@ public class PhaseTypeSpellcard extends PhaseType {
 		public void deserializeNBT(NBTTagCompound nbt) {
 			super.deserializeNBT(nbt);
 			spellcard = DanmakuRegistry.SPELLCARD.getObject(new ResourceLocation(nbt.getString(NBT_SPELLCARD)));
+			//noinspection ConstantConditions
+			if(spellcard == null) {
+				spellcard = DanmakuRegistry.SPELLCARD.getRandomObject(getEntity().getRNG());
+			}
 			firstAttack = nbt.getBoolean(NBT_FIRST_ATTACK);
 		}
 

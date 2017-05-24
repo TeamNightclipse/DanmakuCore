@@ -118,10 +118,26 @@ public class ItemDanmaku extends ItemBase {
 	public static boolean shootDanmaku(ItemStack stack, World world, @Nullable EntityLivingBase player, boolean alternateMode, Vector3 pos,
 			Vector3 angle, double offset) {
 		if(getCustom(stack)) {
-			if(!DanmakuRegistry.FORM.getObjectById(stack.getItemDamage()).onShootDanmaku(player, alternateMode, pos, angle)) return false;
+			Form formType = DanmakuRegistry.FORM.getObjectById(stack.getItemDamage());
+			//noinspection ConstantConditions
+			if(formType == null) {
+				LogHelper.warn("Found null form. Setting to default");
+				stack.setItemDamage(DanmakuRegistry.FORM.getId(LibForms.SPHERE));
+				return false;
+			}
+
+			if(!formType.onShootDanmaku(player, alternateMode, pos, angle)) return false;
 		}
 		else {
-			if(!DanmakuRegistry.DANMAKU_VARIANT.getObjectById(stack.getItemDamage()).onShootDanmaku(player, alternateMode, pos, angle)) return false;
+			DanmakuVariant danmakuVariant = DanmakuRegistry.DANMAKU_VARIANT.getObjectById(stack.getItemDamage());
+			//noinspection ConstantConditions
+			if(danmakuVariant == null) {
+				LogHelper.warn("Found null form. Setting to default");
+				stack.setItemDamage(DanmakuRegistry.FORM.getId(LibForms.SPHERE));
+				return false;
+			}
+
+			if(!danmakuVariant.onShootDanmaku(player, alternateMode, pos, angle)) return false;
 		}
 
 		int amount = getAmount(stack);
