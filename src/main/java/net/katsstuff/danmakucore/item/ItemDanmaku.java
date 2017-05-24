@@ -42,7 +42,6 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.IForgeRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -110,6 +109,7 @@ public class ItemDanmaku extends ItemBase {
 				stack.stackSize--;
 			}
 		}
+
 		DanmakuHelper.playShotSound(player);
 		return new ActionResult<>(success | world.isRemote ? EnumActionResult.SUCCESS : EnumActionResult.FAIL, stack);
 	}
@@ -131,8 +131,7 @@ public class ItemDanmaku extends ItemBase {
 
 	public static boolean shootDanmaku(ItemStack stack, World world, @Nullable EntityLivingBase player, boolean alternateMode, Vector3 pos,
 			Vector3 angle, double offset) {
-		if(getController(stack).onShootDanmaku(player, alternateMode, pos, angle)) return false;
-
+		if(!getController(stack).onShootDanmaku(player, alternateMode, pos, angle)) return false;
 		int amount = getAmount(stack);
 		double shotSpeed = getSpeed(stack);
 		Pattern danmakuPattern = getPattern(stack);
@@ -315,8 +314,9 @@ public class ItemDanmaku extends ItemBase {
 
 	public static ItemStack createStack(DanmakuVariant variant) {
 		ShotData shot = variant.getShotData().setColor(DanmakuHelper.randomSaturatedColor());
-		ItemStack stack = new ItemStack(LibItems.SPELLCARD, 1);
+		ItemStack stack = new ItemStack(LibItems.DANMAKU, 1);
 		ItemNBTHelper.setString(stack, VARIANT, variant.getFullName().toString());
+		ItemNBTHelper.setBoolean(stack, NBT_CUSTOM, true);
 		return ShotData.serializeNBTItemStack(stack, shot);
 	}
 
