@@ -14,4 +14,5 @@ public class LibSubEntityName {
 	public static final String FIRE = "fire";
 	public static final String EXPLODE = "explosion";
 	public static final String TELEPORT = "teleport";
+	public static final String CHILD = "child";
 }

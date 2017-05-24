@@ -41,6 +41,7 @@ import net.katsstuff.danmakucore.impl.phase.PhaseTypeShapeRing;
 import net.katsstuff.danmakucore.impl.phase.PhaseTypeShapeWide;
 import net.katsstuff.danmakucore.impl.phase.PhaseTypeSpellcard;
 import net.katsstuff.danmakucore.impl.spellcard.SpellcardDelusionEnlightenment;
+import net.katsstuff.danmakucore.impl.subentity.SubEntityChild;
 import net.katsstuff.danmakucore.impl.subentity.SubEntityExplosion;
 import net.katsstuff.danmakucore.impl.subentity.SubEntityFire;
 import net.katsstuff.danmakucore.impl.subentity.SubEntityTeleport;
@@ -151,7 +152,8 @@ public class CommonProxy {
 				new SubEntityTypeDefault(LibSubEntityName.DEFAULT),
 				new SubEntityFire(LibSubEntityName.FIRE, 2F),
 				new SubEntityExplosion(LibSubEntityName.EXPLODE, 3F),
-				new SubEntityTeleport(LibSubEntityName.TELEPORT)
+				new SubEntityTeleport(LibSubEntityName.TELEPORT),
+				new SubEntityChild(LibSubEntityName.CHILD)
 		);
 	}
 

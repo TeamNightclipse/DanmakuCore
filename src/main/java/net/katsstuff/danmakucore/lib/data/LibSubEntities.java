@@ -25,4 +25,6 @@ public final class LibSubEntities {
 	public static final SubEntityType EXPLOSION = new SubEntityTypeDummy();
 	@ObjectHolder(LibSubEntityName.TELEPORT)
 	public static final SubEntityType TELEPORT = new SubEntityTypeDummy();
+	@ObjectHolder(LibSubEntityName.CHILD)
+	public static final SubEntityType CHILD = new SubEntityTypeDummy();
 }
