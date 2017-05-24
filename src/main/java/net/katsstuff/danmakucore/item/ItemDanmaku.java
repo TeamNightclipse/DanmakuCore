@@ -135,7 +135,7 @@ public class ItemDanmaku extends ItemBase {
 
 		int amount = getAmount(stack);
 		double shotSpeed = getSpeed(stack);
-		int danmakuPattern = getPattern(stack);
+		Pattern danmakuPattern = getPattern(stack);
 		ShotData shot = ShotData.fromNBTItemStack(stack);
 		Vector3 gravity = getGravity(stack);
 
@@ -145,7 +145,7 @@ public class ItemDanmaku extends ItemBase {
 		DanmakuTemplate built = danmaku.build();
 
 		switch(danmakuPattern) {
-			case 0:
+			case LINE:
 				danmaku.setPos(pos.offset(angle, offset));
 
 				for(int i = 1; i <= amount; i++) {
@@ -153,28 +153,28 @@ public class ItemDanmaku extends ItemBase {
 					built.world.spawnEntityInWorld(danmaku.build().asEntity());
 				}
 				break;
-			case 1:
+			case RANDOM_RING:
 				wide = 120F;
 				if(alternateMode) {
 					wide *= 0.5F;
 				}
 				DanmakuCreationHelper.createRandomRingShot(built, amount, wide, offset);
 				break;
-			case 2:
+			case WIDE:
 				wide = amount * 8F;
 				if(alternateMode) {
 					wide = wide * 0.5F;
 				}
 				DanmakuCreationHelper.createWideShot(built, amount, wide, 0F, offset);
 				break;
-			case 3:
+			case CIRCLE:
 				DanmakuCreationHelper.createCircleShot(built, amount, 0F, offset);
 				break;
-			case 4:
+			case STAR:
 				danmaku.setMovementData(Vector3.GravityZero());
 				DanmakuCreationHelper.createStarShot(danmaku.build(), amount, 0F, 0F, offset);
 				break;
-			case 5:
+			case RING:
 				wide = 15F;
 				if(alternateMode) {
 					wide *= 0.5F;
@@ -195,7 +195,7 @@ public class ItemDanmaku extends ItemBase {
 		ShotData shot = ShotData.fromNBTItemStack(stack);
 		int amount = getAmount(stack);
 		double shotSpeed = getSpeed(stack);
-		int danmakuPattern = getPattern(stack);
+		Pattern danmakuPattern = getPattern(stack);
 		Vector3 gravity = getGravity(stack);
 		boolean isInfinity = getInfinity(stack);
 		boolean custom = getCustom(stack);
@@ -250,12 +250,12 @@ public class ItemDanmaku extends ItemBase {
 	}
 
 	@SuppressWarnings("WeakerAccess")
-	public static int getPattern(ItemStack stack) {
-		return ItemNBTHelper.getInt(stack, NBT_PATTERN, 0);
+	public static Pattern getPattern(ItemStack stack) {
+		return Pattern.class.getEnumConstants()[ItemNBTHelper.getInt(stack, NBT_PATTERN, 0)];
 	}
 
-	public static void setPattern(ItemStack stack, int pattern) {
-		ItemNBTHelper.setInt(stack, NBT_PATTERN, pattern);
+	public static void setPattern(ItemStack stack, Pattern pattern) {
+		ItemNBTHelper.setInt(stack, NBT_PATTERN, pattern.ordinal());
 	}
 
 	@SuppressWarnings("WeakerAccess")
@@ -318,5 +318,14 @@ public class ItemDanmaku extends ItemBase {
 		ItemStack stack = new ItemStack(LibItems.SPELLCARD, 1);
 		ItemNBTHelper.setString(stack, VARIANT, variant.getFullName().toString());
 		return ShotData.serializeNBTItemStack(stack, shot);
+	}
+
+	public enum Pattern {
+		LINE,
+		RANDOM_RING,
+		WIDE,
+		CIRCLE,
+		STAR,
+		RING
 	}
 }

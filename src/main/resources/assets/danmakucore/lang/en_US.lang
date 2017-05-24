@@ -141,12 +141,12 @@ item.danmaku.color.10040115=Red
 item.danmaku.color.1644825=Black
 
 #Shot Patterns
-item.danmaku.pattern.0=Single Shot
-item.danmaku.pattern.1=Random Ring Shot
-item.danmaku.pattern.2=Wide Shot
-item.danmaku.pattern.3=Circle Shot
-item.danmaku.pattern.4=Sphere Shot
-item.danmaku.pattern.5=Ring Shot
+item.danmaku.pattern.LINE=Line Shot
+item.danmaku.pattern.RANDOM_RING=Random Ring Shot
+item.danmaku.pattern.WIDE=Wide Shot
+item.danmaku.pattern.CIRCLE=Circle Shot
+item.danmaku.pattern.STAR=Star Shot
+item.danmaku.pattern.RING=Ring Shot
 
 #Shot subentity
 subentity.danmakucore.default=No Special
