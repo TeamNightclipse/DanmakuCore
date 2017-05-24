@@ -505,13 +505,13 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		});
 		Vector3 angle = target.map(to -> Vector3.angleToEntity(this, to)).orElse(Vector3.Down());
 
-		if(shot.sizeZ() > shot.sizeX() * 1.5) {
+		if(shot.sizeZ() > 1F && shot.sizeZ() / shot.sizeX() > 3) {
 			double zPos = 0.0D;
 			while(zPos < shot.sizeZ()) {
 				Vector3 realPos = pos.offset(angle, zPos);
 
 				world.spawnEntityInWorld(TouhouHelper.createScoreGreen(world, target.orElse(null), realPos, angle));
-				zPos += 1.5D;
+				zPos += 1D;
 			}
 			setDead();
 		}
