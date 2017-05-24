@@ -57,7 +57,7 @@ public class FormPointedSphere extends FormGeneric {
 				GL11.glRotatef(pitch, 1.0F, 0.0F, 0.0F);
 				GL11.glRotatef(roll, 0F, 0F, 1F);
 				GL11.glScalef(sizeX, sizeY, sizeZ);
-
+				GL11.glTranslatef(0, 0, (-sizeZ / 6) * 4);
 
 				createPointedSphere(tes, vb, 0xFFFFFF, 1F, centerZ1 - centerZ2, sizeZ);
 
