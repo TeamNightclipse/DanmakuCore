@@ -49,6 +49,7 @@ public class EntityFallingData extends Entity {
 
 	public EntityFallingData(World worldIn) {
 		super(worldIn);
+		setSize(0.5F, 0.5F);
 	}
 
 	public EntityFallingData(World world, DataType dataType, Vector3 pos, Vector3 angle, @Nullable Entity target, float amount) {
