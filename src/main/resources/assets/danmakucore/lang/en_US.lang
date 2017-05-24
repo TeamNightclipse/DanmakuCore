@@ -5,7 +5,8 @@ itemGroup.danmakucore.spellcard=Spellcard
 
 #Entity
 entity.danmakucore.danmaku.name=Danmaku
-entity.danmakucore.tenguTest.name=Test Tengu
+entity.danmakucore.fallingData.name=Danmaku item
+entity.danmakucore.spellcard.name=Spellcard
 
 #Death
 death.attack.danmaku=%s was killed with danmaku by %s
