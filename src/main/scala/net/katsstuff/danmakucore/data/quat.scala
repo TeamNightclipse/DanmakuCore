@@ -213,6 +213,44 @@ abstract sealed class AbstractQuat {
 		else Vector3(normalized.x / scalar, normalized.y / scalar, normalized.z / scalar)
 	}
 
+	def dot(other: AbstractQuat): Double = {
+		this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w
+	}
+
+	//Taken from libgdx
+	def slerp(end: AbstractQuat, alpha: Float): Self = {
+		val dotProd = this.dot(end)
+		val absDot = Math.abs(dotProd)
+
+		// Set the first and second scale for the interpolation
+		var scale0 = 1F - alpha
+		var scale1 = alpha
+
+		// Check if the angle between the 2 quaternions was big enough to
+		// warrant such calculations
+		if ((1 - absDot) > 0.1) {
+			// Get the angle between the 2 quaternions,
+			// and then store the sin() of that angle
+			val angle = Math.acos(absDot).toFloat
+			val invSinTheta = 1F / MathHelper.sin(angle)
+			// Calculate the scale for q1 and q2, according to the angle and
+			// it's sine value
+			scale0 = MathHelper.sin((1F - alpha) * angle) * invSinTheta
+			scale1 = MathHelper.sin(alpha * angle) * invSinTheta
+		}
+
+		if (dotProd < 0F) scale1 = -scale1
+
+		// Calculate the x, y, z and w values for the quaternion by using a
+		// special form of linear interpolation for quaternions.
+		create(
+			x = (scale0 * x) + (scale1 * end.x),
+			y = (scale0 * y) + (scale1 * end.y),
+			z = (scale0 * z) + (scale1 * end.z),
+			w = (scale0 * w) + (scale1 * end.w)
+		)
+	}
+
 	def asImmutable: Quat
 
 	def asMutable: MutableQuat

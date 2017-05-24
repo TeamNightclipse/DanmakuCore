@@ -245,6 +245,39 @@ sealed trait AbstractVector3 extends Any {
 		*/
 	def pitch: Double = Math.toDegrees(pitchRad)
 
+	def lerp(target: AbstractVector3, alpha: Double): Self = {
+		create(
+			x + alpha * (target.x - x),
+			y + alpha * (target.y - y),
+			z + alpha * (target.z - z)
+		)
+	}
+
+	//From libgdx
+	def slerp(target: AbstractVector3, alpha: Double): Self#Self = {
+		val dotProd = this.dot(target)
+
+		if(Math.abs(dotProd) > 0.9995) lerp(target, alpha).normalize
+		else {
+			val theta0 = Math.acos(dotProd)
+			val theta = (theta0 * alpha).toFloat
+
+			val st = MathHelper.sin(theta)
+			val tx = target.x - x * dotProd
+			val ty = target.y - y * dotProd
+			val tz = target.z - z * dotProd
+			val l2 = tx * tx + ty * ty + tz * tz
+			val dl = st * (if (l2 < 0.0001F) 1F else 1F / Math.sqrt(l2).toFloat)
+
+			val thetaCos = MathHelper.cos(theta)
+			create(
+				this.x * thetaCos + tx * dl,
+				this.y * thetaCos + ty * dl,
+				this.z * thetaCos + tz * dl
+			).normalize
+		}
+	}
+
 	def asMutable: MutableVector3
 
 	def asImmutable: Vector3
@@ -442,6 +475,8 @@ final case class MutableVector3(@BeanProperty var x: Double, @BeanProperty var y
 	override def rotate(quat: Quat): MutableVector3 = super.rotate(quat)
 	override def rotate(angle: Double, point: AbstractVector3): MutableVector3 = super.rotate(angle, point)
 	override def rotateRad(angle: Double, point: AbstractVector3): MutableVector3 = super.rotateRad(angle, point)
+	override def lerp(target: AbstractVector3, alpha: Double): MutableVector3 = super.lerp(target, alpha)
+	override def slerp(target: AbstractVector3, alpha: Double): MutableVector3 = super.slerp(target, alpha)
 }
 
 final case class Vector3(@BeanProperty x: Double, @BeanProperty y: Double, @BeanProperty z: Double) extends AbstractVector3 {
@@ -502,6 +537,9 @@ final case class Vector3(@BeanProperty x: Double, @BeanProperty y: Double, @Bean
 	override def rotate(quat: Quat): Vector3 = super.rotate(quat)
 	override def rotate(angle: Double, point: AbstractVector3): Vector3 = super.rotate(angle, point)
 	override def rotateRad(angle: Double, point: AbstractVector3): Vector3 = super.rotateRad(angle, point)
+
+	override def lerp(target: AbstractVector3, alpha: Double): Vector3 = super.lerp(target, alpha)
+	override def slerp(target: AbstractVector3, alpha: Double): Vector3 = super.slerp(target, alpha)
 }
 
 object Vector3 {
@@ -584,36 +622,6 @@ object Vector3 {
 	def gravity(gravityY: Double): Vector3 = Vector3(0.0D, gravityY, 0.0D)
 
 	def getVecWithoutY(vec: AbstractVector3): AbstractVector3 = vec.create(vec.x, 0.0D, vec.z).normalize
-
-	@Deprecated
-	def getRotationVector(yaw: Double, pitch: Double, angle: Double): Vector3 = {
-		getRotationVectorRad(Math.toRadians(yaw).toFloat, Math.toRadians(pitch).toFloat, Math.toRadians(angle).toFloat)
-	}
-
-	@Deprecated
-	def getRotationVectorRad(yaw: Float, pitch: Float, angle: Float): Vector3 = {
-		val vector = fromSphericalRad(yaw, pitch)
-		val cosYaw = MathHelper.cos(yaw)
-		val sinYaw = MathHelper.sin(yaw)
-		val sinPitch = MathHelper.sin(pitch)
-		val cosAngleYaw = MathHelper.cos(angle)
-		val sinAngleYaw = MathHelper.sin(angle)
-		val cosAnglePitch = 1
-		val sinAnglePitch = 0
-		Vector3(
-			cosAngleYaw * cosAnglePitch * vector.x + sinAngleYaw * cosYaw - cosAngleYaw * sinAnglePitch * sinPitch * sinYaw,
-			-cosAngleYaw * sinPitch,
-			cosAngleYaw * cosAnglePitch * vector.z + sinAngleYaw * sinYaw + cosAngleYaw * sinAnglePitch * sinPitch * cosYaw)
-	}
-
-	@Deprecated
-	def getRotationVector(vector: AbstractVector3, angle: Float): Vector3 = getRotationVector(vector.yaw, vector.pitch, angle)
-
-	@Deprecated
-	def getOverVector(vec: AbstractVector3): Vector3 = {
-		val newVec = getVecWithoutY(vec)
-		fromSpherical(newVec.yaw, newVec.pitch + 90F)
-	}
 
 	def randomVector: Vector3 = {
 		fromSpherical(rand.nextFloat * 360F, rand.nextFloat * 180F - 90F)
