@@ -5,7 +5,8 @@ itemGroup.danmakucore.spellcard=符卡
 
 #Entity
 entity.danmakucore.danmaku.name=弹幕
-entity.danmakucore.tenguTest.name=天狗[测试]
+entity.danmakucore.fallingData.name=弹幕物品
+entity.danmakucore.spellcard.name=符卡
 
 #Death
 death.attack.danmaku=%s被%s用弹幕杀死了
@@ -78,6 +79,7 @@ form.danmakucore.laser=镭射形
 form.danmakucore.pellet=丸形
 form.danmakucore.sphere_dark=黑球形
 form.danmakucore.fire=火形
+form.danmakucore.sphere_pointed=点状球形
 
 
 #Stack Names normal
@@ -113,6 +115,7 @@ item.danmaku.form.danmakucore.laser.name=自定义激光弹
 item.danmaku.form.danmakucore.pellet.name=自定义丸弹
 item.danmaku.form.danmakucore.sphere_dark.name=自定义黑球弹
 item.danmaku.form.danmakucore.fire.name=自定义火弹
+item.danmaku.form.danmakucore.sphere_pointed=自定义点状球状弹
 
 #Vibrant colors
 item.danmaku.color.16711680=深红色
@@ -169,3 +172,4 @@ commands.danmakucore.bombs.success=将玩家%2$s的bombs设置为%1$d
 commands.danmakucore.lives.success=将玩家%2$s的lives设置为%1$d
 commands.danmakucore.power.success=将玩家%2$s的power设置为%1$d
 commands.danmakucore.score.success=将玩家%2$s的score设置为%1$d
+
