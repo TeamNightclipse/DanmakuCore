@@ -12,7 +12,9 @@ import java.util.Arrays;
 
 import javax.annotation.Nullable;
 
+import net.katsstuff.danmakucore.client.particle.GlowTexture;
 import net.katsstuff.danmakucore.client.particle.IGlowParticle;
+import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.EntityFallingData;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
@@ -59,8 +61,10 @@ import net.katsstuff.danmakucore.lib.LibSubEntityName;
 import net.katsstuff.danmakucore.lib.data.LibShotData;
 import net.katsstuff.danmakucore.network.SpellcardInfoPacket;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -226,6 +230,11 @@ public class CommonProxy {
 	 * Adds a spellcard name to the spellcard renderer
 	 */
 	public void handleSpellcardInfo(SpellcardInfoPacket.Message packet) {}
+
+	public void createParticleGlow(World world, Vector3 pos, Vector3 motion, float r, float g, float b, float scale, int lifetime,
+			GlowTexture type) {}
+
+	public void createChargeSphere(Entity entity, int amount, double offset, double divSpeed, float r, float g, float b, int lifetime) {}
 
 	public <T extends IGlowParticle> void addParticle(T particle) {}
 

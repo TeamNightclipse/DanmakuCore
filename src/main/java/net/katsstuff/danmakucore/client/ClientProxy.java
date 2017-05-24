@@ -13,12 +13,15 @@ import net.katsstuff.danmakucore.client.handler.BossBarHandler;
 import net.katsstuff.danmakucore.client.handler.HUDHandler;
 import net.katsstuff.danmakucore.client.handler.SpellcardHandler;
 import net.katsstuff.danmakucore.client.helper.RenderHelper;
+import net.katsstuff.danmakucore.client.particle.GlowTexture;
 import net.katsstuff.danmakucore.client.particle.IGlowParticle;
 import net.katsstuff.danmakucore.client.particle.ParticleRenderer;
+import net.katsstuff.danmakucore.client.particle.ParticleUtil;
 import net.katsstuff.danmakucore.client.render.RenderDanmaku;
 import net.katsstuff.danmakucore.client.render.RenderFallingData;
 import net.katsstuff.danmakucore.client.render.RenderSpellcard;
 import net.katsstuff.danmakucore.data.ShotData;
+import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.EntityFallingData;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
@@ -27,6 +30,7 @@ import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
+import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.item.ItemDanmaku;
 import net.katsstuff.danmakucore.item.ItemSpellcard;
 import net.katsstuff.danmakucore.lib.data.LibDanmakuVariants;
@@ -37,6 +41,8 @@ import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.entity.Entity;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -120,5 +126,15 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public <T extends IGlowParticle> void addParticle(T particle) {
 		particleRenderer.addParticle(particle);
+	}
+
+	@Override
+	public void createParticleGlow(World world, Vector3 pos, Vector3 motion, float r, float g, float b, float scale, int lifetime, GlowTexture type) {
+		ParticleUtil.spawnParticleGlow(world, pos, motion, r, g, b, scale, lifetime, type);
+	}
+
+	@Override
+	public void createChargeSphere(Entity entity, int amount, double offset, double divSpeed, float r, float g, float b, int lifetime) {
+		TouhouHelper.createChargeSphere(entity, amount, offset, divSpeed, r, g, b, lifetime);
 	}
 }
