@@ -49,7 +49,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditionalSpawnData {
 
-	private static final double EPSILON = 1E-5;
+	public static final double EPSILON = 1E-5;
 
 	private static final String NBT_SHOT_DATA = "shotData";
 	private static final String NBT_ANGLE = "angle";
@@ -74,6 +74,8 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	private RotationData rotation;
 
 	private SubEntity subEntity;
+
+	private boolean frozen = false;
 
 	public EntityDanmaku(World world) {
 		super(world);
@@ -178,7 +180,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		prevRotationPitch = rotationPitch = (float)vec.pitch();
 
 		if(!world.isRemote) {
-			angle = vec;
+			angle = vec.normalize();
 		}
 	}
 
@@ -188,11 +190,6 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	@Override
 	public void onUpdate() {
 		ShotData shot = getShotData();
-
-		if(!world.isRemote && ticksExisted > shot.end()) {
-			setDead();
-			return;
-		}
 
 		if(subEntity == null) {
 			LogHelper.warn("For some reason the danmaku entity is missing it's subEntity. Will try to create a new subEntity");
@@ -204,37 +201,23 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			}
 		}
 
-		if(!world.isRemote && user != null && user.isDead) {
-			danmakuFinishBonus();
-			return;
-		}
-
-		int delay = shot.delay();
-		if(delay > 0) {
-			ticksExisted--;
-			delay--;
-
-			if(!world.isRemote) {
-				if(delay <= 0) {
-					resetMotion();
-				}
-				else {
-					motionX = 0;
-					motionY = 0;
-					motionZ = 0;
-				}
+		if(!frozen) {
+			if(!world.isRemote && ticksExisted > shot.end()) {
+				setDead();
+				return;
 			}
 
-			shot = shot.setDelay(delay);
-			setShotData(shot);
-		}
-		else {
+			if(!world.isRemote && user != null && user.isDead) {
+				danmakuFinishBonus();
+				return;
+			}
+
 			super.onUpdate();
 			shot.getForm().onTick(this);
 			subEntity.subEntityTick();
-		}
 
-		setPosition(posX + motionX, posY + motionY, posZ + motionZ);
+			setPosition(posX + motionX, posY + motionY, posZ + motionZ);
+		}
 	}
 
 	public void accelerate(double currentSpeed) {
@@ -249,9 +232,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			setSpeed(lowerSpeedLimit);
 		}
 		else {
-			motionX += angle.x() * speedAccel;
-			motionY += angle.y() * speedAccel;
-			motionZ += angle.z() * speedAccel;
+			addSpeed(speedAccel);
 
 			double newCurrentSpeed = getCurrentSpeed();
 			if(DoubleMath.fuzzyCompare(newCurrentSpeed, upperSpeedLimit, EPSILON) > 0) {
@@ -270,6 +251,12 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		motionX = angle.x() * speed;
 		motionY = angle.y() * speed;
 		motionZ = angle.z() * speed;
+	}
+
+	public void addSpeed(double speed) {
+		motionX += angle.x() * speed;
+		motionY += angle.y() * speed;
+		motionZ += angle.z() * speed;
 	}
 
 	@SuppressWarnings("WeakerAccess")
@@ -299,6 +286,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 	public void setShotData(ShotData shot, boolean forceNewSubentity) {
 		ShotData oldShot = getShotData();
+
 		boolean first = subEntity == null; //The first time we call this the subentity isn't created yet
 		ShotData toUse = first ? shot : subEntity.onShotDataChange(oldShot, oldShot.form().onShotDataChange(oldShot, shot), shot);
 
@@ -517,7 +505,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		});
 		Vector3 angle = target.map(to -> Vector3.angleToEntity(this, to)).orElse(Vector3.Down());
 
-		if(shot.sizeZ() * 1.5 < shot.sizeX()) {
+		if(shot.sizeZ() > shot.sizeX() * 1.5) {
 			double zPos = 0.0D;
 			while(zPos < shot.sizeZ()) {
 				Vector3 realPos = pos.offset(angle, zPos);
@@ -535,7 +523,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 	@Override
 	public Vec3d getLookVec() {
-		return angle.normalize().toVec3d();
+		return angle.toVec3d();
 	}
 
 	@Override
@@ -556,5 +544,13 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 	public Random getRNG() {
 		return rand;
+	}
+
+	public boolean isFrozen() {
+		return frozen;
+	}
+
+	public void setFrozen(boolean frozen) {
+		this.frozen = frozen;
 	}
 }
