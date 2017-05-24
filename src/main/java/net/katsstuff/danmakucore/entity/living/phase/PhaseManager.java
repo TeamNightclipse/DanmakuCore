@@ -193,7 +193,7 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 
 		for(int i = 0; i < size; i++) {
 			NBTTagCompound tagPhase = list.getCompoundTagAt(i);
-			PhaseType type = DanmakuRegistry.PHASE.getObject(new ResourceLocation(tagPhase.getString(Phase.NBT_NAME)));
+			PhaseType type = DanmakuRegistry.PHASE.getValue(new ResourceLocation(tagPhase.getString(Phase.NBT_NAME)));
 			//noinspection ConstantConditions
 			if(type == null) {
 				type = LibPhases.FALLBACK;

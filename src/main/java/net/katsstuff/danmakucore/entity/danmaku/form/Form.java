@@ -20,6 +20,7 @@ import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
 import net.katsstuff.danmakucore.registry.RegistryValueItemStack;
+import net.katsstuff.danmakucore.registry.RegistryValueShootable;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,7 +39,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * specific to this form. For example size restrictions.
  */
 @SuppressWarnings("UnusedParameters")
-public abstract class Form extends RegistryValueItemStack<Form> {
+public abstract class Form extends RegistryValueShootable<Form> {
 
 	public Form(String name) {
 		setRegistryName(name);
@@ -68,6 +69,7 @@ public abstract class Form extends RegistryValueItemStack<Form> {
 	 *
 	 * @return If the danmaku should be allowed to fire.
 	 */
+	@Override
 	public boolean onShootDanmaku(@Nullable EntityLivingBase user, boolean alternateMode, Vector3 pos, Vector3 angle) {
 		return true;
 	}

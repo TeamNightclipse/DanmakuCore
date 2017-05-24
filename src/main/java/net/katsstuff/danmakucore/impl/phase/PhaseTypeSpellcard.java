@@ -17,6 +17,7 @@ import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
+import net.katsstuff.danmakucore.item.ItemSpellcard;
 import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.entity.EntityLivingBase;
@@ -31,7 +32,7 @@ public class PhaseTypeSpellcard extends PhaseType {
 
 	@Override
 	public Phase instantiate(PhaseManager manager) {
-		return new PhaseSpellcard(manager, this, DanmakuRegistry.SPELLCARD.getRandomObject(manager.entity.getRNG()));
+		return new PhaseSpellcard(manager, this, DanmakuRegistry.getRandomObject(Spellcard.class, manager.entity.getRNG()));
 	}
 
 	public PhaseSpellcard instantiate(PhaseManager manager, Spellcard spellcard) {
@@ -119,17 +120,17 @@ public class PhaseTypeSpellcard extends PhaseType {
 		@Override
 		public void deserializeNBT(NBTTagCompound nbt) {
 			super.deserializeNBT(nbt);
-			spellcard = DanmakuRegistry.SPELLCARD.getObject(new ResourceLocation(nbt.getString(NBT_SPELLCARD)));
+			spellcard = DanmakuRegistry.SPELLCARD.getValue(new ResourceLocation(nbt.getString(NBT_SPELLCARD)));
 			//noinspection ConstantConditions
 			if(spellcard == null) {
-				spellcard = DanmakuRegistry.SPELLCARD.getRandomObject(getEntity().getRNG());
+				spellcard = DanmakuRegistry.getRandomObject(Spellcard.class, getEntity().getRNG());
 			}
 			firstAttack = nbt.getBoolean(NBT_FIRST_ATTACK);
 		}
 
 		@Override
 		public void dropLoot(DamageSource source) {
-			getEntity().entityDropItem(new ItemStack(LibItems.SPELLCARD, 1, DanmakuRegistry.SPELLCARD.getId(spellcard)), 0F);
+			getEntity().entityDropItem(ItemSpellcard.createStack(spellcard), 0F);
 		}
 	}
 }

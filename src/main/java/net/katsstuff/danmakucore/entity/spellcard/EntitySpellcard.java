@@ -56,7 +56,7 @@ public class EntitySpellcard extends Entity {
 		setRotation(user.rotationYaw, user.rotationPitch);
 		this.user = user;
 		spellCard = type.instantiate(this, target);
-		setSpellcardId(DanmakuRegistry.SPELLCARD.getId(type));
+		setSpellcardId(DanmakuRegistry.getId(Spellcard.class, type));
 		this.sendNamePacket = sendInfoPacket;
 
 		if(sendInfoPacket) {
@@ -140,7 +140,7 @@ public class EntitySpellcard extends Entity {
 				setDead();
 			}
 			else {
-				setSpellcardId(DanmakuRegistry.SPELLCARD.getId(type));
+				setSpellcardId(DanmakuRegistry.getId(Spellcard.class, type));
 				spellCard = type.instantiate(this, user);
 				spellCard.deserializeNBT(tag.getCompoundTag(NBT_SPELLCARD_DATA));
 			}

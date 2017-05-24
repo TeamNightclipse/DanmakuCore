@@ -19,16 +19,20 @@ import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
+import net.katsstuff.danmakucore.entity.danmaku.form.Form;
 import net.katsstuff.danmakucore.helper.DanmakuCreationHelper;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
+import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.lib.LibItemName;
+import net.katsstuff.danmakucore.lib.data.LibDanmakuVariants;
 import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.lib.data.LibSubEntities;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
-import net.katsstuff.danmakucore.registry.RegistryValueItemStack;
+import net.katsstuff.danmakucore.registry.RegistryValueShootable;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -36,8 +40,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
+import net.minecraftforge.fml.common.registry.IForgeRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -52,10 +57,10 @@ public class ItemDanmaku extends ItemBase {
 	private static final String NBT_AMOUNT = "amount";
 	private static final String NBT_CUSTOM = "custom";
 	private static final String NBT_SPEED = "speed";
+	private static final String VARIANT = "variant";
 
 	public ItemDanmaku() {
 		super(LibItemName.DANMAKU);
-		setHasSubtypes(true);
 		setMaxDamage(0);
 		setCreativeTab(DanmakuCore.DANMAKU_CREATIVE_TAB);
 	}
@@ -63,13 +68,9 @@ public class ItemDanmaku extends ItemBase {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(Item item, CreativeTabs creativeTabs, List<ItemStack> list) {
-		FMLControlledNamespacedRegistry<DanmakuVariant> variantRegistry = DanmakuRegistry.DANMAKU_VARIANT;
-		list.addAll(variantRegistry.getValues().stream()
+		list.addAll(DanmakuRegistry.DANMAKU_VARIANT.getValues().stream()
 				.sorted()
-				.map(variant -> {
-					ShotData shot = variant.getShotData().setColor(DanmakuHelper.randomSaturatedColor());
-					ItemStack stack = new ItemStack(LibItems.DANMAKU, 1, variantRegistry.getId(variant));
-					return ShotData.serializeNBTItemStack(stack, shot);})
+				.map(ItemDanmaku::createStack)
 				.collect(Collectors.toList()));
 	}
 
@@ -81,64 +82,56 @@ public class ItemDanmaku extends ItemBase {
 
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
-		String name = getCustom(stack) ?
-				ShotData.fromNBTItemStack(stack).form().getUnlocalizedName() :
-				DanmakuRegistry.DANMAKU_VARIANT.getObjectById(stack.getItemDamage()).getUnlocalizedName();
-		return this.getUnlocalizedName() + "." + name;
+		return this.getUnlocalizedName() + "." + getController(stack).getUnlocalizedName();
+	}
+
+	@Override
+	public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+		migrateFromLegacy(stack);
+		super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
 	}
 
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
-		FMLControlledNamespacedRegistry<? extends RegistryValueItemStack<? extends RegistryValueItemStack<?>>> registry = getCustom(stack) ?
-				DanmakuRegistry.FORM : DanmakuRegistry.DANMAKU_VARIANT;
-
-		if(!registry.getObjectById(stack.getItemDamage()).onRightClick(stack, world, player, hand)) {
-			return super.onItemRightClick(stack, world, player, hand);
-		}
+		if(!getController(stack).onRightClick(stack, world, player, hand)) return super.onItemRightClick(stack, world, player, hand);
 
 		boolean success = false;
 		if(!world.isRemote) {
 			if(player.capabilities.isCreativeMode) {
 				setInfinity(stack, true);
 			}
+			ShotData shot = ShotData.fromNBTItemStack(stack);
 
 			success = shootDanmaku(stack, player.world, player, player.isSneaking(),
-					new Vector3(player.posX, player.posY + player.eyeHeight - ShotData.fromNBTItemStack(stack).sizeY() / 2, player.posZ),
-					new Vector3(player.getLookVec()), ShotData.fromNBTItemStack(stack).sizeZ() / 4);
+					new Vector3(player.posX, player.posY + player.eyeHeight - shot.sizeY() / 2, player.posZ),
+					new Vector3(player.getLookVec()), shot.sizeZ() / 4);
 
 			if(!getInfinity(stack) && success) {
 				stack.stackSize--;
 			}
 		}
 		DanmakuHelper.playShotSound(player);
-
 		return new ActionResult<>(success | world.isRemote ? EnumActionResult.SUCCESS : EnumActionResult.FAIL, stack);
+	}
+
+	private void migrateFromLegacy(ItemStack stack) {
+		if(!getCustom(stack) && !ItemNBTHelper.verifyExistance(stack, VARIANT)) {
+			int id = stack.getItemDamage();
+			DanmakuVariant variant = DanmakuRegistry.getObjById(DanmakuVariant.class, id);
+			//noinspection ConstantConditions
+			if(variant == null) {
+				variant = LibDanmakuVariants.DEFAULT_TYPE;
+				LogHelper.warn("Found null spellcard. Fixing");
+			}
+
+			ItemNBTHelper.setString(stack, VARIANT, variant.getFullName().toString());
+			stack.setItemDamage(0);
+		}
 	}
 
 	public static boolean shootDanmaku(ItemStack stack, World world, @Nullable EntityLivingBase player, boolean alternateMode, Vector3 pos,
 			Vector3 angle, double offset) {
-		if(getCustom(stack)) {
-			Form formType = DanmakuRegistry.FORM.getObjectById(stack.getItemDamage());
-			//noinspection ConstantConditions
-			if(formType == null) {
-				LogHelper.warn("Found null form. Setting to default");
-				stack.setItemDamage(DanmakuRegistry.FORM.getId(LibForms.SPHERE));
-				return false;
-			}
-
-			if(!formType.onShootDanmaku(player, alternateMode, pos, angle)) return false;
-		}
-		else {
-			DanmakuVariant danmakuVariant = DanmakuRegistry.DANMAKU_VARIANT.getObjectById(stack.getItemDamage());
-			//noinspection ConstantConditions
-			if(danmakuVariant == null) {
-				LogHelper.warn("Found null form. Setting to default");
-				stack.setItemDamage(DanmakuRegistry.FORM.getId(LibForms.SPHERE));
-				return false;
-			}
-
-			if(!danmakuVariant.onShootDanmaku(player, alternateMode, pos, angle)) return false;
-		}
+		if(getController(stack).onShootDanmaku(player, alternateMode, pos, angle)) return false;
 
 		int amount = getAmount(stack);
 		double shotSpeed = getSpeed(stack);
@@ -299,5 +292,31 @@ public class ItemDanmaku extends ItemBase {
 	@SuppressWarnings({"WeakerAccess", "SameParameterValue"})
 	public static void setInfinity(ItemStack stack, boolean infinity) {
 		ItemNBTHelper.setBoolean(stack, NBT_INFINITY, infinity);
+	}
+
+	public static DanmakuVariant getVariant(ItemStack stack) {
+		DanmakuVariant variant = DanmakuRegistry.DANMAKU_VARIANT.getValue(new ResourceLocation(ItemNBTHelper.getString(stack, VARIANT, LibDanmakuVariants.DEFAULT_TYPE.getFullName().toString())));
+		if(variant == null) {
+			variant = LibDanmakuVariants.DEFAULT_TYPE;
+			LogHelper.warn("Found null variant. Changing to default");
+			ItemNBTHelper.setString(stack, VARIANT, variant.getFullName().toString());
+		}
+
+		return variant;
+	}
+
+	public static Form getForm(ItemStack stack) {
+		return ShotData.fromNBTItemStack(stack).getForm();
+	}
+
+	public static RegistryValueShootable<?> getController(ItemStack stack) {
+		return getCustom(stack) ? getVariant(stack) : getForm(stack);
+	}
+
+	public static ItemStack createStack(DanmakuVariant variant) {
+		ShotData shot = variant.getShotData().setColor(DanmakuHelper.randomSaturatedColor());
+		ItemStack stack = new ItemStack(LibItems.SPELLCARD, 1);
+		ItemNBTHelper.setString(stack, VARIANT, variant.getFullName().toString());
+		return ShotData.serializeNBTItemStack(stack, shot);
 	}
 }

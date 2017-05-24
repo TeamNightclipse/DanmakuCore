@@ -78,14 +78,14 @@ abstract sealed class AbstractShotData {
 	def subEntity: SubEntityType
 
 	def serializeByteBuf(buf: ByteBuf) {
-		buf.writeInt(DanmakuRegistry.FORM.getId(form))
+		buf.writeInt(DanmakuRegistry.getId(classOf[Form], form))
 		buf.writeInt(color)
 		buf.writeFloat(sizeX)
 		buf.writeFloat(sizeY)
 		buf.writeFloat(sizeZ)
 		buf.writeInt(delay)
 		buf.writeInt(end)
-		buf.writeInt(DanmakuRegistry.SUB_ENTITY.getId(subEntity))
+		buf.writeInt(DanmakuRegistry.getId(classOf[SubEntityType], subEntity))
 	}
 
 	def serializeNBT: NBTTagCompound = {
@@ -157,7 +157,7 @@ final case class MutableShotData(
 		copy(sizeX = sizeX * scaleX, sizeY = sizeY * scaleY, sizeZ = sizeZ * scaleZ)
 
 	def deserializeByteBuf(buf: ByteBuf) {
-		form = Option(DanmakuRegistry.FORM.getObjectById(buf.readInt)).getOrElse {
+		form = Option(DanmakuRegistry.getObjById(classOf[Form], buf.readInt())).getOrElse {
 			LogHelper.warn("Found null form. Setting to default")
 			LibForms.SPHERE
 		}
@@ -167,14 +167,14 @@ final case class MutableShotData(
 		sizeZ = buf.readFloat
 		delay = buf.readInt
 		end = buf.readInt
-		subEntity = Option(DanmakuRegistry.SUB_ENTITY.getObjectById(buf.readInt)).getOrElse {
+		subEntity = Option(DanmakuRegistry.getObjById(classOf[SubEntityType], buf.readInt())).getOrElse {
 			LogHelper.warn("Found null subEntity type. Setting to default")
 			LibSubEntities.DEFAULT_TYPE
 		}
 	}
 
 	override def deserializeNBT(tag: NBTTagCompound): Unit = {
-		form = Option(DanmakuRegistry.FORM.getObject(new ResourceLocation(tag.getString(ShotData.NbtForm)))).getOrElse {
+		form = Option(DanmakuRegistry.FORM.getValue(new ResourceLocation(tag.getString(ShotData.NbtForm)))).getOrElse {
 			LogHelper.warn("Found null form. Setting to default")
 			LibForms.SPHERE
 		}
@@ -185,7 +185,7 @@ final case class MutableShotData(
 		sizeZ = tag.getFloat(ShotData.NbtSizeZ)
 		delay = tag.getInteger(ShotData.NbtDelay)
 		end = tag.getInteger(ShotData.NbtEnd)
-		subEntity = Option(DanmakuRegistry.SUB_ENTITY.getObject(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))).getOrElse {
+		subEntity = Option(DanmakuRegistry.SUB_ENTITY.getValue(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))).getOrElse {
 			LogHelper.warn("Found null subEntity type. Setting to default")
 			LibSubEntities.DEFAULT_TYPE
 		}
@@ -211,7 +211,7 @@ final case class ShotData(
 
 	def this(buf: ByteBuf) {
 		this(
-			form = Option(DanmakuRegistry.FORM.getObjectById(buf.readInt)).getOrElse {
+			form = Option(DanmakuRegistry.getObjById(classOf[Form], buf.readInt)).getOrElse {
 				LogHelper.warn("Found null form. Setting to default")
 				LibForms.SPHERE
 			},
@@ -221,7 +221,7 @@ final case class ShotData(
 			sizeZ = buf.readFloat,
 			delay = buf.readInt,
 			end = buf.readInt,
-			subEntity = Option(DanmakuRegistry.SUB_ENTITY.getObjectById(buf.readInt)).getOrElse {
+			subEntity = Option(DanmakuRegistry.getObjById(classOf[SubEntityType], buf.readInt)).getOrElse {
 				LogHelper.warn("Found null subEntity type. Setting to default")
 				LibSubEntities.DEFAULT_TYPE
 			}
@@ -230,7 +230,7 @@ final case class ShotData(
 
 	def this(tag: NBTTagCompound) {
 		this(
-			form = Option(DanmakuRegistry.FORM.getObject(new ResourceLocation(tag.getString(ShotData.NbtForm)))).getOrElse {
+			form = Option(DanmakuRegistry.FORM.getValue(new ResourceLocation(tag.getString(ShotData.NbtForm)))).getOrElse {
 				LogHelper.warn("Found null form. Setting to default")
 				LibForms.SPHERE
 			},
@@ -241,7 +241,7 @@ final case class ShotData(
 			sizeZ = tag.getFloat(ShotData.NbtSizeZ),
 			delay = tag.getInteger(ShotData.NbtDelay),
 			end = tag.getInteger(ShotData.NbtEnd),
-			subEntity = Option(DanmakuRegistry.SUB_ENTITY.getObject(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))).getOrElse {
+			subEntity = Option(DanmakuRegistry.SUB_ENTITY.getValue(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))).getOrElse {
 				LogHelper.warn("Found null subEntity type. Setting to default")
 				LibSubEntities.DEFAULT_TYPE
 			}

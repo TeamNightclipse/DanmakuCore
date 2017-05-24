@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
+import net.katsstuff.danmakucore.item.ItemSpellcard;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
@@ -43,7 +44,7 @@ public class RenderSpellcard extends Render<EntitySpellcard> {
 		GL11.glRotatef(entity.ticksExisted * 20F, 0.0F, 1.0F, 0.0F);
 		GL11.glRotatef(30F, 0.0F, 0.0F, 1.0F);
 
-		Minecraft.getMinecraft().getRenderItem().renderItem(new ItemStack(LibItems.SPELLCARD, 1, entity.getSpellcardId()),
+		Minecraft.getMinecraft().getRenderItem().renderItem(ItemSpellcard.createStack(entity.getSpellCard().getType()),
 				ItemCameraTransforms.TransformType.GROUND);
 
 		GL11.glPopMatrix();

@@ -29,7 +29,7 @@ public class PhaseTypeFallback extends PhaseType {
 	public static class PhaseFallback extends Phase {
 
 		private final PhaseTypeFallback type;
-		private final DanmakuVariant variant = DanmakuRegistry.DANMAKU_VARIANT.getRandomObject(getEntity().getRNG());
+		private final DanmakuVariant variant = DanmakuRegistry.getRandomObject(DanmakuVariant.class, getEntity().getRNG());
 		private final int amount = getEntity().getRNG().nextInt(8);
 
 		public PhaseFallback(PhaseManager manager, PhaseTypeFallback type) {

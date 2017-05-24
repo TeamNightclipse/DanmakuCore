@@ -18,6 +18,7 @@ import net.katsstuff.danmakucore.data.RotationData;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.registry.RegistryValueItemStack;
+import net.katsstuff.danmakucore.registry.RegistryValueShootable;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,7 +36,7 @@ import net.minecraft.world.World;
  * Remember to not load the ShotData (and thus Form and SubEntity) before everything
  * there has finished to register. One approach is to make it lazy.
  */
-public abstract class DanmakuVariant extends RegistryValueItemStack<DanmakuVariant> {
+public abstract class DanmakuVariant extends RegistryValueShootable<DanmakuVariant> {
 
 	public DanmakuVariant(String name) {
 		setRegistryName(name);
@@ -69,7 +70,7 @@ public abstract class DanmakuVariant extends RegistryValueItemStack<DanmakuVaria
 	 *
 	 * @return If the danmaku should be allowed to fire.
 	 */
-	@SuppressWarnings("UnusedParameters")
+	@Override
 	public boolean onShootDanmaku(@Nullable EntityLivingBase user, boolean alternateMode, Vector3 pos, Vector3 angle) {
 		return true;
 	}

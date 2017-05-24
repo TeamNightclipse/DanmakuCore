@@ -28,6 +28,7 @@ import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
 import net.katsstuff.danmakucore.item.ItemDanmaku;
+import net.katsstuff.danmakucore.item.ItemSpellcard;
 import net.katsstuff.danmakucore.lib.data.LibDanmakuVariants;
 import net.katsstuff.danmakucore.lib.data.LibForms;
 import net.katsstuff.danmakucore.lib.data.LibItems;
@@ -63,7 +64,7 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void bakeSpellcard(Spellcard spellcard) {
-		ModelLoader.setCustomModelResourceLocation(LibItems.SPELLCARD, DanmakuRegistry.SPELLCARD.getId(spellcard), spellcard.getItemModel());
+		ModelBakery.registerItemVariants(LibItems.SPELLCARD, spellcard.getItemModel());
 	}
 
 	@Override
@@ -97,20 +98,8 @@ public class ClientProxy extends CommonProxy {
 
 	@SubscribeEvent
 	public static void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomMeshDefinition(LibItems.DANMAKU, stack -> {
-			if(ItemDanmaku.getCustom(stack)) {
-				Form form = ShotData.fromNBTItemStack(stack).form();
-				return form.getItemModel();
-			}
-			else {
-				DanmakuVariant variant = DanmakuRegistry.DANMAKU_VARIANT.getObjectById(stack.getItemDamage());
-				//noinspection ConstantConditions
-				if(variant == null) {
-					variant = LibDanmakuVariants.DEFAULT_TYPE;
-				}
-				return variant.getItemModel();
-			}
-		});
+		ModelLoader.setCustomMeshDefinition(LibItems.DANMAKU, stack -> ItemDanmaku.getController(stack).getItemModel());
+		ModelLoader.setCustomMeshDefinition(LibItems.SPELLCARD, stack -> ItemSpellcard.getSpellcard(stack).getItemModel());
 	}
 
 	@Override
