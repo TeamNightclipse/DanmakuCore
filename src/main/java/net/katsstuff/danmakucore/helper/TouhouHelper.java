@@ -283,7 +283,7 @@ public class TouhouHelper {
 		}
 	}
 
-	public static void creatChargeSpherePacket(Vector3 packetCenter, Entity entity, int amount, double offset, double divSpeed, float r, float g,
+	public static void createChargeSpherePacket(Vector3 packetCenter, Entity entity, int amount, double offset, double divSpeed, float r, float g,
 			float b, int lifetime) {
 		DanmakuCorePacketHandler.sendToAllAround(new ChargeSpherePacket.Message(entity, amount, offset, divSpeed, r, g, b, lifetime), packetCenter,
 				32D, entity.dimension);
