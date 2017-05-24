@@ -79,6 +79,7 @@ form.danmakucore.laser=Laser Shape
 form.danmakucore.pellet=Pellet Shape
 form.danmakucore.sphere_dark=Dark Sphere Shape
 form.danmakucore.fire=Fire Shape
+form.danmakucore.sphere_pointed=Pointed Sphere Shape
 
 
 #Stack Names normal
@@ -114,6 +115,7 @@ item.danmaku.form.danmakucore.laser.name=Custom Laser Danmaku
 item.danmaku.form.danmakucore.pellet.name=Custom Pellet Danmaku
 item.danmaku.form.danmakucore.sphere_dark.name=Custom Dark Sphere Danmaku
 item.danmaku.form.danmakucore.fire.name=Custom Fire Danmaku
+item.danmaku.form.danmakucore.sphere_pointed=Custom Pointed Sphere Danmaku
 
 #Vibrant colors
 item.danmaku.color.16711680=Strong Red
