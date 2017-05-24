@@ -10,8 +10,6 @@ package net.katsstuff.danmakucore.capability;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import com.google.common.base.Objects;
 
 import net.minecraft.util.math.MathHelper;

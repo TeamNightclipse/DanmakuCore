@@ -240,7 +240,8 @@ public abstract class EntityDanmakuMob extends EntityMob {
 		Vector3 angle;
 		if(source.getEntity() != null) {
 			angle = Vector3.angleToEntity(this, source.getEntity());
-		} else {
+		}
+		else {
 			angle = Vector3.Down();
 		}
 

@@ -11,7 +11,7 @@ package net.katsstuff.danmakucore.client.particle;
 import net.katsstuff.danmakucore.client.lib.LibParticleTexures;
 import net.minecraft.util.ResourceLocation;
 
-public enum  GlowTexture {
+public enum GlowTexture {
 
 	GLINT(LibParticleTexures.PARTICLE_GLINT),
 	GLOW(LibParticleTexures.PARTICLE_GLOW),

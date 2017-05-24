@@ -30,9 +30,7 @@ public class ShapeCombined implements IShape {
 	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Vector3 angle, int tick) {
 		Set<Tuple<Boolean, Set<EntityDanmaku>>> ret = Arrays.stream(shapes).map(s -> s.drawForTick(pos, angle, tick)).collect(Collectors.toSet());
 		boolean done = ret.stream().allMatch(Tuple::getFirst);
-		Set<EntityDanmaku> drawn = ret.stream()
-				.flatMap(t -> t.getSecond().stream())
-				.collect(Collectors.toSet());
+		Set<EntityDanmaku> drawn = ret.stream().flatMap(t -> t.getSecond().stream()).collect(Collectors.toSet());
 
 		return new Tuple<>(done, drawn);
 	}

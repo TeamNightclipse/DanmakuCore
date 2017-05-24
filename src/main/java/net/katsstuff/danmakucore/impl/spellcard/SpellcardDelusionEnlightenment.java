@@ -112,9 +112,7 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 
 			RayTraceResult ray = getWorld().rayTraceBlocks(posSource.toVec3d(), posReach.toVec3d());
 
-			Vector3 spawnPos = ray != null ?
-					new Vector3(ray.hitVec) :
-					posReach; //Can I multiply the vectors here?
+			Vector3 spawnPos = ray != null ? new Vector3(ray.hitVec) : posReach; //Can I multiply the vectors here?
 
 			EntityDanmaku danmaku = DanmakuTemplate.builder()
 					.setUser(getUser())

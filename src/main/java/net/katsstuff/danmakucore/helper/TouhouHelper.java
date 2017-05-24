@@ -10,7 +10,6 @@ package net.katsstuff.danmakucore.helper;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
@@ -31,7 +30,6 @@ import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -195,8 +193,8 @@ public class TouhouHelper {
 	 * @return The score entity
 	 */
 	public static EntityFallingData createScoreGreen(World world, @Nullable Entity target, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_GREEN,
-				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), target, 10);
+		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_GREEN, fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), target,
+				10);
 	}
 
 	/**
@@ -208,8 +206,8 @@ public class TouhouHelper {
 	 * @return The score entity
 	 */
 	public static EntityFallingData createScoreBlue(World world, @Nullable Entity target, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_BLUE,
-				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), target, 100);
+		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_BLUE, fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), target,
+				100);
 	}
 
 	/**
@@ -220,8 +218,7 @@ public class TouhouHelper {
 	 * @return The score entity
 	 */
 	public static EntityFallingData createPower(World world, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.POWER,
-				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 0.05F);
+		return new EntityFallingData(world, EntityFallingData.DataType.POWER, fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 0.05F);
 	}
 
 	/**
@@ -232,8 +229,8 @@ public class TouhouHelper {
 	 * @return The score entity
 	 */
 	public static EntityFallingData createBigPower(World world, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.BIG_POWER,
-				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 1F);
+		return new EntityFallingData(world, EntityFallingData.DataType.BIG_POWER, fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null,
+				1F);
 	}
 
 	/**
@@ -244,8 +241,7 @@ public class TouhouHelper {
 	 * @return The score entity
 	 */
 	public static EntityFallingData createLife(World world, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.LIFE,
-				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 1);
+		return new EntityFallingData(world, EntityFallingData.DataType.LIFE, fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 1);
 	}
 
 	/**
@@ -256,8 +252,7 @@ public class TouhouHelper {
 	 * @return The score entity
 	 */
 	public static EntityFallingData createBomb(World world, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.BOMB,
-				fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 1);
+		return new EntityFallingData(world, EntityFallingData.DataType.BOMB, fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 1);
 	}
 
 	/**

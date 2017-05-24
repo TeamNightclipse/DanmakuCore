@@ -33,11 +33,8 @@ import net.katsstuff.danmakucore.helper.ItemNBTHelper;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.item.ItemDanmaku;
 import net.katsstuff.danmakucore.item.ItemSpellcard;
-import net.katsstuff.danmakucore.lib.data.LibDanmakuVariants;
-import net.katsstuff.danmakucore.lib.data.LibForms;
 import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.network.SpellcardInfoPacket;
-import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.color.ItemColors;
@@ -129,7 +126,8 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
-	public void createParticleGlow(World world, Vector3 pos, Vector3 motion, float r, float g, float b, float scale, int lifetime, GlowTexture type) {
+	public void createParticleGlow(World world, Vector3 pos, Vector3 motion, float r, float g, float b, float scale, int lifetime, GlowTexture
+			type) {
 		ParticleUtil.spawnParticleGlow(world, pos, motion, r, g, b, scale, lifetime, type);
 	}
 

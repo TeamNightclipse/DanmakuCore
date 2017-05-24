@@ -102,8 +102,8 @@ public class ItemDanmaku extends ItemBase {
 			ShotData shot = ShotData.fromNBTItemStack(stack);
 
 			success = shootDanmaku(stack, player.world, player, player.isSneaking(),
-					new Vector3(player.posX, player.posY + player.eyeHeight - shot.sizeY() / 2, player.posZ),
-					new Vector3(player.getLookVec()), shot.sizeZ() / 4);
+					new Vector3(player.posX, player.posY + player.eyeHeight - shot.sizeY() / 2, player.posZ), new Vector3(player.getLookVec()),
+					shot.sizeZ() / 4);
 
 			if(!getInfinity(stack) && success) {
 				stack.stackSize--;
@@ -199,8 +199,8 @@ public class ItemDanmaku extends ItemBase {
 		boolean isInfinity = getInfinity(stack);
 		boolean custom = getCustom(stack);
 
-		float powerDamage = new BigDecimal(DanmakuHelper.adjustDamageCoreData(player, shot.damage()) - shot.damage())
-				.setScale(4, BigDecimal.ROUND_HALF_UP).floatValue();
+		float powerDamage = new BigDecimal(DanmakuHelper.adjustDamageCoreData(player, shot.damage()) - shot.damage()).setScale(4,
+				BigDecimal.ROUND_HALF_UP).floatValue();
 		String item = "item.danmaku";
 
 		list.add(I18n.format(item + ".damage") + " : " + shot.damage() + " + " + powerDamage);
@@ -294,7 +294,8 @@ public class ItemDanmaku extends ItemBase {
 	}
 
 	public static DanmakuVariant getVariant(ItemStack stack) {
-		DanmakuVariant variant = DanmakuRegistry.DANMAKU_VARIANT.getValue(new ResourceLocation(ItemNBTHelper.getString(stack, VARIANT, LibDanmakuVariants.DEFAULT_TYPE.getFullName().toString())));
+		DanmakuVariant variant = DanmakuRegistry.DANMAKU_VARIANT.getValue(
+				new ResourceLocation(ItemNBTHelper.getString(stack, VARIANT, LibDanmakuVariants.DEFAULT_TYPE.getFullName().toString())));
 		if(variant == null) {
 			variant = LibDanmakuVariants.DEFAULT_TYPE;
 			LogHelper.warn("Found null variant. Changing to default");

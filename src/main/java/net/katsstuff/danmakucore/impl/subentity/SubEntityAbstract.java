@@ -21,7 +21,6 @@ import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
 import net.katsstuff.danmakucore.entity.living.IAllyDanmaku;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
-import net.katsstuff.danmakucore.helper.LogHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
@@ -66,8 +65,9 @@ public abstract class SubEntityAbstract extends SubEntity {
 		if(hitEntity instanceof EntityLivingBase && !(hitEntity instanceof EntityAgeable) && !(optUser.orElse(null) instanceof IAllyDanmaku
 				&& hitEntity instanceof IAllyDanmaku)) {
 			EntityLivingBase living = (EntityLivingBase)hitEntity;
-			living.attackEntityFrom(DamageSourceDanmaku.causeDanmakuDamage(danmaku, indirect), DanmakuHelper.adjustDanmakuDamage(
-					optUser.orElse(null), living, danmaku.getShotData().damage(), ConfigHandler.danmaku.danmakuLevel));
+			living.attackEntityFrom(DamageSourceDanmaku.causeDanmakuDamage(danmaku, indirect),
+					DanmakuHelper.adjustDanmakuDamage(optUser.orElse(null), living, danmaku.getShotData().damage(),
+							ConfigHandler.danmaku.danmakuLevel));
 			if(averageSize < 0.7F) {
 				danmaku.delete();
 			}
@@ -134,8 +134,8 @@ public abstract class SubEntityAbstract extends SubEntity {
 		}
 
 		Entity entity = null;
-		List<Entity> list = world.getEntitiesInAABBexcluding(danEntity, danEntity.getEntityBoundingBox()
-				.addCoord(danEntity.motionX, danEntity.motionY, danEntity.motionZ).expandXyz(1D), exclude::test);
+		List<Entity> list = world.getEntitiesInAABBexcluding(danEntity,
+				danEntity.getEntityBoundingBox().addCoord(danEntity.motionX, danEntity.motionY, danEntity.motionZ).expandXyz(1D), exclude::test);
 		double d0 = 0.0D;
 
 		for(Entity entity1 : list) {

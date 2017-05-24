@@ -11,7 +11,6 @@ package net.katsstuff.danmakucore.entity.living.ai;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.monster.EntitySkeleton;
 
 //EntityAIAttackRangedBow without attack part
 public class EntityAIMoveRanged extends EntityAIBase {

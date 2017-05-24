@@ -81,8 +81,7 @@ public class ParticlePacket {
 		public IMessage onMessage(Message message, MessageContext ctx) {
 			Minecraft.getMinecraft().addScheduledTask(
 					() -> ParticleUtil.spawnParticleGlow(Minecraft.getMinecraft().player.world, message.pos, message.motion, message.r, message.g,
-							message.b,
-							message.scale, message.lifetime, message.type));
+							message.b, message.scale, message.lifetime, message.type));
 			return null;
 		}
 	}

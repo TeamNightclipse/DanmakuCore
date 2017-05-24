@@ -25,8 +25,8 @@ public class PhaseTypeShapeCircle extends PhaseType {
 		return new Circle(this, phaseManager, 8, 0F, 0.5D, ShotData.DefaultShotData(), MovementData.constant(0.4D), RotationData.none());
 	}
 
-	public Phase instantiate(PhaseManager phaseManager, int amount, float baseAngle, double distance, ShotData shotData,
-			MovementData movementData, RotationData rotationData) {
+	public Phase instantiate(PhaseManager phaseManager, int amount, float baseAngle, double distance, ShotData shotData, MovementData movementData,
+			RotationData rotationData) {
 		return new Circle(this, phaseManager, amount, baseAngle, distance, shotData, movementData, rotationData);
 	}
 

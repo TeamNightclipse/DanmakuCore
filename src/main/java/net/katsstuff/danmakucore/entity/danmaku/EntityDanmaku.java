@@ -111,8 +111,8 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		resetMotion();
 	}
 
-	public EntityDanmaku(World world, @Nullable EntityLivingBase user, @Nullable Entity source, ShotData shot, Vector3 pos, Vector3 angle,
-			float roll, MovementData movement, RotationData rotation) {
+	public EntityDanmaku(World world, @Nullable EntityLivingBase user, @Nullable Entity source, ShotData shot, Vector3 pos, Vector3 angle, float
+			roll, MovementData movement, RotationData rotation) {
 		this(world, shot, pos, angle, movement);
 		this.user = user;
 		this.source = source;
@@ -389,7 +389,8 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			this.posY = y;
 			this.posZ = z;
 			ShotData shot = getShotData();
-			Vector3 size = new Vector3(shot.sizeX(), shot.sizeY(), shot.sizeZ()).rotate(Quat.eulerToQuat(rotationYaw + 180, rotationPitch, getRoll()));
+			Quat rotation = Quat.eulerToQuat(rotationYaw + 180, rotationPitch, getRoll());
+			Vector3 size = new Vector3(shot.sizeX(), shot.sizeY(), shot.sizeZ()).rotate(rotation);
 			double xSize = size.x() / 2F;
 			double zSize = size.z() / 2F;
 			double ySize = size.y();

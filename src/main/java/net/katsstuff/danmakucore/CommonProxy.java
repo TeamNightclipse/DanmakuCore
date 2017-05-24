@@ -60,7 +60,6 @@ import net.katsstuff.danmakucore.lib.LibRegistryName;
 import net.katsstuff.danmakucore.lib.LibSubEntityName;
 import net.katsstuff.danmakucore.lib.data.LibShotData;
 import net.katsstuff.danmakucore.network.SpellcardInfoPacket;
-import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;

@@ -10,8 +10,6 @@ package net.katsstuff.danmakucore.entity.spellcard;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.CaseFormat;
-
 import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.entity.living.boss.EnumTouhouCharacters;
 import net.katsstuff.danmakucore.registry.RegistryValueItemStack;

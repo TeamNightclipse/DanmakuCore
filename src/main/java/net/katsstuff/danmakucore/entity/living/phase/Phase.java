@@ -16,7 +16,6 @@ import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.entity.spellcard.spellcardbar.SpellcardInfoServer;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
-import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.misc.LogicalSideOnly;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;

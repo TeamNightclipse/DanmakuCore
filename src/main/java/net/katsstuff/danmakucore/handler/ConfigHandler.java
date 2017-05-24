@@ -25,7 +25,8 @@ public class ConfigHandler {
 
 		public int danmakuMaxNumber = 32;
 		public boolean oneHitKill = false;
-		@Comment({"Allowed values:", "PEACEFUL, EASY, NORMAL, HARD, LUNATIC, EXTRA, LAST_SPELL, LAST_WORD", "Anything above EXTRA is not guaranteed to work as well"})
+		@Comment({"Allowed values:", "PEACEFUL, EASY, NORMAL, HARD, LUNATIC, EXTRA, LAST_SPELL, LAST_WORD",
+						 "Anything above EXTRA is not guaranteed to work as well"})
 		public EnumDanmakuLevel danmakuLevel = EnumDanmakuLevel.NORMAL;
 		public boolean useComplexHitbox = true;
 	}
@@ -44,6 +45,7 @@ public class ConfigHandler {
 		public Stars stars = new Stars();
 
 		public static class Power {
+
 			@Comment({"How many pixels before the power bar starts", "The size of the power bar is widthEnd - widthStart"})
 			public int widthStart = 32;
 			@Comment({"How many pixels before the power bar ends", "The size of the power bar is widthEnd - widthStart"})
@@ -57,6 +59,7 @@ public class ConfigHandler {
 		}
 
 		public static class Stars {
+
 			public int posX = 8;
 			public int posY = 24;
 

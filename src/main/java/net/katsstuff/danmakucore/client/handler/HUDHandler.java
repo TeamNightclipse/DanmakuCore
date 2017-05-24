@@ -85,10 +85,12 @@ public class HUDHandler {
 					}
 
 					mc.getTextureManager().bindTexture(POWER_BACKGROUND);
-					Gui.drawModalRectWithCustomSizedTexture(powerStartPosX - 2, powerPosY - 2, 0F, 0F, widthUsed + 4, height + 4, widthUsed + 4, height + 4);
+					Gui.drawModalRectWithCustomSizedTexture(powerStartPosX - 2, powerPosY - 2, 0F, 0F, widthUsed + 4, height + 4, widthUsed + 4,
+							height + 4);
 
 					mc.getTextureManager().bindTexture(POWER);
-					Gui.drawModalRectWithCustomSizedTexture(powerFilledPosX, powerPosY, widthFilled * -1, 0F, widthFilled, height, widthUsed, height);
+					Gui.drawModalRectWithCustomSizedTexture(powerFilledPosX, powerPosY, widthFilled * -1, 0F, widthFilled, height, widthUsed,
+							height);
 
 					int textColor = 0xFFFFFFFF;
 					boolean drawText = true;

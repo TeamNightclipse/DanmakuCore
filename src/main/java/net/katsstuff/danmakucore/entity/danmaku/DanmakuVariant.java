@@ -10,14 +10,11 @@ package net.katsstuff.danmakucore.entity.danmaku;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.CaseFormat;
-
 import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.data.MovementData;
 import net.katsstuff.danmakucore.data.RotationData;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
-import net.katsstuff.danmakucore.registry.RegistryValueItemStack;
 import net.katsstuff.danmakucore.registry.RegistryValueShootable;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
