@@ -202,13 +202,16 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		}
 
 		if(!frozen) {
-			if(!world.isRemote && ticksExisted > shot.end()) {
-				setDead();
+			//We do the isRemote check inside to make sure that also the client exits here
+			if(ticksExisted > shot.end()) {
+				delete();
 				return;
 			}
 
-			if(!world.isRemote && user != null && user.isDead) {
-				danmakuFinishBonus();
+			if(user != null && user.isDead) {
+				if(!world.isRemote) {
+					danmakuFinishBonus();
+				}
 				return;
 			}
 

@@ -44,15 +44,19 @@ public class SubEntityTypeDefault extends SubEntityType {
 				danmaku.ticksExisted--;
 				delay--;
 
-				if(!world.isRemote) {
-					if(delay <= 0) {
+				if(delay == 0) {
+					if(shot.end() == 1) {
+						danmaku.delete();
+						return;
+					}
+					else if(!danmaku.world.isRemote) {
 						danmaku.resetMotion();
 					}
-					else {
-						danmaku.motionX = 0;
-						danmaku.motionY = 0;
-						danmaku.motionZ = 0;
-					}
+				}
+				else {
+					danmaku.motionX = 0;
+					danmaku.motionY = 0;
+					danmaku.motionZ = 0;
 				}
 
 				shot = shot.setDelay(delay);

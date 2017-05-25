@@ -34,25 +34,28 @@ public class RenderDanmaku extends Render<EntityDanmaku> {
 
 	@Override
 	public void doRender(EntityDanmaku entity, double x, double y, double z, float entityYaw, float partialTicks) {
-		GL11.glPushMatrix();
-		bindEntityTexture(entity);
 		ShotData shotData = entity.getShotData();
-		GL11.glTranslated(x, y + shotData.sizeY() / 2, z);
-		GlStateManager.disableLighting();
+		//We don't want to render expired danmaku
+		if(entity.ticksExisted <= shotData.end()) {
+			GL11.glPushMatrix();
+			bindEntityTexture(entity);
+			GL11.glTranslated(x, y + shotData.sizeY() / 2, z);
+			GlStateManager.disableLighting();
 
-		Form form = shotData.form();
-		IRenderForm renderForm = form.getRenderer(entity);
-		if(renderForm != null) {
-			renderForm.renderForm(entity, x, y, z, entityYaw, partialTicks, renderManager);
-		}
-		else if(!invalidForms.contains(form)) {
-			LogHelper.error("Invalid renderer for " + I18n.format(form.getUnlocalizedName()));
-			invalidForms.add(form);
-		}
+			Form form = shotData.form();
+			IRenderForm renderForm = form.getRenderer(entity);
+			if(renderForm != null) {
+				renderForm.renderForm(entity, x, y, z, entityYaw, partialTicks, renderManager);
+			}
+			else if(!invalidForms.contains(form)) {
+				LogHelper.error("Invalid renderer for " + I18n.format(form.getUnlocalizedName()));
+				invalidForms.add(form);
+			}
 
-		GL11.glPopMatrix();
-		GlStateManager.enableLighting();
-		super.doRender(entity, x, y, z, entityYaw, partialTicks);
+			GL11.glPopMatrix();
+			GlStateManager.enableLighting();
+			super.doRender(entity, x, y, z, entityYaw, partialTicks);
+		}
 	}
 
 	@Override

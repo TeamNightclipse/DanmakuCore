@@ -52,15 +52,28 @@ public class FormLaser extends FormGeneric {
 				GL11.glRotatef(roll, 0F, 0F, 1F);
 				GL11.glScalef(sizeX, sizeY, sizeZ);
 
-				createCylinder(0xFFFFFF, 1F);
+				if(shotData.delay() > 0) {
+					float scale = 0.025F * Math.min(shotData.delay(), 20);
 
-				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
-				GlStateManager.depthMask(false);
-				GlStateManager.scale(1.2F, 1.2F, 1.2F);
-				createCylinder(color, 0.3F);
-				GlStateManager.depthMask(true);
-				GlStateManager.disableBlend();
+					GlStateManager.enableBlend();
+					GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
+					GlStateManager.depthMask(false);
+					GlStateManager.scale(scale, scale, 1F);
+					createCylinder(color, 0.6F);
+					GlStateManager.depthMask(true);
+					GlStateManager.disableBlend();
+				}
+				else {
+					createCylinder(0xFFFFFF, 1F);
+
+					GlStateManager.enableBlend();
+					GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
+					GlStateManager.depthMask(false);
+					GlStateManager.scale(1.2F, 1.2F, 1.2F);
+					createCylinder(color, 0.3F);
+					GlStateManager.depthMask(true);
+					GlStateManager.disableBlend();
+				}
 			}
 
 			@SideOnly(Side.CLIENT)

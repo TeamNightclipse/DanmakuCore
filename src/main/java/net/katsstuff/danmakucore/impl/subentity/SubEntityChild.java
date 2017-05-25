@@ -52,6 +52,11 @@ public class SubEntityChild extends SubEntityType {
 				danmaku.ticksExisted--;
 				delay--;
 
+				if(delay == 0 && shot.end() == 1) {
+					danmaku.delete();
+					return;
+				}
+
 				shot = shot.setDelay(delay);
 				danmaku.setShotData(shot);
 			}
