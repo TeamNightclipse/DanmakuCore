@@ -10,6 +10,7 @@ package net.katsstuff.danmakucore.impl.form;
 
 import org.lwjgl.opengl.GL11;
 
+import net.katsstuff.danmakucore.client.helper.RenderHelper;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
@@ -42,8 +43,6 @@ public class FormCrystal1 extends FormGeneric {
 			@SideOnly(Side.CLIENT)
 			public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks,
 					RenderManager rendermanager) {
-				Tessellator tes = Tessellator.getInstance();
-				VertexBuffer vb = tes.getBuffer();
 				float pitch = danmaku.rotationPitch;
 				float yaw = danmaku.rotationYaw;
 				float roll = danmaku.getRoll();
@@ -53,73 +52,35 @@ public class FormCrystal1 extends FormGeneric {
 				float sizeZ = shotData.getSizeZ();
 				int color = shotData.getColor();
 
-				GL11.glRotatef(-yaw - 180F, 0F, 1F, 0F);
-				GL11.glRotatef(pitch - 90F, 1F, 0F, 0F);
+				GL11.glRotatef(-yaw, 0F, 1F, 0F);
+				GL11.glRotatef(pitch, 1F, 0F, 0F);
 				GL11.glRotatef(roll, 0F, 0F, 1F);
-				GL11.glScalef(sizeX, sizeY, sizeZ);
+				GL11.glScalef((sizeX / 3) * 2, (sizeY / 3) * 2, sizeZ);
 
-				createShapeOneEnd(tes, vb, 0xFFFFFF, 1F, 0.5F, 1.25F);
+				createCrystal(0xFFFFFF, 1F);
+
 				GlStateManager.enableBlend();
 				GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 				GlStateManager.depthMask(false);
-				createShapeOneEnd(tes, vb, color, 0.3F, 0.6F, 1.25F * 1.2F);
+				GlStateManager.scale(1.2F, 1.2F, 1.2F);
+				createCrystal(color, 0.3F);
 				GlStateManager.depthMask(true);
 				GlStateManager.disableBlend();
 			}
 
 			@SideOnly(Side.CLIENT)
-			private void createShapeOneEnd(Tessellator tes, VertexBuffer vb, int color, float alpha, float radius, float pointy) {
-				float r = (color >> 16 & 255) / 255.0F;
-				float g = (color >> 8 & 255) / 255.0F;
-				float b = (color & 255) / 255.0F;
-				float corner = (MathHelper.cos((float)Math.toRadians(45)) * radius);
+			private void createCrystal(int color, float alpha) {
+				GL11.glPushMatrix();
 
-				vb.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
-				vb.pos(0F, -pointy, 0F).color(r, g, b, alpha).endVertex();
-				vb.pos(0F, -radius, radius).color(r, g, b, alpha).endVertex();
-				vb.pos(corner, -radius, corner).color(r, g, b, alpha).endVertex();
-				vb.pos(radius, -radius, 0F).color(r, g, b, alpha).endVertex();
-				vb.pos(corner, -radius, -corner).color(r, g, b, alpha).endVertex();
-				vb.pos(0F, -radius, -radius).color(r, g, b, alpha).endVertex();
-				vb.pos(-corner, -radius, -corner).color(r, g, b, alpha).endVertex();
-				vb.pos(-radius, -radius, 0F).color(r, g, b, alpha).endVertex();
-				vb.pos(-corner, -radius, corner).color(r, g, b, alpha).endVertex();
-				vb.pos(0F, -radius, radius).color(r, g, b, alpha).endVertex();
-				tes.draw();
+				GL11.glTranslatef(0F, 0F, 1F);
+				RenderHelper.drawCone(color, alpha);
+				GL11.glTranslatef(0F, 0F, -1F);
+				RenderHelper.drawCylinder(color, alpha);
+				GL11.glRotatef(180, 0F, 1F, 0F);
+				GL11.glTranslatef(0F, 0F, 1F);
+				RenderHelper.drawCone(color, alpha);
 
-				vb.begin(GL11.GL_QUAD_STRIP, DefaultVertexFormats.POSITION_COLOR);
-				vb.pos(0F, -radius, radius).color(r, g, b, alpha).endVertex();
-				vb.pos(0F, radius, radius).color(r, g, b, alpha).endVertex();
-				vb.pos(corner, -radius, corner).color(r, g, b, alpha).endVertex();
-				vb.pos(corner, radius, corner).color(r, g, b, alpha).endVertex();
-				vb.pos(radius, -radius, 0F).color(r, g, b, alpha).endVertex();
-				vb.pos(radius, radius, 0F).color(r, g, b, alpha).endVertex();
-				vb.pos(corner, -radius, -corner).color(r, g, b, alpha).endVertex();
-				vb.pos(corner, radius, -corner).color(r, g, b, alpha).endVertex();
-				vb.pos(0F, -radius, -radius).color(r, g, b, alpha).endVertex();
-				vb.pos(0F, radius, -radius).color(r, g, b, alpha).endVertex();
-				vb.pos(-corner, -radius, -corner).color(r, g, b, alpha).endVertex();
-				vb.pos(-corner, radius, -corner).color(r, g, b, alpha).endVertex();
-				vb.pos(-radius, -radius, 0F).color(r, g, b, alpha).endVertex();
-				vb.pos(-radius, radius, 0F).color(r, g, b, alpha).endVertex();
-				vb.pos(-corner, -radius, corner).color(r, g, b, alpha).endVertex();
-				vb.pos(-corner, radius, corner).color(r, g, b, alpha).endVertex();
-				vb.pos(0F, -radius, radius).color(r, g, b, alpha).endVertex();
-				vb.pos(0F, radius, radius).color(r, g, b, alpha).endVertex();
-				tes.draw();
-
-				vb.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
-				vb.pos(0F, pointy, 0F).color(r, g, b, alpha).endVertex();
-				vb.pos(0F, radius, radius).color(r, g, b, alpha).endVertex();
-				vb.pos(-corner, radius, corner).color(r, g, b, alpha).endVertex();
-				vb.pos(-radius, radius, 0F).color(r, g, b, alpha).endVertex();
-				vb.pos(-corner, radius, -corner).color(r, g, b, alpha).endVertex();
-				vb.pos(0F, radius, -radius).color(r, g, b, alpha).endVertex();
-				vb.pos(corner, radius, -corner).color(r, g, b, alpha).endVertex();
-				vb.pos(radius, radius, 0F).color(r, g, b, alpha).endVertex();
-				vb.pos(corner, radius, corner).color(r, g, b, alpha).endVertex();
-				vb.pos(0F, radius, radius).color(r, g, b, alpha).endVertex();
-				tes.draw();
+				GL11.glPopMatrix();
 			}
 		};
 	}
