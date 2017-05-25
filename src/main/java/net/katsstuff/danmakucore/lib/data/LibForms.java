@@ -41,4 +41,6 @@ public final class LibForms {
 	public static final Form CONTROL = new FormDummy();
 	@ObjectHolder(LibFormName.FIRE)
 	public static final Form FIRE = new FormDummy();
+	@ObjectHolder(LibFormName.LASER)
+	public static final Form LASER = new FormDummy();
 }

@@ -22,10 +22,11 @@ public class LibDanmakuVariantName {
 	public static final String CRYSTAL2 = "crystal2";
 	public static final String KUNAI = "kunai";
 	public static final String OVAL = "oval";
-	public static final String LASER = "laser";
-	public static final String LASER_SHORT = "laser_short";
-	public static final String LASER_LONG = "laser_long";
+	public static final String POINTED_LASER = "pointed_laser";
+	public static final String POINTED_LASER_SHORT = "pointed_laser_short";
+	public static final String POINTED_LASER_LONG = "pointed_laser_long";
 	public static final String SPHERE_DARK = "sphere_dark";
 	public static final String PELLET = "pellet";
 	public static final String FIRE = "fire";
+	public static final String LASER = "laser";
 }

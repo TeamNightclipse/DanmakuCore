@@ -59,12 +59,13 @@ danmakuvariant.danmakucore.crystal1.name=Pointed Crystal Danmaku
 danmakuvariant.danmakucore.crystal2.name=Blunt Crystal Danmaku
 danmakuvariant.danmakucore.kunai.name=Kunai Danmaku
 danmakuvariant.danmakucore.oval.name=Oval Danmaku
-danmakuvariant.danmakucore.laser.name=Laser Danmaku
-danmakuvariant.danmakucore.laser_short.name=Short Laser Danmaku
-danmakuvariant.danmakucore.laser_long.name=Long Laser Danmaku
+danmakuvariant.danmakucore.pointed_laser.name=Pointed Laser Danmaku
+danmakuvariant.danmakucore.pointed_laser_short.name=Short Pointed Laser Danmaku
+danmakuvariant.danmakucore.pointed_laser_long.name=Long Pointed Laser Danmaku
 danmakuvariant.danmakucore.pellet.name=Pellet Danmaku
 danmakuvariant.danmakucore.sphere_dark.name=Dark Sphere Danmaku
 danmakuvariant.danmakucore.fire.name=Fire Danmaku
+danmakuvariant.danmakucore.laser.name=Laser Danmaku
 
 #Forms
 form.danmakucore.normal=Normal Shape
@@ -95,12 +96,13 @@ item.danmaku.danmakuvariant.danmakucore.crystal1.name=Pointed Crystal Danmaku
 item.danmaku.danmakuvariant.danmakucore.crystal2.name=Blunt Crystal Danmaku
 item.danmaku.danmakuvariant.danmakucore.kunai.name=Kunai Danmaku
 item.danmaku.danmakuvariant.danmakucore.oval.name=Oval Danmaku
-item.danmaku.danmakuvariant.danmakucore.laser.name=Laser Danmaku
-item.danmaku.danmakuvariant.danmakucore.laser_short.name=Short Laser Danmaku
-item.danmaku.danmakuvariant.danmakucore.laser_long.name=Long Laser Danmaku
+item.danmaku.danmakuvariant.danmakucore.pointed_laser.name=Pointed Laser Danmaku
+item.danmaku.danmakuvariant.danmakucore.pointed_laser_short.name=Short Pointed Laser Danmaku
+item.danmaku.danmakuvariant.danmakucore.pointed_laser_long.name=Long Pointed Laser Danmaku
 item.danmaku.danmakuvariant.danmakucore.pellet.name=Pellet Danmaku
 item.danmaku.danmakuvariant.danmakucore.sphere_dark.name=Dark Sphere Danmaku
 item.danmaku.danmakuvariant.danmakucore.fire.name=Fire Danmaku
+item.danmaku.danmakuvariant.danmakucore.laser.name=Laser Danmaku
 
 #Stack names custom
 item.danmaku.form.danmakucore.normal.name=Custom Normal Danmaku

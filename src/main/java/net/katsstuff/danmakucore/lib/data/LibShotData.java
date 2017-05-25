@@ -28,8 +28,9 @@ public class LibShotData {
 	public static final ShotData SHOT_CRYSTAL2 = new ShotData(LibForms.CRYSTAL_2, COLOR_VANILLA_RED, 1F, 0.2F);
 	public static final ShotData SHOT_KUNAI = new ShotData(LibForms.KUNAI, COLOR_VANILLA_RED, 2F, 0.2F);
 	public static final ShotData SHOT_OVAL = new ShotData(LibForms.SPHERE, COLOR_VANILLA_RED, 3F, 0.5F, 0.5F, 1F, 0, 80, LibSubEntities.DEFAULT_TYPE);
-	public static final ShotData SHOT_LASER = new ShotData(LibForms.SPHERE_POINTED, COLOR_VANILLA_RED, 3F, 0.2F, 0.2F, 1.25F, 0, 80, LibSubEntities.DEFAULT_TYPE);
-	public static final ShotData SHOT_LASER_SHORT = new ShotData(LibForms.SPHERE_POINTED, COLOR_VANILLA_RED, 1F, 0.2F, 0.2F, 1F, 0, 80, LibSubEntities.DEFAULT_TYPE);
-	public static final ShotData SHOT_LASER_LONG = new ShotData(LibForms.SPHERE_POINTED, COLOR_VANILLA_RED, 2F, 0.2F, 0.2F, 1.5F, 0, 80, LibSubEntities.DEFAULT_TYPE);
-	public static final ShotData FIRE = new ShotData(LibForms.FIRE, COLOR_VANILLA_RED, 1.7F, 0.3F);
+	public static final ShotData SHOT_POINTED_LASER = new ShotData(LibForms.SPHERE_POINTED, COLOR_VANILLA_RED, 3F, 0.2F, 0.2F, 1.25F, 0, 80, LibSubEntities.DEFAULT_TYPE);
+	public static final ShotData SHOT_POINTED_LASER_SHORT = new ShotData(LibForms.SPHERE_POINTED, COLOR_VANILLA_RED, 1F, 0.2F, 0.2F, 1F, 0, 80, LibSubEntities.DEFAULT_TYPE);
+	public static final ShotData SHOT_POINTED_LASER_LONG = new ShotData(LibForms.SPHERE_POINTED, COLOR_VANILLA_RED, 2F, 0.2F, 0.2F, 1.5F, 0, 80, LibSubEntities.DEFAULT_TYPE);
+	public static final ShotData SHOT_FIRE = new ShotData(LibForms.FIRE, COLOR_VANILLA_RED, 1.7F, 0.3F);
+	public static final ShotData SHOT_LASER = new ShotData(LibForms.LASER, COLOR_VANILLA_RED, 1.5F, 0.5F, 0.5F, 15F, 20, 60, LibSubEntities.DEFAULT_TYPE);
 }

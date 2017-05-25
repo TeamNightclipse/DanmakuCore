@@ -22,4 +22,5 @@ public class LibFormName {
 	public static final String SPHERE_DARK = "sphere_dark";
 	public static final String CONTROL = "control";
 	public static final String FIRE = "fire";
+	public static final String LASER = "laser";
 }

@@ -45,10 +45,12 @@ public final class LibDanmakuVariants {
 	public static final DanmakuVariant SCALE = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.RICE)
 	public static final DanmakuVariant RICE = new DanmakuVariantDummy();
+	@ObjectHolder(LibDanmakuVariantName.POINTED_LASER)
+	public static final DanmakuVariant POINTED_LASER = new DanmakuVariantDummy();
+	@ObjectHolder(LibDanmakuVariantName.POINTED_LASER_SHORT)
+	public static final DanmakuVariant POINTED_LASER_SHORT = new DanmakuVariantDummy();
+	@ObjectHolder(LibDanmakuVariantName.POINTED_LASER_LONG)
+	public static final DanmakuVariant POINTED_LASER_LONG = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.LASER)
 	public static final DanmakuVariant LASER = new DanmakuVariantDummy();
-	@ObjectHolder(LibDanmakuVariantName.LASER_SHORT)
-	public static final DanmakuVariant LASER_SHORT = new DanmakuVariantDummy();
-	@ObjectHolder(LibDanmakuVariantName.LASER_LONG)
-	public static final DanmakuVariant LASER_LONG = new DanmakuVariantDummy();
 }

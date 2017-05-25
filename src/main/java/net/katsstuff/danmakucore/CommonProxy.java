@@ -30,6 +30,7 @@ import net.katsstuff.danmakucore.impl.form.FormCrystal1;
 import net.katsstuff.danmakucore.impl.form.FormCrystal2;
 import net.katsstuff.danmakucore.impl.form.FormFire;
 import net.katsstuff.danmakucore.impl.form.FormKunai;
+import net.katsstuff.danmakucore.impl.form.FormLaser;
 import net.katsstuff.danmakucore.impl.form.FormPellet;
 import net.katsstuff.danmakucore.impl.form.FormPointedSphere;
 import net.katsstuff.danmakucore.impl.form.FormScale;
@@ -145,7 +146,8 @@ public class CommonProxy {
 				new FormSphereDark(),
 				new FormStar(),
 				new FormControl(),
-				new FormFire()
+				new FormFire(),
+				new FormLaser()
 		);
 	}
 
@@ -199,10 +201,11 @@ public class CommonProxy {
 				new DanmakuVariantGeneric(LibDanmakuVariantName.KUNAI, () -> LibShotData.SHOT_KUNAI, 0.4D),
 				new DanmakuVariantGeneric(LibDanmakuVariantName.SCALE, () -> LibShotData.SHOT_SCALE, 0.4D),
 				new DanmakuVariantGeneric(LibDanmakuVariantName.RICE, () -> LibShotData.SHOT_RICE, 0.4D),
-				new DanmakuVariantGeneric(LibDanmakuVariantName.LASER, () -> LibShotData.SHOT_LASER, 0.35D),
-				new DanmakuVariantGeneric(LibDanmakuVariantName.LASER_SHORT, () -> LibShotData.SHOT_LASER_SHORT, 0.4D),
-				new DanmakuVariantGeneric(LibDanmakuVariantName.LASER_LONG, () -> LibShotData.SHOT_LASER_LONG, 0.3D),
-				new DanmakuVariantGeneric(LibDanmakuVariantName.FIRE, () -> LibShotData.FIRE, 0.4D)
+				new DanmakuVariantGeneric(LibDanmakuVariantName.POINTED_LASER, () -> LibShotData.SHOT_POINTED_LASER, 0.35D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.POINTED_LASER_SHORT, () -> LibShotData.SHOT_POINTED_LASER_SHORT, 0.4D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.POINTED_LASER_LONG, () -> LibShotData.SHOT_POINTED_LASER_LONG, 0.3D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.FIRE, () -> LibShotData.SHOT_FIRE, 0.4D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.LASER, () -> LibShotData.SHOT_LASER, 0D)
 		);
 	}
 
