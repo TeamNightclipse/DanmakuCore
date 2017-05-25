@@ -270,6 +270,8 @@ sealed trait AbstractVector3 extends Any {
     }
   }
 
+  def transformDirection(mat: AbstractMat4): Self = mat.transformDirection(this)
+
   def asMutable: MutableVector3
 
   def asImmutable: Vector3
@@ -468,6 +470,8 @@ final case class MutableVector3(@BeanProperty var x: Double, @BeanProperty var y
   override def rotateRad(angle: Double, point: AbstractVector3): MutableVector3 = super.rotateRad(angle, point)
   override def lerp(target: AbstractVector3, alpha: Double):     MutableVector3 = super.lerp(target, alpha)
   override def slerp(target: AbstractVector3, alpha: Double):    MutableVector3 = super.slerp(target, alpha)
+
+  override def transformDirection(mat: AbstractMat4): MutableVector3 = super.transformDirection(mat)
 }
 
 final case class Vector3(@BeanProperty x: Double, @BeanProperty y: Double, @BeanProperty z: Double) extends AbstractVector3 {
@@ -531,6 +535,8 @@ final case class Vector3(@BeanProperty x: Double, @BeanProperty y: Double, @Bean
 
   override def lerp(target: AbstractVector3, alpha: Double):  Vector3 = super.lerp(target, alpha)
   override def slerp(target: AbstractVector3, alpha: Double): Vector3 = super.slerp(target, alpha)
+
+  override def transformDirection(mat: AbstractMat4): Vector3 = super.transformDirection(mat)
 }
 
 object Vector3 {
@@ -553,6 +559,11 @@ object Vector3 {
   final val South = Vector3(0, 0, 1)
   final val West  = Vector3(-1, 0, 0)
   final val East  = Vector3(1, 0, 0)
+
+  final val Forward  = Vector3(0, 0, -1)
+  final val Left     = Vector3(-1, 0, 0)
+  final val Right    = Vector3(1, 0, 0)
+  final val Backward = Vector3(0, 0, 1)
 
   /* ============================== Position ============================== */
 
