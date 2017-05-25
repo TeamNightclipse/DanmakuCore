@@ -72,7 +72,7 @@ public class FormKunai extends FormGeneric {
 				double length = 2.0D;
 
 				GL11.glScalef(sizeX, sizeY, sizeZ);
-				GL11.glRotatef(-yaw - 180, 0F, 1F, 0F); //TODO: Fix this in a better way?
+				GL11.glRotatef(-yaw, 0F, 1F, 0F);
 				GL11.glRotatef(pitch, 1F, 0F, 0F);
 				GL11.glRotatef(roll, 0F, 0F, 1F);
 

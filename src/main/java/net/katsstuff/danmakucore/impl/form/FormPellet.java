@@ -55,7 +55,7 @@ public class FormPellet extends FormGeneric {
 				hsb[2] = 1.0F;
 
 				GL11.glRotatef(-yaw, 0F, 1F, 0F);
-				GL11.glRotatef(-pitch, 1F, 0F, 0F);
+				GL11.glRotatef(pitch, 1F, 0F, 0F);
 				GL11.glRotatef(roll, 0F, 0F, 1F);
 				GL11.glScalef(sizeX, sizeY, sizeZ);
 

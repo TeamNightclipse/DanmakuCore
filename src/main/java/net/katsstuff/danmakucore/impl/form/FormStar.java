@@ -59,10 +59,10 @@ public class FormStar extends FormGeneric {
 
 				GlStateManager.rotate((danmaku.ticksExisted + partialTicks) * 5F, 1F, 1F, 1F);
 
-				GlStateManager.scale(sizeX, sizeY, sizeZ);
-				GlStateManager.rotate(-yaw - 180, 0F, 1F, 0F);
+				GlStateManager.rotate(-yaw, 0F, 1F, 0F);
 				GlStateManager.rotate(pitch, 1F, 0F, 0F);
 				GlStateManager.rotate(roll, 0F, 0F, 1F);
+				GlStateManager.scale(sizeX, sizeY, sizeZ);
 
 				float red = 1F;
 				float green = 1F;

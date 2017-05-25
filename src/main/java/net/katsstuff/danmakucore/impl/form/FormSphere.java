@@ -47,7 +47,7 @@ public class FormSphere extends FormGeneric {
 				float alpha = 0.3F;
 
 				GL11.glRotatef(-yaw, 0F, 1F, 0F);
-				GL11.glRotatef(-pitch, 1F, 0F, 0F);
+				GL11.glRotatef(pitch, 1F, 0F, 0F);
 				GL11.glRotatef(roll, 0F, 0F, 1F);
 				GL11.glScalef(sizeX, sizeY, sizeZ);
 

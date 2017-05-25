@@ -53,7 +53,7 @@ public class FormPointedSphere extends FormGeneric {
 				float centerZ1 = sizeZ * 1.2F / 2.0F;
 				float centerZ2 = sizeZ / 2.0F;
 
-				GL11.glRotatef(-yaw - 180, 0F, 1F, 0F); //TODO: Fix this in a better way?
+				GL11.glRotatef(-yaw, 0F, 1F, 0F);
 				GL11.glRotatef(pitch, 1.0F, 0.0F, 0.0F);
 				GL11.glRotatef(roll, 0F, 0F, 1F);
 				GL11.glScalef(sizeX, sizeY, sizeZ);
