@@ -11,6 +11,7 @@ package net.katsstuff.danmakucore.impl.shape;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.katsstuff.danmakucore.data.Mat4;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
@@ -37,13 +38,17 @@ public class ShapeSphere implements IShape {
 	@Override
 	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Vector3 angle, int tick) {
 		if(!danmaku.world.isRemote) {
-			Vector3 rotateVec = Vector3.fromSpherical(angle.yaw(), angle.pitch() + 90); //TODO: How do do this without relying on yaw and pitch?
-			/*
+			Mat4 fromWorld = Mat4.fromWorld(pos, angle, Vector3.Up());
+			Vector3 localForward = Vector3.Forward().transformDirection(fromWorld);
+			Vector3 localBackward = Vector3.Backward().transformDirection(fromWorld);
+			Vector3 rotateVec = Vector3.Left().transformDirection(fromWorld);
+			float increment = 180F / bands;
+			ShapeWideShot shape = new ShapeWideShot(danmaku, rings, 180F, baseAngle, distance);
+
 			for(int i = 0; i < bands; i++) {
-				ShapeWideShot shape = new ShapeWideShot(danmaku, rings, 360F, baseAngle, distance);
-				set.addAll(shape.drawForTick(pos, angle.rotate(360F / i, rotateVec), tick).getSecond());
+				set.addAll(shape.drawForTick(pos, localForward.rotate(increment * i, rotateVec), tick).getSecond());
+				set.addAll(shape.drawForTick(pos, localBackward.rotate(increment * i, rotateVec), tick).getSecond());
 			}
-			*/
 		}
 
 		return new Tuple<>(true, set);

@@ -180,6 +180,8 @@ public class ItemDanmaku extends ItemBase {
 				}
 				DanmakuCreationHelper.createRingShot(built, amount, wide, world.rand.nextFloat() * 360F, offset);
 				break;
+			case SPHERE:
+				DanmakuCreationHelper.createSphereShot(built, amount, amount / 2, 0F, offset);
 			default:
 				break;
 		}
@@ -329,6 +331,7 @@ public class ItemDanmaku extends ItemBase {
 		WIDE,
 		CIRCLE,
 		STAR,
-		RING
+		RING,
+		SPHERE
 	}
 }

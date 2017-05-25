@@ -152,6 +152,7 @@ item.danmaku.pattern.WIDE=Wide Shot
 item.danmaku.pattern.CIRCLE=Circle Shot
 item.danmaku.pattern.STAR=Star Shot
 item.danmaku.pattern.RING=Ring Shot
+item.danmaku.pattern.SPHERE=Sphere Shot
 
 #Shot subentity
 subentity.danmakucore.default=No Special

@@ -15,6 +15,7 @@ import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.impl.shape.ShapeCircle;
 import net.katsstuff.danmakucore.impl.shape.ShapeRandomRing;
 import net.katsstuff.danmakucore.impl.shape.ShapeRing;
+import net.katsstuff.danmakucore.impl.shape.ShapeSphere;
 import net.katsstuff.danmakucore.impl.shape.ShapeStar;
 import net.katsstuff.danmakucore.impl.shape.ShapeWideShot;
 
@@ -45,6 +46,11 @@ public class DanmakuCreationHelper {
 
 	public static Set<EntityDanmaku> createStarShot(DanmakuTemplate danmaku, int amount, float angleZ, float baseAngle, double distance) {
 		ShapeStar shape = new ShapeStar(danmaku, amount, angleZ, baseAngle, distance);
+		return shape.drawForTick(danmaku.pos, danmaku.angle, 0).getSecond();
+	}
+
+	public static Set<EntityDanmaku> createSphereShot(DanmakuTemplate danmaku, int rings, int bands, float baseAngle, double distance) {
+		ShapeSphere shape = new ShapeSphere(danmaku, rings, bands, baseAngle, distance);
 		return shape.drawForTick(danmaku.pos, danmaku.angle, 0).getSecond();
 	}
 }
