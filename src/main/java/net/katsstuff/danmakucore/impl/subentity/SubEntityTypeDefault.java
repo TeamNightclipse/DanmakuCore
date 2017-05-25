@@ -10,9 +10,11 @@ package net.katsstuff.danmakucore.impl.subentity;
 
 import net.katsstuff.danmakucore.data.RotationData;
 import net.katsstuff.danmakucore.data.ShotData;
+import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
+import net.katsstuff.danmakucore.helper.LogHelper;
 import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.world.World;
 
@@ -71,7 +73,13 @@ public class SubEntityTypeDefault extends SubEntityType {
 				}
 
 				if(danmaku.motionX != 0D && danmaku.motionY != 0D && danmaku.motionZ != 0D) {
-					ProjectileHelper.rotateTowardsMovement(danmaku, 1F);
+					//Projectile helper is buggy. We use this instead
+					Vector3 motion = new Vector3(danmaku.motionX, danmaku.motionY, danmaku.motionZ).normalize();
+
+					danmaku.prevRotationPitch = danmaku.rotationPitch;
+					danmaku.prevRotationYaw = danmaku.rotationYaw;
+					danmaku.rotationPitch = (float)motion.pitch();
+					danmaku.rotationYaw = (float)motion.yaw();
 				}
 
 				if(danmaku.isInWater()) {

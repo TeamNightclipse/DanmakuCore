@@ -389,7 +389,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			this.posY = y;
 			this.posZ = z;
 			ShotData shot = getShotData();
-			Quat rotation = Quat.eulerToQuat(rotationYaw + 180, rotationPitch, getRoll());
+			Quat rotation = Quat.eulerToQuat(rotationYaw, rotationPitch, getRoll());
 			Vector3 size = new Vector3(shot.sizeX(), shot.sizeY(), shot.sizeZ()).rotate(rotation);
 			double xSize = size.x() / 2F;
 			double zSize = size.z() / 2F;
