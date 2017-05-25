@@ -11,6 +11,7 @@ package net.katsstuff.danmakucore.impl.shape;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.katsstuff.danmakucore.data.Mat4;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
@@ -38,7 +39,8 @@ public class ShapeWideShot implements IShape {
 	@Override
 	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Vector3 angle, int tick) {
 		if(!danmaku.world.isRemote) {
-			Vector3 rotateVec = Vector3.fromSpherical(angle.yaw(), angle.pitch() + 90); //TODO: How do do this without relying on yaw and pitch?
+			Mat4 fromWorld = Mat4.fromWorld(pos, angle, Vector3.Up());
+			Vector3 rotateVec = angle.rotate(90, Vector3.Left().transformDirection(fromWorld));
 
 			double rotateAngle = Math.toRadians(-wideAngle / 2F);
 			double stepSize = Math.toRadians(wideAngle / (amount - 1));
