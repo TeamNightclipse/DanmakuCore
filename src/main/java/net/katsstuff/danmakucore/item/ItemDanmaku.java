@@ -310,14 +310,16 @@ public class ItemDanmaku extends ItemBase {
 	}
 
 	public static RegistryValueShootable<?> getController(ItemStack stack) {
-		return getCustom(stack) ? getVariant(stack) : getForm(stack);
+		return !getCustom(stack) ? getVariant(stack) : getForm(stack);
 	}
 
 	public static ItemStack createStack(DanmakuVariant variant) {
 		ShotData shot = variant.getShotData().setColor(DanmakuHelper.randomSaturatedColor());
 		ItemStack stack = new ItemStack(LibItems.DANMAKU, 1);
 		ItemNBTHelper.setString(stack, VARIANT, variant.getFullName().toString());
-		ItemNBTHelper.setBoolean(stack, NBT_CUSTOM, true);
+		setGravity(stack, variant.getMovementData().gravity());
+		setSpeed(stack, variant.getMovementData().speedOriginal());
+		ItemNBTHelper.setBoolean(stack, NBT_CUSTOM, false);
 		return ShotData.serializeNBTItemStack(stack, shot);
 	}
 
