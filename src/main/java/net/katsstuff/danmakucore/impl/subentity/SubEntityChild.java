@@ -15,8 +15,10 @@ import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
+import net.katsstuff.danmakucore.handler.PlayerChangeHandler;
+import net.katsstuff.danmakucore.helper.LogHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.projectile.ProjectileHelper;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
 public class SubEntityChild extends SubEntityType {
@@ -32,15 +34,8 @@ public class SubEntityChild extends SubEntityType {
 
 	public static class Child extends SubEntityAbstract {
 
-		private double distanceToParent;
-
-		public Child(World world, EntityDanmaku danmaku) {
+		private Child(World world, EntityDanmaku danmaku) {
 			super(world, danmaku);
-			Optional<Entity> sourceOpt = danmaku.getSource();
-			if(sourceOpt.isPresent()) {
-				Entity user = sourceOpt.get();
-				distanceToParent = user.getDistanceSqToEntity(danmaku);
-			}
 		}
 
 		@Override
@@ -71,12 +66,21 @@ public class SubEntityChild extends SubEntityType {
 				if(sourceOpt.isPresent() && !sourceOpt.get().isDead) {
 					Entity source = sourceOpt.get();
 
-					double currentSpeed = danmaku.getCurrentSpeed();
-					danmaku.accelerate(currentSpeed);
+					danmaku.accelerate(danmaku.getCurrentSpeed());
 
-					danmaku.motionX += source.motionX;
-					danmaku.motionY += source.motionY;
-					danmaku.motionZ += source.motionZ;
+					if(source instanceof EntityPlayer) {
+						EntityPlayer player = (EntityPlayer)source;
+						double[] change = PlayerChangeHandler.getPlayerChange(player);
+						danmaku.motionX += change[0];
+						danmaku.motionY += change[1];
+						danmaku.motionZ += change[2];
+					}
+					else {
+						danmaku.motionX += source.motionX;
+						danmaku.motionY += source.motionY;
+						danmaku.motionZ += source.motionZ;
+					}
+
 				}
 				else {
 					danmaku.setDead();
@@ -86,10 +90,6 @@ public class SubEntityChild extends SubEntityType {
 				if(delay >= 0) {
 					hitCheck(entity -> entity != danmaku.getUser().orElse(null) && entity != sourceOpt.orElse(null));
 				}
-			}
-
-			if(danmaku.motionX != 0D && danmaku.motionY != 0D && danmaku.motionZ != 0D) {
-				ProjectileHelper.rotateTowardsMovement(danmaku, 1F);
 			}
 
 			if(danmaku.isInWater()) {

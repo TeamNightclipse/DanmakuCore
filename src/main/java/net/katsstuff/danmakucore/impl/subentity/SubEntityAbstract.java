@@ -178,4 +178,16 @@ public abstract class SubEntityAbstract extends SubEntity {
 	protected void rotate() {
 		danmaku.setAngle(danmaku.getAngle().rotate(danmaku.getRotationData().getRotationQuat()));
 	}
+
+	protected void rotateTowardsMovement() {
+		if(danmaku.motionX != 0D && danmaku.motionY != 0D && danmaku.motionZ != 0D) {
+			//Projectile helper is buggy. We use this instead
+			Vector3 motion = new Vector3(danmaku.motionX, danmaku.motionY, danmaku.motionZ).normalize();
+
+			danmaku.prevRotationPitch = danmaku.rotationPitch;
+			danmaku.prevRotationYaw = danmaku.rotationYaw;
+			danmaku.rotationPitch = (float)motion.pitch();
+			danmaku.rotationYaw = (float)motion.yaw();
+		}
+	}
 }

@@ -69,22 +69,13 @@ public class SubEntityTypeDefault extends SubEntityType {
 						rotate();
 					}
 
-					double currentSpeed = danmaku.getCurrentSpeed();
-					danmaku.accelerate(currentSpeed);
+					danmaku.accelerate(danmaku.getCurrentSpeed());
 
 					updateMotionWithGravity();
 					hitCheck(entity -> entity != danmaku.getUser().orElse(null) && entity != danmaku.getSource().orElse(null));
 				}
 
-				if(danmaku.motionX != 0D && danmaku.motionY != 0D && danmaku.motionZ != 0D) {
-					//Projectile helper is buggy. We use this instead
-					Vector3 motion = new Vector3(danmaku.motionX, danmaku.motionY, danmaku.motionZ).normalize();
-
-					danmaku.prevRotationPitch = danmaku.rotationPitch;
-					danmaku.prevRotationYaw = danmaku.rotationYaw;
-					danmaku.rotationPitch = (float)motion.pitch();
-					danmaku.rotationYaw = (float)motion.yaw();
-				}
+				rotateTowardsMovement();
 
 				if(danmaku.isInWater()) {
 					waterMovement();

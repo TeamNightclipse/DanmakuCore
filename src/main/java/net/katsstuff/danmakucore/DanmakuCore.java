@@ -12,6 +12,7 @@ import net.katsstuff.danmakucore.capability.CapabilityDanmakuCoreData;
 import net.katsstuff.danmakucore.capability.DanmakuCoreDataHandler;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.EntityFallingData;
+import net.katsstuff.danmakucore.handler.PlayerChangeHandler;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
 import net.katsstuff.danmakucore.item.ItemDanmaku;
 import net.katsstuff.danmakucore.lib.LibMod;
@@ -75,6 +76,7 @@ public class DanmakuCore {
 		DanmakuCorePacketHandler.init();
 		MinecraftForge.EVENT_BUS.register(ShapeHandler.class);
 		MinecraftForge.EVENT_BUS.register(new DanmakuCoreDataHandler());
+		MinecraftForge.EVENT_BUS.register(PlayerChangeHandler.class);
 
 		BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(LibItems.DANMAKU, ((source, stack) -> {
 			IPosition iposition = BlockDispenser.getDispensePosition(source);
