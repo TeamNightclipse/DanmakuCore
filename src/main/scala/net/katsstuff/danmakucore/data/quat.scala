@@ -10,6 +10,8 @@ package net.katsstuff.danmakucore.data
 
 import java.text.NumberFormat
 
+import javax.vecmath.Quat4f
+
 import scala.beans.BeanProperty
 
 import net.minecraft.entity.Entity
@@ -406,13 +408,13 @@ object Quat {
 		* @param vec3 The rotation vec.
 		* @param angle The rotation angle. This needs to be in radians.
 		*/
-  def fromVectorRad(vec3: AbstractVector3, angle: Double): Quat = {
+  def fromAxisAngleRad(vec3: AbstractVector3, angle: Double): Quat = {
     val halfAngle    = (angle * 0.5).toFloat
     val sinHalfAngle = MathHelper.sin(halfAngle)
     Quat(vec3.x * sinHalfAngle, vec3.y * sinHalfAngle, vec3.z * sinHalfAngle, MathHelper.cos(halfAngle))
   }
 
-  def fromVector(vec3: AbstractVector3, angle: Double): Quat = fromVectorRad(vec3, Math.toRadians(angle))
+  def fromAxisAngle(vec3: AbstractVector3, angle: Double): Quat = fromAxisAngleRad(vec3, Math.toRadians(angle))
 
   def fromEuler(yaw: Float, pitch: Float, roll: Float): Quat =
     fromEulerRad(Math.toRadians(yaw).toFloat, Math.toRadians(pitch).toFloat, Math.toRadians(roll).toFloat)

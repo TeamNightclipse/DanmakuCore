@@ -192,11 +192,11 @@ public final class DanmakuTemplate {
 		}
 
 		public Builder setRotationData(Vector3 rotation, float rotationAngle) {
-			return setRotationData(new RotationData(true, Quat.fromVector(rotation, rotationAngle), 9999));
+			return setRotationData(new RotationData(true, Quat.fromAxisAngle(rotation, rotationAngle), 9999));
 		}
 
 		public Builder setRotationData(Vector3 rotation, float rotationAngle, int rotationEndTime) {
-			return setRotationData(new RotationData(true, Quat.fromVector(rotation, rotationAngle), rotationEndTime));
+			return setRotationData(new RotationData(true, Quat.fromAxisAngle(rotation, rotationAngle), rotationEndTime));
 		}
 	}
 }

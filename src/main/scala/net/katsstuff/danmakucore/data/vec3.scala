@@ -214,13 +214,13 @@ sealed trait AbstractVector3 extends Any {
   /**
 		* Rotate this vector around the given point.
 		*/
-  def rotate(angle: Double, point: AbstractVector3): Self = rotate(Quat.fromVector(point, angle))
+  def rotate(angle: Double, point: AbstractVector3): Self = rotate(Quat.fromAxisAngle(point, angle))
 
   /**
 		* Rotate this vector around the given point.
 		* The angle must be in radiens.
 		*/
-  def rotateRad(angle: Double, point: AbstractVector3): Self = rotate(Quat.fromVectorRad(point, angle))
+  def rotateRad(angle: Double, point: AbstractVector3): Self = rotate(Quat.fromAxisAngleRad(point, angle))
 
   /**
 		* Calculates the yaw of this vector in radians.

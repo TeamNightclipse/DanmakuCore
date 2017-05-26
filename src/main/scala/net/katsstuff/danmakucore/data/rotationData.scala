@@ -52,13 +52,13 @@ final case class MutableRotationData(@BooleanBeanProperty var enabled: Boolean, 
 
   def setRotationVec(vector: Vector3): MutableRotationData = {
     val angle = rotationQuat.computeAngle
-    rotationQuat = Quat.fromVector(vector, angle)
+    rotationQuat = Quat.fromAxisAngle(vector, angle)
     this
   }
 
   def setRotationAngle(angle: Double): MutableRotationData = {
     val vector = rotationQuat.computeVector
-    rotationQuat = Quat.fromVector(vector, angle)
+    rotationQuat = Quat.fromAxisAngle(vector, angle)
     this
   }
 
@@ -73,12 +73,12 @@ final case class RotationData(@BooleanBeanProperty enabled: Boolean, @BeanProper
 
   def setRotationVec(vector: Vector3): RotationData = {
     val angle = rotationQuat.computeAngle
-    copy(rotationQuat = Quat.fromVector(vector, angle))
+    copy(rotationQuat = Quat.fromAxisAngle(vector, angle))
   }
 
   def setRotationAngle(angle: Double): RotationData = {
     val vector = rotationQuat.computeVector
-    copy(rotationQuat = Quat.fromVector(vector, angle))
+    copy(rotationQuat = Quat.fromAxisAngle(vector, angle))
   }
 }
 
