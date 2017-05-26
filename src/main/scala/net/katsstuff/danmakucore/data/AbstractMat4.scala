@@ -149,10 +149,10 @@ object Mat4 {
     val right = forwardNormalized.cross(up).normalize
     val newUp = right.cross(forwardNormalized).normalize
 
-    set(right, newUp, forwardNormalized * -1, pos)
+    fromAxes(right, newUp, forwardNormalized, pos)
   }
 
-  def set(xAxis: AbstractVector3, yAxis: AbstractVector3, zAxis: AbstractVector3, pos: AbstractVector3): Mat4 = {
+  def fromAxes(xAxis: AbstractVector3, yAxis: AbstractVector3, zAxis: AbstractVector3, pos: AbstractVector3): Mat4 = {
     Mat4(
       xAxis.x, xAxis.y, xAxis.z, pos.x,
       yAxis.x, yAxis.y, yAxis.z, pos.y,

@@ -560,10 +560,10 @@ object Vector3 {
   final val West  = Vector3(-1, 0, 0)
   final val East  = Vector3(1, 0, 0)
 
-  final val Forward  = Vector3(0, 0, -1)
+  final val Forward  = Vector3(0, 0, 1)
   final val Left     = Vector3(-1, 0, 0)
   final val Right    = Vector3(1, 0, 0)
-  final val Backward = Vector3(0, 0, 1)
+  final val Backward = Vector3(0, 0, -1)
 
   /* ============================== Position ============================== */
 

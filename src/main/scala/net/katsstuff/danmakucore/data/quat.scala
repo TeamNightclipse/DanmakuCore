@@ -12,6 +12,7 @@ import java.text.NumberFormat
 
 import scala.beans.BeanProperty
 
+import net.minecraft.entity.Entity
 import net.minecraft.util.math.MathHelper
 
 abstract sealed class AbstractQuat {
@@ -138,9 +139,8 @@ abstract sealed class AbstractQuat {
 		* Required that the quat is normalized.
 		*/
   def pitchRad: Double = {
-    val pole                                           = getGimbalPole
-    def clamp(value: Double, min: Double, max: Double) = if (value > max) max else if (value < min) min else value
-    if (pole == 0) Math.asin(clamp(2F * (w * x - z * y), -1F, 1F)) else pole * Math.PI * 0.5F
+    val pole = getGimbalPole
+    if (pole == 0) -Math.asin(MathHelper.clamp(2F * (w * x - z * y), -1F, 1F)) else pole * Math.PI * 0.5F
   }
 
   /**
@@ -414,22 +414,86 @@ object Quat {
 
   def fromVector(vec3: AbstractVector3, angle: Double): Quat = fromVectorRad(vec3, Math.toRadians(angle))
 
-  def eulerToQuat(yaw: Float, pitch: Float, roll: Float): Quat =
-    eulerToQuatRad(Math.toRadians(yaw).toFloat, Math.toRadians(pitch).toFloat, Math.toRadians(roll).toFloat)
+  def fromEuler(yaw: Float, pitch: Float, roll: Float): Quat =
+    fromEulerRad(Math.toRadians(yaw).toFloat, Math.toRadians(pitch).toFloat, Math.toRadians(roll).toFloat)
 
-  def eulerToQuatRad(yaw: Float, pitch: Float, roll: Float): Quat = {
+  def fromEulerRad(yaw: Float, pitch: Float, roll: Float): Quat = {
     val cy = MathHelper.cos(yaw / 2)
-    val cp = MathHelper.cos(pitch / 2)
+    val cp = MathHelper.cos(-pitch / 2)
     val cr = MathHelper.cos(roll / 2)
 
     val sy = MathHelper.sin(yaw / 2)
-    val sp = MathHelper.sin(pitch / 2)
+    val sp = MathHelper.sin(-pitch / 2)
     val sr = MathHelper.sin(roll / 2)
 
-    val w = cy * cp * cr - sy * sp * sr
-    val x = sy * sp * cr + cy * cp * sr
-    val y = sy * cp * cr + cy * sp * sr
-    val z = cy * sp * cr - sy * cp * sr
+    val w = cy * cr * cp - sy * sr * sp
+    val x = sy * sr * cp + cy * cr * sp
+    val y = sy * cr * cp + cy * sr * sp
+    val z = cy * sr * cp - sy * cr * sp
+
     Quat(x, y, z, w)
+  }
+
+  def orientationOf(entity: Entity): Quat = fromEuler(entity.rotationYaw, entity.rotationPitch, 0F)
+
+  def lookRotation(forward: AbstractVector3, up: AbstractVector3): Quat = {
+    val normalizedForward = forward.normalize
+    val right = up.cross(normalizedForward).normalize
+    val newUp = normalizedForward.cross(right)
+    fromAxes(normalizedForward, right, newUp)
+  }
+
+  def fromAxes(xAxis: AbstractVector3, yAxis: AbstractVector3, zAxis: AbstractVector3): Quat = {
+    fromAxes(xAxis.x, yAxis.x, zAxis.x, xAxis.y, yAxis.y, zAxis.y, xAxis.z, yAxis.z, zAxis.z)
+  }
+
+  //https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java#L496
+  def fromAxes(
+      xx: Double, xy: Double, xz: Double,
+      yx: Double, yy: Double, yz: Double,
+      zx: Double, zy: Double, zz: Double
+  ): Quat = {
+    val t = xx + yy + zz
+
+    if (t >= 0) {
+      val squared = Math.sqrt(t + 1)
+      val w = 0.5f * squared
+      val s = 0.5f / squared
+
+      val x = (zy - yz) * s
+      val y = (xz - zx) * s
+      val z = (yx - xy) * s
+      Quat(x, y, z, w)
+    }
+    else if ((xx > yy) && (xx > zz)) {
+      val squared = Math.sqrt(1.0 + xx - yy - zz)
+      val x = squared * 0.5f
+
+      val s = 0.5f / squared
+      val y = (yx + xy) * s
+      val z = (xz + zx) * s
+      val w = (zy - yz) * s
+      Quat(x, y, z, w)
+    }
+    else if (yy > zz) {
+      val squared = Math.sqrt(1.0 + yy - xx - zz)
+      val y = squared * 0.5f
+
+      val s = 0.5f / squared
+      val x = (yx + xy) * s
+      val z = (zy + yz) * s
+      val w = (xz - zx) * s
+      Quat(x, y, z, w)
+    }
+    else {
+      val squared = Math.sqrt(1.0 + zz - xx - yy)
+      val z = squared * 0.5f
+
+      val s = 0.5f / squared
+      val x = (xz + zx) * s
+      val y = (zy + yz) * s
+      val w = (yx - xy) * s
+      Quat(x, y, z, w)
+    }
   }
 }
