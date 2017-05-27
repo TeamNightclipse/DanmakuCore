@@ -5,14 +5,19 @@ buildscript {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath "gradle.plugin.com.github.maiflai:gradle-scalatest:0.15"
     }
 }
 
 apply plugin: 'scala'
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: "com.github.maiflai.scalatest"
 
 ext.configFile = file('build.properties')
 ext.config = parseConfig(configFile)
@@ -53,7 +58,10 @@ minecraft {
 	replaceIn 'LibMod.java'
 }
 
-dependencies {}
+dependencies {
+    testCompile 'org.scalatest:scalatest_2.11:3.0.1'
+    testRuntime 'org.pegdown:pegdown:1.4.2'
+}
 
 processResources {
     // this will ensure that this task is redone when the versions change.

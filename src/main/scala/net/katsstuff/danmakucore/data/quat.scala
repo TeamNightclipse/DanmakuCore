@@ -52,32 +52,26 @@ abstract sealed class AbstractQuat {
   /**
 		* Create a new quat with this quat and the other quat added together.
 		*/
-  def +(other: AbstractQuat):   Self = this.+(other.x, other.y, other.z, other.w): Self
-  def add(other: AbstractQuat): Self = this.+(other)
+  def +(other: AbstractQuat):   Self = this + (other.x, other.y, other.z, other.w)
+  def add(other: AbstractQuat): Self = this + other
 
   /**
 		* Create a new quat with the passed in values added to this quat
 		*/
   def +(x: Double, y: Double, z: Double, w: Double):   Self = create(this.x + x, this.y + y, this.z + z, this.w + w)
-  def add(x: Double, y: Double, z: Double, w: Double): Self = this.+(x, y, z, w)
+  def add(x: Double, y: Double, z: Double, w: Double): Self = this + (x, y, z, w)
 
   /**
 		* Create a new quat with this quat and the other quat multiplied together.
 		*/
-  def *(other: AbstractQuat):        Self = *(other.x, other.y, other.z, other.w)
-  def multiply(other: AbstractQuat): Self = this.*(other)
+  def *(other: AbstractQuat):        Self = this * (other.x, other.y, other.z, other.w)
+  def multiply(other: AbstractQuat): Self = this * other
 
   /**
 		* Create a new quat with the passed in value multiplied with this quat
 		*/
-  def *(other: Double): Self = {
-    val newX = x * other
-    val newY = y * other
-    val newZ = z * other
-    val newW = w * other
-    create(newX, newY, newZ, newW)
-  }
-  def multiply(other: Double): Self = this.*(other)
+  def *(other: Double): Self = create(x * other, y * other, z * other, w * other)
+  def multiply(other: Double): Self = this * other
 
   /**
 		* Create a new quat with the passed in values multiplied with this quat
@@ -89,7 +83,7 @@ abstract sealed class AbstractQuat {
     val newW = this.w * w - this.x * x - this.y * y - this.z * z
     create(newX, newY, newZ, newW)
   }
-  def multiply(x: Double, y: Double, z: Double, w: Double): Self = this.*(x, y, z, w)
+  def multiply(x: Double, y: Double, z: Double, w: Double): Self = this * (x, y, z, w)
 
   def mulLeft(other: AbstractQuat): Self = mulLeft(other.x, other.y, other.z, other.w)
 
@@ -116,7 +110,7 @@ abstract sealed class AbstractQuat {
 		*
 		* @return Positive (+1) for north pole, negative (-1) for south pole, zero (0) when no gimbal lock
 		*/
-  def getGimbalPole: Int = {
+  def gimbalPole: Int = {
     val t = y * x + z * w
     if (t > 0.499F) 1 else if (t < -0.499F) -1 else 0
   }
@@ -126,7 +120,7 @@ abstract sealed class AbstractQuat {
 		* Requires that the quat is normalized.
 		*/
   def rollRad: Double = {
-    val pole = getGimbalPole
+    val pole = gimbalPole
     if (pole == 0) Math.atan2(2f * (w * z + y * x), 1f - 2f * (x * x + z * z)) else pole * 2f * Math.atan2(y, w)
   }
 
@@ -141,7 +135,7 @@ abstract sealed class AbstractQuat {
 		* Required that the quat is normalized.
 		*/
   def pitchRad: Double = {
-    val pole = getGimbalPole
+    val pole = gimbalPole
     if (pole == 0) -Math.asin(MathHelper.clamp(2F * (w * x - z * y), -1F, 1F)) else pole * Math.PI * 0.5F
   }
 
@@ -155,7 +149,7 @@ abstract sealed class AbstractQuat {
 		* Calculates the yaw of this quat in radians.
 		* Required that the quat is normalized.
 		*/
-  def yawRad: Double = if (getGimbalPole == 0) Math.atan2(2f * (y * w + x * z), 1f - 2f * (y * y + x * x)) else 0f
+  def yawRad: Double = if (gimbalPole == 0) Math.atan2(2f * (y * w + x * z), 1f - 2f * (y * y + x * x)) else 0f
 
   /**
 		* Calculates the yaw of this quat in degrees.
@@ -185,6 +179,7 @@ abstract sealed class AbstractQuat {
 
   def conjugate: Self = create(-x, -y, -z, w)
 
+  //https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java#L210
   def normalize: Self = {
     val len2 = lengthSquared
     if (len2 != 0D && len2 != 1D) {

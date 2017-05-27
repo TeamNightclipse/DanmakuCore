@@ -51,62 +51,62 @@ sealed trait AbstractVector3 extends Any {
   /**
 		* Create a new vector with this vector and the other vector added together.
 		*/
-  def +(other: AbstractVector3):   Self = this.+(other.x, other.y, other.z)
-  def add(other: AbstractVector3): Self = this.+(other)
+  def +(other: AbstractVector3):   Self = this + (other.x, other.y, other.z)
+  def add(other: AbstractVector3): Self = this + other
 
   /**
 		* Create a new vector with the passed in value added to this vector
 		*/
-  def +(other: Double):   Self = this.+(other, other, other)
-  def add(other: Double): Self = this.+(other)
+  def +(other: Double):   Self = this + (other, other, other)
+  def add(other: Double): Self = this + other
 
   /**
 		* Create a new vector with the passed in values added to this vector
 		*/
   def +(x: Double, y: Double, z: Double):   Self = create(this.x + x, this.y + y, this.z + z)
-  def add(x: Double, y: Double, z: Double): Self = this.+(x, y, z)
+  def add(x: Double, y: Double, z: Double): Self = this + (x, y, z)
 
   /**
 		* Create a new vector with the passed in vector subtracted from this vector
 		*/
-  def -(other: AbstractVector3):        Self = this.-(other.x, other.y, other.z)
-  def subtract(other: AbstractVector3): Self = this.-(other)
+  def -(other: AbstractVector3):        Self = this - (other.x, other.y, other.z)
+  def subtract(other: AbstractVector3): Self = this - other
 
   /**
 		* Create a new vector with the passed in value subtracted from this vector
 		*/
-  def -(other: Double):        Self = this.-(other, other, other)
-  def subtract(other: Double): Self = this.-(other)
+  def -(other: Double):        Self = this - (other, other, other)
+  def subtract(other: Double): Self = this - other
 
   /**
 		* Create a new vector with the passed in values subtracted from this vector
 		*/
   def -(x: Double, y: Double, z: Double):        Self = create(this.x - x, this.y - y, this.z - z)
-  def subtract(x: Double, y: Double, z: Double): Self = this.-(x, y, z)
+  def subtract(x: Double, y: Double, z: Double): Self = this - (x, y, z)
 
   /**
 		* Create a new vector with this vector and the other vector multiplied together.
 		*/
-  def *(other: AbstractVector3):        Self = *(other.x, other.y, other.z)
-  def multiply(other: AbstractVector3): Self = this.*(other)
+  def *(other: AbstractVector3):        Self = this * (other.x, other.y, other.z)
+  def multiply(other: AbstractVector3): Self = this * other
 
   /**
 		* Create a new vector with the passed in value multiplied with this vector
 		*/
-  def *(other: Double):        Self = *(other, other, other)
-  def multiply(other: Double): Self = this.*(other)
+  def *(other: Double):        Self = this * (other, other, other)
+  def multiply(other: Double): Self = this * other
 
   /**
 		* Create a new vector with the passed in values multiplied with this vector
 		*/
   def *(x: Double, y: Double, z: Double):        Self = create(this.x * x, this.y * y, this.z * z)
-  def multiply(x: Double, y: Double, z: Double): Self = this.*(x, y, z)
+  def multiply(x: Double, y: Double, z: Double): Self = this * (x, y, z)
 
   /**
 		* Create a new vector with the passed in vector divided by this vector
 		*/
-  def /(other: AbstractVector3):      Self = /(other.x, other.y, other.z)
-  def divide(other: AbstractVector3): Self = this./(other)
+  def /(other: AbstractVector3):      Self = this / (other.x, other.y, other.z)
+  def divide(other: AbstractVector3): Self = this / other
 
   /**
 		* Create a new vector with the passed in value divided by this vector
@@ -118,7 +118,7 @@ sealed trait AbstractVector3 extends Any {
 		* Create a new vector with the passed in values divided by this vector
 		*/
   def /(x: Double, y: Double, z: Double):      Self = create(this.x / x, this.y / y, this.z / z)
-  def divide(x: Double, y: Double, z: Double): Self = this./(x, y, z)
+  def divide(x: Double, y: Double, z: Double): Self = this / (x, y, z)
 
   def unary_- : Self = create(-x, -y, -z)
   def negate:   Self = unary_-
