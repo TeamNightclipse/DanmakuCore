@@ -15,8 +15,6 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FunSuite, Matchers}
 
-import net.katsstuff.danmakucore.helper.LogHelper
-
 @RunWith(classOf[JUnitRunner])
 class QuatSuite extends FunSuite with Matchers with GeneratorDrivenPropertyChecks {
 
@@ -96,6 +94,17 @@ class QuatSuite extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
       rotated.x shouldEqual reference.x +- 0.1
       rotated.y shouldEqual reference.y +- 0.1
       rotated.z shouldEqual reference.z +- 0.1
+    }
+  }
+
+  test("Look at") {
+    forAll (randPos, randPos) { (from: Vector3, to: Vector3) =>
+      val direction = Vector3.directionToPos(from, to)
+      val rotate = Quat.lookRotation(direction, Vector3.Up)
+      val rotated = rotate * Vector3.Forward
+      rotated.x shouldEqual direction.x
+      rotated.y shouldEqual direction.y
+      rotated.z shouldEqual direction.z
     }
   }
 }

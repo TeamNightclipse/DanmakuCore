@@ -429,10 +429,10 @@ object Quat {
   def orientationOf(entity: Entity): Quat = fromEuler(entity.rotationYaw, entity.rotationPitch, 0F)
 
   def lookRotation(forward: AbstractVector3, up: AbstractVector3): Quat = {
-    val normalizedForward = forward.normalize
-    val right = up.cross(normalizedForward).normalize
-    val newUp = normalizedForward.cross(right)
-    fromAxes(normalizedForward, right, newUp)
+    val vect3 = forward.normalize
+    val vect1 = up.cross(forward).normalize
+    val vect2 = forward.cross(vect1)
+    fromAxes(vect1, vect2, vect3)
   }
 
   def fromAxes(xAxis: AbstractVector3, yAxis: AbstractVector3, zAxis: AbstractVector3): Quat = {
