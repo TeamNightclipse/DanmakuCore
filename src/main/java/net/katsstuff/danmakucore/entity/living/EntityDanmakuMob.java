@@ -222,14 +222,14 @@ public abstract class EntityDanmakuMob extends EntityMob {
 	 * How many power entities to spawn when this entity dies.
 	 */
 	public int powerSpawns() {
-		return rand.nextInt(3);
+		return rand.nextInt(4) + 1;
 	}
 
 	/**
 	 * How many point entities to spawn when this entity dies.
 	 */
 	public int pointSpawns() {
-		return rand.nextInt(4);
+		return rand.nextInt(5) + 1;
 	}
 
 	/**
