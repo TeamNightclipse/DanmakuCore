@@ -12,11 +12,14 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
+import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.shape.IShape;
 import net.minecraft.util.Tuple;
+import net.minecraft.util.math.MathHelper;
 
 public class ShapeRandomRing implements IShape {
 
@@ -34,26 +37,18 @@ public class ShapeRandomRing implements IShape {
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Vector3 angle, int tick) {
+	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
 		if(!danmaku.world.isRemote) {
-			double yaw = angle.yaw();
-			double pitch = angle.pitch();
-			Vector3 rotationVec = Vector3.fromSpherical(yaw, pitch + 90F);
 			Random rand = danmaku.world.rand;
+			Quat rotatedOrientation = orientation.multiply(Quat.fromAxisAngle(Vector3.Right(), 90));
 
 			for(int i = 0; i < amount; i++) {
-				double rotationAngle = Math.toRadians(rand.nextFloat() * 360F);
-				Vector3 angleVec = angle.rotateRad(rotationAngle, Vector3.fromSpherical(yaw, pitch + rand.nextFloat() * radius));
-				Vector3 distanceVec = angle.rotateRad(rotationAngle, rotationVec);
-
-				danmaku.pos = pos.offset(distanceVec, distance);
-				danmaku.angle = angleVec;
-				danmaku.roll = (float)rotationAngle;
-				danmaku.rotation = danmaku.rotation.setRotationVec(angle);
-
-				EntityDanmaku spawned = danmaku.asEntity();
+				Quat rotate = rotatedOrientation.multiply(Quat.fromAxisAngle(Vector3.Up(), rand.nextDouble() * 360D).multiply(Quat.fromAxisAngle(Vector3.Left(), 90D - rand.nextDouble() * radius)));
+				danmaku.angle = Vector3.Forward().rotate(rotate);
+				danmaku.pos = pos.offset(danmaku.angle, distance);
+				EntityDanmaku spawned = this.danmaku.asEntity();
+				danmaku.asEntity().world.spawnEntityInWorld(spawned);
 				set.add(spawned);
-				danmaku.world.spawnEntityInWorld(spawned);
 			}
 		}
 		return new Tuple<>(true, set);

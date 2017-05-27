@@ -12,9 +12,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.katsstuff.danmakucore.data.Mat4;
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
+import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.shape.IShape;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.MathHelper;
@@ -37,26 +39,20 @@ public class ShapeWideShot implements IShape {
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Vector3 angle, int tick) {
+	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
 		if(!danmaku.world.isRemote) {
-			Mat4 fromWorld = Mat4.fromWorld(pos, angle, Vector3.Up());
-			Vector3 rotateVec = angle.rotate(90, Vector3.Left().transformDirection(fromWorld));
-
-			double rotateAngle = Math.toRadians(-wideAngle / 2F);
-			double stepSize = Math.toRadians(wideAngle / (amount - 1));
-			rotateAngle += Math.toRadians(baseAngle);
+			double rotateAngle = -wideAngle / 2D;
+			double stepSize = wideAngle / (amount - 1);
+			rotateAngle += baseAngle;
 
 			for(int i = 0; i < amount; i++) {
-				Vector3 angleVec = angle.rotateRad(rotateAngle, rotateVec);
-
-				danmaku.pos = pos.offset(angleVec, distance);
-				danmaku.angle = angleVec;
-				danmaku.roll = (float)(angle.pitch() * MathHelper.sin((float)rotateAngle));
-				danmaku.rotation = danmaku.rotation.setRotationVec(rotateVec);
-
-				EntityDanmaku spawned = danmaku.asEntity();
+				Quat rotate = orientation.multiply(Quat.fromAxisAngle(Vector3.Up(), rotateAngle));
+				danmaku.angle = Vector3.Forward().rotate(rotate);
+				danmaku.pos = pos.offset(danmaku.angle, distance);
+				danmaku.roll = (float)(orientation.pitch() * MathHelper.sin((float)rotateAngle));
+				EntityDanmaku spawned = this.danmaku.asEntity();
+				danmaku.asEntity().world.spawnEntityInWorld(spawned);
 				set.add(spawned);
-				danmaku.world.spawnEntityInWorld(spawned);
 				rotateAngle += stepSize;
 			}
 		}

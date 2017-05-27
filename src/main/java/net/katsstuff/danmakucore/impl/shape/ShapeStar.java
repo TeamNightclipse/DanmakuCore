@@ -11,6 +11,7 @@ package net.katsstuff.danmakucore.impl.shape;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
@@ -51,12 +52,14 @@ public class ShapeStar implements IShape {
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Vector3 angle, int tick) {
+	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
 		if(amount >= WAYS.length) return new Tuple<>(true, set);
 		if(!danmaku.world.isRemote) {
-			Vector3 angleNegative = angle.negate();
-			Vector3 frontPos = pos.offset(angle, distance);
-			Vector3 backPos = pos.offset(angle, -distance);
+			Vector3 localForward = Vector3.Forward().rotate(orientation);
+			Vector3 localBackward = Vector3.Backward().rotate(orientation);
+
+			Vector3 frontPos = pos.offset(localForward, distance);
+			Vector3 backPos = pos.offset(localBackward, distance);
 
 			float angleBase = 0F;
 			float angleSpan = 0F;
@@ -73,7 +76,7 @@ public class ShapeStar implements IShape {
 				if(WAYS[amount][i] == 1) {
 					if(!flagFB) {
 						danmaku.pos = frontPos;
-						danmaku.angle = angle;
+						danmaku.angle = localForward;
 						EntityDanmaku spawned = danmaku.asEntity();
 						set.add(spawned);
 						danmaku.world.spawnEntityInWorld(spawned);
@@ -81,7 +84,7 @@ public class ShapeStar implements IShape {
 					}
 					else {
 						danmaku.pos = backPos;
-						danmaku.angle = angleNegative;
+						danmaku.angle = localBackward;
 						EntityDanmaku spawned = danmaku.asEntity();
 						set.add(spawned);
 						danmaku.world.spawnEntityInWorld(spawned);
@@ -89,9 +92,9 @@ public class ShapeStar implements IShape {
 				}
 				else {
 					danmaku.pos = pos;
-					danmaku.angle = angle;
+					danmaku.angle = localForward;
 					ShapeRing shape = new ShapeRing(danmaku, WAYS[amount][i], angleBase, baseAngle + slope, distance);
-					set.addAll(shape.drawForTick(pos, angle, 0).getSecond());
+					set.addAll(shape.drawForTick(pos, orientation, 0).getSecond());
 					slope += 180F / WAYS[amount].length;
 				}
 

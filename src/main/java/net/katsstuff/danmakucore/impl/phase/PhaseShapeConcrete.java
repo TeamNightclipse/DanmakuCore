@@ -9,6 +9,7 @@
 package net.katsstuff.danmakucore.impl.phase;
 
 import net.katsstuff.danmakucore.data.MovementData;
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.RotationData;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
@@ -62,7 +63,10 @@ public abstract class PhaseShapeConcrete extends Phase {
 		EntityLivingBase target = entity.getAttackTarget();
 
 		if(!isFrozen() && isCounterStart() && target != null && entity.getEntitySenses().canSee(target)) {
-			shape.drawForTick(new Vector3(entity), Vector3.angleToEntity(entity, target), 0);
+			Vector3 entityPos = new Vector3(entity);
+			Vector3 forward = new Vector3(target).subtract(entityPos);
+
+			shape.drawForTick(entityPos, Quat.lookRotation(forward, Vector3.Up()), 0);
 		}
 	}
 

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
@@ -27,8 +28,8 @@ public class ShapeCombined implements IShape {
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Vector3 angle, int tick) {
-		Set<Tuple<Boolean, Set<EntityDanmaku>>> ret = Arrays.stream(shapes).map(s -> s.drawForTick(pos, angle, tick)).collect(Collectors.toSet());
+	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
+		Set<Tuple<Boolean, Set<EntityDanmaku>>> ret = Arrays.stream(shapes).map(s -> s.drawForTick(pos, orientation, tick)).collect(Collectors.toSet());
 		boolean done = ret.stream().allMatch(Tuple::getFirst);
 		Set<EntityDanmaku> drawn = ret.stream().flatMap(t -> t.getSecond().stream()).collect(Collectors.toSet());
 

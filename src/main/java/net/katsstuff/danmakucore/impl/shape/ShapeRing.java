@@ -11,11 +11,14 @@ package net.katsstuff.danmakucore.impl.shape;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
+import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.shape.IShape;
 import net.minecraft.util.Tuple;
+import net.minecraft.util.math.MathHelper;
 
 public class ShapeRing implements IShape {
 
@@ -35,31 +38,25 @@ public class ShapeRing implements IShape {
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Vector3 angle, int tick) {
+	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
 		if(!danmaku.world.isRemote) {
-			double yaw = angle.yaw();
-			double pitch = angle.pitch();
-			Vector3 radiusVec = Vector3.fromSpherical(yaw, pitch + radius);
-			Vector3 radiusRotateVec = Vector3.fromSpherical(yaw, pitch + radius + 90F);
-			Vector3 rotateVec = Vector3.fromSpherical(yaw, pitch + 90F);
 
-			double rotationAngle = Math.toRadians(baseAngle);
-			float stepSize = 360F / amount;
+			float wideAngle = 360F;
+			double rotateAngle = -wideAngle / 2D;
+			double stepSize = wideAngle / (amount - 1);
+			rotateAngle += baseAngle;
+
+			Quat rotatedOrientation = orientation.multiply(Quat.fromAxisAngle(Vector3.Right(), 90));
 
 			for(int i = 0; i < amount; i++) {
-				Vector3 angleVec = angle.rotate(rotationAngle, radiusVec);
-				Vector3 distanceVec = angle.rotate(rotationAngle, rotateVec);
-				Vector3 rotationVec = angle.rotate(rotationAngle, radiusRotateVec);
-
-				danmaku.pos = pos.offset(distanceVec, distance);
-				danmaku.angle = angleVec;
-				danmaku.roll = (float)rotationAngle;
-				danmaku.rotation = danmaku.rotation.setRotationVec(rotationVec);
-
-				EntityDanmaku spawned = danmaku.asEntity();
-				danmaku.world.spawnEntityInWorld(spawned);
+				Quat rotate = rotatedOrientation.multiply(Quat.fromAxisAngle(Vector3.Up(), rotateAngle).multiply(Quat.fromAxisAngle(Vector3.Left(), 90D - radius)));
+				danmaku.angle = Vector3.Forward().rotate(rotate);
+				danmaku.pos = pos.offset(danmaku.angle, distance);
+				danmaku.roll = (float)(orientation.pitch() * MathHelper.sin((float)rotateAngle));
+				EntityDanmaku spawned = this.danmaku.asEntity();
+				danmaku.asEntity().world.spawnEntityInWorld(spawned);
 				set.add(spawned);
-				rotationAngle += stepSize;
+				rotateAngle += stepSize;
 			}
 		}
 		return new Tuple<>(true, set);

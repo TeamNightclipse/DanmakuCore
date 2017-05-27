@@ -10,6 +10,7 @@ package net.katsstuff.danmakucore.shape;
 
 import java.util.Set;
 
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.minecraft.util.Tuple;
@@ -23,9 +24,9 @@ public interface IShape {
 	 * Draws a shape for the given tick.
 	 *
 	 * @param pos The position to draw the shape at.
-	 * @param angle The angle that was registered for this shape.
+	 * @param orientation The angle that was registered for this shape.
 	 * @param tick The tick position.
 	 * @return Tuple first, if this shape is done. Tuple second, the danmaku that was created by this shape.
 	 */
-	Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Vector3 angle, int tick);
+	Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick);
 }

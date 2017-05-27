@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import net.katsstuff.danmakucore.DanmakuCore;
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
@@ -142,6 +143,7 @@ public class ItemDanmaku extends ItemBase {
 		DanmakuTemplate.Builder danmaku = DanmakuTemplate.builder();
 		danmaku.setUser(player).setShot(shot).setWorld(world).setMovementData(shotSpeed, gravity).setPos(pos).setAngle(angle);
 		DanmakuTemplate built = danmaku.build();
+		Quat orientation = Quat.orientationOf(player);
 
 		switch(danmakuPattern) {
 			case LINE:
@@ -157,31 +159,31 @@ public class ItemDanmaku extends ItemBase {
 				if(alternateMode) {
 					wide *= 0.5F;
 				}
-				DanmakuCreationHelper.createRandomRingShot(built, amount, wide, offset);
+				DanmakuCreationHelper.createRandomRingShot(orientation, built, amount, wide, offset);
 				break;
 			case WIDE:
 				wide = amount * 8F;
 				if(alternateMode) {
 					wide = wide * 0.5F;
 				}
-				DanmakuCreationHelper.createWideShot(built, amount, wide, 0F, offset);
+				DanmakuCreationHelper.createWideShot(orientation, built, amount, wide, 0F, offset);
 				break;
 			case CIRCLE:
-				DanmakuCreationHelper.createCircleShot(built, amount, 0F, offset);
+				DanmakuCreationHelper.createCircleShot(orientation, built, amount, 0F, offset);
 				break;
 			case STAR:
 				danmaku.setMovementData(Vector3.GravityZero());
-				DanmakuCreationHelper.createStarShot(danmaku.build(), amount, 0F, 0F, offset);
+				DanmakuCreationHelper.createStarShot(orientation, danmaku.build(), amount, 0F, 0F, offset);
 				break;
 			case RING:
 				wide = 15F;
 				if(alternateMode) {
 					wide *= 0.5F;
 				}
-				DanmakuCreationHelper.createRingShot(built, amount, wide, world.rand.nextFloat() * 360F, offset);
+				DanmakuCreationHelper.createRingShot(orientation, built, amount, wide, world.rand.nextFloat() * 360, offset);
 				break;
 			case SPHERE:
-				DanmakuCreationHelper.createSphereShot(built, amount, amount / 2, 0F, offset);
+				DanmakuCreationHelper.createSphereShot(orientation, built, amount, amount / 2, 0F, offset);
 			default:
 				break;
 		}

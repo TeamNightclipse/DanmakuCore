@@ -12,9 +12,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.katsstuff.danmakucore.data.Mat4;
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
+import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.shape.IShape;
 import net.minecraft.util.Tuple;
 
@@ -30,24 +32,21 @@ public class ShapeSphere implements IShape {
 	public ShapeSphere(DanmakuTemplate danmaku, int rings, int bands, float baseAngle, double distance) {
 		this.danmaku = danmaku;
 		this.rings = rings;
-		this.bands = bands;
+		this.bands = bands / 2;
 		this.baseAngle = baseAngle;
 		this.distance = distance;
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Vector3 angle, int tick) {
+	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
 		if(!danmaku.world.isRemote) {
-			Mat4 fromWorld = Mat4.fromWorld(pos, angle, Vector3.Up());
-			Vector3 localForward = Vector3.Forward().transformDirection(fromWorld);
-			Vector3 localBackward = Vector3.Backward().transformDirection(fromWorld);
-			Vector3 rotateVec = Vector3.Left().transformDirection(fromWorld);
+			Quat rotatedForward = orientation.multiply(Quat.fromAxisAngle(Vector3.Forward(), 90));
 			float increment = 180F / bands;
-			ShapeWideShot shape = new ShapeWideShot(danmaku, rings, 180F, baseAngle, distance);
+			ShapeCircle shape = new ShapeCircle(danmaku, rings, baseAngle, distance);
 
 			for(int i = 0; i < bands; i++) {
-				set.addAll(shape.drawForTick(pos, localForward.rotate(increment * i, rotateVec), tick).getSecond());
-				set.addAll(shape.drawForTick(pos, localBackward.rotate(increment * i, rotateVec), tick).getSecond());
+				Quat rotate = Quat.fromAxisAngle(Vector3.Up(), increment * i);
+				set.addAll(shape.drawForTick(pos, rotate.multiply(rotatedForward), tick).getSecond());
 			}
 		}
 

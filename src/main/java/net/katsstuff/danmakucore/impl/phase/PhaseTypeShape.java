@@ -10,6 +10,7 @@ package net.katsstuff.danmakucore.impl.phase;
 
 import java.util.Set;
 
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
@@ -61,7 +62,7 @@ public class PhaseTypeShape {
 			if(isCounterStart()) {
 				EntityDanmakuMob danmakuMob = getEntity();
 
-				Tuple<Boolean, Set<EntityDanmaku>> done = shape.drawForTick(new Vector3(danmakuMob), Vector3.angleEntity(danmakuMob), counter);
+				Tuple<Boolean, Set<EntityDanmaku>> done = shape.drawForTick(new Vector3(danmakuMob), Quat.orientationOf(danmakuMob), counter);
 
 				if(continuous && done.getFirst()) {
 					counter = 0;

@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.katsstuff.danmakucore.data.Mat4;
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
@@ -42,25 +43,24 @@ public class ShapeArrow implements IShape {
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Vector3 angle, int tick) {
+	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
 		if(!danmaku.world.isRemote) {
-			Mat4 fromWorld = Mat4.fromWorld(pos, angle, Vector3.Up());
-			Vector3 rotationVec = angle.rotate(90, Vector3.Left().transformDirection(fromWorld));
-			Vector3 leftVec = angle.rotate(-90D, rotationVec);
-			Vector3 rightVec = angle.rotate(90D, rotationVec);
-			danmaku.angle = angle;
+			Vector3 localForward = Vector3.Forward().rotate(orientation);
+			Vector3 localLeft = Vector3.Left().rotate(orientation);
+			Vector3 localRight = Vector3.Right().rotate(orientation);
+			danmaku.angle = localForward;
 
 			for(int i = 0; i < amount; i++) {
 				double newDistance = -i * distance;
 				double newWidth = -i * width;
-				Vector3 newPosNeutral = pos.offset(angle, newDistance);
+				Vector3 newPosNeutral = pos.offset(localForward, newDistance);
 
-				danmaku.pos = newPosNeutral.offset(leftVec, newWidth);
+				danmaku.pos = newPosNeutral.offset(localLeft, newWidth);
 				EntityDanmaku createdLeft = danmaku.asEntity();
 				danmaku.world.spawnEntityInWorld(createdLeft);
 				set.add(createdLeft);
 
-				danmaku.pos = newPosNeutral.offset(rightVec, newWidth);
+				danmaku.pos = newPosNeutral.offset(localRight, newWidth);
 				EntityDanmaku createdRight = danmaku.asEntity();
 				danmaku.world.spawnEntityInWorld(createdRight);
 				set.add(createdRight);

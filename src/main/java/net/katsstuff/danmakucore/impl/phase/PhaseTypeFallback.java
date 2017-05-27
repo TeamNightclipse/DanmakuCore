@@ -8,6 +8,7 @@
  */
 package net.katsstuff.danmakucore.impl.phase;
 
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
@@ -47,7 +48,7 @@ public class PhaseTypeFallback extends PhaseType {
 				Vector3 angle = Vector3.angleEntity(user);
 				if(!variant.onShootDanmaku(user, false, pos, angle)) return;
 				DanmakuTemplate.Builder builder = variant.toBuilder();
-				DanmakuCreationHelper.createCircleShot(builder.setUser(user).build(), amount, 0F, 0.2D);
+				DanmakuCreationHelper.createCircleShot(Quat.orientationOf(user), builder.setUser(user).build(), amount, 0F, 0.2D);
 			}
 		}
 

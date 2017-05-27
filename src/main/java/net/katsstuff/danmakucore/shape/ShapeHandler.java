@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.minecraft.entity.Entity;
@@ -31,8 +32,8 @@ public final class ShapeHandler {
 	 * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
 	 */
 	@SuppressWarnings("WeakerAccess")
-	public static Set<EntityDanmaku> createShape(IShape shape, Vector3 pos, Vector3 angle) {
-		return createEntry(new ShapeEntryPosition(shape, pos, angle));
+	public static Set<EntityDanmaku> createShape(IShape shape, Vector3 pos, Quat orientation) {
+		return createEntry(new ShapeEntryPosition(shape, pos, orientation));
 	}
 
 	/**
@@ -116,8 +117,8 @@ public final class ShapeHandler {
 		@Override
 		public boolean draw() {
 			Vector3 currentPos = new Vector3(entity);
-			Vector3 currentAngle = Vector3.fromSpherical(entity.rotationYaw, entity.rotationPitch);
-			Tuple<Boolean, Set<EntityDanmaku>> ret = shape.drawForTick(currentPos, currentAngle, counter);
+			Quat currentOrientation = Quat.orientationOf(entity);
+			Tuple<Boolean, Set<EntityDanmaku>> ret = shape.drawForTick(currentPos, currentOrientation, counter);
 			drawn.addAll(ret.getSecond());
 			counter++;
 			return ret.getFirst();
@@ -136,8 +137,8 @@ public final class ShapeHandler {
 		@Override
 		public boolean draw() {
 			Vector3 currentPos = new Vector3(entity);
-			Vector3 currentAngle = Vector3.fromSpherical(entity.rotationYaw, entity.rotationPitch);
-			Tuple<Boolean, Set<EntityDanmaku>> ret = shape.drawForTick(currentPos, currentAngle, counter);
+			Quat currentOrientation = Quat.orientationOf(entity);
+			Tuple<Boolean, Set<EntityDanmaku>> ret = shape.drawForTick(currentPos, currentOrientation, counter);
 			drawn.addAll(ret.getSecond());
 			counter++;
 			return ret.getFirst();
@@ -147,17 +148,17 @@ public final class ShapeHandler {
 	private static class ShapeEntryPosition extends ShapeEntry {
 
 		private final Vector3 pos;
-		private final Vector3 angle;
+		private final Quat orientation;
 
-		ShapeEntryPosition(IShape shape, Vector3 pos, Vector3 angle) {
+		ShapeEntryPosition(IShape shape, Vector3 pos, Quat orientation) {
 			super(shape);
 			this.pos = pos;
-			this.angle = angle;
+			this.orientation = orientation;
 		}
 
 		@Override
 		public boolean draw() {
-			Tuple<Boolean, Set<EntityDanmaku>> ret = shape.drawForTick(pos, angle, counter);
+			Tuple<Boolean, Set<EntityDanmaku>> ret = shape.drawForTick(pos, orientation, counter);
 			drawn.addAll(ret.getSecond());
 			counter++;
 			return ret.getFirst();

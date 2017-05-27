@@ -10,6 +10,7 @@ package net.katsstuff.danmakucore.helper;
 
 import java.util.Set;
 
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.impl.shape.ShapeCircle;
@@ -24,33 +25,33 @@ import net.katsstuff.danmakucore.impl.shape.ShapeWideShot;
  */
 public class DanmakuCreationHelper {
 
-	public static Set<EntityDanmaku> createWideShot(DanmakuTemplate danmaku, int amount, float wideAngle, float baseAngle, double distance) {
+	public static Set<EntityDanmaku> createWideShot(Quat orientation, DanmakuTemplate danmaku, int amount, float wideAngle, float baseAngle, double distance) {
 		ShapeWideShot shape = new ShapeWideShot(danmaku, amount, wideAngle, baseAngle, distance);
-		return shape.drawForTick(danmaku.pos, danmaku.angle, 0).getSecond();
+		return shape.drawForTick(danmaku.pos, orientation, 0).getSecond();
 	}
 
-	public static Set<EntityDanmaku> createCircleShot(DanmakuTemplate danmaku, int amount, float baseAngle, double distance) {
+	public static Set<EntityDanmaku> createCircleShot(Quat orientation, DanmakuTemplate danmaku, int amount, float baseAngle, double distance) {
 		ShapeCircle shape = new ShapeCircle(danmaku, amount, baseAngle, distance);
-		return shape.drawForTick(danmaku.pos, danmaku.angle, 0).getSecond();
+		return shape.drawForTick(danmaku.pos, orientation, 0).getSecond();
 	}
 
-	public static Set<EntityDanmaku> createRingShot(DanmakuTemplate danmaku, int amount, float size, float baseAngle, double distance) {
+	public static Set<EntityDanmaku> createRingShot(Quat orientation, DanmakuTemplate danmaku, int amount, float size, float baseAngle, double distance) {
 		ShapeRing shape = new ShapeRing(danmaku, amount, size, baseAngle, distance);
-		return shape.drawForTick(danmaku.pos, danmaku.angle, 0).getSecond();
+		return shape.drawForTick(danmaku.pos, orientation, 0).getSecond();
 	}
 
-	public static Set<EntityDanmaku> createRandomRingShot(DanmakuTemplate danmaku, int amount, float size, double distance) {
+	public static Set<EntityDanmaku> createRandomRingShot(Quat orientation, DanmakuTemplate danmaku, int amount, float size, double distance) {
 		ShapeRandomRing shape = new ShapeRandomRing(danmaku, amount, size, distance);
-		return shape.drawForTick(danmaku.pos, danmaku.angle, 0).getSecond();
+		return shape.drawForTick(danmaku.pos, orientation, 0).getSecond();
 	}
 
-	public static Set<EntityDanmaku> createStarShot(DanmakuTemplate danmaku, int amount, float angleZ, float baseAngle, double distance) {
+	public static Set<EntityDanmaku> createStarShot(Quat orientation, DanmakuTemplate danmaku, int amount, float angleZ, float baseAngle, double distance) {
 		ShapeStar shape = new ShapeStar(danmaku, amount, angleZ, baseAngle, distance);
-		return shape.drawForTick(danmaku.pos, danmaku.angle, 0).getSecond();
+		return shape.drawForTick(danmaku.pos, orientation, 0).getSecond();
 	}
 
-	public static Set<EntityDanmaku> createSphereShot(DanmakuTemplate danmaku, int rings, int bands, float baseAngle, double distance) {
+	public static Set<EntityDanmaku> createSphereShot(Quat orientation, DanmakuTemplate danmaku, int rings, int bands, float baseAngle, double distance) {
 		ShapeSphere shape = new ShapeSphere(danmaku, rings, bands, baseAngle, distance);
-		return shape.drawForTick(danmaku.pos, danmaku.angle, 0).getSecond();
+		return shape.drawForTick(danmaku.pos, orientation, 0).getSecond();
 	}
 }

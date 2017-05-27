@@ -11,6 +11,7 @@ package net.katsstuff.danmakucore.impl.spellcard;
 import javax.annotation.Nullable;
 
 import net.katsstuff.danmakucore.data.AbstractVector3;
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
@@ -84,7 +85,7 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 							.build();
 
 					DanmakuHelper.playShotSound(card);
-					DanmakuCreationHelper.createWideShot(danmaku, danmakuLevelMultiplier * 2, 120F, 180F, 1.25D);
+					DanmakuCreationHelper.createWideShot(Quat.orientationOf(card), danmaku, danmakuLevelMultiplier * 2, 120F, 180F, 1.25D);
 				}
 
 				if(time40 == 0) {
@@ -98,7 +99,7 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 								.setShot(LibShotData.SHOT_MEDIUM.setColor(LibColor.COLOR_SATURATED_RED))
 								.build();
 
-						DanmakuCreationHelper.createWideShot(danmaku, danmakuLevelMultiplier, 30F, 0F, 0.5D);
+						DanmakuCreationHelper.createWideShot(Quat.orientationOf(card), danmaku, danmakuLevelMultiplier, 30F, 0F, 0.5D);
 					}
 				}
 			}

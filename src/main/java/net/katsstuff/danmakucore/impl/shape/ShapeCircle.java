@@ -10,6 +10,7 @@ package net.katsstuff.danmakucore.impl.shape;
 
 import java.util.Set;
 
+import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
@@ -31,11 +32,11 @@ public class ShapeCircle implements IShape {
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Vector3 angle, int tick) {
+	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
 		if(amount % 2 == 0) {
 			baseAngle += 360F / (amount * 2F);
 		}
 		ShapeWideShot shape = new ShapeWideShot(danmaku, amount, 360F - 360F / amount, baseAngle, distance);
-		return shape.drawForTick(pos, angle, tick);
+		return shape.drawForTick(pos, orientation, tick);
 	}
 }
