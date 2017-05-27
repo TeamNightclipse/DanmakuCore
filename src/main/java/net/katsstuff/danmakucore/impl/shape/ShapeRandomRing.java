@@ -16,10 +16,8 @@ import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
-import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.shape.IShape;
 import net.minecraft.util.Tuple;
-import net.minecraft.util.math.MathHelper;
 
 public class ShapeRandomRing implements IShape {
 
@@ -44,8 +42,8 @@ public class ShapeRandomRing implements IShape {
 
 			for(int i = 0; i < amount; i++) {
 				Quat rotate = rotatedOrientation.multiply(Quat.fromAxisAngle(Vector3.Up(), rand.nextDouble() * 360D).multiply(Quat.fromAxisAngle(Vector3.Left(), 90D - rand.nextDouble() * radius)));
-				danmaku.angle = Vector3.Forward().rotate(rotate);
-				danmaku.pos = pos.offset(danmaku.angle, distance);
+				danmaku.direction = Vector3.Forward().rotate(rotate);
+				danmaku.pos = pos.offset(danmaku.direction, distance);
 				EntityDanmaku spawned = this.danmaku.asEntity();
 				danmaku.asEntity().world.spawnEntityInWorld(spawned);
 				set.add(spawned);

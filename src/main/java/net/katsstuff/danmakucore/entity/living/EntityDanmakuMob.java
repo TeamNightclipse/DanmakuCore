@@ -237,22 +237,22 @@ public abstract class EntityDanmakuMob extends EntityMob {
 	 */
 	protected void dropPhaseLoot(DamageSource source) {
 		Vector3 pos = pos();
-		Vector3 angle;
+		Vector3 direction;
 		if(source.getEntity() != null) {
-			angle = Vector3.angleToEntity(this, source.getEntity());
+			direction = Vector3.directionToEntity(this, source.getEntity());
 		}
 		else {
-			angle = Vector3.Down();
+			direction = Vector3.Down();
 		}
 
 		int powerSpawns = powerSpawns();
 		for(int i = 1; i < powerSpawns; i++) {
-			world.spawnEntityInWorld(TouhouHelper.createPower(world, pos, angle));
+			world.spawnEntityInWorld(TouhouHelper.createPower(world, pos, direction));
 		}
 
 		int pointSpawns = pointSpawns();
 		for(int i = 1; i < pointSpawns; i++) {
-			world.spawnEntityInWorld(TouhouHelper.createScoreBlue(world, null, pos, angle));
+			world.spawnEntityInWorld(TouhouHelper.createScoreBlue(world, null, pos, direction));
 		}
 	}
 

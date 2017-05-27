@@ -173,10 +173,10 @@ public abstract class SubEntityAbstract extends SubEntity {
 	}
 
 	/**
-	 * Sets the angle based on the rotation.
+	 * Sets the direction based on the rotation.
 	 */
 	protected void rotate() {
-		danmaku.setAngle(danmaku.getAngle().rotate(danmaku.getRotationData().getRotationQuat()));
+		danmaku.setDirection(danmaku.getDirection().rotate(danmaku.getRotationData().getRotationQuat()));
 	}
 
 	protected void rotateTowardsMovement() {

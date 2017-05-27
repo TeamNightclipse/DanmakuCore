@@ -28,7 +28,7 @@ import net.minecraft.world.World;
  * A {@link DanmakuVariant} can be thought of as a named {@link ShotData}
  * with {@link MovementData} and {@link RotationData} packed into it.
  * It's purpose is to define what danmaku to fire, given only this and a source,
- * or a world + position + angle.
+ * or a world + position + direction.
  *
  * Remember to not load the ShotData (and thus Form and SubEntity) before everything
  * there has finished to register. One approach is to make it lazy.
@@ -68,7 +68,7 @@ public abstract class DanmakuVariant extends RegistryValueShootable<DanmakuVaria
 	 * @return If the danmaku should be allowed to fire.
 	 */
 	@Override
-	public boolean onShootDanmaku(@Nullable EntityLivingBase user, boolean alternateMode, Vector3 pos, Vector3 angle) {
+	public boolean onShootDanmaku(@Nullable EntityLivingBase user, boolean alternateMode, Vector3 pos, Vector3 direction) {
 		return true;
 	}
 

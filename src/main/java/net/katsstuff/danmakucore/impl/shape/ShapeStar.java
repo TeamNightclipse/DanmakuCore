@@ -76,7 +76,7 @@ public class ShapeStar implements IShape {
 				if(WAYS[amount][i] == 1) {
 					if(!flagFB) {
 						danmaku.pos = frontPos;
-						danmaku.angle = localForward;
+						danmaku.direction = localForward;
 						EntityDanmaku spawned = danmaku.asEntity();
 						set.add(spawned);
 						danmaku.world.spawnEntityInWorld(spawned);
@@ -84,7 +84,7 @@ public class ShapeStar implements IShape {
 					}
 					else {
 						danmaku.pos = backPos;
-						danmaku.angle = localBackward;
+						danmaku.direction = localBackward;
 						EntityDanmaku spawned = danmaku.asEntity();
 						set.add(spawned);
 						danmaku.world.spawnEntityInWorld(spawned);
@@ -92,7 +92,7 @@ public class ShapeStar implements IShape {
 				}
 				else {
 					danmaku.pos = pos;
-					danmaku.angle = localForward;
+					danmaku.direction = localForward;
 					ShapeRing shape = new ShapeRing(danmaku, WAYS[amount][i], angleBase, baseAngle + slope, distance);
 					set.addAll(shape.drawForTick(pos, orientation, 0).getSecond());
 					slope += 180F / WAYS[amount].length;

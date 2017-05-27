@@ -15,5 +15,5 @@ import net.minecraft.entity.EntityLivingBase;
 
 public abstract class RegistryValueShootable<T extends RegistryValueShootable<T>> extends RegistryValueItemStack<T> {
 
-	public abstract boolean onShootDanmaku(@Nullable EntityLivingBase user, boolean alternateMode, Vector3 pos, Vector3 angle);
+	public abstract boolean onShootDanmaku(@Nullable EntityLivingBase user, boolean alternateMode, Vector3 pos, Vector3 direction);
 }

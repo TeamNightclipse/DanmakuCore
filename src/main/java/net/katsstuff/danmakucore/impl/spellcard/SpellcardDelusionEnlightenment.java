@@ -106,9 +106,9 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 		}
 
 		private void spawnGroundDanmaku() {
-			AbstractVector3 angle = Vector3.getVecWithoutY(Vector3.randomVector());
+			AbstractVector3 direction = Vector3.getVecWithoutY(Vector3.randomVector());
 
-			Vector3 posSource = posUser().offset(angle, rand.nextDouble() * 16);
+			Vector3 posSource = posUser().offset(direction, rand.nextDouble() * 16);
 			Vector3 posReach = posSource.offset(Vector3.Down(), 16);
 
 			RayTraceResult ray = getWorld().rayTraceBlocks(posSource.toVec3d(), posReach.toVec3d());
@@ -118,7 +118,7 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 			EntityDanmaku danmaku = DanmakuTemplate.builder()
 					.setUser(getUser())
 					.setSource(card)
-					.setAngle(Vector3.Up())
+					.setDirection(Vector3.Up())
 					.setMovementData(0.2D)
 					.setPos(spawnPos)
 					.setShot(LibShotData.SHOT_RICE.setColor(LibColor.COLOR_SATURATED_BLUE))

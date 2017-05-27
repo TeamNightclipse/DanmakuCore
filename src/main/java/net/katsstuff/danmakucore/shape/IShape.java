@@ -24,7 +24,7 @@ public interface IShape {
 	 * Draws a shape for the given tick.
 	 *
 	 * @param pos The position to draw the shape at.
-	 * @param orientation The angle that was registered for this shape.
+	 * @param orientation The direction that was registered for this shape.
 	 * @param tick The tick position.
 	 * @return Tuple first, if this shape is done. Tuple second, the danmaku that was created by this shape.
 	 */

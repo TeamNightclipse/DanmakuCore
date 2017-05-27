@@ -139,29 +139,29 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 
 		int powerSpawns = rand.nextInt(6);
 		Vector3 pos = new Vector3(this);
-		Vector3 angle;
+		Vector3 direction;
 		if(source.getEntity() != null) {
-			angle = Vector3.angleToEntity(this, source.getEntity());
+			direction = Vector3.directionToEntity(this, source.getEntity());
 		}
 		else {
-			angle = Vector3.Down();
+			direction = Vector3.Down();
 		}
 
 		for(int i = 0; i < powerSpawns; i++) {
-			world.spawnEntityInWorld(TouhouHelper.createPower(world, pos, angle));
+			world.spawnEntityInWorld(TouhouHelper.createPower(world, pos, direction));
 		}
 
 		int pointSpawns = rand.nextInt(8);
 		for(int i = 0; i < pointSpawns; i++) {
-			world.spawnEntityInWorld(TouhouHelper.createScoreBlue(world, null, pos, angle));
+			world.spawnEntityInWorld(TouhouHelper.createScoreBlue(world, null, pos, direction));
 		}
 
 		if(rand.nextInt(100) < 10) {
-			world.spawnEntityInWorld(TouhouHelper.createBomb(world, pos, angle));
+			world.spawnEntityInWorld(TouhouHelper.createBomb(world, pos, direction));
 		}
 
 		if(rand.nextInt(100) < 2) {
-			world.spawnEntityInWorld(TouhouHelper.createLife(world, pos, angle));
+			world.spawnEntityInWorld(TouhouHelper.createLife(world, pos, direction));
 		}
 	}
 }

@@ -189,11 +189,11 @@ public class TouhouHelper {
 	 * @param world The world
 	 * @param target The target if the entity should home in on the target
 	 * @param pos The position for the entity. Will be fuzzed.
-	 * @param angle The angle that the entity will go in.
+	 * @param direction The direction that the entity will go in.
 	 * @return The score entity
 	 */
-	public static EntityFallingData createScoreGreen(World world, @Nullable Entity target, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_GREEN, fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), target,
+	public static EntityFallingData createScoreGreen(World world, @Nullable Entity target, Vector3 pos, Vector3 direction) {
+		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_GREEN, fuzzPosition(pos), Vector3.limitRandomDirection(direction, 7.5F), target,
 				10);
 	}
 
@@ -202,11 +202,11 @@ public class TouhouHelper {
 	 * @param world The world
 	 * @param target The target if the entity should home in on the target
 	 * @param pos The position for the entity. Will be fuzzed.
-	 * @param angle The angle that the entity will go in.
+	 * @param direction The direction that the entity will go in.
 	 * @return The score entity
 	 */
-	public static EntityFallingData createScoreBlue(World world, @Nullable Entity target, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_BLUE, fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), target,
+	public static EntityFallingData createScoreBlue(World world, @Nullable Entity target, Vector3 pos, Vector3 direction) {
+		return new EntityFallingData(world, EntityFallingData.DataType.SCORE_BLUE, fuzzPosition(pos), Vector3.limitRandomDirection(direction, 7.5F), target,
 				100);
 	}
 
@@ -214,22 +214,22 @@ public class TouhouHelper {
 	 * Creates a power entity.
 	 * @param world The world
 	 * @param pos The position for the entity. Will be fuzzed.
-	 * @param angle The angle that the entity will go in.
+	 * @param direction The direction that the entity will go in.
 	 * @return The score entity
 	 */
-	public static EntityFallingData createPower(World world, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.POWER, fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 0.05F);
+	public static EntityFallingData createPower(World world, Vector3 pos, Vector3 direction) {
+		return new EntityFallingData(world, EntityFallingData.DataType.POWER, fuzzPosition(pos), Vector3.limitRandomDirection(direction, 7.5F), null, 0.05F);
 	}
 
 	/**
 	 * Creates a big power entity.
 	 * @param world The world
 	 * @param pos The position for the entity. Will be fuzzed.
-	 * @param angle The angle that the entity will go in.
+	 * @param direction The direction that the entity will go in.
 	 * @return The score entity
 	 */
-	public static EntityFallingData createBigPower(World world, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.BIG_POWER, fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null,
+	public static EntityFallingData createBigPower(World world, Vector3 pos, Vector3 direction) {
+		return new EntityFallingData(world, EntityFallingData.DataType.BIG_POWER, fuzzPosition(pos), Vector3.limitRandomDirection(direction, 7.5F), null,
 				1F);
 	}
 
@@ -237,22 +237,22 @@ public class TouhouHelper {
 	 * Creates a life entity.
 	 * @param world The world
 	 * @param pos The position for the entity. Will be fuzzed.
-	 * @param angle The angle that the entity will go in.
+	 * @param direction The direction that the entity will go in.
 	 * @return The score entity
 	 */
-	public static EntityFallingData createLife(World world, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.LIFE, fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 1);
+	public static EntityFallingData createLife(World world, Vector3 pos, Vector3 direction) {
+		return new EntityFallingData(world, EntityFallingData.DataType.LIFE, fuzzPosition(pos), Vector3.limitRandomDirection(direction, 7.5F), null, 1);
 	}
 
 	/**
 	 * Creates a bomb entity.
 	 * @param world The world
 	 * @param pos The position for the entity. Will be fuzzed.
-	 * @param angle The angle that the entity will go in.
+	 * @param direction The direction that the entity will go in.
 	 * @return The score entity
 	 */
-	public static EntityFallingData createBomb(World world, Vector3 pos, Vector3 angle) {
-		return new EntityFallingData(world, EntityFallingData.DataType.BOMB, fuzzPosition(pos), Vector3.angleLimitRandom(angle, 7.5F), null, 1);
+	public static EntityFallingData createBomb(World world, Vector3 pos, Vector3 direction) {
+		return new EntityFallingData(world, EntityFallingData.DataType.BOMB, fuzzPosition(pos), Vector3.limitRandomDirection(direction, 7.5F), null, 1);
 	}
 
 	/**
@@ -271,10 +271,10 @@ public class TouhouHelper {
 	public static void createChargeSphere(Entity entity, int amount, double offset, double divSpeed, float r, float g, float b, int lifetime) {
 		Vector3 center = new Vector3(entity.posX, entity.posY + (entity.height / 2), entity.posZ);
 		Vector3 offsetPos = center.offset(Vector3.randomVector(), offset);
-		Vector3 angleToCenter = ((Vector3)Vector3.angleToPos(offsetPos, center)).divide(divSpeed);
+		Vector3 directionToCenter = ((Vector3)Vector3.directionToPos(offsetPos, center)).divide(divSpeed);
 
 		for(int i = 0; i < amount; i++) {
-			ParticleUtil.spawnParticleGlow(entity.world, offsetPos, angleToCenter, r, g, b, 1F, lifetime, GlowTexture.MOTE);
+			ParticleUtil.spawnParticleGlow(entity.world, offsetPos, directionToCenter, r, g, b, 1F, lifetime, GlowTexture.MOTE);
 		}
 	}
 

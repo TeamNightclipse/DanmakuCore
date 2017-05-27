@@ -104,7 +104,7 @@ public abstract class SpellcardEntity implements INBTSerializable<NBTTagCompound
 		return getTarget().map(Vector3::new);
 	}
 
-	public Optional<Vector3> angleUserToTarget() {
+	public Optional<Vector3> directionUserToTarget() {
 		return posTarget().map(v -> v.subtract(posUser()).normalize());
 	}
 

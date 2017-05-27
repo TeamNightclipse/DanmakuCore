@@ -67,7 +67,7 @@ public abstract class Form extends RegistryValueShootable<Form> {
 	 * @return If the danmaku should be allowed to fire.
 	 */
 	@Override
-	public boolean onShootDanmaku(@Nullable EntityLivingBase user, boolean alternateMode, Vector3 pos, Vector3 angle) {
+	public boolean onShootDanmaku(@Nullable EntityLivingBase user, boolean alternateMode, Vector3 pos, Vector3 direction) {
 		return true;
 	}
 

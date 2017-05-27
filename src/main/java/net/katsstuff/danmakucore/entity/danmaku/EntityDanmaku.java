@@ -52,7 +52,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	public static final double EPSILON = 1E-5;
 
 	private static final String NBT_SHOT_DATA = "shotData";
-	private static final String NBT_ANGLE = "angle";
+	private static final String NBT_DIRECTION = "direction";
 	private static final String NBT_ROTATION = "rotation";
 	private static final String NBT_MOVEMENT = "movement";
 	private static final String NBT_SOURCE_UUID = "sourceUUID";
@@ -67,7 +67,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	@LogicalSideOnly(Side.SERVER)
 	private Entity source;
 	@LogicalSideOnly(Side.SERVER)
-	private Vector3 angle;
+	private Vector3 direction;
 	@LogicalSideOnly(Side.SERVER)
 	private MovementData movement;
 	@LogicalSideOnly(Side.SERVER)
@@ -98,22 +98,22 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		posZ -= MathHelper.sin((float)Math.toRadians(rotationYaw)) * 0.16F;
 		setPosition(posX, posY, posZ);
 
-		angle = new Vector3(user.getLookVec());
+		direction = new Vector3(user.getLookVec());
 		resetMotion();
 	}
 
-	public EntityDanmaku(World world, ShotData shot, Vector3 pos, Vector3 angle, MovementData movement) {
+	public EntityDanmaku(World world, ShotData shot, Vector3 pos, Vector3 direction, MovementData movement) {
 		this(world, shot);
-		this.angle = angle;
+		this.direction = direction;
 		this.movement = movement;
 		rotation = RotationData.none();
 		setPosition(pos.x(), pos.y(), pos.z());
 		resetMotion();
 	}
 
-	public EntityDanmaku(World world, @Nullable EntityLivingBase user, @Nullable Entity source, ShotData shot, Vector3 pos, Vector3 angle, float
+	public EntityDanmaku(World world, @Nullable EntityLivingBase user, @Nullable Entity source, ShotData shot, Vector3 pos, Vector3 direction, float
 			roll, MovementData movement, RotationData rotation) {
-		this(world, shot, pos, angle, movement);
+		this(world, shot, pos, direction, movement);
 		this.user = user;
 		this.source = source;
 		setRoll(roll);
@@ -126,7 +126,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	}
 
 	private EntityDanmaku(EntityDanmaku old) {
-		this(old.world, old.user, old.source, old.getShotData(), new Vector3(old), old.angle, old.getRoll(), old.movement, old.rotation);
+		this(old.world, old.user, old.source, old.getShotData(), new Vector3(old), old.direction, old.getRoll(), old.movement, old.rotation);
 	}
 
 	@Override
@@ -180,7 +180,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		prevRotationPitch = rotationPitch = (float)vec.pitch();
 
 		if(!world.isRemote) {
-			angle = vec.normalize();
+			direction = vec.normalize();
 		}
 	}
 
@@ -248,29 +248,29 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	}
 
 	/**
-	 * Updates the motion to the current angle.
+	 * Updates the motion to the current direction.
 	 */
 	public void setSpeed(double speed) {
-		motionX = angle.x() * speed;
-		motionY = angle.y() * speed;
-		motionZ = angle.z() * speed;
+		motionX = direction.x() * speed;
+		motionY = direction.y() * speed;
+		motionZ = direction.z() * speed;
 	}
 
 	public void addSpeed(double speed) {
-		motionX += angle.x() * speed;
-		motionY += angle.y() * speed;
-		motionZ += angle.z() * speed;
+		motionX += direction.x() * speed;
+		motionY += direction.y() * speed;
+		motionZ += direction.z() * speed;
 	}
 
 	@SuppressWarnings("WeakerAccess")
 	public void resetMotion() {
 		double speedOriginal = getMovementData().getSpeedOriginal();
-		motionX = angle.x() * speedOriginal;
-		motionY = angle.y() * speedOriginal;
-		motionZ = angle.z() * speedOriginal;
+		motionX = direction.x() * speedOriginal;
+		motionY = direction.y() * speedOriginal;
+		motionZ = direction.z() * speedOriginal;
 
-		prevRotationYaw = rotationYaw = (float)angle.yaw();
-		prevRotationPitch = rotationPitch = (float)angle.pitch();
+		prevRotationYaw = rotationYaw = (float)direction.yaw();
+		prevRotationPitch = rotationPitch = (float)direction.pitch();
 	}
 
 	@Override
@@ -323,12 +323,12 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		return Optional.ofNullable(source);
 	}
 
-	public Vector3 getAngle() {
-		return angle;
+	public Vector3 getDirection() {
+		return direction;
 	}
 
-	public void setAngle(Vector3 angle) {
-		this.angle = angle;
+	public void setDirection(Vector3 direction) {
+		this.direction = direction;
 	}
 
 	public MovementData getMovementData() {
@@ -413,7 +413,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	public void writeEntityToNBT(NBTTagCompound nbtTag) {
 		getUser().ifPresent(living -> nbtTag.setUniqueId(NBT_USER_UUID, living.getUniqueID()));
 		getSource().ifPresent(entity -> nbtTag.setUniqueId(NBT_SOURCE_UUID, entity.getUniqueID()));
-		NBTHelper.setVector(nbtTag, NBT_ANGLE, angle);
+		NBTHelper.setVector(nbtTag, NBT_DIRECTION, direction);
 
 		nbtTag.setTag(NBT_MOVEMENT, movement.serializeNBT());
 		nbtTag.setTag(NBT_ROTATION, rotation.serializeNBT());
@@ -426,7 +426,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 	@Override
 	public void readEntityFromNBT(NBTTagCompound nbtTag) {
-		angle = NBTHelper.getVector(nbtTag, NBT_ANGLE);
+		direction = NBTHelper.getVector(nbtTag, NBT_DIRECTION);
 		movement = MovementData.fromNBT(nbtTag.getCompoundTag(NBT_MOVEMENT));
 		rotation = RotationData.fromNBT(nbtTag.getCompoundTag(NBT_ROTATION));
 
@@ -507,27 +507,27 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 			return Optional.empty();
 		});
-		Vector3 angle = target.map(to -> Vector3.angleToEntity(this, to)).orElse(Vector3.Down());
+		Vector3 direction = target.map(to -> Vector3.directionToEntity(this, to)).orElse(Vector3.Down());
 
 		if(shot.sizeZ() > 1F && shot.sizeZ() / shot.sizeX() > 3) {
 			double zPos = 0.0D;
 			while(zPos < shot.sizeZ()) {
-				Vector3 realPos = pos.offset(angle, zPos);
+				Vector3 realPos = pos.offset(direction, zPos);
 
-				world.spawnEntityInWorld(TouhouHelper.createScoreGreen(world, target.orElse(null), realPos, angle));
+				world.spawnEntityInWorld(TouhouHelper.createScoreGreen(world, target.orElse(null), realPos, direction));
 				zPos += 1D;
 			}
 			setDead();
 		}
 		else {
-			world.spawnEntityInWorld(TouhouHelper.createScoreGreen(world, target.orElse(null), pos, angle));
+			world.spawnEntityInWorld(TouhouHelper.createScoreGreen(world, target.orElse(null), pos, direction));
 			setDead();
 		}
 	}
 
 	@Override
 	public Vec3d getLookVec() {
-		return angle.toVec3d();
+		return direction.toVec3d();
 	}
 
 	@Override

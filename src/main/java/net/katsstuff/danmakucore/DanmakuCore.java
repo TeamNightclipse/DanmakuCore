@@ -85,9 +85,9 @@ public class DanmakuCore {
 			Vec3i directionVec = facing.getDirectionVec();
 
 			Vector3 pos = new Vector3(iposition.getX(), iposition.getY(), iposition.getZ());
-			Vector3 angle = new Vector3(directionVec.getX(), directionVec.getY(), directionVec.getZ());
+			Vector3 direction = new Vector3(directionVec.getX(), directionVec.getY(), directionVec.getZ());
 
-			if(ItemDanmaku.shootDanmaku(stack, source.getWorld(), null, false, pos.asImmutable(), angle, 0D)) {
+			if(ItemDanmaku.shootDanmaku(stack, source.getWorld(), null, false, pos.asImmutable(), direction, 0D)) {
 				--stack.stackSize;
 			}
 			DanmakuHelper.playShotSound(source.getWorld(), pos);

@@ -131,8 +131,8 @@ public class ItemDanmaku extends ItemBase {
 	}
 
 	public static boolean shootDanmaku(ItemStack stack, World world, @Nullable EntityLivingBase player, boolean alternateMode, Vector3 pos,
-			Vector3 angle, double offset) {
-		if(!getController(stack).onShootDanmaku(player, alternateMode, pos, angle)) return false;
+			Vector3 direction, double offset) {
+		if(!getController(stack).onShootDanmaku(player, alternateMode, pos, direction)) return false;
 		int amount = getAmount(stack);
 		double shotSpeed = getSpeed(stack);
 		Pattern danmakuPattern = getPattern(stack);
@@ -141,13 +141,13 @@ public class ItemDanmaku extends ItemBase {
 
 		float wide;
 		DanmakuTemplate.Builder danmaku = DanmakuTemplate.builder();
-		danmaku.setUser(player).setShot(shot).setWorld(world).setMovementData(shotSpeed, gravity).setPos(pos).setAngle(angle);
+		danmaku.setUser(player).setShot(shot).setWorld(world).setMovementData(shotSpeed, gravity).setPos(pos).setDirection(direction);
 		DanmakuTemplate built = danmaku.build();
 		Quat orientation = Quat.orientationOf(player);
 
 		switch(danmakuPattern) {
 			case LINE:
-				danmaku.setPos(pos.offset(angle, offset));
+				danmaku.setPos(pos.offset(direction, offset));
 
 				for(int i = 1; i <= amount; i++) {
 					danmaku.setMovementData(shotSpeed / amount * i);

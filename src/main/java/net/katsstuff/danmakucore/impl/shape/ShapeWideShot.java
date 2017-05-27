@@ -11,12 +11,10 @@ package net.katsstuff.danmakucore.impl.shape;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.katsstuff.danmakucore.data.Mat4;
 import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
-import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.shape.IShape;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.MathHelper;
@@ -47,8 +45,8 @@ public class ShapeWideShot implements IShape {
 
 			for(int i = 0; i < amount; i++) {
 				Quat rotate = orientation.multiply(Quat.fromAxisAngle(Vector3.Up(), rotateAngle));
-				danmaku.angle = Vector3.Forward().rotate(rotate);
-				danmaku.pos = pos.offset(danmaku.angle, distance);
+				danmaku.direction = Vector3.Forward().rotate(rotate);
+				danmaku.pos = pos.offset(danmaku.direction, distance);
 				danmaku.roll = (float)(orientation.pitch() * MathHelper.sin((float)rotateAngle));
 				EntityDanmaku spawned = this.danmaku.asEntity();
 				danmaku.asEntity().world.spawnEntityInWorld(spawned);

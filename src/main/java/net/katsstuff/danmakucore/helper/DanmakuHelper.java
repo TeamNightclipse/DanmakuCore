@@ -247,18 +247,18 @@ public class DanmakuHelper {
 	}
 
 	//TODO: For simpler cases (no acceleration), there has to be a simpler way to do this
-	public static Vector3 simulateRotation(Vector3 pos, Vector3 angle, MovementData movement, RotationData rotation) {
-		angle = angle.negate(); //Need this for it to work correctly?
+	public static Vector3 simulateRotation(Vector3 pos, Vector3 direction, MovementData movement, RotationData rotation) {
+		direction = direction.negate(); //Need this for it to work correctly?
 		Quat quat = rotation.getRotationQuat();
 		Vector3 origin = pos;
 		double last1 = 0D;
 		double last2 = 0D;
 		int counter = 0;
-		Vector3 motion = simulateSetSpeed(angle, movement.speedOriginal());
+		Vector3 motion = simulateSetSpeed(direction, movement.speedOriginal());
 
 		while(last1 >= last2 && counter < 999) {
-			angle = angle.rotate(quat);
-			motion = simulateAccelerate(movement, motion, angle);
+			direction = direction.rotate(quat);
+			motion = simulateAccelerate(movement, motion, direction);
 			pos = pos.add(motion);
 			last2 = last1;
 			last1 = pos.distanceSquared(origin);
@@ -268,37 +268,37 @@ public class DanmakuHelper {
 		return origin.add(pos.subtract(origin).divide(2));
 	}
 
-	public static Vector3 simulateAccelerate(MovementData movement, Vector3 currentMotion, Vector3 angle) {
+	public static Vector3 simulateAccelerate(MovementData movement, Vector3 currentMotion, Vector3 direction) {
 		double speedAccel = movement.getSpeedAcceleration();
 		double upperSpeedLimit = movement.getUpperSpeedLimit();
 		double lowerSpeedLimit = movement.getLowerSpeedLimit();
 		double currentSpeed = currentMotion.length();
 
 		if(DoubleMath.fuzzyCompare(currentSpeed, upperSpeedLimit, EntityDanmaku.EPSILON) >= 0 && speedAccel >= 0D) {
-			return simulateSetSpeed(angle, upperSpeedLimit);
+			return simulateSetSpeed(direction, upperSpeedLimit);
 		}
 		else if(DoubleMath.fuzzyCompare(currentSpeed, lowerSpeedLimit, EntityDanmaku.EPSILON) <= 0 && speedAccel <= 0D) {
-			return simulateSetSpeed(angle, lowerSpeedLimit);
+			return simulateSetSpeed(direction, lowerSpeedLimit);
 		}
 		else {
-			Vector3 newMotion = simulateAddSpeed(angle, speedAccel, currentMotion);
+			Vector3 newMotion = simulateAddSpeed(direction, speedAccel, currentMotion);
 
 			double newCurrentSpeed = newMotion.length();
 			if(DoubleMath.fuzzyCompare(newCurrentSpeed, upperSpeedLimit, EntityDanmaku.EPSILON) > 0) {
-				return simulateSetSpeed(angle, upperSpeedLimit);
+				return simulateSetSpeed(direction, upperSpeedLimit);
 			}
 			else if(DoubleMath.fuzzyCompare(newCurrentSpeed, lowerSpeedLimit, EntityDanmaku.EPSILON) < 0) {
-				return simulateSetSpeed(angle, lowerSpeedLimit);
+				return simulateSetSpeed(direction, lowerSpeedLimit);
 			}
 			else return newMotion;
 		}
 	}
 
-	public static Vector3 simulateSetSpeed(Vector3 angle, double speed) {
-		return angle.multiply(speed);
+	public static Vector3 simulateSetSpeed(Vector3 direction, double speed) {
+		return direction.multiply(speed);
 	}
 
-	public static Vector3 simulateAddSpeed(Vector3 angle, double speed, Vector3 currentMotion) {
-		return currentMotion.offset(angle, speed);
+	public static Vector3 simulateAddSpeed(Vector3 direction, double speed, Vector3 currentMotion) {
+		return currentMotion.offset(direction, speed);
 	}
 }

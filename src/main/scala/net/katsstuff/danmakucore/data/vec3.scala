@@ -199,7 +199,7 @@ sealed trait AbstractVector3 extends Any {
   /**
 		* Offsets this vec in an angle th given distance.
 		*/
-  def offset(angle: AbstractVector3, distance: Double): Self = this + (angle * distance)
+  def offset(direction: AbstractVector3, distance: Double): Self = this + (direction * distance)
 
   /**
 		* Gets the angle between this vector and the passed in vector.
@@ -214,13 +214,13 @@ sealed trait AbstractVector3 extends Any {
   /**
 		* Rotate this vector around the given point.
 		*/
-  def rotate(angle: Double, point: AbstractVector3): Self = rotate(Quat.fromAxisAngle(point, angle))
+  def rotate(angle: Double, axis: AbstractVector3): Self = rotate(Quat.fromAxisAngle(axis, angle))
 
   /**
 		* Rotate this vector around the given point.
-		* The angle must be in radiens.
+		* The angle must be in radians.
 		*/
-  def rotateRad(angle: Double, point: AbstractVector3): Self = rotate(Quat.fromAxisAngleRad(point, angle))
+  def rotateRad(angle: Double, axis: AbstractVector3): Self = rotate(Quat.fromAxisAngleRad(axis, angle))
 
   /**
 		* Calculates the yaw of this vector in radians.
@@ -463,11 +463,11 @@ final case class MutableVector3(@BeanProperty var x: Double, @BeanProperty var y
   override def cross(other: AbstractVector3):          MutableVector3 = super.cross(other)
   override def cross(x: Double, y: Double, z: Double): MutableVector3 = super.cross(x, y, z)
 
-  override def offset(angle: AbstractVector3, distance: Double): MutableVector3 = super.offset(angle, distance)
+  override def offset(direction: AbstractVector3, distance: Double): MutableVector3 = super.offset(direction, distance)
 
   override def rotate(quat: Quat):                               MutableVector3 = super.rotate(quat)
-  override def rotate(angle: Double, point: AbstractVector3):    MutableVector3 = super.rotate(angle, point)
-  override def rotateRad(angle: Double, point: AbstractVector3): MutableVector3 = super.rotateRad(angle, point)
+  override def rotate(angle: Double, axis: AbstractVector3):    MutableVector3 = super.rotate(angle, axis)
+  override def rotateRad(angle: Double, axis: AbstractVector3): MutableVector3 = super.rotateRad(angle, axis)
   override def lerp(target: AbstractVector3, alpha: Double):     MutableVector3 = super.lerp(target, alpha)
   override def slerp(target: AbstractVector3, alpha: Double):    MutableVector3 = super.slerp(target, alpha)
 
@@ -527,11 +527,11 @@ final case class Vector3(@BeanProperty x: Double, @BeanProperty y: Double, @Bean
   override def cross(other: AbstractVector3):          Vector3 = super.cross(other)
   override def cross(x: Double, y: Double, z: Double): Vector3 = super.cross(x, y, z)
 
-  override def offset(angle: AbstractVector3, distance: Double): Vector3 = super.offset(angle, distance)
+  override def offset(direction: AbstractVector3, distance: Double): Vector3 = super.offset(direction, distance)
 
   override def rotate(quat: Quat):                               Vector3 = super.rotate(quat)
-  override def rotate(angle: Double, point: AbstractVector3):    Vector3 = super.rotate(angle, point)
-  override def rotateRad(angle: Double, point: AbstractVector3): Vector3 = super.rotateRad(angle, point)
+  override def rotate(angle: Double, axis: AbstractVector3):    Vector3 = super.rotate(angle, axis)
+  override def rotateRad(angle: Double, axis: AbstractVector3): Vector3 = super.rotateRad(angle, axis)
 
   override def lerp(target: AbstractVector3, alpha: Double):  Vector3 = super.lerp(target, alpha)
   override def slerp(target: AbstractVector3, alpha: Double): Vector3 = super.slerp(target, alpha)
@@ -597,25 +597,25 @@ object Vector3 {
     Vector3(-sinYaw * cosPitch, -sinPitch, cosYaw * cosPitch)
   }
 
-  def angleEntity(entity: Entity): Vector3 = fromSpherical(entity.rotationYaw, entity.rotationPitch)
+  def directionEntity(entity: Entity): Vector3 = fromSpherical(entity.rotationYaw, entity.rotationPitch)
 
-  private def angleToPosNotNormalized(posA: AbstractVector3, posB: AbstractVector3): posB.Self = posB - posA
+  private def directionToPosNotNormalized(posA: AbstractVector3, posB: AbstractVector3): posB.Self = posB - posA
 
-  def angleToPos(posA: AbstractVector3, posB: AbstractVector3): AbstractVector3 = angleToPosNotNormalized(posA, posB).normalize
+  def directionToPos(posA: AbstractVector3, posB: AbstractVector3): AbstractVector3 = directionToPosNotNormalized(posA, posB).normalize
 
-  def angleToEntity(from: AbstractVector3, to: Entity): Vector3 = angleToPosNotNormalized(from, new Vector3(to)).normalize
+  def directionToEntity(from: AbstractVector3, to: Entity): Vector3 = directionToPosNotNormalized(from, new Vector3(to)).normalize
 
-  def angleToEntity(from: Entity, to: Entity): Vector3 = angleToPosNotNormalized(new Vector3(from), new Vector3(to)).normalize
+  def directionToEntity(from: Entity, to: Entity): Vector3 = directionToPosNotNormalized(new Vector3(from), new Vector3(to)).normalize
 
-  def angleToLiving(from: AbstractVector3, to: EntityLivingBase): Vector3 = angleToPosNotNormalized(from, new Vector3(to)).normalize
+  def directionToLiving(from: AbstractVector3, to: EntityLivingBase): Vector3 = directionToPosNotNormalized(from, new Vector3(to)).normalize
 
-  def angleToLiving(from: EntityLivingBase, to: EntityLivingBase): Vector3 = angleToPosNotNormalized(new Vector3(from), new Vector3(to)).normalize
+  def directionToLiving(from: EntityLivingBase, to: EntityLivingBase): Vector3 = directionToPosNotNormalized(new Vector3(from), new Vector3(to)).normalize
 
-  def angleRandom: Vector3 = randomVector
+  def randomDirection: Vector3 = randomVector
 
-  def angleLimitRandom(angle: Vector3, limitAngle: Float): Vector3 = {
+  def limitRandomDirection(direction: Vector3, limitAngle: Float): Vector3 = {
     val rotate = rotateRandom
-    angle.rotate(rand.nextFloat * limitAngle - limitAngle / 2.0F, rotate)
+    direction.rotate(rand.nextFloat * limitAngle - limitAngle / 2.0F, rotate)
   }
 
   /* ============================== Misc ============================== */
@@ -664,11 +664,11 @@ object Vector3 {
     override def cross(other: AbstractVector3):          WrappedVec3d = super.cross(other)
     override def cross(x: Double, y: Double, z: Double): WrappedVec3d = super.cross(x, y, z)
 
-    override def offset(angle: AbstractVector3, distance: Double): WrappedVec3d = super.offset(angle, distance)
+    override def offset(direction: AbstractVector3, distance: Double): WrappedVec3d = super.offset(direction, distance)
 
     override def rotate(quat: Quat):                               WrappedVec3d = super.rotate(quat)
-    override def rotate(angle: Double, point: AbstractVector3):    WrappedVec3d = super.rotate(angle, point)
-    override def rotateRad(angle: Double, point: AbstractVector3): WrappedVec3d = super.rotateRad(angle, point)
+    override def rotate(angle: Double, axis: AbstractVector3):    WrappedVec3d = super.rotate(angle, axis)
+    override def rotateRad(angle: Double, axis: AbstractVector3): WrappedVec3d = super.rotateRad(angle, axis)
   }
 
   implicit class DoubleOps(private val double: Double) extends AnyVal {
@@ -689,8 +689,8 @@ object Vector3 {
     }
     val posSourceVec3d = posSource.toVec3d
 
-    val angle    = sourceEntity.getLookVec
-    val posReach = posSource.offset(angle, distanceReach).toVec3d
+    val direction    = sourceEntity.getLookVec
+    val posReach = posSource.offset(direction, distanceReach).toVec3d
     val rayTrace = sourceEntity.world.rayTraceBlocks(posSourceVec3d, posReach, false, false, true)
 
     val distance = if (rayTrace != null) rayTrace.hitVec.distanceTo(posSourceVec3d) else distanceReach
@@ -698,7 +698,7 @@ object Vector3 {
     val foundEntities: Seq[Entity] = sourceEntity.world
       .getEntitiesInAABBexcluding(
         sourceEntity,
-        sourceEntity.getEntityBoundingBox.addCoord(angle.x * distanceReach, angle.y * distanceReach, angle.z * distanceReach).expandXyz(1F),
+        sourceEntity.getEntityBoundingBox.addCoord(direction.x * distanceReach, direction.y * distanceReach, direction.z * distanceReach).expandXyz(1F),
         (entity => filter.test(entity)): GPredicate[Entity]
       )
       .asScala

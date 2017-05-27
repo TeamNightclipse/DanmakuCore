@@ -11,7 +11,6 @@ package net.katsstuff.danmakucore.impl.shape;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.katsstuff.danmakucore.data.Mat4;
 import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
@@ -48,7 +47,7 @@ public class ShapeArrow implements IShape {
 			Vector3 localForward = Vector3.Forward().rotate(orientation);
 			Vector3 localLeft = Vector3.Left().rotate(orientation);
 			Vector3 localRight = Vector3.Right().rotate(orientation);
-			danmaku.angle = localForward;
+			danmaku.direction = localForward;
 
 			for(int i = 0; i < amount; i++) {
 				double newDistance = -i * distance;

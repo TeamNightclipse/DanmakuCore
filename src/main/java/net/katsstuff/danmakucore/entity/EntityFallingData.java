@@ -43,7 +43,7 @@ public class EntityFallingData extends Entity {
 
 	@Nullable
 	private Entity target;
-	private Vector3 angle;
+	private Vector3 direction;
 	private float amount;
 
 	public EntityFallingData(World worldIn) {
@@ -51,12 +51,12 @@ public class EntityFallingData extends Entity {
 		setSize(0.5F, 0.5F);
 	}
 
-	public EntityFallingData(World world, DataType dataType, Vector3 pos, Vector3 angle, @Nullable Entity target, float amount) {
+	public EntityFallingData(World world, DataType dataType, Vector3 pos, Vector3 direction, @Nullable Entity target, float amount) {
 		this(world);
 		setDataType(dataType);
-		setPositionAndRotation(pos.x(), pos.y(), pos.z(), (float)angle.yaw(), (float)angle.pitch());
+		setPositionAndRotation(pos.x(), pos.y(), pos.z(), (float)direction.yaw(), (float)direction.pitch());
 		this.target = target;
-		this.angle = angle;
+		this.direction = direction;
 		this.amount = amount;
 	}
 
@@ -73,10 +73,10 @@ public class EntityFallingData extends Entity {
 
 			Vector3 motion;
 			if(target != null) {
-				motion = Vector3.angleToEntity(this, target);
+				motion = Vector3.directionToEntity(this, target);
 			}
 			else {
-				motion = angle.multiply(0.25);
+				motion = direction.multiply(0.25);
 			}
 
 			motionX = motion.x();
@@ -137,7 +137,7 @@ public class EntityFallingData extends Entity {
 			this.target = targetEntity;
 		}
 
-		angle = NBTHelper.getVector(compound, "angle");
+		direction = NBTHelper.getVector(compound, "direction");
 		amount = compound.getFloat("amount");
 
 		setDataType(DataType.class.getEnumConstants()[compound.getInteger("dataType")]);
@@ -149,7 +149,7 @@ public class EntityFallingData extends Entity {
 			compound.setUniqueId("target", target.getUniqueID());
 		}
 
-		NBTHelper.setVector(compound, "angle", angle);
+		NBTHelper.setVector(compound, "direction", direction);
 		compound.setFloat("amount", amount);
 		compound.setInteger("dataType", getDataType().ordinal());
 	}

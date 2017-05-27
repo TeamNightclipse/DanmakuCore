@@ -29,30 +29,30 @@ public final class DanmakuTemplate {
 	public Entity source;
 	public ShotData shot;
 	public Vector3 pos;
-	public Vector3 angle;
+	public Vector3 direction;
 	public float roll = 0F;
 	public MovementData movement = MovementData.constant(0.4D);
 	public RotationData rotation = RotationData.none();
 
-	private DanmakuTemplate(World world, @Nullable EntityLivingBase user, @Nullable Entity source, ShotData shot, Vector3 pos, Vector3 angle,
+	private DanmakuTemplate(World world, @Nullable EntityLivingBase user, @Nullable Entity source, ShotData shot, Vector3 pos, Vector3 direction,
 			float roll, MovementData movement, RotationData rotation) {
 		this.world = world;
 		this.user = user;
 		this.source = source;
 		this.shot = shot;
 		this.pos = pos;
-		this.angle = angle;
+		this.direction = direction;
 		this.roll = roll;
 		this.movement = movement;
 		this.rotation = rotation;
 	}
 
 	public DanmakuTemplate copy() {
-		return new DanmakuTemplate(world, user, source, shot, pos, angle, roll, movement, rotation);
+		return new DanmakuTemplate(world, user, source, shot, pos, direction, roll, movement, rotation);
 	}
 
 	public EntityDanmaku asEntity() {
-		return new EntityDanmaku(world, user, source, shot, pos, angle, roll, movement, rotation);
+		return new EntityDanmaku(world, user, source, shot, pos, direction, roll, movement, rotation);
 	}
 
 	public static Builder builder() {
@@ -69,7 +69,7 @@ public final class DanmakuTemplate {
 		public Entity source;
 		public ShotData shot;
 		public Vector3 pos;
-		public Vector3 angle;
+		public Vector3 direction;
 		public float roll = 0F;
 		public MovementData movement = MovementData.constant(0.4D);
 		public RotationData rotation = RotationData.none();
@@ -97,16 +97,16 @@ public final class DanmakuTemplate {
 				else throw new IllegalArgumentException("Could not find a pos for builder, and neither source or user is set");
 			}
 
-			if(angle == null) {
+			if(direction == null) {
 				if(source != null) {
-					angle = Vector3.angleEntity(source);
+					direction = Vector3.directionEntity(source);
 				}
-				else throw new IllegalArgumentException("could not find an angle for builder, and neither source or user is set");
+				else throw new IllegalArgumentException("could not find an direction for builder, and neither source or user is set");
 			}
 
 			if(shot == null) throw new IllegalArgumentException("Make sure that shot is set");
 
-			return new DanmakuTemplate(world, user, source, shot, pos, angle, roll, movement, rotation);
+			return new DanmakuTemplate(world, user, source, shot, pos, direction, roll, movement, rotation);
 		}
 
 		public Builder setWorld(World world) {
@@ -134,8 +134,8 @@ public final class DanmakuTemplate {
 			return this;
 		}
 
-		public Builder setAngle(Vector3 angle) {
-			this.angle = angle;
+		public Builder setDirection(Vector3 direction) {
+			this.direction = direction;
 			return this;
 		}
 
@@ -191,12 +191,12 @@ public final class DanmakuTemplate {
 			return setRotationData(new RotationData(true, rotation, 9999));
 		}
 
-		public Builder setRotationData(Vector3 rotation, float rotationAngle) {
-			return setRotationData(new RotationData(true, Quat.fromAxisAngle(rotation, rotationAngle), 9999));
+		public Builder setRotationData(Vector3 axis, float angle) {
+			return setRotationData(new RotationData(true, Quat.fromAxisAngle(axis, angle), 9999));
 		}
 
-		public Builder setRotationData(Vector3 rotation, float rotationAngle, int rotationEndTime) {
-			return setRotationData(new RotationData(true, Quat.fromAxisAngle(rotation, rotationAngle), rotationEndTime));
+		public Builder setRotationData(Vector3 axis, float angle, int endTime) {
+			return setRotationData(new RotationData(true, Quat.fromAxisAngle(axis, angle), endTime));
 		}
 	}
 }

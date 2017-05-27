@@ -45,8 +45,8 @@ public class PhaseTypeFallback extends PhaseType {
 				EntityDanmakuMob user = getEntity();
 				LogHelper.warn("This is the fallback phase being used for" + user + ". If you are seeing this something broke");
 				Vector3 pos = user.pos();
-				Vector3 angle = Vector3.angleEntity(user);
-				if(!variant.onShootDanmaku(user, false, pos, angle)) return;
+				Vector3 direction = Vector3.directionEntity(user);
+				if(!variant.onShootDanmaku(user, false, pos, direction)) return;
 				DanmakuTemplate.Builder builder = variant.toBuilder();
 				DanmakuCreationHelper.createCircleShot(Quat.orientationOf(user), builder.setUser(user).build(), amount, 0F, 0.2D);
 			}
