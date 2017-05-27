@@ -160,22 +160,13 @@ abstract sealed class AbstractQuat {
   /**
 		* Creates a rotated vec from the passed in vec.
 		*/
-  //From apache commons math
+  //TODO: Find a more efficient solution
   def rotate(vec3: AbstractVector3): vec3.Self = {
-    val s = this.x * vec3.x + this.y * vec3.y + this.z * vec3.z
-
-    vec3.create(
-      2 * (w * (vec3.x * w - (y * vec3.z - z * vec3.y)) + s * x) - vec3.x,
-      2 * (w * (vec3.y * w - (z * vec3.x - x * vec3.z)) + s * y) - vec3.y,
-      2 * (w * (vec3.z * w - (x * vec3.y - y * vec3.x)) + s * z) - vec3.z
-    )
-
-    /*
-		val vecQuat = create(vec3.x, vec3.y, vec3.z, 0)
-		val ret = this * vecQuat * conjugate
-		vec3.create(ret.x, ret.y, ret.z)
-		*/
+    val pure = Quat(vec3.x, vec3.y, vec3.z, 0)
+    val multiplied = this * pure * this.conjugate
+    vec3.create(multiplied.x, multiplied.y, multiplied.z)
   }
+  def *(vec3: AbstractVector3): vec3.Self = rotate(vec3)
 
   def conjugate: Self = create(-x, -y, -z, w)
 
@@ -411,16 +402,20 @@ object Quat {
 
   def fromAxisAngle(vec3: AbstractVector3, angle: Double): Quat = fromAxisAngleRad(vec3, Math.toRadians(angle))
 
-  def fromEuler(yaw: Float, pitch: Float, roll: Float): Quat =
-    fromEulerRad(Math.toRadians(yaw).toFloat, Math.toRadians(pitch).toFloat, Math.toRadians(roll).toFloat)
+  def fromEuler(yaw: Float, pitch: Float, roll: Float): Quat = {
+    val clampedPitch = if (pitch > 90F || pitch < -90F) Math.IEEEremainder(pitch, 180F) else pitch
+    val clampedYaw   = if (yaw > 180F || yaw < -180F) Math.IEEEremainder(yaw, 360F) else yaw
+
+    fromEulerRad(Math.toRadians(clampedYaw).toFloat, Math.toRadians(clampedPitch).toFloat, Math.toRadians(roll).toFloat)
+  }
 
   def fromEulerRad(yaw: Float, pitch: Float, roll: Float): Quat = {
     val cy = MathHelper.cos(yaw / 2)
-    val cp = MathHelper.cos(-pitch / 2)
+    val cp = MathHelper.cos(pitch / 2)
     val cr = MathHelper.cos(roll / 2)
 
-    val sy = MathHelper.sin(yaw / 2)
-    val sp = MathHelper.sin(-pitch / 2)
+    val sy = -MathHelper.sin(yaw / 2)
+    val sp = MathHelper.sin(pitch / 2)
     val sr = MathHelper.sin(roll / 2)
 
     val w = cy * cr * cp - sy * sr * sp
@@ -492,5 +487,9 @@ object Quat {
       val w = (yx - xy) * s
       Quat(x, y, z, w)
     }
+  }
+
+  implicit class DoubleOps(private val double: Double) extends AnyVal {
+    def *(quat: AbstractQuat): quat.Self = quat * double
   }
 }
