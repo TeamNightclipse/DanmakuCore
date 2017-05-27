@@ -5,19 +5,14 @@ buildscript {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
-        classpath "gradle.plugin.com.github.maiflai:gradle-scalatest:0.15"
     }
 }
 
 apply plugin: 'scala'
 apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: "com.github.maiflai.scalatest"
 
 ext.configFile = file('build.properties')
 ext.config = parseConfig(configFile)
@@ -59,8 +54,9 @@ minecraft {
 }
 
 dependencies {
-    testCompile 'org.scalatest:scalatest_2.11:3.0.1'
-    testRuntime 'org.pegdown:pegdown:1.4.2'
+    testCompile 'junit:junit:4.12'
+    testCompile('org.scalatest:scalatest_2.11:3.0.1')
+    testCompile('org.scalacheck:scalacheck_2.11:1.13.4')
 }
 
 processResources {
