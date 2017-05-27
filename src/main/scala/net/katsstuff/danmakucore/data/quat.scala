@@ -98,12 +98,12 @@ abstract sealed class AbstractQuat {
   /**
 		* Gets the length of this quat.
 		*/
-  def length: Double = Math.sqrt(x * x + y * y + z * z)
+  def length: Double = Math.sqrt(x * x + y * y + z * z + w * w)
 
   /**
 		* Gets the length of this quat squared.
 		*/
-  def lengthSquared: Double = x * x + y * y + z * z
+  def lengthSquared: Double = x * x + y * y + z * z + w * w
 
   /**
 		* Gets the pole of the gimbal lock, if any.
