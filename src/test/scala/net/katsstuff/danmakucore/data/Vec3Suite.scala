@@ -45,19 +45,19 @@ class Vec3Suite extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
 
   test("a + b = (ax + bx)ex + (ay + by)ey + (az + bz)ez") {
     forAll (randPos, randPos) { (a: Vector3, b: Vector3) =>
-      a + b shouldEqual ex * (a.x + b.x) + ey * (a.y + b.y) + ez * (a.z + b.z)
+      a + b shouldEqual (a.x + b.x) * ex + (a.y + b.y) * ey +  (a.z + b.z) * ez
     }
   }
 
   test("a - b = (ax - bx)ex + (ay - by)ey + (az - bz)ez") {
     forAll (randPos, randPos) { (a: Vector3, b: Vector3) =>
-      a - b shouldEqual ex * (a.x - b.x) + ey * (a.y - b.y) + ez * (a.z - b.z)
+      a - b shouldEqual (a.x - b.x) * ex + (a.y - b.y) * ey + (a.z - b.z) * ez
     }
   }
 
   test("r * a = (r * ax)ex + (r * ay)ey + (r * az)ez") {
     forAll (saneDouble, randPos) { (r: Double, a: Vector3) =>
-      a * r shouldEqual ex * (r * a.x) + ey * (r * a.y) + ez * (r * a.z)
+      r * a shouldEqual (r * a.x) * ex + (r * a.y) * ey + (r * a.z) * ez
     }
   }
 

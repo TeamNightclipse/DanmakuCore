@@ -671,6 +671,11 @@ object Vector3 {
     override def rotateRad(angle: Double, point: AbstractVector3): WrappedVec3d = super.rotateRad(angle, point)
   }
 
+  implicit class DoubleOps(private val double: Double) extends AnyVal {
+    def +(vec: AbstractVector3): vec.Self = vec + double
+    def *(vec: AbstractVector3): vec.Self = vec * double
+  }
+
   import scala.language.implicitConversions
 
   implicit def toVec3d(vector3: AbstractVector3): Vec3d = vector3.toVec3d
