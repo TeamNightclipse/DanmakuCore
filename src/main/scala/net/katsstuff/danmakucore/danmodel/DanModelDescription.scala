@@ -6,6 +6,6 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danmakucore.entity.danmaku.form.danobj
+package net.katsstuff.danmakucore.danmodel
 
-class DanmakuParseException(msg: String) extends Exception(msg)
+case class DanModelDescription(name: String, description: String, author: String)
