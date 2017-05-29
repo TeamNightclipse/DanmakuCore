@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 
 import net.katsstuff.danmakucore.client.particle.GlowTexture;
 import net.katsstuff.danmakucore.client.particle.IGlowParticle;
+import net.katsstuff.danmakucore.danmodel.DanModelReader;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.EntityFallingData;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
@@ -147,7 +148,8 @@ public class CommonProxy {
 				new FormStar(),
 				new FormControl(),
 				new FormFire(),
-				new FormLaser()
+				new FormLaser(),
+				DanModelReader.createForm(new ResourceLocation(LibMod.MODID, "models/form/heart"), LibFormName.HEART).get()
 		);
 	}
 
@@ -205,7 +207,8 @@ public class CommonProxy {
 				new DanmakuVariantGeneric(LibDanmakuVariantName.POINTED_LASER_SHORT, () -> LibShotData.SHOT_POINTED_LASER_SHORT, 0.4D),
 				new DanmakuVariantGeneric(LibDanmakuVariantName.POINTED_LASER_LONG, () -> LibShotData.SHOT_POINTED_LASER_LONG, 0.3D),
 				new DanmakuVariantGeneric(LibDanmakuVariantName.FIRE, () -> LibShotData.SHOT_FIRE, 0.4D),
-				new DanmakuVariantGeneric(LibDanmakuVariantName.LASER, () -> LibShotData.SHOT_LASER, 0D)
+				new DanmakuVariantGeneric(LibDanmakuVariantName.LASER, () -> LibShotData.SHOT_LASER, 0D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.HEART, () -> LibShotData.SHOT_HEART, 0.4D)
 		);
 	}
 

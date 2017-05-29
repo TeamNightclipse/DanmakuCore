@@ -23,4 +23,5 @@ public class LibFormName {
 	public static final String CONTROL = "control";
 	public static final String FIRE = "fire";
 	public static final String LASER = "laser";
+	public static final String HEART = "heart";
 }

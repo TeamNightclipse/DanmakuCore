@@ -29,4 +29,5 @@ public class LibDanmakuVariantName {
 	public static final String PELLET = "pellet";
 	public static final String FIRE = "fire";
 	public static final String LASER = "laser";
+	public static final String HEART = "heart";
 }
