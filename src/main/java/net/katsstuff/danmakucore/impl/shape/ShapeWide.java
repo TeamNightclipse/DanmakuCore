@@ -19,7 +19,7 @@ import net.katsstuff.danmakucore.shape.IShape;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.MathHelper;
 
-public class ShapeWideShot implements IShape {
+public class ShapeWide implements IShape {
 
 	private final DanmakuTemplate danmaku;
 	private final int amount;
@@ -28,7 +28,7 @@ public class ShapeWideShot implements IShape {
 	private final double distance;
 	private final Set<EntityDanmaku> set = new HashSet<>();
 
-	public ShapeWideShot(DanmakuTemplate danmaku, int amount, float wideAngle, float baseAngle, double distance) {
+	public ShapeWide(DanmakuTemplate danmaku, int amount, float wideAngle, float baseAngle, double distance) {
 		this.danmaku = danmaku;
 		this.amount = amount;
 		this.wideAngle = wideAngle;

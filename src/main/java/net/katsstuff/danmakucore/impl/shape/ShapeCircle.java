@@ -36,7 +36,7 @@ public class ShapeCircle implements IShape {
 		if(amount % 2 == 0) {
 			baseAngle += 360F / (amount * 2F);
 		}
-		ShapeWideShot shape = new ShapeWideShot(danmaku, amount, 360F - 360F / amount, baseAngle, distance);
+		ShapeWide shape = new ShapeWide(danmaku, amount, 360F - 360F / amount, baseAngle, distance);
 		return shape.drawForTick(pos, orientation, tick);
 	}
 }

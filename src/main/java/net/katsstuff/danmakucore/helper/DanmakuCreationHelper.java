@@ -18,7 +18,7 @@ import net.katsstuff.danmakucore.impl.shape.ShapeRandomRing;
 import net.katsstuff.danmakucore.impl.shape.ShapeRing;
 import net.katsstuff.danmakucore.impl.shape.ShapeSphere;
 import net.katsstuff.danmakucore.impl.shape.ShapeStar;
-import net.katsstuff.danmakucore.impl.shape.ShapeWideShot;
+import net.katsstuff.danmakucore.impl.shape.ShapeWide;
 
 /**
  * A few helper methods for the most used shapes.
@@ -26,7 +26,7 @@ import net.katsstuff.danmakucore.impl.shape.ShapeWideShot;
 public class DanmakuCreationHelper {
 
 	public static Set<EntityDanmaku> createWideShot(Quat orientation, DanmakuTemplate danmaku, int amount, float wideAngle, float baseAngle, double distance) {
-		ShapeWideShot shape = new ShapeWideShot(danmaku, amount, wideAngle, baseAngle, distance);
+		ShapeWide shape = new ShapeWide(danmaku, amount, wideAngle, baseAngle, distance);
 		return shape.drawForTick(danmaku.pos, orientation, 0).getSecond();
 	}
 

@@ -15,7 +15,7 @@ import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.living.phase.Phase;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseManager;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
-import net.katsstuff.danmakucore.impl.shape.ShapeWideShot;
+import net.katsstuff.danmakucore.impl.shape.ShapeWide;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class PhaseTypeShapeWide extends PhaseType {
@@ -49,7 +49,7 @@ public class PhaseTypeShapeWide extends PhaseType {
 					.setMovementData(movementData)
 					.setRotationData(rotationData)
 					.build();
-			shape = new ShapeWideShot(template, amount, wideAngle, baseAngle, distance);
+			shape = new ShapeWide(template, amount, wideAngle, baseAngle, distance);
 		}
 
 		@Override
@@ -75,7 +75,7 @@ public class PhaseTypeShapeWide extends PhaseType {
 					.setMovementData(movementData)
 					.setRotationData(rotationData)
 					.build();
-			shape = new ShapeWideShot(template, amount, wideAngle, baseAngle, distance);
+			shape = new ShapeWide(template, amount, wideAngle, baseAngle, distance);
 		}
 	}
 }
