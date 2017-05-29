@@ -37,6 +37,7 @@ A vertex consists of (in order)
 
 Descriptions from here: https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glBegin.xml
 Valid glModes:
+
 | Name               | Int representation | Description                                                                                                                                                                                                                                                                                                                                                                                    |
 |--------------------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | GL_POINTS          | 0x0                | Treats each vertex as a single point.Vertex `n` defines point `n`. `N` points are drawn.                                                                                                                                                                                                                                                                                                       |
