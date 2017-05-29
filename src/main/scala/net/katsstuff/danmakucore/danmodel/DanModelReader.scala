@@ -10,54 +10,25 @@ package net.katsstuff.danmakucore.danmodel
 
 import java.io.{DataInput, DataInputStream}
 import java.nio.ByteBuffer
-import java.nio.file.{Files, Paths}
 
 import scala.annotation.tailrec
 import scala.util.Try
 
-import org.lwjgl.opengl.GL11
-
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
-import net.katsstuff.danmakucore.entity.danmaku.form.{Form, IRenderForm}
-import net.katsstuff.danmakucore.impl.form.FormGeneric
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.entity.RenderManager
+import net.katsstuff.danmakucore.DanmakuCore
+import net.katsstuff.danmakucore.entity.danmaku.form.Form
+import net.katsstuff.danmakucore.helper.LogHelper
 import net.minecraft.util.ResourceLocation
 
 object DanModelReader {
 
-  def createForm(resource: ResourceLocation): Try[Form] = {
-    readModel(resource).map { case (_, model) =>
-        new FormGeneric() {
-          override protected def createRenderer(): IRenderForm = new IRenderForm {
-            override def renderForm(danmaku: EntityDanmaku, x: Double, y: Double, z: Double,
-                entityYaw: Float, partialTicks: Float, man: RenderManager): Unit = {
-              val tes = Tessellator.getInstance
-              val vb = tes.getBuffer
-              val pitch = danmaku.rotationPitch
-              val yaw = danmaku.rotationYaw
-              val roll = danmaku.getRoll
-              val shotData = danmaku.getShotData
-              val sizeX = shotData.getSizeX
-              val sizeY = shotData.getSizeY
-              val sizeZ = shotData.getSizeZ
-              val color = shotData.getColor
-
-              GL11.glRotatef(-yaw, 0F, 1F, 0F)
-              GL11.glRotatef(pitch, 1F, 0F, 0F)
-              GL11.glRotatef(roll, 0F, 0F, 1F)
-              GL11.glScalef(sizeX, sizeY, sizeZ)
-
-              model.render(vb, tes, color)
-            }
-          }
-        }
-    }
+  def createForm(resource: ResourceLocation, name: String): Try[Form] = {
+    readModel(resource).map { case (_, model) => new FormDanModel(name, model) }
   }
 
   def readModel(resource: ResourceLocation): Try[(DanModelDescription, DanModel)] = Try {
-    val url = getClass.getResource(s"assets/${resource.getResourceDomain}/${resource.getResourcePath}")
-    val is: DataInput = new DataInputStream(Files.newInputStream(Paths.get(url.toURI)))
+    val rawIs = classOf[DanmakuCore].getResourceAsStream(s"/assets/${resource.getResourceDomain}/${resource.getResourcePath}.danmodel")
+    if(rawIs == null) throw new IllegalArgumentException("No model at that location")
+    val is: DataInput = new DataInputStream(rawIs)
 
 
     val danModel = readString(is)
@@ -78,6 +49,7 @@ object DanModelReader {
     val data = new Array[Byte](modelLength)
     is.readFully(data)
 
+    LogHelper.trace(s"Verifying danmodel $name found at $resource")
     verifyData(data, pieces)
 
     val model = new DanModel(data, pieces, danAlpha)
@@ -92,7 +64,7 @@ object DanModelReader {
   }
 
   def readString(buf: ByteBuffer): String = {
-    val array = new Array[Byte](buf.getShort)
+    val array = new Array[Byte](buf.getShort())
     buf.get(array)
     new String(array, "UTF-8")
   }
@@ -103,9 +75,12 @@ object DanModelReader {
     @tailrec
     def verifyPiece(i: Int): Unit = {
       if(i < pieces) {
-        buf.getInt() //glMode
+        LogHelper.trace(s"Verifying piece $i")
+        LogHelper.trace(s"GLMode: ${buf.getInt()}")
         val vertices = buf.getInt()
         val useDanColor = buf.get() != 0
+        LogHelper.trace(s"Vertices: $vertices")
+        LogHelper.trace(s"UseDanColor: $useDanColor")
 
         @tailrec
         def verifyVertex(j: Int): Unit = {
@@ -113,7 +88,6 @@ object DanModelReader {
             buf.getDouble() //x
             buf.getDouble() //y
             buf.getDouble() //z
-
             buf.getDouble() //u
             buf.getDouble() //v
 
