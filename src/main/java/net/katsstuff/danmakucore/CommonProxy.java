@@ -149,7 +149,8 @@ public class CommonProxy {
 				new FormControl(),
 				new FormFire(),
 				new FormLaser(),
-				DanModelReader.createForm(new ResourceLocation(LibMod.MODID, "models/form/heart"), LibFormName.HEART).get()
+				DanModelReader.createForm(new ResourceLocation(LibMod.MODID, "models/form/heart"), LibFormName.HEART).get(),
+				DanModelReader.createForm(new ResourceLocation(LibMod.MODID, "models/form/note1"), LibFormName.NOTE1).get()
 		);
 	}
 
@@ -208,7 +209,8 @@ public class CommonProxy {
 				new DanmakuVariantGeneric(LibDanmakuVariantName.POINTED_LASER_LONG, () -> LibShotData.SHOT_POINTED_LASER_LONG, 0.3D),
 				new DanmakuVariantGeneric(LibDanmakuVariantName.FIRE, () -> LibShotData.SHOT_FIRE, 0.4D),
 				new DanmakuVariantGeneric(LibDanmakuVariantName.LASER, () -> LibShotData.SHOT_LASER, 0D),
-				new DanmakuVariantGeneric(LibDanmakuVariantName.HEART, () -> LibShotData.SHOT_HEART, 0.4D)
+				new DanmakuVariantGeneric(LibDanmakuVariantName.HEART, () -> LibShotData.SHOT_HEART, 0.4D),
+				new DanmakuVariantGeneric(LibDanmakuVariantName.NOTE1, () -> LibShotData.SHOT_NOTE1, 0.4D)
 		);
 	}
 

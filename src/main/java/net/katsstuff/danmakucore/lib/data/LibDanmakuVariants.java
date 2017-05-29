@@ -53,4 +53,8 @@ public final class LibDanmakuVariants {
 	public static final DanmakuVariant POINTED_LASER_LONG = new DanmakuVariantDummy();
 	@ObjectHolder(LibDanmakuVariantName.LASER)
 	public static final DanmakuVariant LASER = new DanmakuVariantDummy();
+	@ObjectHolder(LibDanmakuVariantName.HEART)
+	public static final DanmakuVariant HEART = new DanmakuVariantDummy();
+	@ObjectHolder(LibDanmakuVariantName.NOTE1)
+	public static final DanmakuVariant NOTE1 = new DanmakuVariantDummy();
 }
