@@ -14,8 +14,11 @@ import javax.vecmath.Quat4f
 
 import scala.beans.BeanProperty
 
+import org.lwjgl.util.vector.Quaternion
+
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.MathHelper
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 abstract sealed class AbstractQuat {
 
@@ -241,6 +244,9 @@ abstract sealed class AbstractQuat {
   def asImmutable: Quat
 
   def asMutable: MutableQuat
+
+  @SideOnly(Side.CLIENT)
+  def toQuaternion: Quaternion = new Quaternion(x.toFloat, y.toFloat, z.toFloat, w.toFloat)
 
   override def toString: String = {
     val format = NumberFormat.getNumberInstance

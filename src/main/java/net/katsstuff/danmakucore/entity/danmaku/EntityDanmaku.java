@@ -19,6 +19,7 @@ import com.google.common.math.DoubleMath;
 import io.netty.buffer.ByteBuf;
 import net.katsstuff.danmakucore.CoreDataSerializers;
 import net.katsstuff.danmakucore.data.MovementData;
+import net.katsstuff.danmakucore.data.OrientedBoundingBox;
 import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.RotationData;
 import net.katsstuff.danmakucore.data.ShotData;
@@ -396,13 +397,8 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			Vector3 size = new Vector3(shot.sizeX(), shot.sizeY(), shot.sizeZ()).rotate(rotation);
 			double xSize = size.x() / 2F;
 			double zSize = size.z() / 2F;
-			double ySize = size.y();
-			if(ySize < 0) {
-				this.setEntityBoundingBox(new AxisAlignedBB(x - xSize, y - ySize, z - zSize, x + xSize, y, z + zSize));
-			}
-			else {
-				this.setEntityBoundingBox(new AxisAlignedBB(x - xSize, y, z - zSize, x + xSize, y + ySize, z + zSize));
-			}
+			double ySize = size.y() / 2F;
+			this.setEntityBoundingBox(new AxisAlignedBB(x - xSize, y - ySize, z - zSize, x + xSize, y + ySize, z + zSize));
 		}
 		else {
 			super.setPosition(x, y, z);
@@ -509,7 +505,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		});
 		Vector3 direction = target.map(to -> Vector3.directionToEntity(this, to)).orElse(Vector3.Down());
 
-		if(shot.sizeZ() > 1F && shot.sizeZ() / shot.sizeX() > 3) {
+		if(shot.sizeZ() > 1F && shot.sizeZ() / shot.sizeX() > 3 && shot.sizeZ() / shot.sizeY() > 3) {
 			double zPos = 0.0D;
 			while(zPos < shot.sizeZ()) {
 				Vector3 realPos = pos.offset(direction, zPos);
@@ -556,5 +552,17 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 	public void setFrozen(boolean frozen) {
 		this.frozen = frozen;
+	}
+
+	public OrientedBoundingBox getOrientedBoundingBox() {
+		ShotData shot = getShotData();
+		Quat orientation = Quat.fromEuler(rotationYaw, rotationPitch, getRoll());
+
+		double xSize = shot.sizeX() / 2F;
+		double zSize = shot.sizeZ() / 2F;
+		double ySize = shot.sizeY() / 2F;
+		AxisAlignedBB aabb = new AxisAlignedBB(posX - xSize, posY - ySize, posZ - zSize, posX + xSize, posY + ySize, posZ + zSize);
+
+		return new OrientedBoundingBox(aabb, new Vector3(this), orientation);
 	}
 }

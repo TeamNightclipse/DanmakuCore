@@ -13,16 +13,20 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import net.katsstuff.danmakucore.data.OrientedBoundingBox;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.Form;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
 import net.katsstuff.danmakucore.helper.LogHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 
 public class RenderDanmaku extends Render<EntityDanmaku> {
 
@@ -52,8 +56,33 @@ public class RenderDanmaku extends Render<EntityDanmaku> {
 				invalidForms.add(form);
 			}
 
-			GL11.glPopMatrix();
 			GlStateManager.enableLighting();
+			GL11.glPopMatrix();
+
+			//From RenderManager renderDebugBoundingBox
+			if (renderManager.isDebugBoundingBox() && !entity.isInvisible() && !Minecraft.getMinecraft().isReducedDebug()) {
+				GlStateManager.pushMatrix();
+				GlStateManager.depthMask(false);
+				GlStateManager.disableTexture2D();
+				GlStateManager.disableLighting();
+				GlStateManager.disableCull();
+				GlStateManager.disableBlend();
+				GL11.glTranslated(x, y + shotData.sizeY() / 2, z);
+
+				OrientedBoundingBox obb = entity.getOrientedBoundingBox();
+				AxisAlignedBB aabb = obb.boundingBox();
+
+				GlStateManager.rotate(obb.orientation().toQuaternion());
+				RenderGlobal.drawSelectionBoundingBox(aabb.offset(-entity.posX, -entity.posY, -entity.posZ), 0F, 1F, 0F, 1F);
+
+				GlStateManager.enableTexture2D();
+				GlStateManager.enableLighting();
+				GlStateManager.enableCull();
+				GlStateManager.disableBlend();
+				GlStateManager.depthMask(true);
+				GlStateManager.popMatrix();
+			}
+
 			super.doRender(entity, x, y, z, entityYaw, partialTicks);
 		}
 	}

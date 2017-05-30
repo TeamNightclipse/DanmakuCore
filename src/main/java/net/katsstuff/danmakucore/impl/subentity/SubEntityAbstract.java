@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 
+import net.katsstuff.danmakucore.data.OrientedBoundingBox;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmaku;
@@ -21,6 +22,7 @@ import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
 import net.katsstuff.danmakucore.entity.living.IAllyDanmaku;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
+import net.katsstuff.danmakucore.helper.LogHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
@@ -45,7 +47,10 @@ public abstract class SubEntityAbstract extends SubEntity {
 	 */
 	@SuppressWarnings("UnusedParameters")
 	protected void impactBlock(RayTraceResult raytrace) {
-		danmaku.delete();
+		ShotData shot = danmaku.getShotData();
+		if(shot.sizeZ() <= 1F || shot.sizeZ() / shot.sizeX() <= 3 || shot.sizeZ() / shot.sizeY() <= 3) {
+			danmaku.delete();
+		}
 	}
 
 	/**
@@ -124,51 +129,55 @@ public abstract class SubEntityAbstract extends SubEntity {
 	}
 
 	protected void hitCheck(Predicate<Entity> exclude) {
-		Entity danEntity = danmaku;
-		Vector3 start = new Vector3(danEntity);
-		Vector3 end = start.add(danEntity.motionX, danEntity.motionY, danEntity.motionZ);
-		RayTraceResult ray = world.rayTraceBlocks(start.toVec3d(), end.toVec3d(), false, true, false);
+		ShotData shot = danmaku.getShotData();
+		Vector3 direction = danmaku.getDirection();
+		Vector3 start = new Vector3(danmaku).offset(direction, -shot.sizeZ() / 2);
+		Vector3 end = start.offset(direction, shot.sizeZ()).add(danmaku.motionX, danmaku.motionY, danmaku.motionZ);
 
-		if(ray != null) {
-			end = new Vector3(ray.hitVec);
-		}
+		@SuppressWarnings("ConstantConditions")
+		List<Entity> potentialHits = world.getEntitiesInAABBexcluding(danmaku,
+				danmaku.getEntityBoundingBox().addCoord(danmaku.motionX, danmaku.motionY, danmaku.motionZ).expandXyz(1D),
+				e -> e.canBeCollidedWith() && !e.noClip && exclude.test(e));
 
-		Entity entity = null;
-		List<Entity> list = world.getEntitiesInAABBexcluding(danEntity,
-				danEntity.getEntityBoundingBox().addCoord(danEntity.motionX, danEntity.motionY, danEntity.motionZ).expandXyz(1D), exclude::test);
-		double d0 = 0.0D;
+		RayTraceResult groundRay = null;
 
-		for(Entity entity1 : list) {
-			if(entity1.canBeCollidedWith() && !entity1.noClip) {
-				AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expandXyz(0.3D);
-				RayTraceResult ray1 = axisalignedbb.calculateIntercept(start.toVec3d(), end.toVec3d());
+		OrientedBoundingBox obb =  danmaku.getOrientedBoundingBox();
+		for(Entity potentialHit : potentialHits) {
+			AxisAlignedBB entityAabb = potentialHit.getEntityBoundingBox();
+			boolean intersects = obb.intersects(entityAabb);
+			LogHelper.info("Intersect: " + intersects);
 
-				if(ray1 != null) {
-					double d1 = start.distanceSquared(new Vector3(ray1.hitVec));
-					if(d1 < d0 || d0 == 0.0D) {
-						entity = entity1;
-						d0 = d1;
+			if(intersects) {
+				RayTraceResult rayTraceResult = entityAabb.calculateIntercept(start.toVec3d(), end.toVec3d());
+				if(rayTraceResult != null) {
+					RayTraceResult rayToHit = world.rayTraceBlocks(start.toVec3d(), rayTraceResult.hitVec, false, true, false);
+					LogHelper.info("Ray: " + rayToHit);
+					if(rayToHit != null && rayToHit.typeOfHit == RayTraceResult.Type.BLOCK) {
+						groundRay = rayToHit;
+					}
+					else {
+						RayTraceResult rayHit = new RayTraceResult(potentialHit);
+						impactEntity(rayHit);
+						impact(rayHit);
 					}
 				}
 			}
 		}
 
-		if(entity != null) {
-			ray = new RayTraceResult(entity);
+		if(groundRay == null) {
+			RayTraceResult ray = world.rayTraceBlocks(start.toVec3d(), end.toVec3d(), false, true, false);
+
+			if(ray != null && ray.typeOfHit == RayTraceResult.Type.BLOCK) {
+				groundRay = ray;
+			}
 		}
 
-		if(ray != null) {
-			if(ray.typeOfHit == RayTraceResult.Type.BLOCK) {
-				if(world.getBlockState(ray.getBlockPos()).getBlock() == Blocks.PORTAL) {
-					danEntity.setPortal(ray.getBlockPos());
-				}
-				impactBlock(ray);
+		if(groundRay != null) {
+			if(world.getBlockState(groundRay.getBlockPos()).getBlock() == Blocks.PORTAL) {
+				danmaku.setPortal(groundRay.getBlockPos());
 			}
-			else if(ray.typeOfHit == RayTraceResult.Type.ENTITY) {
-				impactEntity(ray);
-			}
-
-			impact(ray);
+			impactBlock(groundRay);
+			impact(groundRay);
 		}
 	}
 
