@@ -375,6 +375,8 @@ final case class Quat(@BeanProperty x: Double, @BeanProperty y: Double, @BeanPro
 
   override def create(x: Double, y: Double, z: Double, w: Double): Quat = Quat(x, y, z, w)
 
+  //We make conjugate a lazy val to prevent recomputing it
+  override lazy val conjugate: Quat = super.conjugate
   override def asImmutable: Quat = this
 
   override def asMutable: MutableQuat = MutableQuat(x, y, z, w)
