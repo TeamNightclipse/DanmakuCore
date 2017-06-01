@@ -56,11 +56,10 @@ public abstract class EntityDanmakuMob extends EntityMob {
 	protected void onDeathUpdate() {
 		super.onDeathUpdate();
 
-		if(deathTime == 7) {
+		if(getLastDamageSource() instanceof DamageSourceDanmaku && deathTime == 7) {
 			DanmakuHelper.explosionEffect2(world, pos(), 1.0F + deathTime * 0.1F);
 			DanmakuHelper.chainExplosion(this, 5.0F, 5.0F);
 		}
-
 	}
 
 	@Override
