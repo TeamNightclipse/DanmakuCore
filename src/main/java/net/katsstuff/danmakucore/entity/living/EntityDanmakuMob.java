@@ -17,6 +17,8 @@ import net.katsstuff.danmakucore.entity.living.phase.PhaseManager;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
+import net.katsstuff.danmakucore.network.DanmakuCorePacketHandler;
+import net.katsstuff.danmakucore.network.PhaseDataPacket;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.EntityMob;
@@ -149,6 +151,10 @@ public abstract class EntityDanmakuMob extends EntityMob {
 		return phaseManager;
 	}
 
+	public boolean syncPhaseManagerToClient() {
+		return false;
+	}
+
 	public Vector3 pos() {
 		return new Vector3(this);
 	}
@@ -207,7 +213,12 @@ public abstract class EntityDanmakuMob extends EntityMob {
 	public void readEntityFromNBT(NBTTagCompound tag) {
 		super.readEntityFromNBT(tag);
 		setFlyingHeight(tag.getByte(NBT_FLYINGHEIGHT));
-		phaseManager.deserializeNBT(tag.getCompoundTag(NBT_PHASE_MANAGER));
+		NBTTagCompound phaseTag = tag.getCompoundTag(NBT_PHASE_MANAGER);
+		phaseManager.deserializeNBT(phaseTag);
+
+		if(syncPhaseManagerToClient()) {
+			DanmakuCorePacketHandler.sendToAllAround(new PhaseDataPacket.Message(this, phaseTag), new Vector3(this), 64, dimension);
+		}
 	}
 
 	@Override

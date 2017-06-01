@@ -25,6 +25,7 @@ public class DanmakuCorePacketHandler {
 		INSTANCE.registerMessage(SpellcardInfoPacket.Handler.class, SpellcardInfoPacket.Message.class, id++, Side.CLIENT);
 		INSTANCE.registerMessage(ParticlePacket.Handler.class, ParticlePacket.Message.class, id++, Side.CLIENT);
 		INSTANCE.registerMessage(ChargeSpherePacket.Handler.class, ChargeSpherePacket.Message.class, id++, Side.CLIENT);
+		INSTANCE.registerMessage(PhaseDataPacket.Handler.class, PhaseDataPacket.Message.class, id++, Side.CLIENT);
 	}
 
 	public static void sendToAllAround(IMessage message, Vector3 pos, double distance, int dim) {

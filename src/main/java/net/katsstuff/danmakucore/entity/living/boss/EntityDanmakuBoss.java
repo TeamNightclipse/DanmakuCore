@@ -134,6 +134,11 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 	public abstract EnumTouhouCharacters getCharacter();
 
 	@Override
+	public boolean syncPhaseManagerToClient() {
+		return true;
+	}
+
+	@Override
 	protected void dropPhaseLoot(DamageSource source) {
 		super.dropPhaseLoot(source);
 

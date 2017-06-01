@@ -187,7 +187,7 @@ public class PhaseManager implements INBTSerializable<NBTTagCompound> {
 		int size = list.tagCount();
 
 		List<Phase> deseralized = new ArrayList<>();
-		ListMultimap<PhaseType, Phase> multimap = MultimapBuilder.hashKeys().linkedListValues().build();
+		ListMultimap<PhaseType, Phase> multimap = MultimapBuilder.hashKeys().arrayListValues().build();
 
 		phaseList.stream().collect(Collectors.groupingBy(Phase::getType)).forEach(multimap::putAll);
 
