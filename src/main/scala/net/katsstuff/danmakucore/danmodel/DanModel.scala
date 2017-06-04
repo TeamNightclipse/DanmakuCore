@@ -22,20 +22,20 @@ class DanModel(private[this] val data: Array[Byte], private[this] val pieces: In
   def render(vb: VertexBuffer, tes: Tessellator, danmakuColor: Int): Unit = {
     val buf = ByteBuffer.wrap(data)
 
-    val danRed = (danmakuColor >> 16 & 255) / 255F
+    val danRed   = (danmakuColor >> 16 & 255) / 255F
     val danGreen = (danmakuColor >> 8 & 255) / 255F
-    val danBlue = (danmakuColor & 255) / 255F
+    val danBlue  = (danmakuColor & 255) / 255F
 
     @tailrec
     def renderPiece(i: Int): Unit = {
-      if(i < pieces) {
-        val glMode = buf.getInt()
-        val vertices = buf.getInt()
+      if (i < pieces) {
+        val glMode      = buf.getInt()
+        val vertices    = buf.getInt()
         val useDanColor = buf.get() != 0
 
         @tailrec
         def renderVertex(j: Int): Unit = {
-          if(j < vertices) {
+          if (j < vertices) {
             val x = buf.getDouble()
             val y = buf.getDouble()
             val z = buf.getDouble()
@@ -43,10 +43,10 @@ class DanModel(private[this] val data: Array[Byte], private[this] val pieces: In
             val u = buf.getDouble()
             val v = buf.getDouble()
 
-            val r = if(useDanColor) danRed else buf.getFloat()
-            val g = if(useDanColor) danGreen else buf.getFloat()
-            val b = if(useDanColor) danBlue else buf.getFloat()
-            val a = if(useDanColor) danAlpha else buf.getFloat()
+            val r = if (useDanColor) danRed else buf.getFloat()
+            val g = if (useDanColor) danGreen else buf.getFloat()
+            val b = if (useDanColor) danBlue else buf.getFloat()
+            val a = if (useDanColor) danAlpha else buf.getFloat()
 
             val nx = buf.getFloat()
             val ny = buf.getFloat()
@@ -62,7 +62,7 @@ class DanModel(private[this] val data: Array[Byte], private[this] val pieces: In
           }
         }
 
-        if(useDanColor) {
+        if (useDanColor) {
           GlStateManager.enableBlend()
           GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
           GlStateManager.depthMask(false)
@@ -73,7 +73,7 @@ class DanModel(private[this] val data: Array[Byte], private[this] val pieces: In
 
         tes.draw()
 
-        if(useDanColor) {
+        if (useDanColor) {
           GlStateManager.depthMask(true)
           GlStateManager.disableBlend()
         }

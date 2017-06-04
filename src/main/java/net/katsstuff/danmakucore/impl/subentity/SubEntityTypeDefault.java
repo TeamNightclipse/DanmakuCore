@@ -10,12 +10,9 @@ package net.katsstuff.danmakucore.impl.subentity;
 
 import net.katsstuff.danmakucore.data.RotationData;
 import net.katsstuff.danmakucore.data.ShotData;
-import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
-import net.katsstuff.danmakucore.helper.LogHelper;
-import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.world.World;
 
 public class SubEntityTypeDefault extends SubEntityType {

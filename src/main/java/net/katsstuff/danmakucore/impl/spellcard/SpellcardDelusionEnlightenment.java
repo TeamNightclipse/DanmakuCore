@@ -122,7 +122,8 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 					.setMovementData(0.2D)
 					.setPos(spawnPos)
 					.setShot(LibShotData.SHOT_RICE.setColor(LibColor.COLOR_SATURATED_BLUE))
-					.build().asEntity();
+					.build()
+					.asEntity();
 
 			getWorld().spawnEntityInWorld(danmaku);
 		}

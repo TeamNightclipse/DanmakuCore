@@ -33,8 +33,8 @@ case class OrientedBoundingBox(boundingBox: AxisAlignedBB, pos: Vector3, orienta
     def project(points: Array[Vector3], axis: Vector3): Projection = {
       var min = axis.dot(points(0))
       var max = min
-      var i = 1
-      while(i < points.length) {
+      var i   = 1
+      while (i < points.length) {
         {
           val p = axis.dot(points(i))
           if (p < min) min = p
@@ -46,11 +46,9 @@ case class OrientedBoundingBox(boundingBox: AxisAlignedBB, pos: Vector3, orienta
       Projection(min, max)
     }
 
-
-    if(rotated.distanceSquared(Vector3.Forward) < 0.1 * 0.1) {
+    if (rotated.distanceSquared(Vector3.Forward) < 0.1 * 0.1) {
       boundingBox.intersectsWith(thatBoundingBox)
-    }
-    else {
+    } else {
       val thisPoints = points(boundingBox).map(p => (orientation * (p - pos)) + pos)
       val thatPoints = points(thatBoundingBox)
 
@@ -75,7 +73,6 @@ case class Projection(min: Double, max: Double) {
 
   def overlapAmount(that: Projection): Double = Math.max(0, Math.min(this.max, that.max) - Math.max(this.min, that.min))
 
-  def overlaps(that: Projection): Boolean = {
+  def overlaps(that: Projection): Boolean =
     this.min <= that.max && this.max >= that.min
-  }
 }

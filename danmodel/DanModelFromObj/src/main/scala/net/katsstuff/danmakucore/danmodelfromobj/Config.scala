@@ -3,7 +3,14 @@ package net.katsstuff.danmakucore.danmodelfromobj
 import java.io.File
 import java.nio.file.{Path, Paths}
 
-case class Config(objFile: Path = Paths.get("."), danmakuColorObj: Seq[String] = Seq.empty, out: Path = Paths.get("."), name: String = "", description: String = "", author: String = "")
+case class Config(
+    objFile: Path = Paths.get("."),
+    danmakuColorObj: Seq[String] = Seq.empty,
+    out: Path = Paths.get("."),
+    name: String = "",
+    description: String = "",
+    author: String = ""
+)
 object Config {
   val parser = new scopt.OptionParser[Config]("danmodelfromobj") {
     head("DanModelFromObj Converts an obj and mtl file to the danmodel format")

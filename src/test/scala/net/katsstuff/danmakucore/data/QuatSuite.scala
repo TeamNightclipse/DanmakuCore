@@ -21,7 +21,7 @@ class QuatSuite extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
   final val Epsilon = 1E5
 
   implicit val doubleEquality: Equality[Double] = TolerantNumerics.tolerantDoubleEquality(1E-5)
-  implicit val floatEquality: Equality[Float] = TolerantNumerics.tolerantFloatEquality(1E-2.toFloat)
+  implicit val floatEquality:  Equality[Float]  = TolerantNumerics.tolerantFloatEquality(1E-2.toFloat)
 
   val saneDouble: Gen[Double] = Gen.choose(-Epsilon, Epsilon)
   val angleFloat: Gen[Float]  = Gen.choose(0F, 360F)
@@ -33,12 +33,12 @@ class QuatSuite extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
   } yield Vector3(x, y, z)
 
   val randDirection: Gen[Vector3] = for {
-    yaw <- angleFloat
+    yaw   <- angleFloat
     pitch <- angleFloat
   } yield Vector3.fromSpherical(yaw, pitch)
 
   val randQuat: Gen[Quat] = for {
-    axis <- randDirection
+    axis  <- randDirection
     angle <- angleFloat
   } yield Quat.fromAxisAngle(axis, angle)
 
@@ -51,25 +51,25 @@ class QuatSuite extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
   val ez = Vector3(0, 0, 1)
 
   test("q* = -1/2 * (q + i * q * i + j * q * j + k * q * k)") {
-    forAll (randQuat) { q: Quat =>
-      q.conjugate shouldEqual (-1D/2D) * (q + i * q * i + j * q * j + k * q * k)
+    forAll(randQuat) { q: Quat =>
+      q.conjugate shouldEqual (-1D / 2D) * (q + i * q * i + j * q * j + k * q * k)
     }
   }
 
   test("|a * q| = |a| * |q|") {
-    forAll (saneDouble, randQuat) { (a: Double, q: Quat) =>
+    forAll(saneDouble, randQuat) { (a: Double, q: Quat) =>
       (a * q).length shouldEqual math.abs(a) * q.length
     }
   }
 
   test("|p * q| = |p| * |q|") {
-    forAll (randQuat, randQuat) { (p: Quat, q: Quat) =>
+    forAll(randQuat, randQuat) { (p: Quat, q: Quat) =>
       (p * q).length shouldEqual p.length * q.length
     }
   }
 
   test("q1 + q2") {
-    forAll (randQuat, randQuat) { (q1: Quat, q2: Quat) =>
+    forAll(randQuat, randQuat) { (q1: Quat, q2: Quat) =>
       val sum = q1 + q2
 
       (q1.x + q2.x) shouldBe sum.x
@@ -80,16 +80,16 @@ class QuatSuite extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
   }
 
   test("v rotated = qvq*") {
-    forAll (randPos, randQuat) { (v: Vector3, q: Quat) =>
+    forAll(randPos, randQuat) { (v: Vector3, q: Quat) =>
       val pure = q * Quat(v.x, v.y, v.z, 0) * q.conjugate
       q * v shouldEqual Vector3(pure.x, pure.y, pure.z)
     }
   }
 
   test("A Quat constructed from a yaw and a pitch should rotate by that") {
-    forAll (angleFloat, angleFloat) { (yaw: Float, pitch: Float) =>
-      val quat = Quat.fromEuler(yaw, pitch, 0F)
-      val rotated = quat * Vector3.Forward
+    forAll(angleFloat, angleFloat) { (yaw: Float, pitch: Float) =>
+      val quat      = Quat.fromEuler(yaw, pitch, 0F)
+      val rotated   = quat * Vector3.Forward
       val reference = Vector3.fromSpherical(yaw, pitch)
       rotated.x shouldEqual reference.x +- 0.1
       rotated.y shouldEqual reference.y +- 0.1
@@ -98,10 +98,10 @@ class QuatSuite extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
   }
 
   test("Look at") {
-    forAll (randPos, randPos) { (from: Vector3, to: Vector3) =>
+    forAll(randPos, randPos) { (from: Vector3, to: Vector3) =>
       val direction = Vector3.directionToPos(from, to)
-      val rotate = Quat.lookRotation(direction, Vector3.Up)
-      val rotated = rotate * Vector3.Forward
+      val rotate    = Quat.lookRotation(direction, Vector3.Up)
+      val rotated   = rotate * Vector3.Forward
       rotated.x shouldEqual direction.x
       rotated.y shouldEqual direction.y
       rotated.z shouldEqual direction.z

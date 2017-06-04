@@ -112,8 +112,8 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		resetMotion();
 	}
 
-	public EntityDanmaku(World world, @Nullable EntityLivingBase user, @Nullable Entity source, ShotData shot, Vector3 pos, Vector3 direction, float
-			roll, MovementData movement, RotationData rotation) {
+	public EntityDanmaku(World world, @Nullable EntityLivingBase user, @Nullable Entity source, ShotData shot, Vector3 pos, Vector3 direction,
+			float roll, MovementData movement, RotationData rotation) {
 		this(world, shot, pos, direction, movement);
 		this.user = user;
 		this.source = source;

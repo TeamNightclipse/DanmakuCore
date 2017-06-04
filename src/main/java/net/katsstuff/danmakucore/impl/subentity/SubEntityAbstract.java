@@ -22,7 +22,6 @@ import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
 import net.katsstuff.danmakucore.entity.living.IAllyDanmaku;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
-import net.katsstuff.danmakucore.helper.LogHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
@@ -134,14 +133,13 @@ public abstract class SubEntityAbstract extends SubEntity {
 		Vector3 start = new Vector3(danmaku).offset(direction, -shot.sizeZ() / 2);
 		Vector3 end = start.offset(direction, shot.sizeZ()).add(danmaku.motionX, danmaku.motionY, danmaku.motionZ);
 
-		@SuppressWarnings("ConstantConditions")
-		List<Entity> potentialHits = world.getEntitiesInAABBexcluding(danmaku,
+		@SuppressWarnings("ConstantConditions") List<Entity> potentialHits = world.getEntitiesInAABBexcluding(danmaku,
 				danmaku.getEntityBoundingBox().addCoord(danmaku.motionX, danmaku.motionY, danmaku.motionZ).expandXyz(1D),
 				e -> e.canBeCollidedWith() && !e.noClip && exclude.test(e));
 
 		RayTraceResult groundRay = null;
 
-		OrientedBoundingBox obb =  danmaku.getOrientedBoundingBox();
+		OrientedBoundingBox obb = danmaku.getOrientedBoundingBox();
 		for(Entity potentialHit : potentialHits) {
 			AxisAlignedBB entityAabb = potentialHit.getEntityBoundingBox();
 			boolean intersects = obb.intersects(entityAabb);

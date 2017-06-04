@@ -20,18 +20,25 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 class FormDanModel(name: String, model: DanModel) extends FormGeneric(name) {
   @SideOnly(Side.CLIENT)
   override protected def createRenderer() = new IRenderForm {
-    override def renderForm(danmaku: EntityDanmaku, x: Double, y: Double, z: Double,
-        entityYaw: Float, partialTicks: Float, man: RenderManager): Unit = {
-      val tes = Tessellator.getInstance
-      val vb = tes.getBuffer
-      val pitch = danmaku.rotationPitch
-      val yaw = danmaku.rotationYaw
-      val roll = danmaku.getRoll
+    override def renderForm(
+        danmaku: EntityDanmaku,
+        x: Double,
+        y: Double,
+        z: Double,
+        entityYaw: Float,
+        partialTicks: Float,
+        man: RenderManager
+    ): Unit = {
+      val tes      = Tessellator.getInstance
+      val vb       = tes.getBuffer
+      val pitch    = danmaku.rotationPitch
+      val yaw      = danmaku.rotationYaw
+      val roll     = danmaku.getRoll
       val shotData = danmaku.getShotData
-      val sizeX = shotData.getSizeX
-      val sizeY = shotData.getSizeY
-      val sizeZ = shotData.getSizeZ
-      val color = shotData.getColor
+      val sizeX    = shotData.getSizeX
+      val sizeY    = shotData.getSizeY
+      val sizeZ    = shotData.getSizeZ
+      val color    = shotData.getColor
 
       GL11.glRotatef(-yaw, 0F, 1F, 0F)
       GL11.glRotatef(pitch, 1F, 0F, 0F)

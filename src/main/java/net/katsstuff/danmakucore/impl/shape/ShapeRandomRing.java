@@ -41,7 +41,8 @@ public class ShapeRandomRing implements IShape {
 			Quat rotatedOrientation = orientation.multiply(Quat.fromAxisAngle(Vector3.Right(), 90));
 
 			for(int i = 0; i < amount; i++) {
-				Quat rotate = rotatedOrientation.multiply(Quat.fromAxisAngle(Vector3.Up(), rand.nextDouble() * 360D).multiply(Quat.fromAxisAngle(Vector3.Left(), 90D - rand.nextDouble() * radius)));
+				Quat rotate = rotatedOrientation.multiply(Quat.fromAxisAngle(Vector3.Up(), rand.nextDouble() * 360D)
+						.multiply(Quat.fromAxisAngle(Vector3.Left(), 90D - rand.nextDouble() * radius)));
 				danmaku.direction = Vector3.Forward().rotate(rotate);
 				danmaku.pos = pos.offset(danmaku.direction, distance);
 				EntityDanmaku spawned = this.danmaku.asEntity();

@@ -108,9 +108,9 @@ final case class MutableMat4(
 
   def multiplyScalarMutable(scalar: Double): Unit = this *= scalar
 
-  override def transpose: MutableMat4 = super.transpose
+  override def transpose:                      MutableMat4 = super.transpose
   override def multiplyScalar(scalar: Double): MutableMat4 = super.multiplyScalar(scalar)
-  def copyObj: MutableMat4 = copy()
+  def copyObj:                                 MutableMat4 = copy()
 }
 final case class Mat4(
     m00: Double, m01: Double, m02: Double, m03: Double,
@@ -132,32 +132,22 @@ final case class Mat4(
     m30, m31, m32, m33
   )
 
-  override def transpose: Mat4 = super.transpose
+  override def transpose:                      Mat4 = super.transpose
   override def multiplyScalar(scalar: Double): Mat4 = super.multiplyScalar(scalar)
 }
 object Mat4 {
-  val Identity = Mat4(
-    1, 0, 0, 0,
-    0, 1, 0, 0,
-    0, 0, 1, 0,
-    0, 0, 0, 1
-  )
+  val Identity = Mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
 
   //From libgdx https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Matrix4.java#L876
   def fromWorld(pos: AbstractVector3, forward: AbstractVector3, up: AbstractVector3): Mat4 = {
     val forwardNormalized = forward.normalize
-    val right = forwardNormalized.cross(up).normalize
-    val newUp = right.cross(forwardNormalized).normalize
+    val right             = forwardNormalized.cross(up).normalize
+    val newUp             = right.cross(forwardNormalized).normalize
 
     fromAxes(right, newUp, forwardNormalized, pos)
   }
 
   def fromAxes(xAxis: AbstractVector3, yAxis: AbstractVector3, zAxis: AbstractVector3, pos: AbstractVector3): Mat4 = {
-    Mat4(
-      xAxis.x, xAxis.y, xAxis.z, pos.x,
-      yAxis.x, yAxis.y, yAxis.z, pos.y,
-      zAxis.x, zAxis.y, zAxis.z, pos.z,
-      0, 0, 0, 1
-    )
+    Mat4(xAxis.x, xAxis.y, xAxis.z, pos.x, yAxis.x, yAxis.y, yAxis.z, pos.y, zAxis.x, zAxis.y, zAxis.z, pos.z, 0, 0, 0, 1)
   }
 }

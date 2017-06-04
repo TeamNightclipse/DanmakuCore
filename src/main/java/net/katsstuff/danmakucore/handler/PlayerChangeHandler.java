@@ -11,7 +11,6 @@ package net.katsstuff.danmakucore.handler;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import net.katsstuff.danmakucore.helper.LogHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;

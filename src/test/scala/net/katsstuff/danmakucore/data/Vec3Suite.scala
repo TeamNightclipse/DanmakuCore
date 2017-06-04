@@ -23,7 +23,7 @@ class Vec3Suite extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
   final val Epsilon = 1E5
 
   implicit val doubleEquality: Equality[Double] = TolerantNumerics.tolerantDoubleEquality(1E-5)
-  implicit val floatEquality: Equality[Float] = TolerantNumerics.tolerantFloatEquality(1E-2.toFloat)
+  implicit val floatEquality:  Equality[Float]  = TolerantNumerics.tolerantFloatEquality(1E-2.toFloat)
 
   val saneDouble: Gen[Double] = Gen.choose(-Epsilon, Epsilon)
   val angleFloat: Gen[Float]  = Gen.choose(0F, 360F)
@@ -35,7 +35,7 @@ class Vec3Suite extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
   } yield Vector3(x, y, z)
 
   val randDirection: Gen[Vector3] = for {
-    yaw <- angleFloat
+    yaw   <- angleFloat
     pitch <- angleFloat
   } yield Vector3.fromSpherical(yaw, pitch)
 
@@ -44,31 +44,31 @@ class Vec3Suite extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
   val ez = Vector3(0, 0, 1)
 
   test("a + b = (ax + bx)ex + (ay + by)ey + (az + bz)ez") {
-    forAll (randPos, randPos) { (a: Vector3, b: Vector3) =>
-      a + b shouldEqual (a.x + b.x) * ex + (a.y + b.y) * ey +  (a.z + b.z) * ez
+    forAll(randPos, randPos) { (a: Vector3, b: Vector3) =>
+      a + b shouldEqual (a.x + b.x) * ex + (a.y + b.y) * ey + (a.z + b.z) * ez
     }
   }
 
   test("a - b = (ax - bx)ex + (ay - by)ey + (az - bz)ez") {
-    forAll (randPos, randPos) { (a: Vector3, b: Vector3) =>
+    forAll(randPos, randPos) { (a: Vector3, b: Vector3) =>
       a - b shouldEqual (a.x - b.x) * ex + (a.y - b.y) * ey + (a.z - b.z) * ez
     }
   }
 
   test("r * a = (r * ax)ex + (r * ay)ey + (r * az)ez") {
-    forAll (saneDouble, randPos) { (r: Double, a: Vector3) =>
+    forAll(saneDouble, randPos) { (r: Double, a: Vector3) =>
       r * a shouldEqual (r * a.x) * ex + (r * a.y) * ey + (r * a.z) * ez
     }
   }
 
   test("a dot b = |a| * |b| * cos theta") {
-    forAll (randPos, randPos) { (a: Vector3, b: Vector3) =>
+    forAll(randPos, randPos) { (a: Vector3, b: Vector3) =>
       a.dot(b) shouldEqual a.length * b.length * math.cos(a.angle(b))
     }
   }
 
   test("v1 * v2") {
-    forAll (randPos, randPos) { (v1: Vector3, v2: Vector3) =>
+    forAll(randPos, randPos) { (v1: Vector3, v2: Vector3) =>
       val product = v1 * v2
 
       (v1.x * v2.x) shouldBe product.x
@@ -78,7 +78,7 @@ class Vec3Suite extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
   }
 
   test("v1 / v2") {
-    forAll (randPos, randPos) { (v1: Vector3, v2: Vector3) =>
+    forAll(randPos, randPos) { (v1: Vector3, v2: Vector3) =>
       val quotient = v1 / v2
 
       (v1.x / v2.x) shouldBe quotient.x
@@ -88,7 +88,7 @@ class Vec3Suite extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
   }
 
   test("-v") {
-    forAll (randPos) { v: Vector3 =>
+    forAll(randPos) { v: Vector3 =>
       val negated = v.negate
 
       (-v.x) shouldBe negated.x
@@ -98,13 +98,13 @@ class Vec3Suite extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
   }
 
   test("Normalized vector v has |v| == 1") {
-    forAll (randPos) { v: Vector3 =>
+    forAll(randPos) { v: Vector3 =>
       v.normalize.length shouldEqual 1D
     }
   }
 
   test("|v * s| == |s|") {
-    forAll (randDirection, saneDouble) { (v: Vector3, s: Double) =>
+    forAll(randDirection, saneDouble) { (v: Vector3, s: Double) =>
       whenever(s != 0) {
         (v * s).length shouldEqual math.abs(s) +- (math.abs(s) / 1E4)
       }
@@ -112,13 +112,13 @@ class Vec3Suite extends FunSuite with Matchers with GeneratorDrivenPropertyCheck
   }
 
   test("Distance between v1 and v2 is |v2-v1|") {
-    forAll (randPos, randPos) { (v1: Vector3, v2: Vector3) =>
+    forAll(randPos, randPos) { (v1: Vector3, v2: Vector3) =>
       v1.distance(v2) shouldEqual (v2 - v1).length
     }
   }
 
   test("For vector v constructed from yaw1 and pitch1, the yaw and pitch of of v should be yaw1 and pitch1") {
-    forAll (angleFloat, angleFloat) { (yaw: Float, pitch: Float) =>
+    forAll(angleFloat, angleFloat) { (yaw: Float, pitch: Float) =>
       val v = Vector3.fromSpherical(yaw, pitch)
 
       def wrapPitch(value: Float): Float = {

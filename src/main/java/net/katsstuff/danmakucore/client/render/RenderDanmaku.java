@@ -60,7 +60,7 @@ public class RenderDanmaku extends Render<EntityDanmaku> {
 			GL11.glPopMatrix();
 
 			//From RenderManager renderDebugBoundingBox
-			if (renderManager.isDebugBoundingBox() && !entity.isInvisible() && !Minecraft.getMinecraft().isReducedDebug()) {
+			if(renderManager.isDebugBoundingBox() && !entity.isInvisible() && !Minecraft.getMinecraft().isReducedDebug()) {
 				GlStateManager.pushMatrix();
 				GlStateManager.depthMask(false);
 				GlStateManager.disableTexture2D();

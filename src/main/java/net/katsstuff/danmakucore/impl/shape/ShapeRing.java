@@ -48,7 +48,8 @@ public class ShapeRing implements IShape {
 			Quat rotatedOrientation = orientation.multiply(Quat.fromAxisAngle(Vector3.Right(), 90));
 
 			for(int i = 0; i < amount; i++) {
-				Quat rotate = rotatedOrientation.multiply(Quat.fromAxisAngle(Vector3.Up(), rotateAngle).multiply(Quat.fromAxisAngle(Vector3.Left(), 90D - radius)));
+				Quat rotate = rotatedOrientation.multiply(
+						Quat.fromAxisAngle(Vector3.Up(), rotateAngle).multiply(Quat.fromAxisAngle(Vector3.Left(), 90D - radius)));
 				danmaku.direction = Vector3.Forward().rotate(rotate);
 				danmaku.pos = pos.offset(danmaku.direction, distance);
 				danmaku.roll = (float)(orientation.pitch() * MathHelper.sin((float)rotateAngle));

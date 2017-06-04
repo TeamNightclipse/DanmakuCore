@@ -73,7 +73,7 @@ abstract sealed class AbstractQuat {
   /**
 		* Create a new quat with the passed in value multiplied with this quat
 		*/
-  def *(other: Double): Self = create(x * other, y * other, z * other, w * other)
+  def *(other: Double):        Self = create(x * other, y * other, z * other, w * other)
   def multiply(other: Double): Self = this * other
 
   /**
@@ -165,7 +165,7 @@ abstract sealed class AbstractQuat {
 		*/
   //TODO: Find a more efficient solution
   def rotate(vec3: AbstractVector3): vec3.Self = {
-    val pure = Quat(vec3.x, vec3.y, vec3.z, 0)
+    val pure       = Quat(vec3.x, vec3.y, vec3.z, 0)
     val multiplied = this * pure * this.conjugate
     vec3.create(multiplied.x, multiplied.y, multiplied.z)
   }
@@ -377,7 +377,7 @@ final case class Quat(@BeanProperty x: Double, @BeanProperty y: Double, @BeanPro
 
   //We make conjugate a lazy val to prevent recomputing it
   override lazy val conjugate: Quat = super.conjugate
-  override def asImmutable: Quat = this
+  override def asImmutable:    Quat = this
 
   override def asMutable: MutableQuat = MutableQuat(x, y, z, w)
 
@@ -443,9 +443,8 @@ object Quat {
     fromAxes(vect1, vect2, vect3)
   }
 
-  def fromAxes(xAxis: AbstractVector3, yAxis: AbstractVector3, zAxis: AbstractVector3): Quat = {
+  def fromAxes(xAxis: AbstractVector3, yAxis: AbstractVector3, zAxis: AbstractVector3): Quat =
     fromAxes(xAxis.x, yAxis.x, zAxis.x, xAxis.y, yAxis.y, zAxis.y, xAxis.z, yAxis.z, zAxis.z)
-  }
 
   //https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java#L496
   def fromAxes(
@@ -457,37 +456,34 @@ object Quat {
 
     if (t >= 0) {
       val squared = Math.sqrt(t + 1)
-      val w = 0.5f * squared
-      val s = 0.5f / squared
+      val w       = 0.5f * squared
+      val s       = 0.5f / squared
 
       val x = (zy - yz) * s
       val y = (xz - zx) * s
       val z = (yx - xy) * s
       Quat(x, y, z, w)
-    }
-    else if ((xx > yy) && (xx > zz)) {
+    } else if ((xx > yy) && (xx > zz)) {
       val squared = Math.sqrt(1.0 + xx - yy - zz)
-      val x = squared * 0.5f
+      val x       = squared * 0.5f
 
       val s = 0.5f / squared
       val y = (yx + xy) * s
       val z = (xz + zx) * s
       val w = (zy - yz) * s
       Quat(x, y, z, w)
-    }
-    else if (yy > zz) {
+    } else if (yy > zz) {
       val squared = Math.sqrt(1.0 + yy - xx - zz)
-      val y = squared * 0.5f
+      val y       = squared * 0.5f
 
       val s = 0.5f / squared
       val x = (yx + xy) * s
       val z = (zy + yz) * s
       val w = (xz - zx) * s
       Quat(x, y, z, w)
-    }
-    else {
+    } else {
       val squared = Math.sqrt(1.0 + zz - xx - yy)
-      val z = squared * 0.5f
+      val z       = squared * 0.5f
 
       val s = 0.5f / squared
       val x = (xz + zx) * s

@@ -12,7 +12,6 @@ import java.io.IOException;
 
 import io.netty.buffer.ByteBuf;
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
-import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;

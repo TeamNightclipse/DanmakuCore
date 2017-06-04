@@ -245,9 +245,8 @@ sealed trait AbstractVector3 extends Any {
 		*/
   def pitch: Double = Math.toDegrees(pitchRad)
 
-  def lerp(target: AbstractVector3, alpha: Double): Self = {
+  def lerp(target: AbstractVector3, alpha: Double): Self =
     create(x + alpha * (target.x - x), y + alpha * (target.y - y), z + alpha * (target.z - z))
-  }
 
   //From libgdx
   def slerp(target: AbstractVector3, alpha: Double): Self#Self = {
@@ -465,11 +464,11 @@ final case class MutableVector3(@BeanProperty var x: Double, @BeanProperty var y
 
   override def offset(direction: AbstractVector3, distance: Double): MutableVector3 = super.offset(direction, distance)
 
-  override def rotate(quat: Quat):                               MutableVector3 = super.rotate(quat)
+  override def rotate(quat: Quat):                              MutableVector3 = super.rotate(quat)
   override def rotate(angle: Double, axis: AbstractVector3):    MutableVector3 = super.rotate(angle, axis)
   override def rotateRad(angle: Double, axis: AbstractVector3): MutableVector3 = super.rotateRad(angle, axis)
-  override def lerp(target: AbstractVector3, alpha: Double):     MutableVector3 = super.lerp(target, alpha)
-  override def slerp(target: AbstractVector3, alpha: Double):    MutableVector3 = super.slerp(target, alpha)
+  override def lerp(target: AbstractVector3, alpha: Double):    MutableVector3 = super.lerp(target, alpha)
+  override def slerp(target: AbstractVector3, alpha: Double):   MutableVector3 = super.slerp(target, alpha)
 
   override def transformDirection(mat: AbstractMat4): MutableVector3 = super.transformDirection(mat)
 }
@@ -529,7 +528,7 @@ final case class Vector3(@BeanProperty x: Double, @BeanProperty y: Double, @Bean
 
   override def offset(direction: AbstractVector3, distance: Double): Vector3 = super.offset(direction, distance)
 
-  override def rotate(quat: Quat):                               Vector3 = super.rotate(quat)
+  override def rotate(quat: Quat):                              Vector3 = super.rotate(quat)
   override def rotate(angle: Double, axis: AbstractVector3):    Vector3 = super.rotate(angle, axis)
   override def rotateRad(angle: Double, axis: AbstractVector3): Vector3 = super.rotateRad(angle, axis)
 
@@ -609,7 +608,8 @@ object Vector3 {
 
   def directionToLiving(from: AbstractVector3, to: EntityLivingBase): Vector3 = directionToPosNotNormalized(from, new Vector3(to)).normalize
 
-  def directionToLiving(from: EntityLivingBase, to: EntityLivingBase): Vector3 = directionToPosNotNormalized(new Vector3(from), new Vector3(to)).normalize
+  def directionToLiving(from: EntityLivingBase, to: EntityLivingBase): Vector3 =
+    directionToPosNotNormalized(new Vector3(from), new Vector3(to)).normalize
 
   def randomDirection: Vector3 = randomVector
 
@@ -666,7 +666,7 @@ object Vector3 {
 
     override def offset(direction: AbstractVector3, distance: Double): WrappedVec3d = super.offset(direction, distance)
 
-    override def rotate(quat: Quat):                               WrappedVec3d = super.rotate(quat)
+    override def rotate(quat: Quat):                              WrappedVec3d = super.rotate(quat)
     override def rotate(angle: Double, axis: AbstractVector3):    WrappedVec3d = super.rotate(angle, axis)
     override def rotateRad(angle: Double, axis: AbstractVector3): WrappedVec3d = super.rotateRad(angle, axis)
   }
@@ -689,16 +689,18 @@ object Vector3 {
     }
     val posSourceVec3d = posSource.toVec3d
 
-    val direction    = sourceEntity.getLookVec
-    val posReach = posSource.offset(direction, distanceReach).toVec3d
-    val rayTrace = sourceEntity.world.rayTraceBlocks(posSourceVec3d, posReach, false, false, true)
+    val direction = sourceEntity.getLookVec
+    val posReach  = posSource.offset(direction, distanceReach).toVec3d
+    val rayTrace  = sourceEntity.world.rayTraceBlocks(posSourceVec3d, posReach, false, false, true)
 
     val distance = if (rayTrace != null) rayTrace.hitVec.distanceTo(posSourceVec3d) else distanceReach
 
     val foundEntities: Seq[Entity] = sourceEntity.world
       .getEntitiesInAABBexcluding(
         sourceEntity,
-        sourceEntity.getEntityBoundingBox.addCoord(direction.x * distanceReach, direction.y * distanceReach, direction.z * distanceReach).expandXyz(1F),
+        sourceEntity.getEntityBoundingBox
+          .addCoord(direction.x * distanceReach, direction.y * distanceReach, direction.z * distanceReach)
+          .expandXyz(1F),
         (entity => filter.test(entity)): GPredicate[Entity]
       )
       .asScala

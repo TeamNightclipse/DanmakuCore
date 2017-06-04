@@ -25,7 +25,8 @@ import net.katsstuff.danmakucore.impl.shape.ShapeWide;
  */
 public class DanmakuCreationHelper {
 
-	public static Set<EntityDanmaku> createWideShot(Quat orientation, DanmakuTemplate danmaku, int amount, float wideAngle, float baseAngle, double distance) {
+	public static Set<EntityDanmaku> createWideShot(Quat orientation, DanmakuTemplate danmaku, int amount, float wideAngle, float baseAngle,
+			double distance) {
 		ShapeWide shape = new ShapeWide(danmaku, amount, wideAngle, baseAngle, distance);
 		return shape.drawForTick(danmaku.pos, orientation, 0).getSecond();
 	}
@@ -35,7 +36,8 @@ public class DanmakuCreationHelper {
 		return shape.drawForTick(danmaku.pos, orientation, 0).getSecond();
 	}
 
-	public static Set<EntityDanmaku> createRingShot(Quat orientation, DanmakuTemplate danmaku, int amount, float size, float baseAngle, double distance) {
+	public static Set<EntityDanmaku> createRingShot(Quat orientation, DanmakuTemplate danmaku, int amount, float size, float baseAngle,
+			double distance) {
 		ShapeRing shape = new ShapeRing(danmaku, amount, size, baseAngle, distance);
 		return shape.drawForTick(danmaku.pos, orientation, 0).getSecond();
 	}
@@ -45,12 +47,14 @@ public class DanmakuCreationHelper {
 		return shape.drawForTick(danmaku.pos, orientation, 0).getSecond();
 	}
 
-	public static Set<EntityDanmaku> createStarShot(Quat orientation, DanmakuTemplate danmaku, int amount, float angleZ, float baseAngle, double distance) {
+	public static Set<EntityDanmaku> createStarShot(Quat orientation, DanmakuTemplate danmaku, int amount, float angleZ, float baseAngle,
+			double distance) {
 		ShapeStar shape = new ShapeStar(danmaku, amount, angleZ, baseAngle, distance);
 		return shape.drawForTick(danmaku.pos, orientation, 0).getSecond();
 	}
 
-	public static Set<EntityDanmaku> createSphereShot(Quat orientation, DanmakuTemplate danmaku, int rings, int bands, float baseAngle, double distance) {
+	public static Set<EntityDanmaku> createSphereShot(Quat orientation, DanmakuTemplate danmaku, int rings, int bands, float baseAngle,
+			double distance) {
 		ShapeSphere shape = new ShapeSphere(danmaku, rings, bands, baseAngle, distance);
 		return shape.drawForTick(danmaku.pos, orientation, 0).getSecond();
 	}
