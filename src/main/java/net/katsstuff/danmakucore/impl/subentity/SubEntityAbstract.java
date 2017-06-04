@@ -145,13 +145,11 @@ public abstract class SubEntityAbstract extends SubEntity {
 		for(Entity potentialHit : potentialHits) {
 			AxisAlignedBB entityAabb = potentialHit.getEntityBoundingBox();
 			boolean intersects = obb.intersects(entityAabb);
-			LogHelper.info("Intersect: " + intersects);
 
 			if(intersects) {
 				RayTraceResult rayTraceResult = entityAabb.calculateIntercept(start.toVec3d(), end.toVec3d());
 				if(rayTraceResult != null) {
 					RayTraceResult rayToHit = world.rayTraceBlocks(start.toVec3d(), rayTraceResult.hitVec, false, true, false);
-					LogHelper.info("Ray: " + rayToHit);
 					if(rayToHit != null && rayToHit.typeOfHit == RayTraceResult.Type.BLOCK) {
 						groundRay = rayToHit;
 					}
