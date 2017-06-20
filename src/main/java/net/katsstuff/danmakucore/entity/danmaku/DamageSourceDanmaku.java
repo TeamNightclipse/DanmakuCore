@@ -36,10 +36,10 @@ public class DamageSourceDanmaku extends EntityDamageSourceIndirect {
 	public ITextComponent getDeathMessage(EntityLivingBase target) {
 		Entity indirect = getImmediateSource();
 		ITextComponent iTextComponent = indirect == null ? getTrueSource().getDisplayName() : indirect.getDisplayName();
-		ItemStack itemstack = indirect instanceof EntityLivingBase ? ((EntityLivingBase)indirect).getHeldItemMainhand() : null;
+		ItemStack itemstack = indirect instanceof EntityLivingBase ? ((EntityLivingBase)indirect).getHeldItemMainhand() : ItemStack.EMPTY;
 		String s = "death.attack." + damageType;
 		String s1 = s + ".item";
-		return itemstack != null && itemstack.hasDisplayName() && I18n.canTranslate(s1) ? new TextComponentTranslation(s1, target.getDisplayName(),
+		return !itemstack.isEmpty() && itemstack.hasDisplayName() && I18n.canTranslate(s1) ? new TextComponentTranslation(s1, target.getDisplayName(),
 				iTextComponent, itemstack.getTextComponent()) : new TextComponentTranslation(s, target.getDisplayName(), iTextComponent);
 	}
 }
