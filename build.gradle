@@ -35,8 +35,8 @@ sourceSets.main.java.srcDirs = []
 
 minecraft {
     version = config.mc_version + "-" + config.forge_version
-	if (file('../run1.10').exists()) {
-		runDir = "../run1.10"
+	if (file('../run1.11').exists()) {
+		runDir = "../run1.11"
 	} else {
 		runDir = "run"
 	}
