@@ -35,6 +35,7 @@ import net.katsstuff.danmakucore.misc.LogicalSideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
+import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -377,7 +378,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 				getEntityBoundingBox().minX + width, getEntityBoundingBox().minY + height, getEntityBoundingBox().minZ + length));
 
 		if(this.width > f && !firstUpdate && !world.isRemote) {
-			moveEntity(f - width, 0.0D, f - length);
+			move(MoverType.SELF, f - width, 0D, f - length);
 		}
 	}
 
@@ -495,7 +496,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			DamageSource lastDamageSource = u.getLastDamageSource();
 
 			if(lastDamageSource != null) {
-				Entity sourceOfDamage = lastDamageSource.getEntity();
+				Entity sourceOfDamage = lastDamageSource.getImmediateSource();
 				if(sourceOfDamage instanceof EntityLivingBase) {
 					return Optional.of((EntityLivingBase)sourceOfDamage);
 				}
@@ -510,13 +511,13 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			while(zPos < shot.sizeZ()) {
 				Vector3 realPos = pos.offset(direction, zPos);
 
-				world.spawnEntityInWorld(TouhouHelper.createScoreGreen(world, target.orElse(null), realPos, direction));
+				world.spawnEntity(TouhouHelper.createScoreGreen(world, target.orElse(null), realPos, direction));
 				zPos += 1D;
 			}
 			setDead();
 		}
 		else {
-			world.spawnEntityInWorld(TouhouHelper.createScoreGreen(world, target.orElse(null), pos, direction));
+			world.spawnEntity(TouhouHelper.createScoreGreen(world, target.orElse(null), pos, direction));
 			setDead();
 		}
 	}

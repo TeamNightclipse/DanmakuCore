@@ -29,9 +29,9 @@ public class NBTHelper {
 
 	public static NBTTagCompound setVec3d(NBTTagCompound tag, String tagName, Vec3d vector) {
 		NBTTagList list = new NBTTagList();
-		list.appendTag(new NBTTagDouble(vector.xCoord));
-		list.appendTag(new NBTTagDouble(vector.yCoord));
-		list.appendTag(new NBTTagDouble(vector.zCoord));
+		list.appendTag(new NBTTagDouble(vector.x));
+		list.appendTag(new NBTTagDouble(vector.y));
+		list.appendTag(new NBTTagDouble(vector.z));
 		tag.setTag(tagName, list);
 		return tag;
 	}

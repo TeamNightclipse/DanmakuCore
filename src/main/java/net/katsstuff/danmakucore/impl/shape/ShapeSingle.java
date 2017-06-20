@@ -34,7 +34,7 @@ public class ShapeSingle implements IShape {
 		if(!danmaku.world.isRemote) {
 			EntityDanmaku created = danmaku.asEntity();
 			set.add(created);
-			danmaku.world.spawnEntityInWorld(created);
+			danmaku.world.spawnEntity(created);
 		}
 		return new Tuple<>(true, set);
 	}

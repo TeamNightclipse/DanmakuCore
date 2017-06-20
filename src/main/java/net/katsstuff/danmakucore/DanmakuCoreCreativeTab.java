@@ -11,6 +11,7 @@ package net.katsstuff.danmakucore;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -20,12 +21,6 @@ public abstract class DanmakuCoreCreativeTab extends CreativeTabs {
 		super(LibMod.MODID + "." + label);
 		setNoTitle();
 		setBackgroundImageName("item_search.png");
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public Item getTabIconItem() {
-		return getIconItemStack().getItem();
 	}
 
 	@Override

@@ -36,7 +36,7 @@ public class DebugHelper {
 		catch(IllegalAccessException e) {
 			e.printStackTrace();
 		}
-		((DebugRendererPathfinding)Minecraft.getMinecraft().debugRenderer.debugRendererPathfinding).addPath(entityId, path, 0.1F);
+		((DebugRendererPathfinding)Minecraft.getMinecraft().debugRenderer.pathfinding).addPath(entityId, path, 0.1F);
 	}
 
 	@SideOnly(Side.CLIENT)

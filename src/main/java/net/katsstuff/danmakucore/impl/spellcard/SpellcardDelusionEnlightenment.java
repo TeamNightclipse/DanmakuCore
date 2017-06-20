@@ -125,7 +125,7 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 					.build()
 					.asEntity();
 
-			getWorld().spawnEntityInWorld(danmaku);
+			getWorld().spawnEntity(danmaku);
 		}
 	}
 }

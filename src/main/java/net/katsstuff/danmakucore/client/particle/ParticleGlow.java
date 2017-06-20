@@ -44,7 +44,7 @@ public class ParticleGlow extends Particle implements IGlowParticle {
 	}
 
 	@Override
-	public boolean isTransparent() {
+	public boolean shouldDisableDepth() {
 		return true;
 	}
 

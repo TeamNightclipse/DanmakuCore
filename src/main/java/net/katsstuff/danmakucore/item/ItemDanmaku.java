@@ -41,6 +41,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -66,9 +67,8 @@ public class ItemDanmaku extends ItemBase {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
-	public void getSubItems(Item item, CreativeTabs creativeTabs, List<ItemStack> list) {
-		list.addAll(DanmakuRegistry.DANMAKU_VARIANT.getValues().stream()
+	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
+		subItems.addAll(DanmakuRegistry.DANMAKU_VARIANT.getValues().stream()
 				.sorted()
 				.map(ItemDanmaku::createStack)
 				.collect(Collectors.toList()));
@@ -92,8 +92,9 @@ public class ItemDanmaku extends ItemBase {
 	}
 
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
-		if(!getController(stack).onRightClick(stack, world, player, hand)) return super.onItemRightClick(stack, world, player, hand);
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+		ItemStack stack = player.getHeldItem(hand);
+		if(!getController(stack).onRightClick(stack, world, player, hand)) return super.onItemRightClick(world, player, hand);
 
 		boolean success = false;
 		if(!world.isRemote) {
@@ -107,7 +108,7 @@ public class ItemDanmaku extends ItemBase {
 					(shot.sizeZ() / 3) * 2);
 
 			if(!getInfinity(stack) && success) {
-				stack.stackSize--;
+				stack.shrink(1);
 			}
 		}
 
@@ -151,7 +152,7 @@ public class ItemDanmaku extends ItemBase {
 
 				for(int i = 1; i <= amount; i++) {
 					danmaku.setMovementData(shotSpeed / amount * i);
-					built.world.spawnEntityInWorld(danmaku.build().asEntity());
+					built.world.spawnEntity(danmaku.build().asEntity());
 				}
 				break;
 			case RANDOM_RING:

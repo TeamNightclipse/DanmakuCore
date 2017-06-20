@@ -302,7 +302,7 @@ final case class MutableVector3(@BeanProperty var x: Double, @BeanProperty var y
   }
 
   def this(vec: Vec3d) {
-    this(vec.xCoord, vec.yCoord, vec.zCoord)
+    this(vec.x, vec.y, vec.z)
   }
 
   override def create(x: Double, y: Double, z: Double): MutableVector3 = MutableVector3(x, y, z)
@@ -489,7 +489,7 @@ final case class Vector3(@BeanProperty x: Double, @BeanProperty y: Double, @Bean
 		* In most cases use [[Vector3.WrappedVec3d]] instead. Only use this if you actually need a [[Vector3]]
 		*/
   def this(vec: Vec3d) {
-    this(vec.xCoord, vec.yCoord, vec.zCoord)
+    this(vec.x, vec.y, vec.z)
   }
 
   def create(x: Double, y: Double, z: Double): Vector3 = Vector3(x, y, z)
@@ -632,9 +632,9 @@ object Vector3 {
   implicit class WrappedVec3d(override val toVec3d: Vec3d) extends AnyVal with AbstractVector3 {
 
     override type Self = WrappedVec3d
-    override def x: Double = toVec3d.xCoord
-    override def y: Double = toVec3d.yCoord
-    override def z: Double = toVec3d.zCoord
+    override def x: Double = toVec3d.x
+    override def y: Double = toVec3d.y
+    override def z: Double = toVec3d.z
 
     override def create(x: Double, y: Double, z: Double): WrappedVec3d   = new Vec3d(x, y, z)
     override def asMutable:                               MutableVector3 = MutableVector3(x, y, z)
@@ -699,18 +699,18 @@ object Vector3 {
       .getEntitiesInAABBexcluding(
         sourceEntity,
         sourceEntity.getEntityBoundingBox
-          .addCoord(direction.x * distanceReach, direction.y * distanceReach, direction.z * distanceReach)
-          .expandXyz(1F),
+          .expand(direction.x * distanceReach, direction.y * distanceReach, direction.z * distanceReach)
+          .grow(1F),
         (entity => filter.test(entity)): GPredicate[Entity]
       )
       .asScala
 
     val (foundEntity, distanceTo) = foundEntities.foldRight((None: Option[Entity], 0D)) {
       case (potentialEntity, prev @ (_, minDistance)) if potentialEntity.canBeCollidedWith && !potentialEntity.noClip =>
-        val hitbox            = potentialEntity.getEntityBoundingBox.expandXyz(potentialEntity.getCollisionBorderSize)
+        val hitbox            = potentialEntity.getEntityBoundingBox.grow(potentialEntity.getCollisionBorderSize)
         val interceptPosition = hitbox.calculateIntercept(posSourceVec3d, posReach)
 
-        if (hitbox.isVecInside(posSourceVec3d)) {
+        if (hitbox.contains(posSourceVec3d)) {
           if (minDistance >= 0.0D) (Some(potentialEntity), 0D) else prev
         } else if (interceptPosition != null) {
           val distanceToEntity = posSourceVec3d.distanceTo(interceptPosition.hitVec)

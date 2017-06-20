@@ -34,8 +34,8 @@ public class DamageSourceDanmaku extends EntityDamageSourceIndirect {
 	@SuppressWarnings("ConstantConditions")
 	@Override
 	public ITextComponent getDeathMessage(EntityLivingBase target) {
-		Entity indirect = getEntity();
-		ITextComponent iTextComponent = indirect == null ? getSourceOfDamage().getDisplayName() : indirect.getDisplayName();
+		Entity indirect = getImmediateSource();
+		ITextComponent iTextComponent = indirect == null ? getTrueSource().getDisplayName() : indirect.getDisplayName();
 		ItemStack itemstack = indirect instanceof EntityLivingBase ? ((EntityLivingBase)indirect).getHeldItemMainhand() : null;
 		String s = "death.attack." + damageType;
 		String s1 = s + ".item";

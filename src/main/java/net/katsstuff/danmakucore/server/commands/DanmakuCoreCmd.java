@@ -21,12 +21,12 @@ public class DanmakuCoreCmd extends CommandTreeBase {
 	}
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "danmakucore";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender sender) {
+	public String getUsage(ICommandSender sender) {
 		return "commands.danmakucore.usage";
 	}
 }

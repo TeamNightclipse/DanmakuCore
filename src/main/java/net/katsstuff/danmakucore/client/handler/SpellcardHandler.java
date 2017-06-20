@@ -42,7 +42,7 @@ public class SpellcardHandler {
 		ScaledResolution res = event.getResolution();
 
 		int red = 0xFFFF0000;
-		int fontHeight = mc.fontRendererObj.FONT_HEIGHT;
+		int fontHeight = mc.fontRenderer.FONT_HEIGHT;
 
 		GlStateManager.pushMatrix();
 		for(SpellcardInfoClient info : spellcards.values()) {
@@ -50,15 +50,15 @@ public class SpellcardHandler {
 			int renderY = (int)(info.getRenderPosY(res, partial) + yOffset);
 
 			String formattedText = info.getName().getFormattedText();
-			int stringWidth = mc.fontRendererObj.getStringWidth(formattedText);
+			int stringWidth = mc.fontRenderer.getStringWidth(formattedText);
 
 			if(info.shouldMirrorText()) {
-				mc.fontRendererObj.drawStringWithShadow(formattedText, renderX - stringWidth, renderY, 0xFFFFFF);
+				mc.fontRenderer.drawStringWithShadow(formattedText, renderX - stringWidth, renderY, 0xFFFFFF);
 				Gui.drawRect(renderX - stringWidth, renderY + fontHeight, renderX - 2, renderY + fontHeight + 1, red);
 				Gui.drawRect(renderX - stringWidth + 40, renderY + 2 + fontHeight, renderX - 2, renderY + fontHeight + 3, red);
 			}
 			else {
-				mc.fontRendererObj.drawStringWithShadow(formattedText, renderX, renderY, 0xFFFFFF);
+				mc.fontRenderer.drawStringWithShadow(formattedText, renderX, renderY, 0xFFFFFF);
 				Gui.drawRect(renderX, renderY + fontHeight, renderX + stringWidth - 2, renderY + fontHeight + 1, red);
 				Gui.drawRect(renderX, renderY + 2 + fontHeight, renderX + stringWidth - 42, renderY + fontHeight + 3, red);
 			}

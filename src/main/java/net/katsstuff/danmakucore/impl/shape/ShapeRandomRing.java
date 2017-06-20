@@ -46,7 +46,7 @@ public class ShapeRandomRing implements IShape {
 				danmaku.direction = Vector3.Forward().rotate(rotate);
 				danmaku.pos = pos.offset(danmaku.direction, distance);
 				EntityDanmaku spawned = this.danmaku.asEntity();
-				danmaku.asEntity().world.spawnEntityInWorld(spawned);
+				danmaku.asEntity().world.spawnEntity(spawned);
 				set.add(spawned);
 			}
 		}

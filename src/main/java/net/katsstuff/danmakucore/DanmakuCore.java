@@ -40,14 +40,14 @@ public class DanmakuCore {
 	public static final DanmakuCoreCreativeTab DANMAKU_CREATIVE_TAB = new DanmakuCoreCreativeTab("danmaku") {
 
 		@Override
-		public ItemStack getIconItemStack() {
+		public ItemStack getTabIconItem() {
 			return new ItemStack(LibItems.DANMAKU);
 		}
 	};
 	public static final DanmakuCoreCreativeTab SPELLCARD_CREATIVE_TAB = new DanmakuCoreCreativeTab("spellcard") {
 
 		@Override
-		public ItemStack getIconItemStack() {
+		public ItemStack getTabIconItem() {
 			return new ItemStack(LibItems.SPELLCARD);
 		}
 	};
@@ -88,7 +88,7 @@ public class DanmakuCore {
 			Vector3 direction = new Vector3(directionVec.getX(), directionVec.getY(), directionVec.getZ());
 
 			if(ItemDanmaku.shootDanmaku(stack, source.getWorld(), null, false, pos.asImmutable(), direction, 0D)) {
-				--stack.stackSize;
+				stack.shrink(1);
 			}
 			DanmakuHelper.playShotSound(source.getWorld(), pos);
 

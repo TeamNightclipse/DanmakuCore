@@ -40,8 +40,8 @@ public class FlyNodeProcessor extends NodeProcessor {
 		int i = 0;
 
 		for(EnumFacing enumfacing : EnumFacing.values()) {
-			PathPoint pathpoint = this.getAirNode(currentPoint.xCoord + enumfacing.getFrontOffsetX(),
-					currentPoint.yCoord + enumfacing.getFrontOffsetY(), currentPoint.zCoord + enumfacing.getFrontOffsetZ());
+			PathPoint pathpoint = this.getAirNode(currentPoint.x + enumfacing.getFrontOffsetX(),
+					currentPoint.y + enumfacing.getFrontOffsetY(), currentPoint.z + enumfacing.getFrontOffsetZ());
 
 			if(pathpoint != null && !pathpoint.visited && pathpoint.distanceTo(targetPoint) < maxDistance) {
 				pathOptions[i++] = pathpoint;

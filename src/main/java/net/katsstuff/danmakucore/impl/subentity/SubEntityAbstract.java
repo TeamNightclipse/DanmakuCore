@@ -134,7 +134,7 @@ public abstract class SubEntityAbstract extends SubEntity {
 		Vector3 end = start.offset(direction, shot.sizeZ()).add(danmaku.motionX, danmaku.motionY, danmaku.motionZ);
 
 		@SuppressWarnings("ConstantConditions") List<Entity> potentialHits = world.getEntitiesInAABBexcluding(danmaku,
-				danmaku.getEntityBoundingBox().addCoord(danmaku.motionX, danmaku.motionY, danmaku.motionZ).expandXyz(1D),
+				danmaku.getEntityBoundingBox().expand(danmaku.motionX, danmaku.motionY, danmaku.motionZ).grow(1D),
 				e -> e.canBeCollidedWith() && !e.noClip && exclude.test(e));
 
 		RayTraceResult groundRay = null;

@@ -36,7 +36,7 @@ public class PhaseDataPacket {
 		public void fromBytes(ByteBuf byteBuf) {
 			PacketBuffer buf = new PacketBuffer(byteBuf);
 			buf.writeInt(entityId);
-			buf.writeNBTTagCompoundToBuffer(phaseTag);
+			buf.writeCompoundTag(phaseTag);
 		}
 
 		@Override
@@ -44,7 +44,7 @@ public class PhaseDataPacket {
 			PacketBuffer buf = new PacketBuffer(byteBuf);
 			entityId = buf.readInt();
 			try {
-				phaseTag = buf.readNBTTagCompoundFromBuffer();
+				phaseTag = buf.readCompoundTag();
 			}
 			catch(IOException e) {
 				e.printStackTrace();

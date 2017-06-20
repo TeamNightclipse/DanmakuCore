@@ -15,7 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 public class DanScoreCmd extends SetDataCmd {
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "score";
 	}
 

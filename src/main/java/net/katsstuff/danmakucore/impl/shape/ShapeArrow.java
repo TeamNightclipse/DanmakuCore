@@ -56,12 +56,12 @@ public class ShapeArrow implements IShape {
 
 				danmaku.pos = newPosNeutral.offset(localLeft, newWidth);
 				EntityDanmaku createdLeft = danmaku.asEntity();
-				danmaku.world.spawnEntityInWorld(createdLeft);
+				danmaku.world.spawnEntity(createdLeft);
 				set.add(createdLeft);
 
 				danmaku.pos = newPosNeutral.offset(localRight, newWidth);
 				EntityDanmaku createdRight = danmaku.asEntity();
-				danmaku.world.spawnEntityInWorld(createdRight);
+				danmaku.world.spawnEntity(createdRight);
 				set.add(createdRight);
 			}
 		}

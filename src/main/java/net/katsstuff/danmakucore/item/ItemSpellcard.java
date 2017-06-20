@@ -32,6 +32,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -50,20 +51,29 @@ public class ItemSpellcard extends ItemBase implements IOwnedBy {
 	}
 
 	@Override
+	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
+		subItems.addAll(DanmakuRegistry.SPELLCARD.getValues().stream()
+				.sorted()
+				.map(ItemSpellcard::createStack)
+				.collect(Collectors.toList()));
+	}
+
+	@Override
 	public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
 		migrateFromLegacy(stack);
 		super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
 	}
 
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+		ItemStack stack = player.getHeldItem(hand);
 		Spellcard type = getSpellcard(stack);
 		//noinspection ConstantConditions
 		if(!world.isRemote && type != null && type.onRightClick(stack, world, player, hand)) {
 			Optional<EntitySpellcard> result = TouhouHelper.declareSpellcardPlayer(player, type, true);
 			return result.isPresent() ? new ActionResult<>(EnumActionResult.SUCCESS, stack) : new ActionResult<>(EnumActionResult.FAIL, stack);
 		}
-		else return super.onItemRightClick(stack, world, player, hand);
+		else return super.onItemRightClick(world, player, hand);
 	}
 
 	private void migrateFromLegacy(ItemStack stack) {
@@ -84,15 +94,6 @@ public class ItemSpellcard extends ItemBase implements IOwnedBy {
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
 		return super.getUnlocalizedName() + "." + getSpellcard(stack).getUnlocalizedName();
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void getSubItems(Item item, CreativeTabs creativeTabs, List<ItemStack> list) {
-		list.addAll(DanmakuRegistry.SPELLCARD.getValues().stream()
-				.sorted()
-				.map(ItemSpellcard::createStack)
-				.collect(Collectors.toList()));
 	}
 
 	@Override

@@ -51,7 +51,7 @@ public class SubEntityExplosion extends SubEntityType {
 			else cause = danmaku.getSource().orElse(null);
 
 			if(!world.isRemote) {
-				world.createExplosion(cause, rayTrace.hitVec.xCoord, rayTrace.hitVec.yCoord, rayTrace.hitVec.zCoord, strength, false);
+				world.createExplosion(cause, rayTrace.hitVec.x, rayTrace.hitVec.y, rayTrace.hitVec.z, strength, false);
 			}
 		}
 	}

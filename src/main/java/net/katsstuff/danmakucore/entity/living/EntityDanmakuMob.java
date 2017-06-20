@@ -20,6 +20,7 @@ import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.network.DanmakuCorePacketHandler;
 import net.katsstuff.danmakucore.network.PhaseDataPacket;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -50,8 +51,8 @@ public abstract class EntityDanmakuMob extends EntityMob {
 	}
 
 	@Override
-	protected PathNavigate getNewNavigator(World worldIn) {
-		return new PathNavigateFlyer(this, worldIn);
+	protected PathNavigate createNavigator(World world) {
+		return new PathNavigateFlyer(this, world);
 	}
 
 	@Override
@@ -98,7 +99,7 @@ public abstract class EntityDanmakuMob extends EntityMob {
 		if(isFlying()) {
 			if(this.isServerWorld()) {
 				this.moveRelative(strafe, forward, 0.1F);
-				this.moveEntity(this.motionX, this.motionY, this.motionZ);
+				this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
 				this.motionX *= 0.9D;
 				this.motionY *= 0.9D;
 				this.motionZ *= 0.9D;
@@ -248,8 +249,8 @@ public abstract class EntityDanmakuMob extends EntityMob {
 	protected void dropPhaseLoot(DamageSource source) {
 		Vector3 pos = pos();
 		Vector3 direction;
-		if(source.getEntity() != null) {
-			direction = Vector3.directionToEntity(this, source.getEntity());
+		if(source.getImmediateSource() != null) {
+			direction = Vector3.directionToEntity(this, source.getImmediateSource());
 		}
 		else {
 			direction = Vector3.Down();
@@ -257,12 +258,12 @@ public abstract class EntityDanmakuMob extends EntityMob {
 
 		int powerSpawns = powerSpawns();
 		for(int i = 1; i < powerSpawns; i++) {
-			world.spawnEntityInWorld(TouhouHelper.createPower(world, pos, direction));
+			world.spawnEntity(TouhouHelper.createPower(world, pos, direction));
 		}
 
 		int pointSpawns = pointSpawns();
 		for(int i = 1; i < pointSpawns; i++) {
-			world.spawnEntityInWorld(TouhouHelper.createScoreBlue(world, null, pos, direction));
+			world.spawnEntity(TouhouHelper.createScoreBlue(world, null, pos, direction));
 		}
 	}
 

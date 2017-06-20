@@ -315,7 +315,7 @@ object ShotData {
   def emptyMutable: MutableShotData = MutableShotData()
 
   def fromNBTItemStack(stack: ItemStack): ShotData =
-    new ShotData(stack.getSubCompound(NbtShotData, true))
+    new ShotData(Option(stack.getSubCompound(NbtShotData)).getOrElse(new NBTTagCompound))
 
   def serializeNBTItemStack(stack: ItemStack, shotData: AbstractShotData): ItemStack = {
     val rootTag = Option(stack.getTagCompound).getOrElse(new NBTTagCompound)

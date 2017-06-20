@@ -80,7 +80,7 @@ public class DanmakuHelper {
 	@SuppressWarnings("SameParameterValue")
 	public static void chainExplosion(Entity deadEntity, double range, float maxDamage) {
 		List<EntityLivingBase> list = deadEntity.world.getEntitiesWithinAABB(EntityLivingBase.class,
-				deadEntity.getEntityBoundingBox().expandXyz(range), e -> e != deadEntity && e instanceof IAllyDanmaku);
+				deadEntity.getEntityBoundingBox().grow(range), e -> e != deadEntity && e instanceof IAllyDanmaku);
 		for(Entity entity : list) {
 			double distance = entity.getDistanceToEntity(deadEntity);
 
@@ -117,7 +117,7 @@ public class DanmakuHelper {
 	public static int danmakuRemove(Entity centerEntity, double range, DanmakuRemoveMode mode, boolean dropBonus) {
 		int count = 0;
 		List<EntityDanmaku> list = centerEntity.world.getEntitiesWithinAABB(EntityDanmaku.class,
-				centerEntity.getEntityBoundingBox().expandXyz(range), entity -> entity != centerEntity);
+				centerEntity.getEntityBoundingBox().grow(range), entity -> entity != centerEntity);
 
 		for(EntityDanmaku entity : list) {
 			Optional<EntityLivingBase> optUser = entity.getUser();

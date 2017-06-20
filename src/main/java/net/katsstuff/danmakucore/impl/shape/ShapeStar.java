@@ -79,7 +79,7 @@ public class ShapeStar implements IShape {
 						danmaku.direction = localForward;
 						EntityDanmaku spawned = danmaku.asEntity();
 						set.add(spawned);
-						danmaku.world.spawnEntityInWorld(spawned);
+						danmaku.world.spawnEntity(spawned);
 						flagFB = true;
 					}
 					else {
@@ -87,7 +87,7 @@ public class ShapeStar implements IShape {
 						danmaku.direction = localBackward;
 						EntityDanmaku spawned = danmaku.asEntity();
 						set.add(spawned);
-						danmaku.world.spawnEntityInWorld(spawned);
+						danmaku.world.spawnEntity(spawned);
 					}
 				}
 				else {

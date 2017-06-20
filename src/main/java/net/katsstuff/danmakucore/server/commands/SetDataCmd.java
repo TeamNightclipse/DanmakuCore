@@ -18,11 +18,11 @@ import net.minecraft.server.MinecraftServer;
 public abstract class SetDataCmd extends CommandBase {
 
 	public String translationKey() {
-		return "commands.danmakucore." + getCommandName();
+		return "commands.danmakucore." + getName();
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender sender) {
+	public String getUsage(ICommandSender sender) {
 		return translationKey() + ".usage";
 	}
 
@@ -34,7 +34,7 @@ public abstract class SetDataCmd extends CommandBase {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if(args.length <= 0) {
-			throw new WrongUsageException(getCommandUsage(sender));
+			throw new WrongUsageException(getUsage(sender));
 		}
 		else {
 

@@ -15,7 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 public class DanBombsCmd extends SetDataCmd {
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "bombs";
 	}
 

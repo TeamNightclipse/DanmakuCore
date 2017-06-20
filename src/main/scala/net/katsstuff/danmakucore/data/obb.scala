@@ -47,7 +47,7 @@ case class OrientedBoundingBox(boundingBox: AxisAlignedBB, pos: Vector3, orienta
     }
 
     if (rotated.distanceSquared(Vector3.Forward) < 0.1 * 0.1) {
-      boundingBox.intersectsWith(thatBoundingBox)
+      boundingBox.intersects(thatBoundingBox)
     } else {
       val thisPoints = points(boundingBox).map(p => (orientation * (p - pos)) + pos)
       val thatPoints = points(thatBoundingBox)

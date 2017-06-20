@@ -105,8 +105,8 @@ public class HUDHandler {
 					}
 
 					if(drawText) {
-						mc.fontRendererObj.drawStringWithShadow("Power: " + power, powerStartPosX, powerPosY - 25, textColor);
-						mc.fontRendererObj.drawStringWithShadow("Score: " + data.getScore(), powerStartPosX, powerPosY - 15, textColor);
+						mc.fontRenderer.drawStringWithShadow("Power: " + power, powerStartPosX, powerPosY - 25, textColor);
+						mc.fontRenderer.drawStringWithShadow("Score: " + data.getScore(), powerStartPosX, powerPosY - 15, textColor);
 					}
 				}
 
@@ -137,7 +137,7 @@ public class HUDHandler {
 
 					if(lives > 9) {
 						Gui.drawModalRectWithCustomSizedTexture(starX, starY - 13, 0F, 0F, 8, 8, 8, 8);
-						mc.fontRendererObj.drawStringWithShadow(lives + "x", starX + 12, starY - 13, 0xFFFFFF);
+						mc.fontRenderer.drawStringWithShadow(lives + "x", starX + 12, starY - 13, 0xFFFFFF);
 					}
 					else {
 						for(int i = 0; i < 9; i++) {
@@ -152,7 +152,7 @@ public class HUDHandler {
 
 					if(bombs > 9) {
 						Gui.drawModalRectWithCustomSizedTexture(starX, starY, 0F, 0F, 8, 8, 8, 8);
-						mc.fontRendererObj.drawStringWithShadow(bombs + "x", starX + 12, starY, 0xFFFFFF);
+						mc.fontRenderer.drawStringWithShadow(bombs + "x", starX + 12, starY, 0xFFFFFF);
 					}
 					else {
 						for(int i = 0; i < 9; i++) {

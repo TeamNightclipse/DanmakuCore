@@ -96,7 +96,7 @@ public class SpellcardInfoPacket {
 		public void fromBytes(ByteBuf buf) {
 			PacketBuffer packetBuffer = new PacketBuffer(buf);
 			action = packetBuffer.readEnumValue(Action.class);
-			uuid = packetBuffer.readUuid();
+			uuid = packetBuffer.readUniqueId();
 
 			switch(action) {
 				case ADD:
@@ -133,7 +133,7 @@ public class SpellcardInfoPacket {
 		public void toBytes(ByteBuf buf) {
 			PacketBuffer packetBuffer = new PacketBuffer(buf);
 			packetBuffer.writeEnumValue(action);
-			packetBuffer.writeUuid(uuid);
+			packetBuffer.writeUniqueId(uuid);
 
 			switch(action) {
 				case ADD:

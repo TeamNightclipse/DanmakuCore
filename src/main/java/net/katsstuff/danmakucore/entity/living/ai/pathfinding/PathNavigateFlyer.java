@@ -45,7 +45,7 @@ public class PathNavigateFlyer extends PathNavigateGround {
 	@Override
 	protected Vec3d getEntityPosition() {
 		if(danmakuMob.isFlying()) {
-			return new Vec3d(this.theEntity.posX, this.theEntity.posY + this.theEntity.height * 0.5D, this.theEntity.posZ);
+			return new Vec3d(this.entity.posX, this.entity.posY + this.entity.height * 0.5D, this.entity.posZ);
 		}
 		else {
 			return super.getEntityPosition();
@@ -56,15 +56,15 @@ public class PathNavigateFlyer extends PathNavigateGround {
 	protected void pathFollow() {
 		if(danmakuMob.isFlying()) {
 			Vec3d vec3d = this.getEntityPosition();
-			float f = this.theEntity.width * this.theEntity.width;
+			float f = this.entity.width * this.entity.width;
 
-			if(vec3d.squareDistanceTo(this.currentPath.getVectorFromIndex(this.theEntity, this.currentPath.getCurrentPathIndex())) < f) {
+			if(vec3d.squareDistanceTo(this.currentPath.getVectorFromIndex(this.entity, this.currentPath.getCurrentPathIndex())) < f) {
 				this.currentPath.incrementPathIndex();
 			}
 
 			for(int j = Math.min(this.currentPath.getCurrentPathIndex() + 6, this.currentPath.getCurrentPathLength() - 1);
 					j > this.currentPath.getCurrentPathIndex(); --j) {
-				Vec3d vec3d1 = this.currentPath.getVectorFromIndex(this.theEntity, j);
+				Vec3d vec3d1 = this.currentPath.getVectorFromIndex(this.entity, j);
 
 				if(vec3d1.squareDistanceTo(vec3d) <= 36.0D && this.isDirectPathBetweenPoints(vec3d, vec3d1, 0, 0, 0)) {
 					this.currentPath.setCurrentPathIndex(j);
@@ -82,8 +82,8 @@ public class PathNavigateFlyer extends PathNavigateGround {
 	@Override
 	protected boolean isDirectPathBetweenPoints(Vec3d posVec31, Vec3d posVec32, int sizeX, int sizeY, int sizeZ) {
 		if(danmakuMob.isFlying()) {
-			RayTraceResult raytraceresult = this.worldObj.rayTraceBlocks(posVec31,
-					new Vec3d(posVec32.xCoord, posVec32.yCoord + (double)this.theEntity.height * 0.5D, posVec32.zCoord), false, true, false);
+			RayTraceResult raytraceresult = this.world.rayTraceBlocks(posVec31,
+					new Vec3d(posVec32.x, posVec32.y + (double)this.entity.height * 0.5D, posVec32.z), false, true, false);
 			return raytraceresult == null || raytraceresult.typeOfHit == RayTraceResult.Type.MISS;
 		}
 		else {
@@ -94,7 +94,7 @@ public class PathNavigateFlyer extends PathNavigateGround {
 	@Override
 	public boolean canEntityStandOnPos(BlockPos pos) {
 		if(danmakuMob.isFlying()) {
-			return !this.worldObj.getBlockState(pos).isFullBlock();
+			return !this.world.getBlockState(pos).isFullBlock();
 		}
 		else {
 			return super.canEntityStandOnPos(pos);

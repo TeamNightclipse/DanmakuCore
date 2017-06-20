@@ -49,7 +49,7 @@ public class ShapeWide implements IShape {
 				danmaku.pos = pos.offset(danmaku.direction, distance);
 				danmaku.roll = (float)(orientation.pitch() * MathHelper.sin((float)rotateAngle));
 				EntityDanmaku spawned = this.danmaku.asEntity();
-				danmaku.asEntity().world.spawnEntityInWorld(spawned);
+				danmaku.asEntity().world.spawnEntity(spawned);
 				set.add(spawned);
 				rotateAngle += stepSize;
 			}

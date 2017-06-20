@@ -56,13 +56,9 @@ public class ParticleRenderer {
 		for(int i = 0; i < particles.size(); i++) {
 			doRemove = true;
 			Particle particle = particles.get(i);
-			if(particle != null) {
-				if(particle instanceof IGlowParticle) {
-					if(((IGlowParticle)particle).alive()) {
-						particle.onUpdate();
-						doRemove = false;
-					}
-				}
+			if(particle != null && particle instanceof IGlowParticle && ((IGlowParticle)particle).alive()) {
+				particle.onUpdate();
+				doRemove = false;
 			}
 			if(doRemove) {
 				particles.remove(i);
