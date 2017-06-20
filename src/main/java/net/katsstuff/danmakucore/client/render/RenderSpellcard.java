@@ -36,7 +36,7 @@ public class RenderSpellcard extends Render<EntitySpellcard> {
 		GL11.glRotatef(entity.ticksExisted * 20F, 0.0F, 1.0F, 0.0F);
 		GL11.glRotatef(30F, 0.0F, 0.0F, 1.0F);
 
-		Minecraft.getMinecraft().getRenderItem().renderItem(ItemSpellcard.createStack(entity.getSpellCard().getType()),
+		Minecraft.getMinecraft().getRenderItem().renderItem(ItemSpellcard.createStack(entity.getSpellcardType()),
 				ItemCameraTransforms.TransformType.GROUND);
 
 		GL11.glPopMatrix();

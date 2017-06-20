@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import net.katsstuff.danmakucore.entity.spellcard.spellcardbar.SpellcardInfoServer;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
 import net.katsstuff.danmakucore.helper.NBTHelper;
+import net.katsstuff.danmakucore.misc.LogicalSideOnly;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -28,6 +29,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class EntitySpellcard extends Entity {
 
@@ -40,7 +42,9 @@ public class EntitySpellcard extends Entity {
 	private boolean sendNamePacket = false;
 	private SpellcardInfoServer spellcardInfo;
 
+	@LogicalSideOnly(Side.SERVER)
 	private EntityLivingBase user;
+	@LogicalSideOnly(Side.SERVER)
 	private SpellcardEntity spellCard;
 
 	public EntitySpellcard(World world) {
@@ -172,12 +176,17 @@ public class EntitySpellcard extends Entity {
 		return 0.5F;
 	}
 
+	@LogicalSideOnly(Side.SERVER)
 	public EntityLivingBase getUser() {
 		return user;
 	}
 
-	@SuppressWarnings("unused")
+	@LogicalSideOnly(Side.SERVER)
 	public SpellcardEntity getSpellCard() {
 		return spellCard;
+	}
+
+	public Spellcard getSpellcardType() {
+		return DanmakuRegistry.getObjById(Spellcard.class, getSpellcardId());
 	}
 }
