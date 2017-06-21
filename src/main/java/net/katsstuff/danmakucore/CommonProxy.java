@@ -118,13 +118,9 @@ public class CommonProxy {
 	}
 
 	void registerEntities() {
-		EntityRegistry.registerModEntity(resouce(LibEntityName.DANMAKU), EntityDanmaku.class, LibEntityName.DANMAKU, 0, LibMod.MODID, 64, 1, true);
-		EntityRegistry.registerModEntity(resouce(LibEntityName.SPELLCARD), EntitySpellcard.class, LibEntityName.SPELLCARD, 1, LibMod.MODID, 64, 1, true);
-		EntityRegistry.registerModEntity(resouce(LibEntityName.FALLING_DATA), EntityFallingData.class, LibEntityName.FALLING_DATA, 2, LibMod.MODID, 40, 1, true);
-	}
-
-	private ResourceLocation resouce(String name) {
-		return new ResourceLocation(LibMod.MODID, name);
+		EntityRegistry.registerModEntity(CommonProxy.resource(LibEntityName.DANMAKU), EntityDanmaku.class, LibEntityName.DANMAKU, 0, LibMod.MODID, 64, 1, true);
+		EntityRegistry.registerModEntity(CommonProxy.resource(LibEntityName.SPELLCARD), EntitySpellcard.class, LibEntityName.SPELLCARD, 1, LibMod.MODID, 64, 1, true);
+		EntityRegistry.registerModEntity(CommonProxy.resource(LibEntityName.FALLING_DATA), EntityFallingData.class, LibEntityName.FALLING_DATA, 2, LibMod.MODID, 40, 1, true);
 	}
 
 	public void registerItemColors() {} //NO-OP
