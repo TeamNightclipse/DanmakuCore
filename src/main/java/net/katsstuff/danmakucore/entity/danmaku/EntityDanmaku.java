@@ -77,8 +77,6 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 	private SubEntity subEntity;
 
-	private boolean frozen = false;
-
 	public EntityDanmaku(World world) {
 		super(world);
 		isImmuneToFire = true;
@@ -203,26 +201,24 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			}
 		}
 
-		if(!frozen) {
-			//We do the isRemote check inside to make sure that also the client exits here
-			if(ticksExisted > shot.end()) {
-				delete();
-				return;
-			}
-
-			if(user != null && user.isDead) {
-				if(!world.isRemote) {
-					danmakuFinishBonus();
-				}
-				return;
-			}
-
-			super.onUpdate();
-			shot.getForm().onTick(this);
-			subEntity.subEntityTick();
-
-			setPosition(posX + motionX, posY + motionY, posZ + motionZ);
+		//We do the isRemote check inside to make sure that also the client exits here
+		if(ticksExisted > shot.end()) {
+			delete();
+			return;
 		}
+
+		if(user != null && user.isDead) {
+			if(!world.isRemote) {
+				danmakuFinishBonus();
+			}
+			return;
+		}
+
+		super.onUpdate();
+		shot.getForm().onTick(this);
+		subEntity.subEntityTick();
+
+		setPosition(posX + motionX, posY + motionY, posZ + motionZ);
 	}
 
 	public void accelerate(double currentSpeed) {
@@ -545,14 +541,6 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 	public Random getRNG() {
 		return rand;
-	}
-
-	public boolean isFrozen() {
-		return frozen;
-	}
-
-	public void setFrozen(boolean frozen) {
-		this.frozen = frozen;
 	}
 
 	public OrientedBoundingBox getOrientedBoundingBox() {
