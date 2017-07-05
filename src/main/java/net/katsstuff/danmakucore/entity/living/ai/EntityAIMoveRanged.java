@@ -23,8 +23,8 @@ public class EntityAIMoveRanged extends EntityAIBase {
 	private boolean strafingBackwards;
 	private int strafingTime = -1;
 
-	public EntityAIMoveRanged(EntityLiving skeleton, double speedAmplifier, float maxDistance) {
-		this.entity = skeleton;
+	public EntityAIMoveRanged(EntityLiving living, double speedAmplifier, float maxDistance) {
+		this.entity = living;
 		this.moveSpeedAmp = speedAmplifier;
 		this.maxAttackDistance = maxDistance * maxDistance;
 		this.setMutexBits(3);
