@@ -113,7 +113,7 @@ public class ItemDanmaku extends ItemBase {
 		}
 
 		DanmakuHelper.playShotSound(player);
-		return new ActionResult<>(success | world.isRemote ? EnumActionResult.SUCCESS : EnumActionResult.FAIL, stack);
+		return new ActionResult<>(success || world.isRemote ? EnumActionResult.SUCCESS : EnumActionResult.FAIL, stack);
 	}
 
 	private void migrateFromLegacy(ItemStack stack) {
@@ -185,6 +185,7 @@ public class ItemDanmaku extends ItemBase {
 				break;
 			case SPHERE:
 				DanmakuCreationHelper.createSphereShot(orientation, built, amount, amount / 2, 0F, offset);
+				break;
 			default:
 				break;
 		}
@@ -204,7 +205,7 @@ public class ItemDanmaku extends ItemBase {
 		boolean isInfinity = getInfinity(stack);
 		boolean custom = getCustom(stack);
 
-		float powerDamage = new BigDecimal(DanmakuHelper.adjustDamageCoreData(player, shot.damage()) - shot.damage()).setScale(4,
+		float powerDamage = BigDecimal.valueOf(DanmakuHelper.adjustDamageCoreData(player, shot.damage()) - shot.damage()).setScale(4,
 				BigDecimal.ROUND_HALF_UP).floatValue();
 		String item = "item.danmaku";
 

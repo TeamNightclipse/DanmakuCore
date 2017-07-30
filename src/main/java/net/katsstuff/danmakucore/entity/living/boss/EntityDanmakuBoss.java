@@ -125,7 +125,7 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 	}
 
 	public int remainingSpellcards() {
-		return (int)phaseManager.getPhaseList().stream().skip(phaseManager.getCurrentPhaseIndex() + 1).filter(Phase::isSpellcard).count();
+		return (int)phaseManager.getPhaseList().stream().skip(phaseManager.getCurrentPhaseIndex() + 1L).filter(Phase::isSpellcard).count();
 	}
 
 	public abstract List<Phase> getPhaseList();

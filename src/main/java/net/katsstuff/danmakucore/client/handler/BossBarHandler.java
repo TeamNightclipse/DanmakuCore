@@ -52,7 +52,7 @@ public class BossBarHandler {
 
 					if(remainingSpellcards > 8) {
 						Gui.drawModalRectWithCustomSizedTexture(baseX, baseY, 0F, 0F, 12, 12, 12F, 12F);
-						mc.fontRenderer.drawStringWithShadow("x" + remainingSpellcards, baseX + 14, baseY + 4, 0xFFFFFF);
+						mc.fontRenderer.drawStringWithShadow("x" + remainingSpellcards, baseX + 14F, baseY + 4F, 0xFFFFFF);
 					}
 					else {
 						for(int j = 0; j < remainingSpellcards; j++) {

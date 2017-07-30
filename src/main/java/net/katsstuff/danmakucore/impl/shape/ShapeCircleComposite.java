@@ -23,14 +23,12 @@ public class ShapeCircleComposite implements IShape {
 	private final IShape shape;
 	private final int amount;
 	private float baseAngle;
-	private final double distance;
 
-	public ShapeCircleComposite(World world, IShape shape, int amount, float baseAngle, double distance) {
+	public ShapeCircleComposite(World world, IShape shape, int amount, float baseAngle) {
 		this.world = world;
 		this.shape = shape;
 		this.amount = amount;
 		this.baseAngle = baseAngle;
-		this.distance = distance;
 	}
 
 	@Override
@@ -38,7 +36,7 @@ public class ShapeCircleComposite implements IShape {
 		if(amount % 2 == 0) {
 			baseAngle += 360F / (amount * 2F);
 		}
-		ShapeWideComposite wideShape = new ShapeWideComposite(world, shape, amount, 360F - 360F / amount, baseAngle, distance);
+		ShapeWideComposite wideShape = new ShapeWideComposite(world, shape, amount, 360F - 360F / amount, baseAngle);
 		return wideShape.drawForTick(pos, orientation, tick);
 	}
 }

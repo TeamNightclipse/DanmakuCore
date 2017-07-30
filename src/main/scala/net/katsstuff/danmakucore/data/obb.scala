@@ -15,7 +15,6 @@ import net.minecraft.util.math.AxisAlignedBB
 case class OrientedBoundingBox(boundingBox: AxisAlignedBB, pos: Vector3, orientation: Quat) {
 
   //http://www.dyn4j.org/2010/01/sat/
-  @Nullable
   def intersects(thatBoundingBox: AxisAlignedBB): Boolean = {
     val rotated = orientation * Vector3.Forward
 

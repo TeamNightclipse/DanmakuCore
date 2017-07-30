@@ -25,16 +25,14 @@ public class ShapeWideComposite implements IShape {
 	private final int amount;
 	private final float wideAngle;
 	private final float baseAngle;
-	private final double distance;
 	private final Set<EntityDanmaku> set = new HashSet<>();
 
-	public ShapeWideComposite(World world, IShape shape, int amount, float wideAngle, float baseAngle, double distance) {
+	public ShapeWideComposite(World world, IShape shape, int amount, float wideAngle, float baseAngle) {
 		this.world = world;
 		this.shape = shape;
 		this.amount = amount;
 		this.wideAngle = wideAngle;
 		this.baseAngle = baseAngle;
-		this.distance = distance;
 	}
 
 	@Override

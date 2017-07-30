@@ -10,10 +10,6 @@ package net.katsstuff.danmakucore;
 
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class DanmakuCoreCreativeTab extends CreativeTabs {
 

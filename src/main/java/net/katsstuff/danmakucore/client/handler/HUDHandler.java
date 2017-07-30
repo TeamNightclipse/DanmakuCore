@@ -51,120 +51,113 @@ public class HUDHandler {
 
 				GlStateManager.pushMatrix();
 
-				{
-					float power = data.getPower();
-
-					float filled = power > 4F ? 1F : power / 4F;
-					int widthEnd = ConfigHandler.hud.power.widthEnd;
-					int widthStart = ConfigHandler.hud.power.widthStart;
-
-					int height = 10;
-
-					int widthUsed = widthEnd - widthStart;
-					int widthFilled = (int)(widthUsed * filled);
-
-					int powerPosX = res.getScaledWidth() + ConfigHandler.hud.power.posX;
-					int powerPosY = res.getScaledHeight() - ConfigHandler.hud.power.posY;
-
-					int powerStartPosX = powerPosX - widthEnd;
-					int powerFilledPosX = powerPosX - widthFilled - widthStart;
-
-					if(ConfigHandler.hud.power.hideIfFull) {
-						if(filled == 1F) {
-							powerBarVisible -= 0.01F;
-						}
-						else {
-							powerBarVisible += 0.1F;
-						}
-						powerBarVisible = MathHelper.clamp(powerBarVisible, 0F, 1F);
-
-						GlStateManager.color(1F, 1F, 1F, powerBarVisible);
-					}
-					else {
-						GlStateManager.color(1F, 1F, 1F, 1F);
-					}
-
-					mc.getTextureManager().bindTexture(POWER_BACKGROUND);
-					Gui.drawModalRectWithCustomSizedTexture(powerStartPosX - 2, powerPosY - 2, 0F, 0F, widthUsed + 4, height + 4, widthUsed + 4,
-							height + 4);
-
-					mc.getTextureManager().bindTexture(POWER);
-					Gui.drawModalRectWithCustomSizedTexture(powerFilledPosX, powerPosY, widthFilled * -1, 0F, widthFilled, height, widthUsed,
-							height);
-
-					int textColor = 0xFFFFFFFF;
-					boolean drawText = true;
-					if(ConfigHandler.hud.power.hideIfFull) {
-						int alpha = (int)(powerBarVisible * 255);
-						if(alpha < 4) {
-							drawText = false;
-						}
-
-						//noinspection NumericOverflow
-						textColor = alpha << 24 | 0xFFFFFF;
-					}
-
-					if(drawText) {
-						mc.fontRenderer.drawStringWithShadow("Power: " + power, powerStartPosX, powerPosY - 25, textColor);
-						mc.fontRenderer.drawStringWithShadow("Score: " + data.getScore(), powerStartPosX, powerPosY - 15, textColor);
-					}
-				}
-
-				{
-
-					int lives = data.getLives();
-					int bombs = data.getBombs();
-
-					if(ConfigHandler.hud.stars.hideIfAboveHigh) {
-						if(lives > ConfigHandler.hud.stars.livesHigh && bombs > ConfigHandler.hud.stars.bombsHigh) {
-							starsVisible -= 0.01F;
-						}
-						else {
-							starsVisible += 0.1F;
-						}
-						starsVisible = MathHelper.clamp(starsVisible, 0F, 1F);
-
-						GlStateManager.color(1F, 1F, 1F, starsVisible);
-					}
-					else {
-						GlStateManager.color(1F, 1F, 1F, 1F);
-					}
-
-					int starX = ConfigHandler.hud.stars.posX;
-					int starY = res.getScaledHeight() - ConfigHandler.hud.stars.posY;
-
-					mc.getTextureManager().bindTexture(LIFE_FULL);
-
-					if(lives > 9) {
-						Gui.drawModalRectWithCustomSizedTexture(starX, starY - 13, 0F, 0F, 8, 8, 8, 8);
-						mc.fontRenderer.drawStringWithShadow(lives + "x", starX + 12, starY - 13, 0xFFFFFF);
-					}
-					else {
-						for(int i = 0; i < 9; i++) {
-							if(i == lives) {
-								mc.getTextureManager().bindTexture(LIFE_EMPTY);
-							}
-							Gui.drawModalRectWithCustomSizedTexture(starX + (i * 11), starY - 13, 0F, 0F, 8, 8, 8, 8);
-						}
-					}
-
-					mc.getTextureManager().bindTexture(BOMB_FULL);
-
-					if(bombs > 9) {
-						Gui.drawModalRectWithCustomSizedTexture(starX, starY, 0F, 0F, 8, 8, 8, 8);
-						mc.fontRenderer.drawStringWithShadow(bombs + "x", starX + 12, starY, 0xFFFFFF);
-					}
-					else {
-						for(int i = 0; i < 9; i++) {
-							if(i == bombs) {
-								mc.getTextureManager().bindTexture(BOMB_EMPTY);
-							}
-							Gui.drawModalRectWithCustomSizedTexture(starX + (i * 11), starY, 0F, 0F, 8, 8, 8, 8);
-						}
-					}
-				}
+				drawPower(res, mc, data.getPower(), data.getScore());
+				drawLivesAndBombs(res, mc, data);
 
 				GlStateManager.popMatrix();
+			}
+		}
+	}
+
+	private void drawPower(ScaledResolution res, Minecraft mc, float power, int score) {
+		float filled = power > 4F ? 1F : power / 4F;
+		int widthEnd = ConfigHandler.hud.power.widthEnd;
+		int widthStart = ConfigHandler.hud.power.widthStart;
+
+		int height = 10;
+
+		int widthUsed = widthEnd - widthStart;
+		int widthFilled = (int)(widthUsed * filled);
+
+		int powerPosX = res.getScaledWidth() + ConfigHandler.hud.power.posX;
+		int powerPosY = res.getScaledHeight() - ConfigHandler.hud.power.posY;
+
+		int powerStartPosX = powerPosX - widthEnd;
+		int powerFilledPosX = powerPosX - widthFilled - widthStart;
+
+		if(ConfigHandler.hud.power.hideIfFull) {
+			if(filled == 1F) {
+				powerBarVisible -= 0.01F;
+			}
+			else {
+				powerBarVisible += 0.1F;
+			}
+			powerBarVisible = MathHelper.clamp(powerBarVisible, 0F, 1F);
+
+			GlStateManager.color(1F, 1F, 1F, powerBarVisible);
+		}
+		else {
+			GlStateManager.color(1F, 1F, 1F, 1F);
+		}
+
+		mc.getTextureManager().bindTexture(POWER_BACKGROUND);
+		Gui.drawModalRectWithCustomSizedTexture(powerStartPosX - 2, powerPosY - 2, 0F, 0F, widthUsed + 4, height + 4, widthUsed + 4F,
+				height + 4F);
+
+		mc.getTextureManager().bindTexture(POWER);
+		Gui.drawModalRectWithCustomSizedTexture(powerFilledPosX, powerPosY, widthFilled * -1F, 0F, widthFilled, height, widthUsed,
+				height);
+
+		int textColor = 0xFFFFFFFF;
+		boolean drawText = true;
+		if(ConfigHandler.hud.power.hideIfFull) {
+			int alpha = (int)(powerBarVisible * 255);
+			if(alpha < 4) {
+				drawText = false;
+			}
+
+			//noinspection NumericOverflow
+			textColor = alpha << 24 | 0xFFFFFF;
+		}
+
+		if(drawText) {
+			mc.fontRenderer.drawStringWithShadow("Power: " + power, powerStartPosX, powerPosY - 25F, textColor);
+			mc.fontRenderer.drawStringWithShadow("Score: " + score, powerStartPosX, powerPosY - 15F, textColor);
+		}
+	}
+
+	private void drawLivesAndBombs(ScaledResolution res, Minecraft mc, IDanmakuCoreData data) {
+		int lives = data.getLives();
+		int bombs = data.getBombs();
+
+		fadeStars(lives, bombs);
+		renderStars(mc, LIFE_FULL, LIFE_EMPTY, lives, 13, res);
+		renderStars(mc, BOMB_FULL, BOMB_EMPTY, lives, 0, res);
+	}
+
+	private void fadeStars(int lives, int bombs) {
+		if(ConfigHandler.hud.stars.hideIfAboveHigh) {
+			if(lives > ConfigHandler.hud.stars.livesHigh && bombs > ConfigHandler.hud.stars.bombsHigh) {
+				starsVisible -= 0.01F;
+			}
+			else {
+				starsVisible += 0.1F;
+			}
+			starsVisible = MathHelper.clamp(starsVisible, 0F, 1F);
+
+			GlStateManager.color(1F, 1F, 1F, starsVisible);
+		}
+		else {
+			GlStateManager.color(1F, 1F, 1F, 1F);
+		}
+	}
+
+	private void renderStars(Minecraft mc, ResourceLocation fullTexture, ResourceLocation emptyTexture, int amount, int yOffset, ScaledResolution res) {
+		int starX = ConfigHandler.hud.stars.posX;
+		int starY = res.getScaledHeight() - ConfigHandler.hud.stars.posY;
+
+		mc.getTextureManager().bindTexture(fullTexture);
+
+		if(amount > 9) {
+			Gui.drawModalRectWithCustomSizedTexture(starX, starY - yOffset, 0F, 0F, 8, 8, 8, 8);
+			mc.fontRenderer.drawStringWithShadow(amount + "x", starX + 12F, starY - (float)yOffset, 0xFFFFFF);
+		}
+		else {
+			for(int i = 0; i < 9; i++) {
+				if(i == amount) {
+					mc.getTextureManager().bindTexture(emptyTexture);
+				}
+				Gui.drawModalRectWithCustomSizedTexture(starX + (i * 11), starY - yOffset, 0F, 0F, 8, 8, 8, 8);
 			}
 		}
 	}

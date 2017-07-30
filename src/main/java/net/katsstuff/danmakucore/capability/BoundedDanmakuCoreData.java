@@ -49,7 +49,7 @@ public class BoundedDanmakuCoreData implements IDanmakuCoreData {
 
 	@Override
 	public void setPower(float power) {
-		this.power = new BigDecimal(MathHelper.clamp(power, 0F, powerBound)).setScale(4, BigDecimal.ROUND_HALF_UP).floatValue();
+		this.power = BigDecimal.valueOf(MathHelper.clamp(power, 0F, powerBound)).setScale(4, BigDecimal.ROUND_HALF_UP).floatValue();
 	}
 
 	@Override

@@ -38,11 +38,13 @@ public class EntityAIMoveRanged extends EntityAIBase {
 		return (this.shouldExecute() || !this.entity.getNavigator().noPath());
 	}
 
+	@Override
 	public void resetTask() {
 		super.resetTask();
 		this.seeTime = 0;
 	}
 
+	@Override
 	public void updateTask() {
 		EntityLivingBase entitylivingbase = entity.getAttackTarget();
 

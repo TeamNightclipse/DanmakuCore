@@ -21,7 +21,7 @@ import net.minecraft.util.text.ITextComponent;
 public class SpellcardInfoServer extends SpellcardInfo {
 
 	private float position = 1F;
-	private final float destinationHeight = 0.02F;
+	private static final float DESTINATION_HEIGHT = 0.02F;
 
 	private List<EntityPlayerMP> sentTo = new ArrayList<>();
 
@@ -34,16 +34,16 @@ public class SpellcardInfoServer extends SpellcardInfo {
 	}
 
 	public void setNoAnimation() {
-		position = destinationHeight;
+		position = DESTINATION_HEIGHT;
 		sendPacketAll(SpellcardInfoPacket.Action.SET_POS_ABSOLUTE);
 	}
 
 	public void tick() {
-		if(position > destinationHeight) {
+		if(position > DESTINATION_HEIGHT) {
 			position = (float)(position - 0.35F * getAcceleration());
 
-			if(position < destinationHeight) {
-				position = destinationHeight;
+			if(position < DESTINATION_HEIGHT) {
+				position = DESTINATION_HEIGHT;
 				sendPacketAll(SpellcardInfoPacket.Action.SET_POS_ABSOLUTE);
 			}
 			else {

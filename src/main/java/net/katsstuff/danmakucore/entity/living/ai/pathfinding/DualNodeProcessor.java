@@ -72,29 +72,35 @@ public class DualNodeProcessor extends NodeProcessor {
 		return decide.test(entity) ? first.getPathNodeType(blockAccess, x, y, z) : second.getPathNodeType(blockAccess, x, y, z);
 	}
 
+	@Override
 	public void setCanEnterDoors(boolean canEnterDoorsIn) {
 		if(decide.test(entity)) first.setCanEnterDoors(canEnterDoorsIn);
 		else second.setCanEnterDoors(canEnterDoorsIn);
 	}
 
+	@Override
 	public void setCanBreakDoors(boolean canBreakDoorsIn) {
 		if(decide.test(entity)) first.setCanBreakDoors(canBreakDoorsIn);
 		else second.setCanBreakDoors(canBreakDoorsIn);
 	}
 
+	@Override
 	public void setCanSwim(boolean canSwimIn) {
 		if(decide.test(entity)) first.setCanSwim(canSwimIn);
 		else second.setCanSwim(canSwimIn);
 	}
 
+	@Override
 	public boolean getCanEnterDoors() {
 		return decide.test(entity) ? first.getCanEnterDoors() : second.getCanEnterDoors();
 	}
 
+	@Override
 	public boolean getCanBreakDoors() {
 		return decide.test(entity) ? first.getCanBreakDoors() : second.getCanBreakDoors();
 	}
 
+	@Override
 	public boolean getCanSwim() {
 		return decide.test(entity) ? first.getCanSwim() : second.getCanSwim();
 	}

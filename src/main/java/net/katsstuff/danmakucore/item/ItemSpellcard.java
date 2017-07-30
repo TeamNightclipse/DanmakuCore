@@ -69,7 +69,7 @@ public class ItemSpellcard extends ItemBase implements IOwnedBy {
 		ItemStack stack = player.getHeldItem(hand);
 		Spellcard type = getSpellcard(stack);
 		//noinspection ConstantConditions
-		if(!world.isRemote && type != null && type.onRightClick(stack, world, player, hand)) {
+		if(!world.isRemote && type.onRightClick(stack, world, player, hand)) {
 			Optional<EntitySpellcard> result = TouhouHelper.declareSpellcardPlayer(player, type, true);
 			return result.isPresent() ? new ActionResult<>(EnumActionResult.SUCCESS, stack) : new ActionResult<>(EnumActionResult.FAIL, stack);
 		}

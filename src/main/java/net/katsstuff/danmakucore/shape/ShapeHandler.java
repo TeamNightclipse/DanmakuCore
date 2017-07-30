@@ -89,7 +89,7 @@ public final class ShapeHandler {
 	/**
 	 * A class that specifies how a shape should be drawn.
 	 */
-	private static abstract class ShapeEntry implements IShapeEntry {
+	private abstract static class ShapeEntry implements IShapeEntry {
 
 		final Set<EntityDanmaku> drawn = new HashSet<>();
 		final IShape shape;

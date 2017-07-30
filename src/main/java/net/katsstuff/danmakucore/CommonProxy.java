@@ -71,8 +71,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
+import net.minecraftforge.fml.common.registry.IForgeRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 import net.minecraftforge.fml.common.registry.PersistentRegistryManager;
+import net.minecraftforge.fml.common.registry.RegistryBuilder;
 
 @Mod.EventBusSubscriber
 public class CommonProxy {
@@ -245,10 +247,9 @@ public class CommonProxy {
 
 	public <T extends IGlowParticle> void addParticle(T particle) {}
 
-	@SuppressWarnings("deprecation") //We need the default value
-	private static <I extends IForgeRegistryEntry<I>> FMLControlledNamespacedRegistry<I> createRegistry(ResourceLocation name, Class<I> clazz,
+	private static <I extends IForgeRegistryEntry<I>> IForgeRegistry<I> createRegistry(ResourceLocation name, Class<I> clazz,
 			@Nullable ResourceLocation defaultValue) {
-		return PersistentRegistryManager.createRegistry(name, clazz, defaultValue, 0, Short.MAX_VALUE, false, null, null, null);
+		return new RegistryBuilder<I>().setName(name).setType(clazz).setIDRange(0, Short.MAX_VALUE).setDefaultKey(defaultValue).create();
 	}
 
 	private static ResourceLocation resource(String path) {

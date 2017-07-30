@@ -128,11 +128,11 @@ public class EntityFallingData extends Entity {
 
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound compound) {
-		UUID target = compound.getUniqueId("target");
-		if(target != null) {
-			Entity targetEntity = world.getPlayerEntityByUUID(target);
+		UUID targetUuid = compound.getUniqueId("target");
+		if(targetUuid != null) {
+			Entity targetEntity = world.getPlayerEntityByUUID(targetUuid);
 			if(targetEntity == null) {
-				NBTHelper.getEntityByUUID(target, world);
+				NBTHelper.getEntityByUUID(targetUuid, world);
 			}
 			this.target = targetEntity;
 		}

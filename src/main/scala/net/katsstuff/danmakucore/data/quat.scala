@@ -48,7 +48,7 @@ abstract sealed class AbstractQuat {
   def w: Double
 
   /**
-		* Creates a new quat of this type. For easy of use
+		* Creates a new quat of this type. Used for default implementation.
 		*/
   def create(x: Double, y: Double, z: Double, w: Double): Self
 

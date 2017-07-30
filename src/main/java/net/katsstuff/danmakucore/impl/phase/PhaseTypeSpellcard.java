@@ -81,9 +81,8 @@ public class PhaseTypeSpellcard extends PhaseType {
 			if(!isFrozen() && (isCounterStart() || firstAttack) && target != null && entity.getEntitySenses().canSee(target)) {
 				Optional<EntitySpellcard> optSpellcard = TouhouHelper.declareSpellcard(entity, target, spellcard, firstAttack, false);
 				if(optSpellcard.isPresent()) {
-					EntitySpellcard spellcard = optSpellcard.get();
 					firstAttack = false;
-					spellcard.getSpellCard().setDanmakuLevel(level);
+					optSpellcard.get().getSpellCard().setDanmakuLevel(level);
 				}
 			}
 		}
@@ -93,6 +92,7 @@ public class PhaseTypeSpellcard extends PhaseType {
 			return type;
 		}
 
+		@Override
 		public Optional<Spellcard> getSpellcard() {
 			return Optional.of(spellcard);
 		}

@@ -390,8 +390,8 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			this.posY = y;
 			this.posZ = z;
 			ShotData shot = getShotData();
-			Quat rotation = Quat.fromEuler(rotationYaw, rotationPitch, getRoll());
-			Vector3 size = new Vector3(shot.sizeX(), shot.sizeY(), shot.sizeZ()).rotate(rotation);
+			Quat danmakuRotation = Quat.fromEuler(rotationYaw, rotationPitch, getRoll());
+			Vector3 size = new Vector3(shot.sizeX(), shot.sizeY(), shot.sizeZ()).rotate(danmakuRotation);
 			double xSize = size.x() / 2F;
 			double zSize = size.z() / 2F;
 			double ySize = size.y() / 2F;
@@ -500,20 +500,20 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 			return Optional.empty();
 		});
-		Vector3 direction = target.map(to -> Vector3.directionToEntity(this, to)).orElse(Vector3.Down());
+		Vector3 launchDirection = target.map(to -> Vector3.directionToEntity(this, to)).orElse(Vector3.Down());
 
 		if(shot.sizeZ() > 1F && shot.sizeZ() / shot.sizeX() > 3 && shot.sizeZ() / shot.sizeY() > 3) {
 			double zPos = 0.0D;
 			while(zPos < shot.sizeZ()) {
-				Vector3 realPos = pos.offset(direction, zPos);
+				Vector3 realPos = pos.offset(launchDirection, zPos);
 
-				world.spawnEntity(TouhouHelper.createScoreGreen(world, target.orElse(null), realPos, direction));
+				world.spawnEntity(TouhouHelper.createScoreGreen(world, target.orElse(null), realPos, launchDirection));
 				zPos += 1D;
 			}
 			setDead();
 		}
 		else {
-			world.spawnEntity(TouhouHelper.createScoreGreen(world, target.orElse(null), pos, direction));
+			world.spawnEntity(TouhouHelper.createScoreGreen(world, target.orElse(null), pos, launchDirection));
 			setDead();
 		}
 	}

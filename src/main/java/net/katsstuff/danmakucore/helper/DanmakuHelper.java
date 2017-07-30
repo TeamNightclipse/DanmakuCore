@@ -236,7 +236,7 @@ public class DanmakuHelper {
 					LibColor.COLOR_VANILLA_SILVER, LibColor.COLOR_VANILLA_CYAN, LibColor.COLOR_VANILLA_PURPLE, LibColor.COLOR_VANILLA_BLUE,
 					LibColor.COLOR_VANILLA_BROWN, LibColor.COLOR_VANILLA_GREEN, LibColor.COLOR_VANILLA_RED, LibColor.COLOR_VANILLA_BLACK};
 
-	private final static Random RAND = new Random();
+	private static final Random RAND = new Random();
 
 	public static int randomSaturatedColor() {
 		return SATURATED_COLORS[RAND.nextInt(SATURATED_COLORS.length)];

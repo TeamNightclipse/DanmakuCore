@@ -31,6 +31,7 @@ public class FlyMoveHelper extends EntityMoveHelper {
 		this.danmakuEntity = danmakuCreature;
 	}
 
+	@Override
 	public void onUpdateMoveHelper() {
 		if(isEntityFlying()) {
 			if(this.action == EntityMoveHelper.Action.MOVE_TO && !danmakuEntity.getNavigator().noPath()) {

@@ -36,7 +36,7 @@ public class BoundlessDanmakuCoreData implements IDanmakuCoreData {
 
 	@Override
 	public void setPower(float power) {
-		this.power = new BigDecimal(power).setScale(4, BigDecimal.ROUND_HALF_UP).floatValue();
+		this.power = BigDecimal.valueOf(power).setScale(4, BigDecimal.ROUND_HALF_UP).floatValue();
 	}
 
 	@Override

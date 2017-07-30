@@ -89,12 +89,14 @@ public class EntitySpellcard extends Entity {
 		}
 	}
 
+	@Override
 	public void addTrackingPlayer(EntityPlayerMP player) {
 		if(sendNamePacket) {
 			spellcardInfo.addPlayer(player);
 		}
 	}
 
+	@Override
 	public void removeTrackingPlayer(EntityPlayerMP player) {
 		if(sendNamePacket) {
 			spellcardInfo.removePlayer(player);
@@ -122,7 +124,6 @@ public class EntitySpellcard extends Entity {
 
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound tag) {
-		EntityLivingBase user;
 		UUID userUuid = NBTUtil.getUUIDFromTag(tag.getCompoundTag(NBT_USER));
 
 		user = world.getPlayerEntityByUUID(userUuid);
@@ -137,7 +138,6 @@ public class EntitySpellcard extends Entity {
 		}
 
 		if(user != null) {
-			this.user = user;
 			Spellcard type = DanmakuRegistry.SPELLCARD.getValue(new ResourceLocation(tag.getString(NBT_SPELLCARD_TYPE)));
 
 			if(type == null) {

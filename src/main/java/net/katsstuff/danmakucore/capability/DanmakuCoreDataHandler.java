@@ -120,6 +120,7 @@ public class DanmakuCoreDataHandler {
 			return capability == CORE_DATA ? CORE_DATA.cast(data) : null;
 		}
 
+		@SuppressWarnings("ConstantConditions")
 		@Override
 		public NBTTagCompound serializeNBT() {
 			return (NBTTagCompound)CORE_DATA.writeNBT(data, null);
