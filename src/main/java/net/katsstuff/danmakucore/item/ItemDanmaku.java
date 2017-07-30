@@ -86,12 +86,6 @@ public class ItemDanmaku extends ItemBase {
 	}
 
 	@Override
-	public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-		migrateFromLegacy(stack);
-		super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
-	}
-
-	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
 		ItemStack stack = player.getHeldItem(hand);
 		if(!getController(stack).onRightClick(stack, world, player, hand)) return super.onItemRightClick(world, player, hand);
@@ -114,21 +108,6 @@ public class ItemDanmaku extends ItemBase {
 
 		DanmakuHelper.playShotSound(player);
 		return new ActionResult<>(success || world.isRemote ? EnumActionResult.SUCCESS : EnumActionResult.FAIL, stack);
-	}
-
-	private void migrateFromLegacy(ItemStack stack) {
-		if(!getCustom(stack) && !ItemNBTHelper.verifyExistance(stack, VARIANT)) {
-			int id = stack.getItemDamage();
-			DanmakuVariant variant = DanmakuRegistry.getObjById(DanmakuVariant.class, id);
-			//noinspection ConstantConditions
-			if(variant == null) {
-				variant = LibDanmakuVariants.DEFAULT_TYPE;
-				LogHelper.warn("Found null spellcard. Fixing");
-			}
-
-			ItemNBTHelper.setString(stack, VARIANT, variant.getFullName().toString());
-			stack.setItemDamage(0);
-		}
 	}
 
 	public static boolean shootDanmaku(ItemStack stack, World world, @Nullable EntityLivingBase player, boolean alternateMode, Vector3 pos,

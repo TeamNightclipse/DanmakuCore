@@ -59,12 +59,6 @@ public class ItemSpellcard extends ItemBase implements IOwnedBy {
 	}
 
 	@Override
-	public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-		migrateFromLegacy(stack);
-		super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
-	}
-
-	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
 		ItemStack stack = player.getHeldItem(hand);
 		Spellcard type = getSpellcard(stack);
@@ -74,21 +68,6 @@ public class ItemSpellcard extends ItemBase implements IOwnedBy {
 			return result.isPresent() ? new ActionResult<>(EnumActionResult.SUCCESS, stack) : new ActionResult<>(EnumActionResult.FAIL, stack);
 		}
 		else return super.onItemRightClick(world, player, hand);
-	}
-
-	private void migrateFromLegacy(ItemStack stack) {
-		if(!ItemNBTHelper.verifyExistance(stack, SPELLCARD)) {
-			int id = stack.getItemDamage();
-			Spellcard spellcard = DanmakuRegistry.getObjById(Spellcard.class, id);
-			//noinspection ConstantConditions
-			if(spellcard == null) {
-				spellcard = LibSpellcards.DELUSION_OF_ENLIGHTENMENT;
-				LogHelper.warn("Found null spellcard. Fixing");
-			}
-
-			ItemNBTHelper.setString(stack, SPELLCARD, spellcard.getFullName().toString());
-			stack.setItemDamage(0);
-		}
 	}
 
 	@Override
