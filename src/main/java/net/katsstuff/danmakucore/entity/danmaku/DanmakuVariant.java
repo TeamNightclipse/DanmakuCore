@@ -61,12 +61,6 @@ public abstract class DanmakuVariant extends RegistryValueShootable<DanmakuVaria
 		return true;
 	}
 
-	/**
-	 * Called before a danmaku is shot using this variant if
-	 * the variant is used directly by some entity.
-	 *
-	 * @return If the danmaku should be allowed to fire.
-	 */
 	@Override
 	public boolean onShootDanmaku(@Nullable EntityLivingBase user, boolean alternateMode, Vector3 pos, Vector3 direction) {
 		return true;

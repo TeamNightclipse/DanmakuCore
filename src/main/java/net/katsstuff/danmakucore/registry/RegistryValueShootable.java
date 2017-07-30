@@ -15,5 +15,11 @@ import net.minecraft.entity.EntityLivingBase;
 
 public abstract class RegistryValueShootable<T extends RegistryValueShootable<T>> extends RegistryValueItemStack<T> {
 
+	/**
+	 * Called before a danmaku is shot using this value if
+	 * the value is used directly by some entity.
+	 *
+	 * @return If the danmaku should be allowed to fire.
+	 */
 	public abstract boolean onShootDanmaku(@Nullable EntityLivingBase user, boolean alternateMode, Vector3 pos, Vector3 direction);
 }
