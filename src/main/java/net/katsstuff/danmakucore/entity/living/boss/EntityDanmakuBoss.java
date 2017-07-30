@@ -98,9 +98,15 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 		}
 	}
 
+	public int getInvincibleTime() {
+		int counter = phaseManager.getCurrentPhase().getCounter();
+
+		return counter < 0 ? -counter : 0;
+	}
+
 	@Override
 	public boolean isEntityInvulnerable(DamageSource source) {
-		return phaseManager.getCurrentPhase().getCounter() < 0 || super.isEntityInvulnerable(source);
+		return getInvincibleTime() > 0 || super.isEntityInvulnerable(source);
 	}
 
 	@Override
