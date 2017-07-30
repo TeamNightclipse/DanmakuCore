@@ -217,7 +217,7 @@ public class TouhouCharacter implements ITranslatable {
 		this.fullName = fullName.toUpperCase();
 		this.shortName = shortName;
 		this.subCharacters = ImmutableList.copyOf(subCharacters);
-		this.species = ImmutableList.copyOf(this.subCharacters.stream().flatMap(c -> c.species.stream()).collect(Collectors.toList()));
+		this.species = ImmutableList.copyOf(this.subCharacters.stream().flatMap(c -> c.species.stream()).distinct().collect(Collectors.toList()));
 
 		byFullName.put(this.fullName, this);
 		byShortName.put(this.shortName, this);
