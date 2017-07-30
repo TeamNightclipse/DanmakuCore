@@ -11,7 +11,7 @@ package net.katsstuff.danmakucore.entity.spellcard;
 import javax.annotation.Nullable;
 
 import net.katsstuff.danmakucore.DanmakuCore;
-import net.katsstuff.danmakucore.entity.living.boss.EnumTouhouCharacters;
+import net.katsstuff.danmakucore.entity.living.TouhouCharacter;
 import net.katsstuff.danmakucore.registry.RegistryValueItemStack;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
@@ -55,7 +55,7 @@ public abstract class Spellcard extends RegistryValueItemStack<Spellcard> {
 	/**
 	 * @return The Touhou character that uses this spellcard in the games.
 	 */
-	public abstract EnumTouhouCharacters getOriginalUser();
+	public abstract TouhouCharacter getOriginalUser();
 
 	/**
 	 * Called when a spellcard itemStack is rightclicked.
@@ -78,7 +78,7 @@ public abstract class Spellcard extends RegistryValueItemStack<Spellcard> {
 
 	@Override
 	public int compareTo(Spellcard other) {
-		return getOriginalUser().getName().compareToIgnoreCase(other.getOriginalUser().getName());
+		return getOriginalUser().getFullName().compareToIgnoreCase(other.getOriginalUser().getFullName());
 	}
 
 	@Override

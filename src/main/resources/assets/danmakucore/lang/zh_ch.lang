@@ -26,8 +26,8 @@ item.spellcard.removeTime=无敌时间
 item.spellcard.endTime=持续时间
 
 #Spellcard users
-item.spellcard.userName.marisa=雾雨魔理沙
-item.spellcard.userName.youmu=魂魄妖梦
+touhouCharacter.name.MARISA_KIRISAME=雾雨魔理沙
+touhouCharacter.name.YOUMU_KONPAKU=魂魄妖梦
 
 #Danmaku Parameters
 item.danmaku.damage=伤害

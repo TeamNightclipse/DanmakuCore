@@ -15,7 +15,7 @@ import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
-import net.katsstuff.danmakucore.entity.living.boss.EnumTouhouCharacters;
+import net.katsstuff.danmakucore.entity.living.TouhouCharacter;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.entity.spellcard.SpellcardEntity;
@@ -54,8 +54,8 @@ public class SpellcardDelusionEnlightenment extends Spellcard {
 	}
 
 	@Override
-	public EnumTouhouCharacters getOriginalUser() {
-		return EnumTouhouCharacters.YOUMU_KONPAKU;
+	public TouhouCharacter getOriginalUser() {
+		return TouhouCharacter.YOUMU_KONPAKU;
 	}
 
 	private static class SpellcardEntityDelusionEnlightenment extends SpellcardEntity {

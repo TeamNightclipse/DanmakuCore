@@ -26,12 +26,12 @@ public class EntityDanmakuCreature extends EntityCreature {
 	private static final String NBT_FLYINGHEIGHT = "flyingHeight";
 
 	private int flyingHeight;
-	private EnumSpecies species;
+	private TouhouSpecies species;
 
 	public EntityDanmakuCreature(World world) {
 		super(world);
 		moveHelper = new FlyMoveHelper(this);
-		setSpecies(EnumSpecies.OTHERS);
+		setSpecies(TouhouSpecies.OTHERS);
 	}
 
 	@Override
@@ -69,11 +69,11 @@ public class EntityDanmakuCreature extends EntityCreature {
 		this.flyingHeight = flyingHeight;
 	}
 
-	public EnumSpecies getSpecies() {
+	public TouhouSpecies getSpecies() {
 		return species;
 	}
 
-	protected void setSpecies(EnumSpecies species) {
+	protected void setSpecies(TouhouSpecies species) {
 		this.species = species;
 	}
 

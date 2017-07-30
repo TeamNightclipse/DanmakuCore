@@ -16,6 +16,7 @@ import com.google.common.base.Optional;
 import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
+import net.katsstuff.danmakucore.entity.living.TouhouCharacter;
 import net.katsstuff.danmakucore.entity.living.phase.Phase;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -131,7 +132,7 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 	public abstract List<Phase> getPhaseList();
 
 	@SuppressWarnings("unused")
-	public abstract EnumTouhouCharacters getCharacter();
+	public abstract TouhouCharacter getCharacter();
 
 	@Override
 	public boolean syncPhaseManagerToClient() {

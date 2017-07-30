@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import net.katsstuff.danmakucore.DanmakuCore;
-import net.katsstuff.danmakucore.entity.living.boss.EnumTouhouCharacters;
+import net.katsstuff.danmakucore.entity.living.TouhouCharacter;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
@@ -104,13 +104,13 @@ public class ItemSpellcard extends ItemBase implements IOwnedBy {
 		Spellcard type = getSpellcard(stack);
 		String item = "item.spellcard";
 		list.add(I18n.format(item + ".level") + " " + type.getLevel() + " " + I18n.format(item + ".spellcard"));
-		list.add(I18n.format(item + ".user") + " : " + I18n.format(item + ".userName." + type.getOriginalUser().getName()));
+		list.add(I18n.format(item + ".user") + " : " + I18n.format(type.getUnlocalizedName()));
 		list.add(I18n.format(item + ".removeTime") + " : " + type.getRemoveTime());
 		list.add(I18n.format(item + ".endTime") + " : " + type.getEndTime());
 	}
 
 	@Override
-	public EnumTouhouCharacters character(ItemStack stack) {
+	public TouhouCharacter character(ItemStack stack) {
 		return getSpellcard(stack).getOriginalUser();
 	}
 

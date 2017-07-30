@@ -41,12 +41,12 @@ public abstract class EntityDanmakuMob extends EntityMob {
 	protected final PhaseManager phaseManager;
 
 	private int flyingHeight;
-	private EnumSpecies species;
+	private TouhouSpecies species;
 
 	public EntityDanmakuMob(World world) {
 		super(world);
 		moveHelper = new FlyMoveHelper(this);
-		setSpecies(EnumSpecies.OTHERS);
+		setSpecies(TouhouSpecies.OTHERS);
 		phaseManager = new PhaseManager(this);
 	}
 
@@ -124,11 +124,11 @@ public abstract class EntityDanmakuMob extends EntityMob {
 		this.flyingHeight = flyingHeight;
 	}
 
-	public EnumSpecies getSpecies() {
+	public TouhouSpecies getSpecies() {
 		return species;
 	}
 
-	protected void setSpecies(EnumSpecies species) {
+	protected void setSpecies(TouhouSpecies species) {
 		this.species = species;
 	}
 

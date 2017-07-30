@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.entity.spellcard;
 
 import javax.annotation.Nullable;
 
-import net.katsstuff.danmakucore.entity.living.boss.EnumTouhouCharacters;
+import net.katsstuff.danmakucore.entity.living.TouhouCharacter;
 import net.minecraft.entity.EntityLivingBase;
 
 public class SpellcardDummy extends Spellcard {
@@ -40,7 +40,7 @@ public class SpellcardDummy extends Spellcard {
 	}
 
 	@Override
-	public EnumTouhouCharacters getOriginalUser() {
-		return EnumTouhouCharacters.OTHER;
+	public TouhouCharacter getOriginalUser() {
+		throw new IllegalStateException("Tried to get user of dummy spellcard");
 	}
 }

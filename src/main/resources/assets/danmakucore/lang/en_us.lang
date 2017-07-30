@@ -25,9 +25,9 @@ item.spellcard.user=User
 item.spellcard.removeTime=Invincibility Time
 item.spellcard.endTime=Duration
 
-#Spellcard users
-item.spellcard.userName.marisa=Marisa Kirisame
-item.spellcard.userName.youmu=Youmu Konpaku
+#Touhou characters
+touhouCharacter.name.MARISA_KIRISAME=Marisa Kirisame
+touhouCharacter.name.YOUMU_KONPAKU=Youmu Konpaku
 
 #Danmaku Parameters
 item.danmaku.damage=Damage
