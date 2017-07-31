@@ -69,7 +69,7 @@ public class SubEntityTypeDefault extends SubEntityType {
 					danmaku.accelerate(danmaku.getCurrentSpeed());
 
 					updateMotionWithGravity();
-					hitCheck(entity -> entity != danmaku.getUser().orElse(null) && entity != danmaku.getSource().orElse(null));
+					hitCheck(entity -> !entity.equals(danmaku.getUser().orElse(null)) && !entity.equals(danmaku.getSource().orElse(null)));
 				}
 
 				rotateTowardsMovement();

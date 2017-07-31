@@ -23,16 +23,16 @@ import net.minecraft.util.ResourceLocation;
 
 public class RenderFallingData extends Render<EntityFallingData> {
 
-	public RenderFallingData(RenderManager renderManager) {
-		super(renderManager);
-	}
-
 	private static final ResourceLocation SCORE_GREEN_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/score_green.png");
 	private static final ResourceLocation SCORE_BLUE_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/point_blue.png");
 	private static final ResourceLocation POWER_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/power_small.png");
 	private static final ResourceLocation BIG_POWER_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/power_big.png");
 	private static final ResourceLocation LIFE_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/life.png");
 	private static final ResourceLocation BOMB_LOCATION = new ResourceLocation(LibMod.MODID, "textures/entity/falling/bomb.png");
+
+	public RenderFallingData(RenderManager renderManager) {
+		super(renderManager);
+	}
 
 	@Override
 	public void doRender(EntityFallingData entity, double x, double y, double z, float entityYaw, float partialTicks) {

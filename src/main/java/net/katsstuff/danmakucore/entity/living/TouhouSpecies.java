@@ -9,6 +9,7 @@
 package net.katsstuff.danmakucore.entity.living;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -135,14 +136,14 @@ public class TouhouSpecies implements ITranslatable {
 	private final String name;
 
 	private TouhouSpecies(String name, @Nullable TouhouSpecies superSpecies) {
-		this.name = name.toUpperCase();
+		this.name = name.toUpperCase(Locale.ROOT);
 		this.superSpecies = superSpecies;
 
 		byName.put(this.name, this);
 	}
 
 	public static TouhouSpecies getOrCreate(String name, @Nullable TouhouSpecies superSpecies) {
-		name = name.toUpperCase();
+		name = name.toUpperCase(Locale.ROOT);
 		TouhouSpecies s = byName.get(name);
 		if(s == null) {
 			s = new TouhouSpecies(name, superSpecies);
@@ -152,7 +153,7 @@ public class TouhouSpecies implements ITranslatable {
 	}
 
 	public static Optional<TouhouSpecies> getByName(String name) {
-		return Optional.ofNullable(byName.get(name.toUpperCase()));
+		return Optional.ofNullable(byName.get(name.toUpperCase(Locale.ROOT)));
 	}
 
 	public Optional<TouhouSpecies> getSuperSpecies() {

@@ -81,7 +81,7 @@ public class FlyNodeProcessor extends NodeProcessor {
 	}
 
 	@Override
-	public PathNodeType getPathNodeType(IBlockAccess x, int y, int z, int p_186330_4_) {
+	public PathNodeType getPathNodeType(IBlockAccess blockAccess, int x, int y, int z) {
 		return PathNodeType.OPEN;
 	}
 }

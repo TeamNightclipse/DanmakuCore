@@ -36,19 +36,10 @@ public class FormLaser extends FormGeneric {
 			@SideOnly(Side.CLIENT)
 			public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks,
 					RenderManager rendermanager) {
-				float pitch = danmaku.rotationPitch;
-				float yaw = danmaku.rotationYaw;
-				float roll = danmaku.getRoll();
 				ShotData shotData = danmaku.getShotData();
-				float sizeX = shotData.getSizeX();
-				float sizeY = shotData.getSizeY();
-				float sizeZ = shotData.getSizeZ();
 				int color = shotData.getColor();
 
-				GL11.glRotatef(-yaw, 0F, 1F, 0F);
-				GL11.glRotatef(pitch, 1F, 0F, 0F);
-				GL11.glRotatef(roll, 0F, 0F, 1F);
-				GL11.glScalef(sizeX, sizeY, sizeZ);
+				RenderHelper.transformEntity(danmaku);
 
 				if(shotData.delay() > 0) {
 					float scale = 0.025F * Math.min(shotData.delay(), 20);

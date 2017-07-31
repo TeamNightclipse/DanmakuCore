@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import net.katsstuff.danmakucore.capability.IDanmakuCoreData;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
+import net.katsstuff.danmakucore.helper.MathUtil;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.minecraft.client.Minecraft;
@@ -76,7 +77,7 @@ public class HUDHandler {
 		int powerFilledPosX = powerPosX - widthFilled - widthStart;
 
 		if(ConfigHandler.hud.power.hideIfFull) {
-			if(filled == 1F) {
+			if(MathUtil.fuzzyEqual(filled, 1F)) {
 				powerBarVisible -= 0.01F;
 			}
 			else {
@@ -142,7 +143,7 @@ public class HUDHandler {
 		}
 	}
 
-	private void renderStars(Minecraft mc, ResourceLocation fullTexture, ResourceLocation emptyTexture, int amount, int yOffset, ScaledResolution res) {
+	private static void renderStars(Minecraft mc, ResourceLocation fullTexture, ResourceLocation emptyTexture, int amount, int yOffset, ScaledResolution res) {
 		int starX = ConfigHandler.hud.stars.posX;
 		int starY = res.getScaledHeight() - ConfigHandler.hud.stars.posY;
 

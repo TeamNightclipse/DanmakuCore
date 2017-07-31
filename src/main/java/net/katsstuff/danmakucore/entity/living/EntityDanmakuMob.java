@@ -52,7 +52,7 @@ public abstract class EntityDanmakuMob extends EntityMob {
 
 	@Override
 	protected PathNavigate createNavigator(World world) {
-		return new PathNavigateFlyer(this, world);
+		return PathNavigateFlyer.create(this, world);
 	}
 
 	@Override

@@ -11,18 +11,18 @@ package net.katsstuff.danmakucore.impl.form;
 import org.lwjgl.opengl.GL11;
 
 import net.katsstuff.danmakucore.client.helper.RenderHelper;
+import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
-import net.katsstuff.danmakucore.lib.LibFormName;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class FormSphereDark extends FormGeneric {
+public abstract class AbstractFormCrystal extends FormGeneric {
 
-	public FormSphereDark() {
-		super(LibFormName.SPHERE_DARK);
+	public AbstractFormCrystal(String name) {
+		super(name);
 	}
 
 	@SuppressWarnings("Convert2Lambda")
@@ -35,21 +35,28 @@ public class FormSphereDark extends FormGeneric {
 			@SideOnly(Side.CLIENT)
 			public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks,
 					RenderManager rendermanager) {
-				RenderHelper.transformEntity(danmaku);
+				ShotData shotData = danmaku.getShotData();
+				float sizeX = shotData.getSizeX();
+				float sizeY = shotData.getSizeY();
+				float sizeZ = shotData.getSizeZ();
+				int color = shotData.getColor();
 
-				int color = danmaku.getShotData().getColor();
-				float alpha = 0.3F;
+				RenderHelper.rotateDanmaku(danmaku);
+				GL11.glScalef((sizeX / 3) * 2, (sizeY / 3) * 2, sizeZ);
+
+				createCrystal(0xFFFFFF, 1F);
 
 				GlStateManager.enableBlend();
 				GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 				GlStateManager.depthMask(false);
 				GlStateManager.scale(1.2F, 1.2F, 1.2F);
-				RenderHelper.drawSphere(color, alpha);
+				createCrystal(color, 0.3F);
 				GlStateManager.depthMask(true);
 				GlStateManager.disableBlend();
-				GlStateManager.scale(0.8F, 0.8F, 0.8F);
-				RenderHelper.drawSphere(0x000000, 1F);
 			}
 		};
 	}
+
+	@SideOnly(Side.CLIENT)
+	protected abstract void createCrystal(int color, float alpha);
 }

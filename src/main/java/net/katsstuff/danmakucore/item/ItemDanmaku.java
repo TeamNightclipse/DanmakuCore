@@ -25,6 +25,7 @@ import net.katsstuff.danmakucore.helper.DanmakuCreationHelper;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
 import net.katsstuff.danmakucore.helper.LogHelper;
+import net.katsstuff.danmakucore.helper.MathUtil;
 import net.katsstuff.danmakucore.lib.LibItemName;
 import net.katsstuff.danmakucore.lib.data.LibDanmakuVariants;
 import net.katsstuff.danmakucore.lib.data.LibItems;
@@ -33,7 +34,6 @@ import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.katsstuff.danmakucore.registry.RegistryValueShootable;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -196,7 +196,7 @@ public class ItemDanmaku extends ItemBase {
 		}
 		list.add(I18n.format(item + ".pattern") + " : " + I18n.format(item + ".pattern." + danmakuPattern));
 		list.add(I18n.format(item + ".speed") + " : " + shotSpeed);
-		if(gravity.x() != 0D || gravity.y() != 0D || gravity.z() != 0D) {
+		if(!MathUtil.fuzzyEqual(gravity.x(), 0D) || !MathUtil.fuzzyEqual(gravity.y(), 0D) || !MathUtil.fuzzyEqual(gravity.z(), 0D)) {
 			list.add(I18n.format(item + ".gravity") + " : " + gravity.x() + " " + gravity.y() + " " + gravity.z());
 		}
 		else {
@@ -294,6 +294,7 @@ public class ItemDanmaku extends ItemBase {
 		return ShotData.fromNBTItemStack(stack).getForm();
 	}
 
+	@SuppressWarnings("squid:S1452")
 	public static RegistryValueShootable<?> getController(ItemStack stack) {
 		return !getCustom(stack) ? getVariant(stack) : getForm(stack);
 	}

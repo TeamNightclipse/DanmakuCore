@@ -30,11 +30,11 @@ import net.minecraft.util.math.AxisAlignedBB;
 
 public class RenderDanmaku extends Render<EntityDanmaku> {
 
+	private final List<Form> invalidForms = new ArrayList<>();
+
 	public RenderDanmaku(RenderManager renderManagerIn) {
 		super(renderManagerIn);
 	}
-
-	private final List<Form> invalidForms = new ArrayList<>();
 
 	@Override
 	public void doRender(EntityDanmaku entity, double x, double y, double z, float entityYaw, float partialTicks) {

@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.impl.form;
 
 import org.lwjgl.opengl.GL11;
 
-import net.katsstuff.danmakucore.data.ShotData;
+import net.katsstuff.danmakucore.client.helper.RenderHelper;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
 import net.katsstuff.danmakucore.lib.LibFormName;
@@ -48,21 +48,11 @@ public class FormStar extends FormGeneric {
 					RenderManager rendermanager) {
 				Tessellator tes = Tessellator.getInstance();
 				VertexBuffer buf = tes.getBuffer();
-				ShotData shotData = danmaku.getShotData();
-				float sizeX = shotData.getSizeX();
-				float sizeY = shotData.getSizeY();
-				float sizeZ = shotData.getSizeZ();
-				int color = shotData.getColor();
-				float pitch = danmaku.rotationPitch;
-				float yaw = danmaku.rotationYaw;
-				float roll = danmaku.getRoll();
+				int color = danmaku.getShotData().getColor();
 
 				GlStateManager.rotate((danmaku.ticksExisted + partialTicks) * 5F, 1F, 1F, 1F);
 
-				GlStateManager.rotate(-yaw, 0F, 1F, 0F);
-				GlStateManager.rotate(pitch, 1F, 0F, 0F);
-				GlStateManager.rotate(roll, 0F, 0F, 1F);
-				GlStateManager.scale(sizeX, sizeY, sizeZ);
+				RenderHelper.transformEntity(danmaku);
 
 				float red = 1F;
 				float green = 1F;

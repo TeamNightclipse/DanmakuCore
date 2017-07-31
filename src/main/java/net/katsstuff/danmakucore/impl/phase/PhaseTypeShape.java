@@ -49,7 +49,7 @@ public class PhaseTypeShape {
 		public void init() {
 			super.init();
 			if(continuous) {
-				interval = 99999;
+				interval = 99_999;
 			}
 			else {
 				interval = 0;

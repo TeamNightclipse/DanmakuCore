@@ -10,6 +10,7 @@ package net.katsstuff.danmakucore.impl.form;
 
 import org.lwjgl.opengl.GL11;
 
+import net.katsstuff.danmakucore.client.helper.RenderHelper;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
@@ -50,13 +51,7 @@ public class FormKunai extends FormGeneric {
 				Tessellator tes = Tessellator.getInstance();
 				VertexBuffer vb = tes.getBuffer();
 				ShotData shotData = danmaku.getShotData();
-				float sizeX = shotData.getSizeX();
-				float sizeY = shotData.getSizeY();
-				float sizeZ = shotData.getSizeZ();
 				int color = shotData.getColor();
-				float pitch = danmaku.rotationPitch;
-				float yaw = danmaku.rotationYaw;
-				float roll = danmaku.getRoll();
 
 				float red = (color >> 16 & 255) / 255.0F;
 				float green = (color >> 8 & 255) / 255.0F;
@@ -71,10 +66,7 @@ public class FormKunai extends FormGeneric {
 				double width = 1.0D;
 				double length = 2.0D;
 
-				GL11.glScalef(sizeX, sizeY, sizeZ);
-				GL11.glRotatef(-yaw, 0F, 1F, 0F);
-				GL11.glRotatef(pitch, 1F, 0F, 0F);
-				GL11.glRotatef(roll, 0F, 0F, 1F);
+				RenderHelper.transformEntity(danmaku);
 
 				GlStateManager.disableCull();
 				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
@@ -87,33 +79,14 @@ public class FormKunai extends FormGeneric {
 				//What we really want here is to use the luminance as the saturation, and set the luminance to 1 for the texture
 				GlStateManager.enableBlend();
 				GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
-				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-				vb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
-				vb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();
-				vb.pos(-width, 0D, -length).tex(u1, v2).color(red, green, blue, alpha).endVertex();
-				vb.pos(width, 0D, -length).tex(u2, v2).color(red, green, blue, alpha).endVertex();
-				tes.draw();
-
-				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-				vb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
-				vb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();
-				vb.pos(-width, 0D, -length).tex(u1, v2).color(red, green, blue, alpha).endVertex();
-				vb.pos(width, 0D, -length).tex(u2, v2).color(red, green, blue, alpha).endVertex();
-				tes.draw();
-
-				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-				vb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
-				vb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();
-				vb.pos(-width, 0D, -length).tex(u1, v2).color(red, green, blue, alpha).endVertex();
-				vb.pos(width, 0D, -length).tex(u2, v2).color(red, green, blue, alpha).endVertex();
-				tes.draw();
-
-				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-				vb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
-				vb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();
-				vb.pos(-width, 0D, -length).tex(u1, v2).color(red, green, blue, alpha).endVertex();
-				vb.pos(width, 0D, -length).tex(u2, v2).color(red, green, blue, alpha).endVertex();
-				tes.draw();
+				for(int i = 0; i < 4; i++) {
+					vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+					vb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
+					vb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();
+					vb.pos(-width, 0D, -length).tex(u1, v2).color(red, green, blue, alpha).endVertex();
+					vb.pos(width, 0D, -length).tex(u2, v2).color(red, green, blue, alpha).endVertex();
+					tes.draw();
+				}
 
 				GlStateManager.disableBlend();
 				GlStateManager.enableCull();

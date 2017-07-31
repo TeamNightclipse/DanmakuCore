@@ -47,5 +47,10 @@ public abstract class RegistryValueItemStack<T extends IForgeRegistryEntry<T>> e
 		return getRegistryName().toString().equalsIgnoreCase(((RegistryValueItemStack)obj).getRegistryName().toString());
 	}
 
+	@Override
+	public int hashCode() {
+		return getRegistryName().hashCode();
+	}
+
 	public abstract ModelResourceLocation getItemModel();
 }

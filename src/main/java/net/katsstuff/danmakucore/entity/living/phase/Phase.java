@@ -126,15 +126,12 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 
 		if(counter % 10 == 0 || interval < 10) {
 			Optional<ITextComponent> spellcardName = getSpellcardName();
-			if((spellcardInfo == null && spellcardName.isPresent()) || spellcardName.map(t -> !t.equals(spellcardInfo.getName())).orElse(false)) {
-				if(spellcardInfo == null) {
-					//noinspection OptionalGetWithoutIsPresent
-					spellcardInfo = new SpellcardInfoServer(spellcardName.get());
-				}
-				else {
-					//noinspection OptionalGetWithoutIsPresent
-					spellcardInfo.setName(spellcardName.get());
-				}
+
+			if(spellcardInfo == null && spellcardName.isPresent()) {
+				spellcardInfo = new SpellcardInfoServer(spellcardName.get());
+			}
+			else if(spellcardName.map(t -> !t.equals(spellcardInfo.getName())).orElse(false)) {
+				spellcardInfo.setName(spellcardName.get());
 			}
 		}
 	}

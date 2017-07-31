@@ -15,20 +15,13 @@ import com.google.common.base.Objects;
 import net.minecraft.util.math.MathHelper;
 
 @SuppressWarnings("WeakerAccess")
-public class BoundedDanmakuCoreData implements IDanmakuCoreData {
+public class BoundedDanmakuCoreData extends AbstractDanmakuCoreData {
 
-	private float power;
-	private int score;
-	private int lives;
-	private int bombs;
 	private final float powerBound;
 	private final int lifeBombBound;
 
 	public BoundedDanmakuCoreData(float power, int score, int lives, int bombs, float powerBound, int lifeBombBound) {
-		this.power = power;
-		this.score = score;
-		this.lives = lives;
-		this.bombs = bombs;
+		super(power, score, lives, bombs);
 
 		this.powerBound = powerBound;
 		this.lifeBombBound = lifeBombBound;
@@ -43,18 +36,8 @@ public class BoundedDanmakuCoreData implements IDanmakuCoreData {
 	}
 
 	@Override
-	public float getPower() {
-		return power;
-	}
-
-	@Override
 	public void setPower(float power) {
 		this.power = BigDecimal.valueOf(MathHelper.clamp(power, 0F, powerBound)).setScale(4, BigDecimal.ROUND_HALF_UP).floatValue();
-	}
-
-	@Override
-	public int getScore() {
-		return score;
 	}
 
 	@Override
@@ -63,18 +46,8 @@ public class BoundedDanmakuCoreData implements IDanmakuCoreData {
 	}
 
 	@Override
-	public int getLives() {
-		return lives;
-	}
-
-	@Override
 	public void setLives(int lives) {
 		this.lives = MathHelper.clamp(lives, 0, lifeBombBound);
-	}
-
-	@Override
-	public int getBombs() {
-		return bombs;
 	}
 
 	@Override

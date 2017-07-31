@@ -66,6 +66,7 @@ public class ParticleRenderer {
 		}
 	}
 
+	@SuppressWarnings("squid:S2696")
 	private void renderParticles(float partialTicks) {
 		float f = ActiveRenderInfo.getRotationX();
 		float f1 = ActiveRenderInfo.getRotationZ();

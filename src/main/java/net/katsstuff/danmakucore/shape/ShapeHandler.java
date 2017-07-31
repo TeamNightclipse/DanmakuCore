@@ -105,43 +105,59 @@ public final class ShapeHandler {
 		}
 	}
 
-	private static class ShapeEntryEntity extends ShapeEntry {
+	private abstract static class ShapeEntryDynamicPos<T> extends ShapeEntry {
 
-		private final Entity entity;
+		@SuppressWarnings("WeakerAccess")
+		protected final T dynPos;
 
-		ShapeEntryEntity(IShape shape, Entity entity) {
+		ShapeEntryDynamicPos(IShape shape, T dynPos) {
 			super(shape);
-			this.entity = entity;
+			this.dynPos = dynPos;
 		}
 
 		@Override
 		public boolean draw() {
-			Vector3 currentPos = new Vector3(entity);
-			Quat currentOrientation = Quat.orientationOf(entity);
-			Tuple<Boolean, Set<EntityDanmaku>> ret = shape.drawForTick(currentPos, currentOrientation, counter);
+			Tuple<Boolean, Set<EntityDanmaku>> ret = shape.drawForTick(getCurrentPos(), getCurrentOrientation(), counter);
 			drawn.addAll(ret.getSecond());
 			counter++;
 			return ret.getFirst();
+		}
+
+		protected abstract Vector3 getCurrentPos();
+		protected abstract Quat getCurrentOrientation();
+	}
+
+	private static class ShapeEntryEntity extends ShapeEntryDynamicPos<Entity> {
+
+		ShapeEntryEntity(IShape shape, Entity dynPos) {
+			super(shape, dynPos);
+		}
+
+		@Override
+		protected Vector3 getCurrentPos() {
+			return new Vector3(dynPos);
+		}
+
+		@Override
+		protected Quat getCurrentOrientation() {
+			return Quat.orientationOf(dynPos);
 		}
 	}
 
-	private static class ShapeEntryEntityLiving extends ShapeEntry {
+	private static class ShapeEntryEntityLiving extends ShapeEntryDynamicPos<EntityLivingBase> {
 
-		private final EntityLivingBase entity;
-
-		ShapeEntryEntityLiving(IShape shape, EntityLivingBase entity) {
-			super(shape);
-			this.entity = entity;
+		ShapeEntryEntityLiving(IShape shape, EntityLivingBase dynPos) {
+			super(shape, dynPos);
 		}
 
 		@Override
-		public boolean draw() {
-			Vector3 currentPos = new Vector3(entity);
-			Quat currentOrientation = Quat.orientationOf(entity);
-			Tuple<Boolean, Set<EntityDanmaku>> ret = shape.drawForTick(currentPos, currentOrientation, counter);
-			drawn.addAll(ret.getSecond());
-			counter++;
-			return ret.getFirst();
+		protected Vector3 getCurrentPos() {
+			return new Vector3(dynPos);
+		}
+
+		@Override
+		protected Quat getCurrentOrientation() {
+			return Quat.orientationOf(dynPos);
 		}
 	}
 

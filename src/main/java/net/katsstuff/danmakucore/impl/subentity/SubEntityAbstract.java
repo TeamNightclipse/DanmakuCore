@@ -22,6 +22,7 @@ import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
 import net.katsstuff.danmakucore.entity.living.IAllyDanmaku;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
+import net.katsstuff.danmakucore.helper.MathUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
@@ -185,7 +186,7 @@ public abstract class SubEntityAbstract extends SubEntity {
 	}
 
 	protected void rotateTowardsMovement() {
-		if(danmaku.motionX != 0D && danmaku.motionY != 0D && danmaku.motionZ != 0D) {
+		if(!MathUtil.fuzzyEqual(danmaku.motionX, 0D) && !MathUtil.fuzzyEqual(danmaku.motionY, 0D) && !MathUtil.fuzzyEqual(danmaku.motionZ, 0D)) {
 			//Projectile helper is buggy. We use this instead
 			Vector3 motion = new Vector3(danmaku.motionX, danmaku.motionY, danmaku.motionZ).normalize();
 

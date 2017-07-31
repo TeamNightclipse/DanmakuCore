@@ -87,7 +87,7 @@ public class SubEntityChild extends SubEntityType {
 				}
 
 				if(delay >= 0) {
-					hitCheck(entity -> entity != danmaku.getUser().orElse(null) && entity != sourceOpt.orElse(null));
+					hitCheck(entity -> !entity.equals(danmaku.getUser().orElse(null)) && !entity.equals(sourceOpt.orElse(null)));
 				}
 			}
 

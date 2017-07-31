@@ -14,8 +14,6 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.google.common.math.DoubleMath;
-
 import net.katsstuff.danmakucore.EnumDanmakuLevel;
 import net.katsstuff.danmakucore.capability.IDanmakuCoreData;
 import net.katsstuff.danmakucore.data.MovementData;
@@ -37,6 +35,20 @@ import net.minecraft.world.World;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class DanmakuHelper {
+
+	public static final double GRAVITY_DEFAULT = -0.03D;
+
+	public static final int[] SATURATED_COLORS =
+			{LibColor.COLOR_SATURATED_BLUE, LibColor.COLOR_SATURATED_CYAN, LibColor.COLOR_SATURATED_GREEN, LibColor.COLOR_SATURATED_MAGENTA,
+					LibColor.COLOR_SATURATED_ORANGE, LibColor.COLOR_SATURATED_RED, LibColor.COLOR_WHITE, LibColor.COLOR_SATURATED_YELLOW};
+
+	public static final int[] VANILLA_COLORS =
+			{LibColor.COLOR_VANILLA_WHITE, LibColor.COLOR_VANILLA_ORANGE, LibColor.COLOR_VANILLA_MAGENTA, LibColor.COLOR_VANILLA_LIGHT_BLUE,
+					LibColor.COLOR_VANILLA_YELLOW, LibColor.COLOR_VANILLA_LIME, LibColor.COLOR_VANILLA_PINK, LibColor.COLOR_VANILLA_GRAY,
+					LibColor.COLOR_VANILLA_SILVER, LibColor.COLOR_VANILLA_CYAN, LibColor.COLOR_VANILLA_PURPLE, LibColor.COLOR_VANILLA_BLUE,
+					LibColor.COLOR_VANILLA_BROWN, LibColor.COLOR_VANILLA_GREEN, LibColor.COLOR_VANILLA_RED, LibColor.COLOR_VANILLA_BLACK};
+
+	private static final Random RAND = new Random();
 
 	/**
 	 * Plays the iconic shot sound
@@ -80,7 +92,7 @@ public class DanmakuHelper {
 	@SuppressWarnings("SameParameterValue")
 	public static void chainExplosion(Entity deadEntity, double range, float maxDamage) {
 		List<EntityLivingBase> list = deadEntity.world.getEntitiesWithinAABB(EntityLivingBase.class,
-				deadEntity.getEntityBoundingBox().grow(range), e -> e != deadEntity && e instanceof IAllyDanmaku);
+				deadEntity.getEntityBoundingBox().grow(range), e -> e instanceof IAllyDanmaku && !e.equals(deadEntity));
 		for(Entity entity : list) {
 			double distance = entity.getDistanceToEntity(deadEntity);
 
@@ -117,7 +129,7 @@ public class DanmakuHelper {
 	public static int danmakuRemove(Entity centerEntity, double range, DanmakuRemoveMode mode, boolean dropBonus) {
 		int count = 0;
 		List<EntityDanmaku> list = centerEntity.world.getEntitiesWithinAABB(EntityDanmaku.class,
-				centerEntity.getEntityBoundingBox().grow(range), entity -> entity != centerEntity);
+				centerEntity.getEntityBoundingBox().grow(range), e -> !centerEntity.equals(e));
 
 		for(EntityDanmaku entity : list) {
 			Optional<EntityLivingBase> optUser = entity.getUser();
@@ -141,7 +153,7 @@ public class DanmakuHelper {
 						}
 						break;
 					case OTHER:
-						if(user != centerEntity) {
+						if(!user.equals(centerEntity)) {
 							finishOrKillDanmaku(entity, dropBonus);
 							count++;
 						}
@@ -217,26 +229,12 @@ public class DanmakuHelper {
 		return adjustDamageToDifficulty(againstTarget, user, level);
 	}
 
-	public static final double GRAVITY_DEFAULT = -0.03D;
-
 	/**
 	 * Check if a color is registered
 	 */
 	public static boolean isNormalColor(int color) {
 		return LibColor.getRegisteredColors().contains(color);
 	}
-
-	public static final int[] SATURATED_COLORS =
-			{LibColor.COLOR_SATURATED_BLUE, LibColor.COLOR_SATURATED_CYAN, LibColor.COLOR_SATURATED_GREEN, LibColor.COLOR_SATURATED_MAGENTA,
-					LibColor.COLOR_SATURATED_ORANGE, LibColor.COLOR_SATURATED_RED, LibColor.COLOR_WHITE, LibColor.COLOR_SATURATED_YELLOW};
-
-	public static final int[] VANILLA_COLORS =
-			{LibColor.COLOR_VANILLA_WHITE, LibColor.COLOR_VANILLA_ORANGE, LibColor.COLOR_VANILLA_MAGENTA, LibColor.COLOR_VANILLA_LIGHT_BLUE,
-					LibColor.COLOR_VANILLA_YELLOW, LibColor.COLOR_VANILLA_LIME, LibColor.COLOR_VANILLA_PINK, LibColor.COLOR_VANILLA_GRAY,
-					LibColor.COLOR_VANILLA_SILVER, LibColor.COLOR_VANILLA_CYAN, LibColor.COLOR_VANILLA_PURPLE, LibColor.COLOR_VANILLA_BLUE,
-					LibColor.COLOR_VANILLA_BROWN, LibColor.COLOR_VANILLA_GREEN, LibColor.COLOR_VANILLA_RED, LibColor.COLOR_VANILLA_BLACK};
-
-	private static final Random RAND = new Random();
 
 	public static int randomSaturatedColor() {
 		return SATURATED_COLORS[RAND.nextInt(SATURATED_COLORS.length)];
@@ -274,20 +272,20 @@ public class DanmakuHelper {
 		double lowerSpeedLimit = movement.getLowerSpeedLimit();
 		double currentSpeed = currentMotion.length();
 
-		if(DoubleMath.fuzzyCompare(currentSpeed, upperSpeedLimit, EntityDanmaku.EPSILON) >= 0 && speedAccel >= 0D) {
+		if(MathUtil.fuzzyCompare(currentSpeed, upperSpeedLimit) >= 0 && speedAccel >= 0D) {
 			return simulateSetSpeed(direction, upperSpeedLimit);
 		}
-		else if(DoubleMath.fuzzyCompare(currentSpeed, lowerSpeedLimit, EntityDanmaku.EPSILON) <= 0 && speedAccel <= 0D) {
+		else if(MathUtil.fuzzyCompare(currentSpeed, lowerSpeedLimit) <= 0 && speedAccel <= 0D) {
 			return simulateSetSpeed(direction, lowerSpeedLimit);
 		}
 		else {
 			Vector3 newMotion = simulateAddSpeed(direction, speedAccel, currentMotion);
 
 			double newCurrentSpeed = newMotion.length();
-			if(DoubleMath.fuzzyCompare(newCurrentSpeed, upperSpeedLimit, EntityDanmaku.EPSILON) > 0) {
+			if(MathUtil.fuzzyCompare(newCurrentSpeed, upperSpeedLimit) > 0) {
 				return simulateSetSpeed(direction, upperSpeedLimit);
 			}
-			else if(DoubleMath.fuzzyCompare(newCurrentSpeed, lowerSpeedLimit, EntityDanmaku.EPSILON) < 0) {
+			else if(MathUtil.fuzzyCompare(newCurrentSpeed, lowerSpeedLimit) < 0) {
 				return simulateSetSpeed(direction, lowerSpeedLimit);
 			}
 			else return newMotion;

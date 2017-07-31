@@ -10,6 +10,7 @@ package net.katsstuff.danmakucore.entity.living;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -204,7 +205,7 @@ public class TouhouCharacter implements ITranslatable {
 	private final List<TouhouCharacter> subCharacters;
 
 	private TouhouCharacter(String fullName, String shortName, TouhouSpecies... species) {
-		this.fullName = fullName.toUpperCase();
+		this.fullName = fullName.toUpperCase(Locale.ROOT);
 		this.shortName = shortName;
 		this.species = ImmutableList.copyOf(species);
 		this.subCharacters = ImmutableList.of();
@@ -214,7 +215,7 @@ public class TouhouCharacter implements ITranslatable {
 	}
 
 	private TouhouCharacter(String fullName, String shortName, TouhouCharacter... subCharacters) {
-		this.fullName = fullName.toUpperCase();
+		this.fullName = fullName.toUpperCase(Locale.ROOT);
 		this.shortName = shortName;
 		this.subCharacters = ImmutableList.copyOf(subCharacters);
 		this.species = ImmutableList.copyOf(this.subCharacters.stream().flatMap(c -> c.species.stream()).distinct().collect(Collectors.toList()));
@@ -228,7 +229,7 @@ public class TouhouCharacter implements ITranslatable {
 	}
 
 	public static TouhouCharacter getOrCreate(String fullName, String shortName, TouhouSpecies... species) {
-		fullName = fullName.toUpperCase();
+		fullName = fullName.toUpperCase(Locale.ROOT);
 		TouhouCharacter c = byFullName.get(fullName);
 		if(c == null) {
 			c = new TouhouCharacter(fullName, shortName, species);
@@ -238,7 +239,7 @@ public class TouhouCharacter implements ITranslatable {
 	}
 
 	public static TouhouCharacter getOrCreate(String fullName, String shortName, TouhouCharacter... subCharacters) {
-		fullName = fullName.toUpperCase();
+		fullName = fullName.toUpperCase(Locale.ROOT);
 		TouhouCharacter c = byFullName.get(fullName);
 		if(c == null) {
 			c = new TouhouCharacter(fullName, shortName, subCharacters);
@@ -248,7 +249,7 @@ public class TouhouCharacter implements ITranslatable {
 	}
 
 	public static Optional<TouhouCharacter> getByFullName(String fullName) {
-		return Optional.ofNullable(byFullName.get(fullName.toUpperCase()));
+		return Optional.ofNullable(byFullName.get(fullName.toUpperCase(Locale.ROOT)));
 	}
 
 	public static Optional<TouhouCharacter> getByShortName(String shortName) {

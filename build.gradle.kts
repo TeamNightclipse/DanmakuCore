@@ -27,6 +27,7 @@ plugins {
     //We apply these to get pretty build script
     java
     idea
+    id("org.sonarqube").version("2.5")
 }
 
 val configFile = file("build.properties")

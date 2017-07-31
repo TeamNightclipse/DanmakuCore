@@ -36,7 +36,7 @@ public class EntityDanmakuCreature extends EntityCreature {
 
 	@Override
 	protected PathNavigate createNavigator(World world) {
-		return new PathNavigateFlyer(this, world);
+		return PathNavigateFlyer.create(this, world);
 	}
 
 	@Override

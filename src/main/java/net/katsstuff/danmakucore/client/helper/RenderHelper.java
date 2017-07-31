@@ -14,6 +14,8 @@ import org.lwjgl.util.glu.Disk;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.Sphere;
 
+import net.katsstuff.danmakucore.data.ShotData;
+import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -110,4 +112,21 @@ public class RenderHelper {
 		GlStateManager.color(r, g, b, alpha);
 		GL11.glCallList(diskId);
 	}
+
+	public static void transformEntity(EntityDanmaku danmaku) {
+		ShotData shotData = danmaku.getShotData();
+		rotateDanmaku(danmaku);
+		GL11.glScalef(shotData.getSizeX(), shotData.getSizeY(), shotData.getSizeZ());
+	}
+
+	public static void rotateDanmaku(EntityDanmaku danmaku) {
+		rotate(-danmaku.rotationYaw, danmaku.rotationPitch, danmaku.getRoll());
+	}
+
+	public static void rotate(float yaw, float pitch, float roll) {
+		GL11.glRotatef(yaw, 0F, 1F, 0F);
+		GL11.glRotatef(pitch, 1F, 0F, 0F);
+		GL11.glRotatef(roll, 0F, 0F, 1F);
+	}
+
 }

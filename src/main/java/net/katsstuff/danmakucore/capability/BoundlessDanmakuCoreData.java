@@ -10,28 +10,15 @@ package net.katsstuff.danmakucore.capability;
 
 import java.math.BigDecimal;
 
-public class BoundlessDanmakuCoreData implements IDanmakuCoreData {
-
-	private float power;
-	private int score;
-	private int lives;
-	private int bombs;
+public class BoundlessDanmakuCoreData extends AbstractDanmakuCoreData {
 
 	@SuppressWarnings("WeakerAccess")
 	public BoundlessDanmakuCoreData(float power, int score, int lives, int bombs) {
-		this.power = power;
-		this.score = score;
-		this.lives = lives;
-		this.bombs = bombs;
+		super(power, score, lives, bombs);
 	}
 
 	public BoundlessDanmakuCoreData() {
 		this(0F, 0, 0, 0);
-	}
-
-	@Override
-	public float getPower() {
-		return power;
 	}
 
 	@Override
@@ -40,28 +27,13 @@ public class BoundlessDanmakuCoreData implements IDanmakuCoreData {
 	}
 
 	@Override
-	public int getScore() {
-		return score;
-	}
-
-	@Override
 	public void setScore(int score) {
 		this.score = score;
 	}
 
 	@Override
-	public int getLives() {
-		return lives;
-	}
-
-	@Override
 	public void setLives(int lives) {
 		this.lives = lives;
-	}
-
-	@Override
-	public int getBombs() {
-		return bombs;
 	}
 
 	@Override

@@ -14,8 +14,6 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import com.google.common.math.DoubleMath;
-
 import io.netty.buffer.ByteBuf;
 import net.katsstuff.danmakucore.CoreDataSerializers;
 import net.katsstuff.danmakucore.data.MovementData;
@@ -28,6 +26,7 @@ import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.helper.LogHelper;
+import net.katsstuff.danmakucore.helper.MathUtil;
 import net.katsstuff.danmakucore.helper.NBTHelper;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.lib.data.LibSubEntities;
@@ -50,8 +49,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditionalSpawnData {
-
-	public static final double EPSILON = 1E-5;
 
 	private static final String NBT_SHOT_DATA = "shotData";
 	private static final String NBT_DIRECTION = "direction";
@@ -226,20 +223,20 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		double upperSpeedLimit = movement.getUpperSpeedLimit();
 		double lowerSpeedLimit = movement.getLowerSpeedLimit();
 
-		if(DoubleMath.fuzzyCompare(currentSpeed, upperSpeedLimit, EPSILON) >= 0 && speedAccel >= 0D) {
+		if(MathUtil.fuzzyCompare(currentSpeed, upperSpeedLimit) >= 0 && speedAccel >= 0D) {
 			setSpeed(upperSpeedLimit);
 		}
-		else if(DoubleMath.fuzzyCompare(currentSpeed, lowerSpeedLimit, EPSILON) <= 0 && speedAccel <= 0D) {
+		else if(MathUtil.fuzzyCompare(currentSpeed, lowerSpeedLimit) <= 0 && speedAccel <= 0D) {
 			setSpeed(lowerSpeedLimit);
 		}
 		else {
 			addSpeed(speedAccel);
 
 			double newCurrentSpeed = getCurrentSpeed();
-			if(DoubleMath.fuzzyCompare(newCurrentSpeed, upperSpeedLimit, EPSILON) > 0) {
+			if(MathUtil.fuzzyCompare(newCurrentSpeed, upperSpeedLimit) > 0) {
 				setSpeed(upperSpeedLimit);
 			}
-			else if(DoubleMath.fuzzyCompare(newCurrentSpeed, lowerSpeedLimit, EPSILON) < 0) {
+			else if(MathUtil.fuzzyCompare(newCurrentSpeed, lowerSpeedLimit) < 0) {
 				setSpeed(lowerSpeedLimit);
 			}
 		}

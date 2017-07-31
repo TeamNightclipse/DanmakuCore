@@ -8,6 +8,8 @@
  */
 package net.katsstuff.danmakucore.entity.living.ai.pathfinding;
 
+import java.util.function.Predicate;
+
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuCreature;
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
 import net.minecraft.entity.EntityCreature;
@@ -20,18 +22,26 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 //Some code taken from PathNavigateSwimmer
-public class PathNavigateFlyer extends PathNavigateGround {
+public class PathNavigateFlyer<T extends EntityCreature> extends PathNavigateGround {
 
-	private final EntityCreature danmakuEntity;
+	private final Predicate<T> isFlying;
 
-	public PathNavigateFlyer(EntityDanmakuMob danmakuMob, World worldIn) {
-		super(danmakuMob, worldIn);
-		danmakuEntity = danmakuMob;
+	private PathNavigateFlyer(T danmakuEntity, World world, Predicate<T> isFlying) {
+		super(danmakuEntity, world);
+		this.isFlying = isFlying;
 	}
 
-	public PathNavigateFlyer(EntityDanmakuCreature danmakuCreature, World worldIn) {
-		super(danmakuCreature, worldIn);
-		danmakuEntity = danmakuCreature;
+	public static PathNavigateFlyer<EntityDanmakuMob> create(EntityDanmakuMob danmakuMob, World worldIn) {
+		return new PathNavigateFlyer<>(danmakuMob, worldIn, EntityDanmakuMob::isFlying);
+	}
+
+	public static PathNavigateFlyer<EntityDanmakuCreature> create(EntityDanmakuCreature danmakuMob, World worldIn) {
+		return new PathNavigateFlyer<>(danmakuMob, worldIn, EntityDanmakuCreature::isFlying);
+	}
+
+	@SuppressWarnings("unchecked")
+	private T danmakuEntity() {
+		return (T)entity;
 	}
 
 	@Override
@@ -46,12 +56,12 @@ public class PathNavigateFlyer extends PathNavigateGround {
 
 	@Override
 	protected boolean canNavigate() {
-		return isEntityFlying() || super.canNavigate();
+		return isFlying.test(danmakuEntity()) || super.canNavigate();
 	}
 
 	@Override
 	protected Vec3d getEntityPosition() {
-		if(isEntityFlying()) {
+		if(isFlying.test(danmakuEntity())) {
 			return new Vec3d(this.entity.posX, this.entity.posY + this.entity.height * 0.5D, this.entity.posZ);
 		}
 		else {
@@ -61,7 +71,7 @@ public class PathNavigateFlyer extends PathNavigateGround {
 
 	@Override
 	protected void pathFollow() {
-		if(isEntityFlying()) {
+		if(isFlying.test(danmakuEntity())) {
 			Vec3d vec3d = this.getEntityPosition();
 			float f = this.entity.width * this.entity.width;
 
@@ -88,7 +98,7 @@ public class PathNavigateFlyer extends PathNavigateGround {
 
 	@Override
 	protected boolean isDirectPathBetweenPoints(Vec3d posVec31, Vec3d posVec32, int sizeX, int sizeY, int sizeZ) {
-		if(isEntityFlying()) {
+		if(isFlying.test(danmakuEntity())) {
 			RayTraceResult raytraceresult = this.world.rayTraceBlocks(posVec31,
 					new Vec3d(posVec32.x, posVec32.y + (double)this.entity.height * 0.5D, posVec32.z), false, true, false);
 			return raytraceresult == null || raytraceresult.typeOfHit == RayTraceResult.Type.MISS;
@@ -100,18 +110,11 @@ public class PathNavigateFlyer extends PathNavigateGround {
 
 	@Override
 	public boolean canEntityStandOnPos(BlockPos pos) {
-		if(isEntityFlying()) {
+		if(isFlying.test(danmakuEntity())) {
 			return !this.world.getBlockState(pos).isFullBlock();
 		}
 		else {
 			return super.canEntityStandOnPos(pos);
 		}
-	}
-
-	private boolean isEntityFlying() {
-		if(danmakuEntity instanceof EntityDanmakuMob) {
-			return ((EntityDanmakuMob)danmakuEntity).isFlying();
-		}
-		else return danmakuEntity instanceof EntityDanmakuCreature && ((EntityDanmakuCreature)danmakuEntity).isFlying();
 	}
 }

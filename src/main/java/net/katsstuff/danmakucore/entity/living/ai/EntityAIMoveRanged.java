@@ -44,6 +44,7 @@ public class EntityAIMoveRanged extends EntityAIBase {
 		this.seeTime = 0;
 	}
 
+	@SuppressWarnings("squid:S3776") //Should be kept as similar as the one found in EntityAIAttackRangedBow as possible
 	@Override
 	public void updateTask() {
 		EntityLivingBase entitylivingbase = entity.getAttackTarget();

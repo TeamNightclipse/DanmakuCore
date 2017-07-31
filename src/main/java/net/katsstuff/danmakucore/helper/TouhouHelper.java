@@ -50,7 +50,7 @@ public class TouhouHelper {
 
 		//Only allow spellcard if use user isn't already using a spellcard
 		@SuppressWarnings("ConstantConditions") List<EntitySpellcard> spellcardList = world.getEntitiesWithinAABB(EntitySpellcard.class,
-				player.getEntityBoundingBox().grow(32D), entitySpellcard -> player == entitySpellcard.getUser());
+				player.getEntityBoundingBox().grow(32D), entitySpellcard -> player.equals(entitySpellcard.getUser()));
 
 		if(spellcardList.isEmpty()) {
 			Optional<Entity> optTarget = Vector3.getEntityLookedAt(player,

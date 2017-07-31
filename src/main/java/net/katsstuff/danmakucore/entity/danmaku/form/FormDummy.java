@@ -21,6 +21,8 @@ public class FormDummy extends Form {
 
 	@Override
 	public IRenderForm getRenderer(EntityDanmaku danmaku) {
-		return (danmaku1, x, y, z, entityYaw, partialTicks, rendermanager) -> {};
+		return (danmaku1, x, y, z, entityYaw, partialTicks, rendermanager) -> {
+			//NO-OP
+		};
 	}
 }

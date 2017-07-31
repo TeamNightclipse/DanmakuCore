@@ -10,6 +10,7 @@ package net.katsstuff.danmakucore.impl.form;
 
 import org.lwjgl.opengl.GL11;
 
+import net.katsstuff.danmakucore.client.helper.RenderHelper;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
@@ -41,22 +42,14 @@ public class FormPointedSphere extends FormGeneric {
 					RenderManager rendermanager) {
 				Tessellator tes = Tessellator.getInstance();
 				VertexBuffer vb = tes.getBuffer();
-				float pitch = danmaku.rotationPitch;
-				float yaw = danmaku.rotationYaw;
-				float roll = danmaku.getRoll();
 				ShotData shot = danmaku.getShotData();
 				int color = shot.getColor();
-				float sizeX = shot.getSizeX();
-				float sizeY = shot.getSizeY();
 				float sizeZ = shot.getSizeZ();
 
 				float centerZ1 = sizeZ * 1.2F / 2.0F;
 				float centerZ2 = sizeZ / 2.0F;
 
-				GL11.glRotatef(-yaw, 0F, 1F, 0F);
-				GL11.glRotatef(pitch, 1.0F, 0.0F, 0.0F);
-				GL11.glRotatef(roll, 0F, 0F, 1F);
-				GL11.glScalef(sizeX, sizeY, sizeZ);
+				RenderHelper.transformEntity(danmaku);
 				GL11.glTranslatef(0, 0, (-sizeZ / 6) * 4);
 
 				createPointedSphere(tes, vb, 0xFFFFFF, 1F, centerZ1 - centerZ2, sizeZ);
