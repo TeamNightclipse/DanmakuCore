@@ -8,6 +8,9 @@
  */
 package net.katsstuff.danmakucore.client.helper;
 
+import static org.lwjgl.opengl.GL11.GL_QUAD_STRIP;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLE_FAN;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Cylinder;
 import org.lwjgl.util.glu.Disk;
@@ -17,6 +20,10 @@ import org.lwjgl.util.glu.Sphere;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -129,4 +136,54 @@ public class RenderHelper {
 		GL11.glRotatef(roll, 0F, 0F, 1F);
 	}
 
+	//Adapted from Glu Sphere
+	public static void drawDropOffSphere(float radius, int slices, int stacks, float dropOffRate, int color, float alpha) {
+		float r = (color >> 16 & 255) / 255.0F;
+		float g = (color >> 8 & 255) / 255.0F;
+		float b = (color & 255) / 255.0F;
+		Tessellator tes = Tessellator.getInstance();
+		VertexBuffer vb = tes.getBuffer();
+
+		float drho = (float)(Math.PI / stacks);
+		float dtheta = (float)(2.0f * Math.PI / slices);
+
+		GlStateManager.disableCull();
+		GlStateManager.depthMask(false);
+
+		vb.begin(GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
+		vb.pos(0F, 0F, radius).color(r, g, b, alpha).endVertex();
+		for (int j = 0; j <= slices; j++) {
+			float theta = (j == slices) ? 0.0f : j * dtheta;
+			float x = -MathHelper.sin(theta) * MathHelper.sin(drho);
+			float y = MathHelper.cos(theta) * MathHelper.sin(drho);
+			float z = MathHelper.cos(drho);
+			vb.pos(x * radius, y * radius, z * radius).color(r, g, b, alpha).endVertex();
+		}
+		tes.draw();
+
+		int imin = 1;
+		int imax = stacks - 1;
+
+		for (int i = imin; i < imax; i++) {
+			alpha = Math.max(alpha - i * dropOffRate, 0F);
+			float rho = i * drho;
+			vb.begin(GL_QUAD_STRIP, DefaultVertexFormats.POSITION_COLOR);
+			for (int j = 0; j <= slices; j++) {
+				float theta = (j == slices) ? 0.0f : j * dtheta;
+				float x = -MathHelper.sin(theta) * MathHelper.sin(rho);
+				float y = MathHelper.cos(theta) * MathHelper.sin(rho);
+				float z = MathHelper.cos(rho);
+				vb.pos(x * radius, y * radius, z * radius).color(r, g, b, alpha).endVertex();
+				x = -MathHelper.sin(theta) * MathHelper.sin(rho + drho);
+				y = MathHelper.cos(theta) * MathHelper.sin(rho + drho);
+				z = MathHelper.cos(rho + drho);
+				vb.pos(x * radius, y * radius, z * radius).color(r, g, b, alpha).endVertex();
+			}
+
+			tes.draw();
+		}
+
+		GlStateManager.enableCull();
+		GlStateManager.depthMask(true);
+	}
 }
