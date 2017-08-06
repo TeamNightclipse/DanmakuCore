@@ -26,6 +26,8 @@ import net.katsstuff.danmakucore.misc.ITranslatable;
 @SuppressWarnings("unused")
 public class TouhouSpecies implements ITranslatable {
 
+	private static final Map<String, TouhouSpecies> byName = new HashMap<>();
+
 	public static final TouhouSpecies HUMAN = new TouhouSpecies("HUMAN", null);
 	public static final TouhouSpecies ANIMAL = new TouhouSpecies("ANIMAL", null);
 	public static final TouhouSpecies GOD = new TouhouSpecies("GOD", null);
@@ -129,8 +131,6 @@ public class TouhouSpecies implements ITranslatable {
 	//Tengu
 	public static final TouhouSpecies YOUKAI_TENGU_CROW = new TouhouSpecies("YOUKAI_TENGU_CROW", YOUKAI_BEAST_TENGU);
 	public static final TouhouSpecies YOUKAI_TENGU_WHITEWOLF = new TouhouSpecies("YOUKAI_TENGU_WHITEWOLF", YOUKAI_BEAST_TENGU);
-
-	private static final Map<String, TouhouSpecies> byName = new HashMap<>();
 
 	private final TouhouSpecies superSpecies;
 	private final String name;

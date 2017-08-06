@@ -25,6 +25,9 @@ import net.katsstuff.danmakucore.misc.ITranslatable;
 @SuppressWarnings("unused")
 public class TouhouCharacter implements ITranslatable {
 
+	private static final Map<String, TouhouCharacter> byFullName = new HashMap<>();
+	private static final Map<String, TouhouCharacter> byShortName = new HashMap<>();
+
 	public static final TouhouCharacter REIMU_HAKUREI = new TouhouCharacter("REIMU_HAKUREI", "reimu", TouhouSpecies.HUMAN);
 	public static final TouhouCharacter MARISA_KIRISAME = new TouhouCharacter("MARISA_KIRISAME", "marisa", TouhouSpecies.HUMAN);
 
@@ -195,9 +198,6 @@ public class TouhouCharacter implements ITranslatable {
 	public static final TouhouCharacter MERIBEL_HEARN = new TouhouCharacter("MERIBEL_HEARN", "maribel", TouhouSpecies.HUMAN);
 	public static final TouhouCharacter RENKO_USAMI = new TouhouCharacter("RENKO_USAMI", "renko", TouhouSpecies.HUMAN);
 	public static final TouhouCharacter HIEDA_NO_AKYUU = new TouhouCharacter("HIEDA_NO_AKYUU", "akyuu", TouhouSpecies.HUMAN);
-
-	private static final Map<String, TouhouCharacter> byFullName = new HashMap<>();
-	private static final Map<String, TouhouCharacter> byShortName = new HashMap<>();
 
 	private final String fullName;
 	private final String shortName;
