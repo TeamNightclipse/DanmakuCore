@@ -84,40 +84,29 @@ public class RenderHelper {
 		GL11.glEndList();
 	}
 
-	public static void drawSphere(int color, float alpha) {
+	private static void drawObj(int color, float alpha, int callListId) {
 		float r = (color >> 16 & 255) / 255.0F;
 		float g = (color >> 8 & 255) / 255.0F;
 		float b = (color & 255) / 255.0F;
 
 		GlStateManager.color(r, g, b, alpha);
-		GL11.glCallList(sphereId);
+		GL11.glCallList(callListId);
+	}
+
+	public static void drawSphere(int color, float alpha) {
+		drawObj(color, alpha, sphereId);
 	}
 
 	public static void drawCylinder(int color, float alpha) {
-		float r = (color >> 16 & 255) / 255.0F;
-		float g = (color >> 8 & 255) / 255.0F;
-		float b = (color & 255) / 255.0F;
-
-		GlStateManager.color(r, g, b, alpha);
-		GL11.glCallList(cylinderId);
+		drawObj(color, alpha, cylinderId);
 	}
 
 	public static void drawCone(int color, float alpha) {
-		float r = (color >> 16 & 255) / 255.0F;
-		float g = (color >> 8 & 255) / 255.0F;
-		float b = (color & 255) / 255.0F;
-
-		GlStateManager.color(r, g, b, alpha);
-		GL11.glCallList(coneId);
+		drawObj(color, alpha, coneId);
 	}
 
 	public static void drawDisk(int color, float alpha) {
-		float r = (color >> 16 & 255) / 255.0F;
-		float g = (color >> 8 & 255) / 255.0F;
-		float b = (color & 255) / 255.0F;
-
-		GlStateManager.color(r, g, b, alpha);
-		GL11.glCallList(diskId);
+		drawObj(color, alpha, diskId);
 	}
 
 	public static void transformEntity(EntityDanmaku danmaku) {

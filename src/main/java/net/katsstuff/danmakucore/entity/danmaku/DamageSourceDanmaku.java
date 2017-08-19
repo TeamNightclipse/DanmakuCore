@@ -8,6 +8,8 @@
  */
 package net.katsstuff.danmakucore.entity.danmaku;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
@@ -19,12 +21,12 @@ import net.minecraft.util.text.translation.I18n;
 
 public class DamageSourceDanmaku extends EntityDamageSourceIndirect {
 
-	private DamageSourceDanmaku(Entity entity, Entity indirectEntityIn) {
+	private DamageSourceDanmaku(Entity entity, @Nullable  Entity indirectEntityIn) {
 		super("danmaku", entity, indirectEntityIn);
 		setProjectile().setDamageBypassesArmor().setDamageIsAbsolute().setMagicDamage();
 	}
 
-	public static DamageSource causeDanmakuDamage(Entity entity, Entity indirectEntityIn) {
+	public static DamageSource causeDanmakuDamage(Entity entity, @Nullable Entity indirectEntityIn) {
 		return new DamageSourceDanmaku(entity, indirectEntityIn);
 	}
 

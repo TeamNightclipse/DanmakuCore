@@ -8,16 +8,33 @@
  */
 package net.katsstuff.danmakucore.server.commands;
 
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+
+import net.katsstuff.danmakucore.capability.IDanmakuCoreData;
+import net.katsstuff.danmakucore.helper.TouhouHelper;
+import net.katsstuff.danmakucore.misc.ThrowFunction;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.server.command.CommandTreeBase;
 
 public class DanmakuCoreCmd extends CommandTreeBase {
 
 	public DanmakuCoreCmd() {
-		addSubcommand(new DanLivesCmd());
-		addSubcommand(new DanBombsCmd());
-		addSubcommand(new DanPowerCmd());
-		addSubcommand(new DanScoreCmd());
+		ThrowFunction<String, Integer, CommandException> parseInt = arg -> parseInt(arg, 0);
+		ThrowFunction<String, Float, CommandException> parseFloat = arg -> (float)parseDouble(arg, 0D, 4D);
+		Function<BiConsumer<IDanmakuCoreData, Integer>, BiConsumer<EntityPlayer, Integer>> processInt = processer();
+		Function<BiConsumer<IDanmakuCoreData, Float>, BiConsumer<EntityPlayer, Float>> processFloat = processer();
+
+		addSubcommand(new SetDataCmd<>("lives", parseInt, processInt.apply(IDanmakuCoreData::setLives)));
+		addSubcommand(new SetDataCmd<>("bombs", parseInt, processInt.apply(IDanmakuCoreData::setBombs)));
+		addSubcommand(new SetDataCmd<>("power", parseFloat, processFloat.apply(IDanmakuCoreData::setPower)));
+		addSubcommand(new SetDataCmd<>("score", parseInt, processInt.apply(IDanmakuCoreData::setScore)));
+	}
+
+	private static <T> Function<BiConsumer<IDanmakuCoreData, T>, BiConsumer<EntityPlayer, T>> processer() {
+		return f1 -> (p, i) -> TouhouHelper.changeAndSyncPlayerData(d -> f1.accept(d, i), p);
 	}
 
 	@Override

@@ -58,6 +58,15 @@ public abstract class SubEntityAbstract extends SubEntity {
 	 */
 	protected void impactEntity(RayTraceResult raytrace) {
 		Entity hitEntity = raytrace.entityHit;
+		Optional<EntityLivingBase> optUser = danmaku.getUser();
+
+		if(hitEntity instanceof EntityLivingBase && !(hitEntity instanceof EntityAgeable) && !(optUser.orElse(null) instanceof IAllyDanmaku
+				&& hitEntity instanceof IAllyDanmaku) || hitEntity instanceof EntityDragonPart) {
+			attackEntity(danmaku, hitEntity);
+		}
+	}
+
+	protected void attackEntity(EntityDanmaku danmaku, Entity entity) {
 		Entity indirect;
 		Optional<EntityLivingBase> optUser = danmaku.getUser();
 		//noinspection OptionalIsPresent Doesn't work as Optional is invariant
@@ -67,22 +76,11 @@ public abstract class SubEntityAbstract extends SubEntity {
 		ShotData shot = danmaku.getShotData();
 		float averageSize = (shot.sizeY() + shot.sizeX() + shot.sizeZ()) / 3;
 
-		if(hitEntity instanceof EntityLivingBase && !(hitEntity instanceof EntityAgeable) && !(optUser.orElse(null) instanceof IAllyDanmaku
-				&& hitEntity instanceof IAllyDanmaku)) {
-			EntityLivingBase living = (EntityLivingBase)hitEntity;
-			living.attackEntityFrom(DamageSourceDanmaku.causeDanmakuDamage(danmaku, indirect),
-					DanmakuHelper.adjustDanmakuDamage(optUser.orElse(null), living, danmaku.getShotData().damage(),
-							ConfigHandler.danmaku.danmakuLevel));
-			if(averageSize < 0.7F) {
-				danmaku.delete();
-			}
-		}
-		else if(hitEntity instanceof EntityDragonPart) {
-			EntityDragonPart dragon = (EntityDragonPart)hitEntity;
-			dragon.attackEntityFrom(DamageSourceDanmaku.causeDanmakuDamage(danmaku, indirect), danmaku.getShotData().damage());
-			if(averageSize < 0.7F) {
-				danmaku.delete();
-			}
+		entity.attackEntityFrom(DamageSourceDanmaku.causeDanmakuDamage(danmaku, indirect),
+				DanmakuHelper.adjustDanmakuDamage(optUser.orElse(null), entity, danmaku.getShotData().damage(),
+						ConfigHandler.danmaku.danmakuLevel));
+		if(averageSize < 0.7F) {
+			danmaku.delete();
 		}
 	}
 

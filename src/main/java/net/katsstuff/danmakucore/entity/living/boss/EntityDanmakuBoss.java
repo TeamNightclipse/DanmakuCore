@@ -168,11 +168,11 @@ public abstract class EntityDanmakuBoss extends EntityDanmakuMob {
 			world.spawnEntity(TouhouHelper.createScoreBlue(world, null, pos, direction));
 		}
 
-		if(rand.nextInt(100) < 10) {
+		if(rand.nextInt(100) < 20) {
 			world.spawnEntity(TouhouHelper.createBomb(world, pos, direction));
 		}
 
-		if(rand.nextInt(100) < 2) {
+		if(rand.nextInt(100) < 5) {
 			world.spawnEntity(TouhouHelper.createLife(world, pos, direction));
 		}
 	}

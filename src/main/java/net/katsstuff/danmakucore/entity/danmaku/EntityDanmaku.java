@@ -386,17 +386,21 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 			this.posX = x;
 			this.posY = y;
 			this.posZ = z;
-			ShotData shot = getShotData();
-			Quat danmakuRotation = Quat.fromEuler(rotationYaw, rotationPitch, getRoll());
-			Vector3 size = new Vector3(shot.sizeX(), shot.sizeY(), shot.sizeZ()).rotate(danmakuRotation);
-			double xSize = size.x() / 2F;
-			double zSize = size.z() / 2F;
-			double ySize = size.y() / 2F;
-			this.setEntityBoundingBox(new AxisAlignedBB(x - xSize, y - ySize, z - zSize, x + xSize, y + ySize, z + zSize));
+			this.setEntityBoundingBox(getRoughScaledBoundingBox(x, y, z));
 		}
 		else {
 			super.setPosition(x, y, z);
 		}
+	}
+
+	private AxisAlignedBB getRoughScaledBoundingBox(double x, double y, double z) {
+		ShotData shot = getShotData();
+		Quat danmakuRotation = Quat.fromEuler(rotationYaw, rotationPitch, getRoll());
+		Vector3 size = new Vector3(shot.sizeX(), shot.sizeY(), shot.sizeZ()).rotate(danmakuRotation);
+		double xSize = size.x() / 2F;
+		double zSize = size.z() / 2F;
+		double ySize = size.y() / 2F;
+		return new AxisAlignedBB(x - xSize, y - ySize, z - zSize, x + xSize, y + ySize, z + zSize);
 	}
 
 	@Override
@@ -541,14 +545,8 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	}
 
 	public OrientedBoundingBox getOrientedBoundingBox() {
-		ShotData shot = getShotData();
 		Quat orientation = Quat.fromEuler(rotationYaw, rotationPitch, getRoll());
-
-		double xSize = shot.sizeX() / 2F;
-		double zSize = shot.sizeZ() / 2F;
-		double ySize = shot.sizeY() / 2F;
-		AxisAlignedBB aabb = new AxisAlignedBB(posX - xSize, posY - ySize, posZ - zSize, posX + xSize, posY + ySize, posZ + zSize);
-
+		AxisAlignedBB aabb = getRoughScaledBoundingBox(posX, posY, posZ);
 		return new OrientedBoundingBox(aabb, new Vector3(this), orientation);
 	}
 }

@@ -8,12 +8,12 @@
  */
 package net.katsstuff.danmakucore.entity.living;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 
@@ -204,30 +204,38 @@ public class TouhouCharacter implements ITranslatable {
 	private final List<TouhouSpecies> species;
 	private final List<TouhouCharacter> subCharacters;
 
-	private TouhouCharacter(String fullName, String shortName, TouhouSpecies... species) {
+	private TouhouCharacter(String fullName, String shortName, TouhouSpecies[] species, TouhouCharacter[] subCharacters) {
 		this.fullName = fullName.toUpperCase(Locale.ROOT);
 		this.shortName = shortName;
 		this.species = ImmutableList.copyOf(species);
-		this.subCharacters = ImmutableList.of();
+		this.subCharacters = ImmutableList.copyOf(subCharacters);
 
 		byFullName.put(this.fullName, this);
 		byShortName.put(this.shortName, this);
 	}
 
-	private TouhouCharacter(String fullName, String shortName, TouhouCharacter... subCharacters) {
-		this.fullName = fullName.toUpperCase(Locale.ROOT);
-		this.shortName = shortName;
-		this.subCharacters = ImmutableList.copyOf(subCharacters);
-		this.species = ImmutableList.copyOf(this.subCharacters.stream().flatMap(c -> c.species.stream()).distinct().collect(Collectors.toList()));
+	private TouhouCharacter(String fullName, String shortName, TouhouSpecies... species) {
+		this(fullName, shortName, species, new TouhouCharacter[0]);
+	}
 
-		byFullName.put(this.fullName, this);
-		byShortName.put(this.shortName, this);
+	private TouhouCharacter(String fullName, String shortName, TouhouCharacter... subCharacters) {
+		this(fullName, shortName, Arrays.stream(subCharacters).flatMap(c -> c.species.stream()).distinct().toArray(TouhouSpecies[]::new), subCharacters);
 	}
 
 	private TouhouCharacter(String name, TouhouSpecies... species) {
 		this(name, name, species);
 	}
 
+	/**
+	 * Get a character by a name, or create it if it doesn't exist.
+	 * @param fullName The full name of the character.
+	 * This should be in all caps, and be unique.
+	 * @param shortName A shorter name for the character.
+	 * This does not need to be unique between characters. This parameter
+	 * will be discarded if a character with that name already exists.
+	 * @param species The species that this character is.
+	 * @return The found character or a new one if none existed already.
+	 */
 	public static TouhouCharacter getOrCreate(String fullName, String shortName, TouhouSpecies... species) {
 		fullName = fullName.toUpperCase(Locale.ROOT);
 		TouhouCharacter c = byFullName.get(fullName);
@@ -238,6 +246,16 @@ public class TouhouCharacter implements ITranslatable {
 		return c;
 	}
 
+	/**
+	 * Get a character by a name, or create it if it doesn't exist.
+	 * @param fullName The full name of the character.
+	 * This should be in all caps, and be unique.
+	 * @param shortName A shorter name for the character.
+	 * This does not need to be unique between characters. This parameter
+	 * will be discarded if a character with that name already exists.
+	 * @param subCharacters characters that make up this character.
+	 * @return The found character or a new one if none existed already.
+	 */
 	public static TouhouCharacter getOrCreate(String fullName, String shortName, TouhouCharacter... subCharacters) {
 		fullName = fullName.toUpperCase(Locale.ROOT);
 		TouhouCharacter c = byFullName.get(fullName);
@@ -266,6 +284,10 @@ public class TouhouCharacter implements ITranslatable {
 
 	public List<TouhouSpecies> getSpecies() {
 		return species;
+	}
+
+	public List<TouhouCharacter> getSubCharacters() {
+		return subCharacters;
 	}
 
 	@Override

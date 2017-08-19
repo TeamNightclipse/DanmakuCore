@@ -31,6 +31,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
@@ -64,8 +65,8 @@ public class DanmakuHelper {
 		world.playSound(null, pos.x(), pos.y(), pos.z(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 2F, 1.2F);
 	}
 
-	public static void explosionEffect(World world, Vector3 pos, float explosionSize) {
-		world.playSound(null, pos.toBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.HOSTILE, 2.0F, 3.0F);
+	private static void explosionEffect(World world, Vector3 pos, float explosionSize, SoundEvent sound) {
+		world.playSound(null, pos.toBlockPos(), sound, SoundCategory.HOSTILE, 2.0F, 3.0F);
 
 		if(explosionSize >= 2.0F) {
 			world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, pos.x(), pos.y(), pos.z(), 1.0D, 0.0D, 0.0D);
@@ -75,15 +76,12 @@ public class DanmakuHelper {
 		}
 	}
 
-	public static void explosionEffect2(World world, Vector3 pos, float explosionSize) {
-		world.playSound(null, pos.toBlockPos(), SoundEvents.ENTITY_FIREWORK_BLAST, SoundCategory.HOSTILE, 2.0F, 3.0F);
+	public static void explosionEffect(World world, Vector3 pos, float explosionSize) {
+		explosionEffect(world, pos, explosionSize, SoundEvents.ENTITY_GENERIC_EXPLODE);
+	}
 
-		if(explosionSize >= 2.0F) {
-			world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, pos.x(), pos.y(), pos.z(), 1.0D, 0.0D, 0.0D);
-		}
-		else {
-			world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, pos.x(), pos.y(), pos.z(), 1.0D, 0.0D, 0.0D);
-		}
+	public static void explosionEffect2(World world, Vector3 pos, float explosionSize) {
+		explosionEffect(world, pos, explosionSize, SoundEvents.ENTITY_FIREWORK_BLAST);
 	}
 
 	/**
@@ -219,11 +217,11 @@ public class DanmakuHelper {
 		else return base;
 	}
 
-	public static float adjustDamageTarget(float base, EntityLivingBase target) {
+	public static float adjustDamageTarget(float base, Entity target) {
 		return target instanceof EntityPlayer ? base * 3.5F : base;
 	}
 
-	public static float adjustDanmakuDamage(@Nullable EntityLivingBase user, EntityLivingBase target, float base, EnumDanmakuLevel level) {
+	public static float adjustDanmakuDamage(@Nullable EntityLivingBase user, Entity target, float base, EnumDanmakuLevel level) {
 		float withData = adjustDamageCoreData(user, base);
 		float againstTarget = adjustDamageTarget(withData, target);
 		return adjustDamageToDifficulty(againstTarget, user, level);

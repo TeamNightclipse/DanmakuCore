@@ -8,6 +8,9 @@
  */
 package net.katsstuff.danmakucore.server.commands;
 
+import java.util.function.BiConsumer;
+
+import net.katsstuff.danmakucore.misc.ThrowFunction;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -15,7 +18,22 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 
-public abstract class SetDataCmd extends CommandBase {
+public class SetDataCmd <T> extends CommandBase {
+
+	private final String name;
+	private final ThrowFunction<String, T, CommandException> parse;
+	private final BiConsumer<EntityPlayer, T> process;
+
+	protected SetDataCmd(String name, ThrowFunction<String, T, CommandException> parse, BiConsumer<EntityPlayer, T> process) {
+		this.name = name;
+		this.parse = parse;
+		this.process = process;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
 
 	public String translationKey() {
 		return "commands.danmakucore." + getName();
@@ -39,10 +57,10 @@ public abstract class SetDataCmd extends CommandBase {
 		else {
 
 			String arg = args[0];
-			EntityPlayer entityplayer = args.length > 1 ? getPlayer(server, sender, args[1]) : getCommandSenderAsPlayer(sender);
-			changeData(arg, entityplayer);
+			EntityPlayer player = args.length > 1 ? getPlayer(server, sender, args[1]) : getCommandSenderAsPlayer(sender);
+			T res = parse.apply(arg);
+			process.accept(player, res);
+			notifyCommandListener(player, this, translationKey() + ".success", res, player.getName());
 		}
 	}
-
-	public abstract void changeData(String arg, EntityPlayer player) throws CommandException;
 }
