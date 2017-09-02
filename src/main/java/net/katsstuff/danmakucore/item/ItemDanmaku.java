@@ -21,11 +21,15 @@ import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.entity.danmaku.form.Form;
+import net.katsstuff.danmakucore.helper.BooleanNBTProperty;
 import net.katsstuff.danmakucore.helper.DanmakuCreationHelper;
 import net.katsstuff.danmakucore.helper.DanmakuHelper;
-import net.katsstuff.danmakucore.helper.ItemNBTHelper;
+import net.katsstuff.danmakucore.helper.DoubleNBTProperty;
+import net.katsstuff.danmakucore.helper.IntNBTProperty;
 import net.katsstuff.danmakucore.helper.LogHelper;
 import net.katsstuff.danmakucore.helper.MathUtil;
+import net.katsstuff.danmakucore.helper.NBTProperty;
+import net.katsstuff.danmakucore.helper.StringNBTProperty;
 import net.katsstuff.danmakucore.lib.LibItemName;
 import net.katsstuff.danmakucore.lib.data.LibDanmakuVariants;
 import net.katsstuff.danmakucore.lib.data.LibItems;
@@ -47,18 +51,18 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class ItemDanmaku extends ItemBase {
 
-	private static final String NBT_GRAVITYX = "gravityX";
-	private static final String NBT_GRAVITYY = "gravityY";
-	private static final String NBT_GRAVITYZ = "gravityZ";
-	private static final String NBT_PATTERN = "pattern";
-	private static final String NBT_INFINITY = "infinity";
-	private static final String NBT_AMOUNT = "amount";
-	private static final String NBT_CUSTOM = "custom";
-	private static final String NBT_SPEED = "speed";
-	private static final String VARIANT = "variant";
+	public static final DoubleNBTProperty<ItemStack> GRAVITYX = DoubleNBTProperty.ofStack("gravityx");
+	public static final DoubleNBTProperty<ItemStack> GRAVITYY = DoubleNBTProperty.ofStack("gravityy");
+	public static final DoubleNBTProperty<ItemStack> GRAVITYZ = DoubleNBTProperty.ofStack("gravityz");
+	public static final DoubleNBTProperty<ItemStack> SPEED = DoubleNBTProperty.ofStack("speed", 0.4D);
+	public static final IntNBTProperty<ItemStack> PATTERN = IntNBTProperty.ofStack("pattern");
+	public static final IntNBTProperty<ItemStack> AMOUNT = IntNBTProperty.ofStack("amount", 1);
+	public static final BooleanNBTProperty<ItemStack> INFINITY = BooleanNBTProperty.ofStack("infinity");
+	public static final BooleanNBTProperty<ItemStack> CUSTOM = BooleanNBTProperty.ofStack("custom");
+	public static final StringNBTProperty<ItemStack> VARIANT = StringNBTProperty.ofStack("variant", () -> LibDanmakuVariants.DEFAULT_TYPE.getFullName().toString());
 
 	public ItemDanmaku() {
 		super(LibItemName.DANMAKU);
@@ -77,7 +81,7 @@ public class ItemDanmaku extends ItemBase {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean hasEffect(ItemStack stack) {
-		return getInfinity(stack);
+		return INFINITY.get(stack);
 	}
 
 	@Override
@@ -93,7 +97,7 @@ public class ItemDanmaku extends ItemBase {
 		boolean success = false;
 		if(!world.isRemote) {
 			if(player.capabilities.isCreativeMode) {
-				setInfinity(stack, true);
+				INFINITY.set(true, stack);
 			}
 			ShotData shot = ShotData.fromNBTItemStack(stack);
 
@@ -101,7 +105,7 @@ public class ItemDanmaku extends ItemBase {
 					new Vector3(player.posX, player.posY + player.eyeHeight - shot.sizeY() / 2, player.posZ), new Vector3(player.getLookVec()),
 					(shot.sizeZ() / 3) * 2);
 
-			if(!getInfinity(stack) && success) {
+			if(!INFINITY.get(stack) && success) {
 				stack.shrink(1);
 			}
 		}
@@ -113,8 +117,8 @@ public class ItemDanmaku extends ItemBase {
 	public static boolean shootDanmaku(ItemStack stack, World world, @Nullable EntityLivingBase player, boolean alternateMode, Vector3 pos,
 			Vector3 direction, double offset) {
 		if(!getController(stack).onShootDanmaku(player, alternateMode, pos, direction)) return false;
-		int amount = getAmount(stack);
-		double shotSpeed = getSpeed(stack);
+		int amount = AMOUNT.get(stack);
+		double shotSpeed = SPEED.get(stack);
 		Pattern danmakuPattern = getPattern(stack);
 		ShotData shot = ShotData.fromNBTItemStack(stack);
 		Vector3 gravity = getGravity(stack);
@@ -177,12 +181,12 @@ public class ItemDanmaku extends ItemBase {
 	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean bool) {
 		super.addInformation(stack, player, list, bool);
 		ShotData shot = ShotData.fromNBTItemStack(stack);
-		int amount = getAmount(stack);
-		double shotSpeed = getSpeed(stack);
+		int amount = AMOUNT.get(stack);
+		double shotSpeed = SPEED.get(stack);
 		Pattern danmakuPattern = getPattern(stack);
 		Vector3 gravity = getGravity(stack);
-		boolean isInfinity = getInfinity(stack);
-		boolean custom = getCustom(stack);
+		boolean isInfinity = INFINITY.get(stack);
+		boolean custom = CUSTOM.get(stack);
 
 		float powerDamage = BigDecimal.valueOf(DanmakuHelper.adjustDamageCoreData(player, shot.damage()) - shot.damage()).setScale(4,
 				BigDecimal.ROUND_HALF_UP).floatValue();
@@ -221,70 +225,33 @@ public class ItemDanmaku extends ItemBase {
 
 	@SuppressWarnings("WeakerAccess")
 	public static Vector3 getGravity(ItemStack stack) {
-		double gravityX = ItemNBTHelper.getDouble(stack, NBT_GRAVITYX, 0D);
-		double gravityY = ItemNBTHelper.getDouble(stack, NBT_GRAVITYY, 0D);
-		double gravityZ = ItemNBTHelper.getDouble(stack, NBT_GRAVITYZ, 0D);
+		double gravityX = GRAVITYX.get(stack);
+		double gravityY = GRAVITYY.get(stack);
+		double gravityZ = GRAVITYZ.get(stack);
 		return new Vector3(gravityX, gravityY, gravityZ);
 	}
 
-	public static void setGravity(ItemStack stack, Vector3 gravity) {
-		ItemNBTHelper.setDouble(stack, NBT_GRAVITYX, gravity.x());
-		ItemNBTHelper.setDouble(stack, NBT_GRAVITYY, gravity.y());
-		ItemNBTHelper.setDouble(stack, NBT_GRAVITYZ, gravity.z());
+	public static void setGravity(Vector3 gravity, ItemStack stack) {
+		GRAVITYX.set(gravity.x(), stack);
+		GRAVITYY.set(gravity.y(), stack);
+		GRAVITYZ.set(gravity.z(), stack);
 	}
 
 	@SuppressWarnings("WeakerAccess")
 	public static Pattern getPattern(ItemStack stack) {
-		return Pattern.class.getEnumConstants()[ItemNBTHelper.getInt(stack, NBT_PATTERN, 0)];
+		return Pattern.class.getEnumConstants()[PATTERN.get(stack)];
 	}
 
 	public static void setPattern(ItemStack stack, Pattern pattern) {
-		ItemNBTHelper.setInt(stack, NBT_PATTERN, pattern.ordinal());
-	}
-
-	@SuppressWarnings("WeakerAccess")
-	public static int getAmount(ItemStack stack) {
-		return ItemNBTHelper.getInt(stack, NBT_AMOUNT, 1);
-	}
-
-	public static void setAmount(ItemStack stack, int amount) {
-		ItemNBTHelper.setInt(stack, NBT_AMOUNT, amount);
-	}
-
-	@SuppressWarnings("WeakerAccess")
-	public static double getSpeed(ItemStack stack) {
-		return ItemNBTHelper.getDouble(stack, NBT_SPEED, 0.4D);
-	}
-
-	public static void setSpeed(ItemStack stack, double speed) {
-		ItemNBTHelper.setDouble(stack, NBT_SPEED, speed);
-	}
-
-	public static boolean getCustom(ItemStack stack) {
-		return ItemNBTHelper.getBoolean(stack, ItemDanmaku.NBT_CUSTOM, false);
-	}
-
-	public static void setCustom(ItemStack stack, boolean custom) {
-		ItemNBTHelper.setBoolean(stack, NBT_CUSTOM, custom);
-	}
-
-	@SuppressWarnings("WeakerAccess")
-	public static boolean getInfinity(ItemStack stack) {
-		return ItemNBTHelper.getBoolean(stack, ItemDanmaku.NBT_INFINITY, false);
-	}
-
-	@SuppressWarnings({"WeakerAccess", "SameParameterValue"})
-	public static void setInfinity(ItemStack stack, boolean infinity) {
-		ItemNBTHelper.setBoolean(stack, NBT_INFINITY, infinity);
+		PATTERN.set(pattern.ordinal(), stack);
 	}
 
 	public static DanmakuVariant getVariant(ItemStack stack) {
-		DanmakuVariant variant = DanmakuRegistry.DANMAKU_VARIANT.getValue(
-				new ResourceLocation(ItemNBTHelper.getString(stack, VARIANT, LibDanmakuVariants.DEFAULT_TYPE.getFullName().toString())));
+		DanmakuVariant variant = DanmakuRegistry.DANMAKU_VARIANT.getValue(new ResourceLocation(VARIANT.get(stack)));
 		if(variant == null) {
 			variant = LibDanmakuVariants.DEFAULT_TYPE;
 			LogHelper.warn("Found null variant. Changing to default");
-			ItemNBTHelper.setString(stack, VARIANT, variant.getFullName().toString());
+			VARIANT.set(variant.getFullName().toString(), stack);
 		}
 
 		return variant;
@@ -296,16 +263,16 @@ public class ItemDanmaku extends ItemBase {
 
 	@SuppressWarnings("squid:S1452")
 	public static RegistryValueShootable<?> getController(ItemStack stack) {
-		return !getCustom(stack) ? getVariant(stack) : getForm(stack);
+		return !CUSTOM.get(stack) ? getVariant(stack) : getForm(stack);
 	}
 
 	public static ItemStack createStack(DanmakuVariant variant) {
 		ShotData shot = variant.getShotData().setColor(DanmakuHelper.randomSaturatedColor());
 		ItemStack stack = new ItemStack(LibItems.DANMAKU, 1);
-		ItemNBTHelper.setString(stack, VARIANT, variant.getFullName().toString());
-		setGravity(stack, variant.getMovementData().gravity());
-		setSpeed(stack, variant.getMovementData().speedOriginal());
-		ItemNBTHelper.setBoolean(stack, NBT_CUSTOM, false);
+		VARIANT.set(variant.getFullName().toString(), stack);
+		setGravity(variant.getMovementData().gravity(), stack);
+		SPEED.set(variant.getMovementData().speedOriginal(), stack);
+		CUSTOM.set(false, stack);
 		return ShotData.serializeNBTItemStack(stack, shot);
 	}
 

@@ -43,6 +43,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -92,7 +93,7 @@ public class ClientProxy extends CommonProxy {
 		ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
 
 		itemColors.registerItemColorHandler((stack, pass) -> {
-			if(!ItemNBTHelper.verifyExistance(stack, ShotData.NbtShotData()) || pass == 1) {
+			if(!ItemNBTHelper.hasTag(stack, ShotData.NbtShotData(), Constants.NBT.TAG_COMPOUND) || pass == 1) {
 				return 0xFFFFFF;
 			}
 			else return ShotData.fromNBTItemStack(stack).color();

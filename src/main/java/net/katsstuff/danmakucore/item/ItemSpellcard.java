@@ -17,6 +17,7 @@ import net.katsstuff.danmakucore.entity.living.TouhouCharacter;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.helper.ItemNBTHelper;
+import net.katsstuff.danmakucore.helper.StringNBTProperty;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.lib.LibItemName;
 import net.katsstuff.danmakucore.lib.data.LibItems;
@@ -39,7 +40,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SuppressWarnings("WeakerAccess")
 public class ItemSpellcard extends ItemBase implements IOwnedBy {
 
-	private static final String SPELLCARD = "spellcard";
+	private static final StringNBTProperty<ItemStack> SPELLCARD = StringNBTProperty.ofStack("spellcard", () -> LibSpellcards.DELUSION_OF_ENLIGHTENMENT.getFullName().toString());
 
 	public ItemSpellcard() {
 		super(LibItemName.SPELLCARD);
@@ -92,11 +93,10 @@ public class ItemSpellcard extends ItemBase implements IOwnedBy {
 	}
 
 	public static Spellcard getSpellcard(ItemStack stack) {
-		Spellcard spellcard = DanmakuRegistry.SPELLCARD.getValue(
-				new ResourceLocation(ItemNBTHelper.getString(stack, SPELLCARD, LibSpellcards.DELUSION_OF_ENLIGHTENMENT.getFullName().toString())));
+		Spellcard spellcard = DanmakuRegistry.SPELLCARD.getValue(new ResourceLocation(SPELLCARD.get(stack)));
 		if(spellcard == null) {
 			spellcard = LibSpellcards.DELUSION_OF_ENLIGHTENMENT;
-			ItemNBTHelper.setString(stack, SPELLCARD, spellcard.getFullName().toString());
+			SPELLCARD.set(spellcard.getFullName().toString(), stack);
 		}
 
 		return spellcard;
@@ -104,7 +104,7 @@ public class ItemSpellcard extends ItemBase implements IOwnedBy {
 
 	public static ItemStack createStack(Spellcard spellcard) {
 		ItemStack stack = new ItemStack(LibItems.SPELLCARD, 1);
-		ItemNBTHelper.setString(stack, SPELLCARD, spellcard.getFullName().toString());
+		SPELLCARD.set(spellcard.getFullName().toString(), stack);
 		return stack;
 	}
 }
