@@ -21,9 +21,9 @@ public class ShapeDelay implements IShape {
 	}
 
 	@Override
-	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
+	public ShapeResult draw(Vector3 pos, Quat orientation, int tick) {
 		if(tick >= delay) {
-			return shape.drawForTick(pos, orientation, tick - delay);
+			return shape.draw(pos, orientation, tick - delay);
 		}
 		else {
 			return ShapeResult.done(ImmutableSet.of());

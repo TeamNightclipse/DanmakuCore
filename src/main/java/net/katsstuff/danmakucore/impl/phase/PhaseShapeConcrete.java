@@ -66,7 +66,7 @@ public abstract class PhaseShapeConcrete extends Phase {
 			Vector3 entityPos = new Vector3(entity);
 			Vector3 forward = Vector3.directionToEntity(entityPos, target);
 
-			shape.drawForTick(entityPos, Quat.lookRotation(forward, Vector3.Up()), 0);
+			shape.draw(entityPos, Quat.lookRotation(forward, Vector3.Up()), 0);
 		}
 	}
 

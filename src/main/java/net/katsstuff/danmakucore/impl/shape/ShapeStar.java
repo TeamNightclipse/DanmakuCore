@@ -52,7 +52,7 @@ public class ShapeStar implements IShape {
 	}
 
 	@Override
-	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
+	public ShapeResult draw(Vector3 pos, Quat orientation, int tick) {
 		if(amount >= WAYS.length) return ShapeResult.done(ImmutableSet.of());
 		HashSet<EntityDanmaku> set = new HashSet<>();
 		if(!danmaku.world.isRemote) {
@@ -95,7 +95,7 @@ public class ShapeStar implements IShape {
 					danmaku.pos = pos;
 					danmaku.direction = localForward;
 					ShapeRing shape = new ShapeRing(danmaku, WAYS[amount][i], angleBase, baseAngle + slope, distance);
-					set.addAll(shape.drawForTick(pos, orientation, 0).getSpawnedDanmaku());
+					set.addAll(shape.draw(pos, orientation, 0).getSpawnedDanmaku());
 					slope += 180F / WAYS[amount].length;
 				}
 

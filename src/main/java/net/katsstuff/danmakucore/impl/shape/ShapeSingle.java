@@ -28,7 +28,7 @@ public class ShapeSingle implements IShape {
 	}
 
 	@Override
-	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
+	public ShapeResult draw(Vector3 pos, Quat orientation, int tick) {
 		if(!danmaku.world.isRemote) {
 			EntityDanmaku created = danmaku.asEntity();
 			danmaku.world.spawnEntity(created);

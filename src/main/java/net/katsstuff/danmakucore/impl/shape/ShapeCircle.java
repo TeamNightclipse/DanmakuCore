@@ -29,11 +29,11 @@ public class ShapeCircle implements IShape {
 	}
 
 	@Override
-	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
+	public ShapeResult draw(Vector3 pos, Quat orientation, int tick) {
 		if(amount % 2 == 0) {
 			baseAngle += 360F / (amount * 2F);
 		}
 		ShapeWide shape = new ShapeWide(danmaku, amount, 360F - 360F / amount, baseAngle, distance);
-		return shape.drawForTick(pos, orientation, tick);
+		return shape.draw(pos, orientation, tick);
 	}
 }

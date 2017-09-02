@@ -19,8 +19,8 @@ public class ShapeEffectDelay implements IShape {
 	}
 
 	@Override
-	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
-		ShapeResult res = shape.drawForTick(pos, orientation, tick);
+	public ShapeResult draw(Vector3 pos, Quat orientation, int tick) {
+		ShapeResult res = shape.draw(pos, orientation, tick);
 		if(tick < delay) return ShapeResult.notDone(res.getSpawnedDanmaku());
 		else return res;
 	}

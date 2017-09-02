@@ -56,6 +56,6 @@ public class DanmakuCreationHelper {
 	}
 
 	private static Set<EntityDanmaku> drawSingle(DanmakuTemplate danmaku, Quat orientation, IShape shape) {
-		return shape.drawForTick(danmaku.pos, orientation, 0).getSpawnedDanmaku();
+		return shape.draw(danmaku.pos, orientation, 0).getSpawnedDanmaku();
 	}
 }

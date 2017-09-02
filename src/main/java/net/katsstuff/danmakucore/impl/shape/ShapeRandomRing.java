@@ -33,7 +33,7 @@ public class ShapeRandomRing implements IShape {
 	}
 
 	@Override
-	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
+	public ShapeResult draw(Vector3 pos, Quat orientation, int tick) {
 		HashSet<EntityDanmaku> set = new HashSet<>();
 		if(!danmaku.world.isRemote) {
 			Random rand = danmaku.world.rand;

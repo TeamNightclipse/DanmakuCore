@@ -8,17 +8,14 @@
  */
 package net.katsstuff.danmakucore.impl.phase;
 
-import java.util.Set;
-
 import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob;
 import net.katsstuff.danmakucore.entity.living.phase.Phase;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseManager;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
 import net.katsstuff.danmakucore.shape.IShape;
-import net.minecraft.util.Tuple;
+import net.katsstuff.danmakucore.shape.ShapeResult;
 
 public class PhaseTypeShape {
 
@@ -62,9 +59,9 @@ public class PhaseTypeShape {
 			if(isCounterStart()) {
 				EntityDanmakuMob danmakuMob = getEntity();
 
-				Tuple<Boolean, Set<EntityDanmaku>> done = shape.drawForTick(new Vector3(danmakuMob), Quat.orientationOf(danmakuMob), counter);
+				ShapeResult res = shape.draw(new Vector3(danmakuMob), Quat.orientationOf(danmakuMob), counter);
 
-				if(continuous && done.getFirst()) {
+				if(continuous && res.isDone()) {
 					counter = 0;
 				}
 			}

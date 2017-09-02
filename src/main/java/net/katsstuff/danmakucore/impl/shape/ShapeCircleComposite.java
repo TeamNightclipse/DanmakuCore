@@ -29,11 +29,11 @@ public class ShapeCircleComposite implements IShape {
 	}
 
 	@Override
-	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
+	public ShapeResult draw(Vector3 pos, Quat orientation, int tick) {
 		if(amount % 2 == 0) {
 			baseAngle += 360F / (amount * 2F);
 		}
 		ShapeWideComposite wideShape = new ShapeWideComposite(world, shape, amount, 360F - 360F / amount, baseAngle);
-		return wideShape.drawForTick(pos, orientation, tick);
+		return wideShape.draw(pos, orientation, tick);
 	}
 }

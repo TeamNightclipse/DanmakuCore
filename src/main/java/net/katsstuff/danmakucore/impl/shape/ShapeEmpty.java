@@ -18,7 +18,7 @@ import net.katsstuff.danmakucore.shape.ShapeResult;
 public class ShapeEmpty implements IShape {
 
 	@Override
-	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
+	public ShapeResult draw(Vector3 pos, Quat orientation, int tick) {
 		return ShapeResult.done(ImmutableSet.of());
 	}
 }

@@ -122,7 +122,7 @@ public final class ShapeHandler {
 			Vector3 pos = getCurrentPos();
 			Quat orientation = getCurrentOrientation();
 
-			ShapeResult ret = shape.drawForTick(pos, orientation, counter);
+			ShapeResult ret = shape.draw(pos, orientation, counter);
 			drawn.addAll(ret.getSpawnedDanmaku());
 			shape.doEffects(pos, orientation, counter, ret.getSpawnedDanmaku(), ImmutableSet.copyOf(drawn));
 
@@ -181,7 +181,7 @@ public final class ShapeHandler {
 
 		@Override
 		public boolean draw() {
-			ShapeResult ret = shape.drawForTick(pos, orientation, counter);
+			ShapeResult ret = shape.draw(pos, orientation, counter);
 			drawn.addAll(ret.getSpawnedDanmaku());
 			shape.doEffects(pos, orientation, counter, ret.getSpawnedDanmaku(), ImmutableSet.copyOf(drawn));
 

@@ -28,8 +28,8 @@ public class ShapeCombined implements IShape {
 	}
 
 	@Override
-	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
-		Set<ShapeResult> ret = Arrays.stream(shapes).map(s -> s.drawForTick(pos, orientation, tick)).collect(Collectors.toSet());
+	public ShapeResult draw(Vector3 pos, Quat orientation, int tick) {
+		Set<ShapeResult> ret = Arrays.stream(shapes).map(s -> s.draw(pos, orientation, tick)).collect(Collectors.toSet());
 		boolean done = ret.stream().allMatch(ShapeResult::isDone);
 		Set<EntityDanmaku> drawn = ret.stream().flatMap(t -> t.getSpawnedDanmaku().stream()).collect(Collectors.toSet());
 

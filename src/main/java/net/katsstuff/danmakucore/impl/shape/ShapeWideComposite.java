@@ -34,7 +34,7 @@ public class ShapeWideComposite implements IShape {
 	}
 
 	@Override
-	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
+	public ShapeResult draw(Vector3 pos, Quat orientation, int tick) {
 		boolean done = true;
 		HashSet<EntityDanmaku> set = new HashSet<>();
 
@@ -45,7 +45,7 @@ public class ShapeWideComposite implements IShape {
 
 			for(int i = 0; i < amount; i++) {
 				Quat rotate = orientation.multiply(Quat.fromAxisAngle(Vector3.Up(), rotateAngle));
-				ShapeResult result = shape.drawForTick(pos, rotate, tick);
+				ShapeResult result = shape.draw(pos, rotate, tick);
 				set.addAll(result.getSpawnedDanmaku());
 				if(!result.isDone()) {
 					done = false;

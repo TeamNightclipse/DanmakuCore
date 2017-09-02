@@ -28,7 +28,7 @@ public interface IShape {
 	 * @param tick The tick.
 	 * @return Tuple first, if this shape is done. Tuple second, the danmaku that was created by this shape.
 	 */
-	ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick);
+	ShapeResult draw(Vector3 pos, Quat orientation, int tick);
 
 	/**
 	 * Executes some sort of effect on the danmaku spawned. This can be used

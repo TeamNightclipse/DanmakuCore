@@ -34,7 +34,7 @@ public class ShapeSphere implements IShape {
 	}
 
 	@Override
-	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
+	public ShapeResult draw(Vector3 pos, Quat orientation, int tick) {
 		HashSet<EntityDanmaku> set = new HashSet<>();
 		if(!danmaku.world.isRemote) {
 			Quat rotatedForward = orientation.multiply(Quat.fromAxisAngle(Vector3.Forward(), 90));
@@ -43,7 +43,7 @@ public class ShapeSphere implements IShape {
 
 			for(int i = 0; i < bands; i++) {
 				Quat rotate = Quat.fromAxisAngle(Vector3.Up(), increment * i);
-				set.addAll(shape.drawForTick(pos, rotate.multiply(rotatedForward), tick).getSpawnedDanmaku());
+				set.addAll(shape.draw(pos, rotate.multiply(rotatedForward), tick).getSpawnedDanmaku());
 			}
 		}
 
