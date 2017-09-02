@@ -218,6 +218,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		setPosition(posX + motionX, posY + motionY, posZ + motionZ);
 	}
 
+	@LogicalSideOnly(Side.SERVER)
 	public void accelerate(double currentSpeed) {
 		double speedAccel = movement.getSpeedAcceleration();
 		double upperSpeedLimit = movement.getUpperSpeedLimit();
@@ -245,19 +246,21 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	/**
 	 * Updates the motion to the current direction.
 	 */
+	@LogicalSideOnly(Side.SERVER)
 	public void setSpeed(double speed) {
 		motionX = direction.x() * speed;
 		motionY = direction.y() * speed;
 		motionZ = direction.z() * speed;
 	}
 
+	@LogicalSideOnly(Side.SERVER)
 	public void addSpeed(double speed) {
 		motionX += direction.x() * speed;
 		motionY += direction.y() * speed;
 		motionZ += direction.z() * speed;
 	}
 
-	@SuppressWarnings("WeakerAccess")
+	@LogicalSideOnly(Side.SERVER)
 	public void resetMotion() {
 		double speedOriginal = getMovementData().getSpeedOriginal();
 		motionX = direction.x() * speedOriginal;
@@ -310,37 +313,45 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		return subEntity;
 	}
 
+	@LogicalSideOnly(Side.SERVER)
 	public Optional<EntityLivingBase> getUser() {
 		return Optional.ofNullable(user);
 	}
 
+	@LogicalSideOnly(Side.SERVER)
 	public Optional<Entity> getSource() {
 		return Optional.ofNullable(source);
 	}
 
+	@LogicalSideOnly(Side.SERVER)
 	public Vector3 getDirection() {
 		return direction;
 	}
 
+	@LogicalSideOnly(Side.SERVER)
 	public void setDirection(Vector3 direction) {
 		this.direction = direction;
 	}
 
+	@LogicalSideOnly(Side.SERVER)
 	public MovementData getMovementData() {
 		return movement;
 	}
 
 	@SuppressWarnings("unused")
+	@LogicalSideOnly(Side.SERVER)
 	public void setMovementData(MovementData movement) {
 		MovementData old = this.movement;
 		this.movement = subEntity.onMovementDataChange(old, getShotData().form().onMovementDataChange(old, movement), movement);
 	}
 
+	@LogicalSideOnly(Side.SERVER)
 	public RotationData getRotationData() {
 		return rotation;
 	}
 
 	@SuppressWarnings("unused")
+	@LogicalSideOnly(Side.SERVER)
 	public void setRotationData(RotationData rotation) {
 		RotationData old = this.rotation;
 		this.rotation = subEntity.onRotationDataChange(old, getShotData().form().onRotationDataChange(old, rotation), rotation);
@@ -473,7 +484,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	 * Sets the subEntity of this Danmaku to the default.
 	 */
 	@SuppressWarnings("unused")
-	public void subEntityDefault() {
+	public void setSubEntityDefault() {
 		setSubEntity(LibSubEntities.DEFAULT_TYPE);
 	}
 
@@ -485,6 +496,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		return ticksExisted >= getShotData().end();
 	}
 
+	@LogicalSideOnly(Side.SERVER)
 	public void danmakuFinishBonus() {
 		ShotData shot = getShotData();
 		Vector3 pos = new Vector3(this);
@@ -521,7 +533,12 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 
 	@Override
 	public Vec3d getLookVec() {
-		return direction.toVec3d();
+		if(!world.isRemote) {
+			return direction.toVec3d();
+		}
+		else {
+			return super.getLookVec();
+		}
 	}
 
 	@Override

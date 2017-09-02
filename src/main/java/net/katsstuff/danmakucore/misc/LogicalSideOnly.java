@@ -15,6 +15,10 @@ import java.lang.annotation.Target;
 
 import net.minecraftforge.fml.relauncher.Side;
 
+/**
+ * Represents a value, method, type or constructor that should only be used
+ * on a specific logical side.
+ */
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.TYPE, ElementType.CONSTRUCTOR})
 public @interface LogicalSideOnly {
