@@ -40,7 +40,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SuppressWarnings("WeakerAccess")
 public class ItemSpellcard extends ItemBase implements IOwnedBy {
 
-	private static final StringNBTProperty<ItemStack> SPELLCARD = StringNBTProperty.ofStack("spellcard", () -> LibSpellcards.DELUSION_OF_ENLIGHTENMENT.getFullName().toString());
+	private static final StringNBTProperty<ItemStack> SPELLCARD = StringNBTProperty.ofStack("spellcard", () -> LibSpellcards.DELUSION_OF_ENLIGHTENMENT.getFullNameString());
 
 	public ItemSpellcard() {
 		super(LibItemName.SPELLCARD);
@@ -96,7 +96,7 @@ public class ItemSpellcard extends ItemBase implements IOwnedBy {
 		Spellcard spellcard = DanmakuRegistry.SPELLCARD.getValue(new ResourceLocation(SPELLCARD.get(stack)));
 		if(spellcard == null) {
 			spellcard = LibSpellcards.DELUSION_OF_ENLIGHTENMENT;
-			SPELLCARD.set(spellcard.getFullName().toString(), stack);
+			SPELLCARD.set(spellcard.getFullNameString(), stack);
 		}
 
 		return spellcard;
@@ -104,7 +104,7 @@ public class ItemSpellcard extends ItemBase implements IOwnedBy {
 
 	public static ItemStack createStack(Spellcard spellcard) {
 		ItemStack stack = new ItemStack(LibItems.SPELLCARD, 1);
-		SPELLCARD.set(spellcard.getFullName().toString(), stack);
+		SPELLCARD.set(spellcard.getFullNameString(), stack);
 		return stack;
 	}
 }

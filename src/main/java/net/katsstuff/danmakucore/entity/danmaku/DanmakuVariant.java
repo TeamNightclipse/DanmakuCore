@@ -73,7 +73,6 @@ public abstract class DanmakuVariant extends RegistryValueShootable<DanmakuVaria
 
 	@Override
 	public ModelResourceLocation getItemModel() {
-		ResourceLocation name = getRegistryName();
-		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/variant/" + name.getResourcePath()), "inventory");
+		return new ModelResourceLocation(new ResourceLocation(getModId(), "danmaku/variant/" + getName()), "inventory");
 	}
 }

@@ -110,7 +110,7 @@ public class PhaseTypeSpellcard extends PhaseType {
 		@Override
 		public NBTTagCompound serializeNBT() {
 			NBTTagCompound compound = super.serializeNBT();
-			compound.setString(NBT_SPELLCARD, spellcard.getFullName().toString());
+			compound.setString(NBT_SPELLCARD, spellcard.getFullNameString());
 			compound.setBoolean(NBT_FIRST_ATTACK, firstAttack);
 			return compound;
 		}

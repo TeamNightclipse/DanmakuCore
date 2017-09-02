@@ -156,7 +156,7 @@ public class EntitySpellcard extends Entity {
 
 	@Override
 	protected void writeEntityToNBT(NBTTagCompound tag) {
-		tag.setString(NBT_SPELLCARD_TYPE, spellCard.type.getFullName().toString());
+		tag.setString(NBT_SPELLCARD_TYPE, spellCard.type.getFullNameString());
 		tag.setTag(NBT_SPELLCARD_DATA, spellCard.serializeNBT());
 		tag.setUniqueId(NBT_USER, user.getUniqueID());
 	}

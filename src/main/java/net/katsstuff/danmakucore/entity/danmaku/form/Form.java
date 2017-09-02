@@ -112,7 +112,6 @@ public abstract class Form extends RegistryValueShootable<Form> {
 
 	@Override
 	public ModelResourceLocation getItemModel() {
-		ResourceLocation name = getRegistryName();
-		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/form/" + name.getResourcePath()), "inventory");
+		return new ModelResourceLocation(new ResourceLocation(getModId(), "danmaku/form/" + getName()), "inventory");
 	}
 }

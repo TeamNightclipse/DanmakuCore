@@ -90,7 +90,7 @@ abstract sealed class AbstractShotData {
 
   def serializeNBT: NBTTagCompound = {
     val tag = new NBTTagCompound
-    tag.setString(ShotData.NbtForm, form.getFullName.toString)
+    tag.setString(ShotData.NbtForm, form.getFullNameString)
     tag.setInteger(ShotData.NbtColor, color)
     tag.setFloat(ShotData.NbtDamage, damage)
     tag.setFloat(ShotData.NbtSizeX, sizeX)
@@ -98,7 +98,7 @@ abstract sealed class AbstractShotData {
     tag.setFloat(ShotData.NbtSizeZ, sizeZ)
     tag.setInteger(ShotData.NbtDelay, delay)
     tag.setInteger(ShotData.NbtEnd, end)
-    tag.setString(ShotData.NbtSubEntity, subEntity.getFullName.toString)
+    tag.setString(ShotData.NbtSubEntity, subEntity.getFullNameString)
     tag
   }
 

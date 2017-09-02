@@ -88,7 +88,6 @@ public abstract class Spellcard extends RegistryValueItemStack<Spellcard> {
 
 	@Override
 	public ModelResourceLocation getItemModel() {
-		ResourceLocation name = getRegistryName();
-		return new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), "danmaku/spellcard/" + name.getResourcePath()), "inventory");
+		return new ModelResourceLocation(new ResourceLocation(getModId(), "danmaku/spellcard/" + getName()), "inventory");
 	}
 }

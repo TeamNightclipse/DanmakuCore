@@ -31,7 +31,7 @@ public abstract class RegistryValueItemStack<T extends IForgeRegistryEntry<T>> e
 	@Override
 	@ParametersAreNonnullByDefault
 	public int compareTo(T other) {
-		return getRegistryName().toString().compareToIgnoreCase(other.getRegistryName().toString());
+		return getFullNameString().compareToIgnoreCase(other.getRegistryName().toString());
 	}
 
 	@Override
@@ -44,12 +44,12 @@ public abstract class RegistryValueItemStack<T extends IForgeRegistryEntry<T>> e
 			return true;
 		}
 
-		return getRegistryName().toString().equalsIgnoreCase(((RegistryValueItemStack)obj).getRegistryName().toString());
+		return getFullNameString().equalsIgnoreCase(((RegistryValueItemStack)obj).getFullNameString());
 	}
 
 	@Override
 	public int hashCode() {
-		return getRegistryName().hashCode();
+		return getFullName().hashCode();
 	}
 
 	public abstract ModelResourceLocation getItemModel();

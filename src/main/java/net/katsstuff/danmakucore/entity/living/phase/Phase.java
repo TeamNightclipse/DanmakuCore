@@ -206,7 +206,7 @@ public abstract class Phase implements INBTSerializable<NBTTagCompound> {
 	@Override
 	public NBTTagCompound serializeNBT() {
 		NBTTagCompound tag = new NBTTagCompound();
-		tag.setString(NBT_NAME, getType().getFullName().toString());
+		tag.setString(NBT_NAME, getType().getFullNameString());
 		tag.setInteger(NBT_COUNTER, counter);
 		tag.setInteger(NBT_INTERVAL, interval);
 		tag.setInteger(NBT_OLD_INTERVAL, oldInterval);

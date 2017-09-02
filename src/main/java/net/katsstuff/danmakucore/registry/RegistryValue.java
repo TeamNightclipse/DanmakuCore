@@ -20,6 +20,10 @@ public abstract class RegistryValue<T extends IForgeRegistryEntry<T>> extends IF
 		return getRegistryName();
 	}
 
+	public String getFullNameString() {
+		return getFullName().toString();
+	}
+
 	/**
 	 * Get the mod id for this value.
 	 */

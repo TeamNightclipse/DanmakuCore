@@ -62,7 +62,7 @@ public class ItemDanmaku extends ItemBase {
 	public static final IntNBTProperty<ItemStack> AMOUNT = IntNBTProperty.ofStack("amount", 1);
 	public static final BooleanNBTProperty<ItemStack> INFINITY = BooleanNBTProperty.ofStack("infinity");
 	public static final BooleanNBTProperty<ItemStack> CUSTOM = BooleanNBTProperty.ofStack("custom");
-	public static final StringNBTProperty<ItemStack> VARIANT = StringNBTProperty.ofStack("variant", () -> LibDanmakuVariants.DEFAULT_TYPE.getFullName().toString());
+	public static final StringNBTProperty<ItemStack> VARIANT = StringNBTProperty.ofStack("variant", () -> LibDanmakuVariants.DEFAULT_TYPE.getFullNameString());
 
 	public ItemDanmaku() {
 		super(LibItemName.DANMAKU);
@@ -251,7 +251,7 @@ public class ItemDanmaku extends ItemBase {
 		if(variant == null) {
 			variant = LibDanmakuVariants.DEFAULT_TYPE;
 			LogHelper.warn("Found null variant. Changing to default");
-			VARIANT.set(variant.getFullName().toString(), stack);
+			VARIANT.set(variant.getFullNameString(), stack);
 		}
 
 		return variant;
@@ -269,7 +269,7 @@ public class ItemDanmaku extends ItemBase {
 	public static ItemStack createStack(DanmakuVariant variant) {
 		ShotData shot = variant.getShotData().setColor(DanmakuHelper.randomSaturatedColor());
 		ItemStack stack = new ItemStack(LibItems.DANMAKU, 1);
-		VARIANT.set(variant.getFullName().toString(), stack);
+		VARIANT.set(variant.getFullNameString(), stack);
 		setGravity(variant.getMovementData().gravity(), stack);
 		SPEED.set(variant.getMovementData().speedOriginal(), stack);
 		CUSTOM.set(false, stack);
