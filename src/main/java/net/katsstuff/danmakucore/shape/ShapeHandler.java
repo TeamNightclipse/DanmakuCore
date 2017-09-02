@@ -14,12 +14,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.ImmutableSet;
+
 import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.Tuple;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -40,6 +41,7 @@ public final class ShapeHandler {
 	 * Creates a new shape with an entity as an anchor
 	 * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public static Set<EntityDanmaku> createShape(IShape shape, Entity anchor) {
 		return createEntry(new ShapeEntryEntity(shape, anchor));
 	}
@@ -117,10 +119,15 @@ public final class ShapeHandler {
 
 		@Override
 		public boolean draw() {
-			Tuple<Boolean, Set<EntityDanmaku>> ret = shape.drawForTick(getCurrentPos(), getCurrentOrientation(), counter);
-			drawn.addAll(ret.getSecond());
+			Vector3 pos = getCurrentPos();
+			Quat orientation = getCurrentOrientation();
+
+			ShapeResult ret = shape.drawForTick(pos, orientation, counter);
+			drawn.addAll(ret.getSpawnedDanmaku());
+			shape.doEffects(pos, orientation, counter, ret.getSpawnedDanmaku(), ImmutableSet.copyOf(drawn));
+
 			counter++;
-			return ret.getFirst();
+			return ret.isDone();
 		}
 
 		protected abstract Vector3 getCurrentPos();
@@ -174,10 +181,12 @@ public final class ShapeHandler {
 
 		@Override
 		public boolean draw() {
-			Tuple<Boolean, Set<EntityDanmaku>> ret = shape.drawForTick(pos, orientation, counter);
-			drawn.addAll(ret.getSecond());
+			ShapeResult ret = shape.drawForTick(pos, orientation, counter);
+			drawn.addAll(ret.getSpawnedDanmaku());
+			shape.doEffects(pos, orientation, counter, ret.getSpawnedDanmaku(), ImmutableSet.copyOf(drawn));
+
 			counter++;
-			return ret.getFirst();
+			return ret.isDone();
 		}
 	}
 }

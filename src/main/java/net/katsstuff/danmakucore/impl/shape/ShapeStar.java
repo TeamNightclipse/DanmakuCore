@@ -9,14 +9,15 @@
 package net.katsstuff.danmakucore.impl.shape;
 
 import java.util.HashSet;
-import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
 
 import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
-import net.minecraft.util.Tuple;
+import net.katsstuff.danmakucore.shape.ShapeResult;
 
 public class ShapeStar implements IShape {
 
@@ -41,7 +42,6 @@ public class ShapeStar implements IShape {
 	private final float angleZ;
 	private final float baseAngle;
 	private final double distance;
-	private final Set<EntityDanmaku> set = new HashSet<>();
 
 	public ShapeStar(DanmakuTemplate danmaku, int amount, float angleZ, float baseAngle, double distance) {
 		this.danmaku = danmaku;
@@ -52,8 +52,9 @@ public class ShapeStar implements IShape {
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
-		if(amount >= WAYS.length) return new Tuple<>(true, set);
+	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
+		if(amount >= WAYS.length) return ShapeResult.done(ImmutableSet.of());
+		HashSet<EntityDanmaku> set = new HashSet<>();
 		if(!danmaku.world.isRemote) {
 			Vector3 localForward = Vector3.Forward().rotate(orientation);
 			Vector3 localBackward = Vector3.Backward().rotate(orientation);
@@ -94,13 +95,13 @@ public class ShapeStar implements IShape {
 					danmaku.pos = pos;
 					danmaku.direction = localForward;
 					ShapeRing shape = new ShapeRing(danmaku, WAYS[amount][i], angleBase, baseAngle + slope, distance);
-					set.addAll(shape.drawForTick(pos, orientation, 0).getSecond());
+					set.addAll(shape.drawForTick(pos, orientation, 0).getSpawnedDanmaku());
 					slope += 180F / WAYS[amount].length;
 				}
 
 				angleBase += angleSpan;
 			}
 		}
-		return new Tuple<>(true, set);
+		return ShapeResult.done(set);
 	}
 }

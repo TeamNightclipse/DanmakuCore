@@ -8,13 +8,10 @@
  */
 package net.katsstuff.danmakucore.impl.shape;
 
-import java.util.Set;
-
 import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
-import net.minecraft.util.Tuple;
+import net.katsstuff.danmakucore.shape.ShapeResult;
 import net.minecraft.world.World;
 
 public class ShapeCircleComposite implements IShape {
@@ -32,7 +29,7 @@ public class ShapeCircleComposite implements IShape {
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
+	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
 		if(amount % 2 == 0) {
 			baseAngle += 360F / (amount * 2F);
 		}

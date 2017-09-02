@@ -9,33 +9,33 @@
 
 package net.katsstuff.danmakucore.impl.shape;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.google.common.collect.ImmutableSet;
 
 import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
-import net.minecraft.util.Tuple;
+import net.katsstuff.danmakucore.shape.ShapeResult;
 
 @SuppressWarnings("unused")
 public class ShapeSingle implements IShape {
 
 	private final DanmakuTemplate danmaku;
-	private final Set<EntityDanmaku> set = new HashSet<>(1);
 
 	public ShapeSingle(DanmakuTemplate danmaku) {
 		this.danmaku = danmaku;
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
+	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
 		if(!danmaku.world.isRemote) {
 			EntityDanmaku created = danmaku.asEntity();
-			set.add(created);
 			danmaku.world.spawnEntity(created);
+			return ShapeResult.done(ImmutableSet.of(created));
 		}
-		return new Tuple<>(true, set);
+		else {
+			return ShapeResult.done(ImmutableSet.of());
+		}
 	}
 }

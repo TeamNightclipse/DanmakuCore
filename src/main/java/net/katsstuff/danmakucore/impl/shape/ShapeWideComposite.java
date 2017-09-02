@@ -9,13 +9,12 @@
 package net.katsstuff.danmakucore.impl.shape;
 
 import java.util.HashSet;
-import java.util.Set;
 
 import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
-import net.minecraft.util.Tuple;
+import net.katsstuff.danmakucore.shape.ShapeResult;
 import net.minecraft.world.World;
 
 public class ShapeWideComposite implements IShape {
@@ -25,7 +24,6 @@ public class ShapeWideComposite implements IShape {
 	private final int amount;
 	private final float wideAngle;
 	private final float baseAngle;
-	private final Set<EntityDanmaku> set = new HashSet<>();
 
 	public ShapeWideComposite(World world, IShape shape, int amount, float wideAngle, float baseAngle) {
 		this.world = world;
@@ -36,8 +34,9 @@ public class ShapeWideComposite implements IShape {
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
+	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
 		boolean done = true;
+		HashSet<EntityDanmaku> set = new HashSet<>();
 
 		if(!world.isRemote) {
 			double rotateAngle = -wideAngle / 2D;
@@ -46,15 +45,15 @@ public class ShapeWideComposite implements IShape {
 
 			for(int i = 0; i < amount; i++) {
 				Quat rotate = orientation.multiply(Quat.fromAxisAngle(Vector3.Up(), rotateAngle));
-				Tuple<Boolean, Set<EntityDanmaku>> result = shape.drawForTick(pos, rotate, tick);
-				set.addAll(result.getSecond());
-				if(!result.getFirst()) {
+				ShapeResult result = shape.drawForTick(pos, rotate, tick);
+				set.addAll(result.getSpawnedDanmaku());
+				if(!result.isDone()) {
 					done = false;
 				}
 				rotateAngle += stepSize;
 			}
 		}
 
-		return new Tuple<>(done, set);
+		return ShapeResult.of(done, set);
 	}
 }

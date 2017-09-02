@@ -9,14 +9,13 @@
 package net.katsstuff.danmakucore.impl.shape;
 
 import java.util.HashSet;
-import java.util.Set;
 
 import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
-import net.minecraft.util.Tuple;
+import net.katsstuff.danmakucore.shape.ShapeResult;
 
 public class ShapeSphere implements IShape {
 
@@ -25,7 +24,6 @@ public class ShapeSphere implements IShape {
 	private final int bands;
 	private final float baseAngle;
 	private final double distance;
-	private final Set<EntityDanmaku> set = new HashSet<>();
 
 	public ShapeSphere(DanmakuTemplate danmaku, int rings, int bands, float baseAngle, double distance) {
 		this.danmaku = danmaku;
@@ -36,7 +34,8 @@ public class ShapeSphere implements IShape {
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
+	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
+		HashSet<EntityDanmaku> set = new HashSet<>();
 		if(!danmaku.world.isRemote) {
 			Quat rotatedForward = orientation.multiply(Quat.fromAxisAngle(Vector3.Forward(), 90));
 			float increment = 180F / bands;
@@ -44,10 +43,10 @@ public class ShapeSphere implements IShape {
 
 			for(int i = 0; i < bands; i++) {
 				Quat rotate = Quat.fromAxisAngle(Vector3.Up(), increment * i);
-				set.addAll(shape.drawForTick(pos, rotate.multiply(rotatedForward), tick).getSecond());
+				set.addAll(shape.drawForTick(pos, rotate.multiply(rotatedForward), tick).getSpawnedDanmaku());
 			}
 		}
 
-		return new Tuple<>(true, set);
+		return ShapeResult.done(set);
 	}
 }

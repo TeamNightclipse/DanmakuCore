@@ -16,7 +16,7 @@ import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
-import net.minecraft.util.Tuple;
+import net.katsstuff.danmakucore.shape.ShapeResult;
 
 @SuppressWarnings("unused")
 public class ShapeCombined implements IShape {
@@ -28,11 +28,11 @@ public class ShapeCombined implements IShape {
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
-		Set<Tuple<Boolean, Set<EntityDanmaku>>> ret = Arrays.stream(shapes).map(s -> s.drawForTick(pos, orientation, tick)).collect(Collectors.toSet());
-		boolean done = ret.stream().allMatch(Tuple::getFirst);
-		Set<EntityDanmaku> drawn = ret.stream().flatMap(t -> t.getSecond().stream()).collect(Collectors.toSet());
+	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
+		Set<ShapeResult> ret = Arrays.stream(shapes).map(s -> s.drawForTick(pos, orientation, tick)).collect(Collectors.toSet());
+		boolean done = ret.stream().allMatch(ShapeResult::isDone);
+		Set<EntityDanmaku> drawn = ret.stream().flatMap(t -> t.getSpawnedDanmaku().stream()).collect(Collectors.toSet());
 
-		return new Tuple<>(done, drawn);
+		return ShapeResult.of(done, drawn);
 	}
 }

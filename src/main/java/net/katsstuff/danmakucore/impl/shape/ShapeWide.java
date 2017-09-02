@@ -9,14 +9,13 @@
 package net.katsstuff.danmakucore.impl.shape;
 
 import java.util.HashSet;
-import java.util.Set;
 
 import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
-import net.minecraft.util.Tuple;
+import net.katsstuff.danmakucore.shape.ShapeResult;
 import net.minecraft.util.math.MathHelper;
 
 public class ShapeWide implements IShape {
@@ -26,7 +25,6 @@ public class ShapeWide implements IShape {
 	private final float wideAngle;
 	private final float baseAngle;
 	private final double distance;
-	private final Set<EntityDanmaku> set = new HashSet<>();
 
 	public ShapeWide(DanmakuTemplate danmaku, int amount, float wideAngle, float baseAngle, double distance) {
 		this.danmaku = danmaku;
@@ -37,7 +35,8 @@ public class ShapeWide implements IShape {
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
+	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
+		HashSet<EntityDanmaku> set = new HashSet<>();
 		if(!danmaku.world.isRemote) {
 			double rotateAngle = -wideAngle / 2D;
 			double stepSize = wideAngle / (amount - 1);
@@ -55,6 +54,6 @@ public class ShapeWide implements IShape {
 			}
 		}
 
-		return new Tuple<>(true, set);
+		return ShapeResult.done(set);
 	}
 }

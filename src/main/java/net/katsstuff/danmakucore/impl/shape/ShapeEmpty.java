@@ -8,20 +8,17 @@
  */
 package net.katsstuff.danmakucore.impl.shape;
 
-import java.util.Set;
-
 import com.google.common.collect.ImmutableSet;
 
 import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
-import net.minecraft.util.Tuple;
+import net.katsstuff.danmakucore.shape.ShapeResult;
 
 public class ShapeEmpty implements IShape {
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
-		return new Tuple<>(true, ImmutableSet.of());
+	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
+		return ShapeResult.done(ImmutableSet.of());
 	}
 }

@@ -10,14 +10,13 @@ package net.katsstuff.danmakucore.impl.shape;
 
 import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 
 import net.katsstuff.danmakucore.data.Quat;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.shape.IShape;
-import net.minecraft.util.Tuple;
+import net.katsstuff.danmakucore.shape.ShapeResult;
 
 public class ShapeRandomRing implements IShape {
 
@@ -25,7 +24,6 @@ public class ShapeRandomRing implements IShape {
 	private final int amount;
 	private final float radius;
 	private final double distance;
-	private final Set<EntityDanmaku> set = new HashSet<>();
 
 	public ShapeRandomRing(DanmakuTemplate danmaku, int amount, float radius, double distance) {
 		this.danmaku = danmaku;
@@ -35,7 +33,8 @@ public class ShapeRandomRing implements IShape {
 	}
 
 	@Override
-	public Tuple<Boolean, Set<EntityDanmaku>> drawForTick(Vector3 pos, Quat orientation, int tick) {
+	public ShapeResult drawForTick(Vector3 pos, Quat orientation, int tick) {
+		HashSet<EntityDanmaku> set = new HashSet<>();
 		if(!danmaku.world.isRemote) {
 			Random rand = danmaku.world.rand;
 			Quat rotatedOrientation = orientation.multiply(Quat.fromAxisAngle(Vector3.Right(), 90));
@@ -50,6 +49,6 @@ public class ShapeRandomRing implements IShape {
 				set.add(spawned);
 			}
 		}
-		return new Tuple<>(true, set);
+		return ShapeResult.done(set);
 	}
 }
