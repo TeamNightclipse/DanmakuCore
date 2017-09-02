@@ -7,25 +7,36 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraftforge.common.util.Constants
 
+/**
+  * Something that describes a specific variable in an nbt tag. Allowing you
+  * to set and get the value, with a default value if it's missing.
+  * @tparam A The type to get and set.
+  * @tparam Holder What the nbt is attached to.
+  */
 trait NBTProperty[A, Holder] {
   def key:         String
   def default:     () => A
   def tpe:         Int
   def holderToNbt: Holder => NBTTagCompound
 
-  def get(holder: Holder): A = getNbt(holderToNbt(holder))
-
-  def getOrDefault(holder: Holder): A = {
+  /**
+    * Get value represented by this property, or the
+    * default if it's not present.
+    */
+  def get(holder: Holder): A = {
     val nbt = holderToNbt(holder)
     if (nbt.hasKey(key, tpe)) getNbt(nbt)
     else default()
   }
 
+  /**
+    * Set the value represented by this property.
+    */
   def set(a: A, holder: Holder): Unit = setNbt(a, holderToNbt(holder))
 
-  def getNbt(holder: NBTTagCompound): A
+  protected def getNbt(holder: NBTTagCompound): A
 
-  def setNbt(a: A, holder: NBTTagCompound): Unit
+  protected def setNbt(a: A, holder: NBTTagCompound): Unit
 }
 object NBTProperty {
   val ItemStackToNbt: ItemStack => NBTTagCompound = ItemNBTHelper.getNBT
@@ -33,9 +44,9 @@ object NBTProperty {
 
 case class BooleanNBTProperty[Holder](key: String, holderToNbt: Holder => NBTTagCompound, default: () => Boolean = () => false)
     extends NBTProperty[Boolean, Holder] {
-  override def tpe:                                        Int     = Constants.NBT.TAG_BYTE
-  override def getNbt(holder: NBTTagCompound):             Boolean = holder.getBoolean(key)
-  override def setNbt(a: Boolean, holder: NBTTagCompound): Unit    = holder.setBoolean(key, a)
+  override def tpe:                                                  Int     = Constants.NBT.TAG_BYTE
+  protected override def getNbt(holder: NBTTagCompound):             Boolean = holder.getBoolean(key)
+  protected override def setNbt(a: Boolean, holder: NBTTagCompound): Unit    = holder.setBoolean(key, a)
 
   override def get(holder: Holder):             Boolean = super.get(holder)
   override def set(a: Boolean, holder: Holder): Unit    = super.set(a, holder)
@@ -55,9 +66,9 @@ object BooleanNBTProperty {
 
 case class ByteNBTProperty[Holder](key: String, holderToNbt: Holder => NBTTagCompound, default: () => Byte = () => 0)
     extends NBTProperty[Byte, Holder] {
-  override def tpe:                                     Int  = Constants.NBT.TAG_BYTE
-  override def getNbt(holder: NBTTagCompound):          Byte = holder.getByte(key)
-  override def setNbt(a: Byte, holder: NBTTagCompound): Unit = holder.setByte(key, a)
+  override def tpe:                                               Int  = Constants.NBT.TAG_BYTE
+  protected override def getNbt(holder: NBTTagCompound):          Byte = holder.getByte(key)
+  protected override def setNbt(a: Byte, holder: NBTTagCompound): Unit = holder.setByte(key, a)
 
   override def get(holder: Holder):          Byte = super.get(holder)
   override def set(a: Byte, holder: Holder): Unit = super.set(a, holder)
@@ -76,9 +87,9 @@ object ByteNBTProperty {
 
 case class ShortNBTProperty[Holder](key: String, holderToNbt: Holder => NBTTagCompound, default: () => Short = () => 0)
     extends NBTProperty[Short, Holder] {
-  override def tpe:                                      Int   = Constants.NBT.TAG_SHORT
-  override def getNbt(holder: NBTTagCompound):           Short = holder.getShort(key)
-  override def setNbt(a: Short, holder: NBTTagCompound): Unit  = holder.setShort(key, a)
+  override def tpe:                                                Int   = Constants.NBT.TAG_SHORT
+  protected override def getNbt(holder: NBTTagCompound):           Short = holder.getShort(key)
+  protected override def setNbt(a: Short, holder: NBTTagCompound): Unit  = holder.setShort(key, a)
 
   override def get(holder: Holder):           Short = super.get(holder)
   override def set(a: Short, holder: Holder): Unit  = super.set(a, holder)
@@ -96,9 +107,9 @@ object ShortNBTProperty {
 }
 
 case class IntNBTProperty[Holder](key: String, holderToNbt: Holder => NBTTagCompound, default: () => Int = () => 0) extends NBTProperty[Int, Holder] {
-  override def tpe:                                    Int  = Constants.NBT.TAG_INT
-  override def getNbt(holder: NBTTagCompound):         Int  = holder.getInteger(key)
-  override def setNbt(a: Int, holder: NBTTagCompound): Unit = holder.setInteger(key, a)
+  override def tpe:                                              Int  = Constants.NBT.TAG_INT
+  protected override def getNbt(holder: NBTTagCompound):         Int  = holder.getInteger(key)
+  protected override def setNbt(a: Int, holder: NBTTagCompound): Unit = holder.setInteger(key, a)
 
   override def get(holder: Holder):         Int  = super.get(holder)
   override def set(a: Int, holder: Holder): Unit = super.set(a, holder)
@@ -117,9 +128,9 @@ object IntNBTProperty {
 
 case class LongNBTProperty[Holder](key: String, holderToNbt: Holder => NBTTagCompound, default: () => Long = () => 0)
     extends NBTProperty[Long, Holder] {
-  override def tpe:                                     Int  = Constants.NBT.TAG_LONG
-  override def getNbt(holder: NBTTagCompound):          Long = holder.getLong(key)
-  override def setNbt(a: Long, holder: NBTTagCompound): Unit = holder.setLong(key, a)
+  override def tpe:                                               Int  = Constants.NBT.TAG_LONG
+  protected override def getNbt(holder: NBTTagCompound):          Long = holder.getLong(key)
+  protected override def setNbt(a: Long, holder: NBTTagCompound): Unit = holder.setLong(key, a)
 
   override def get(holder: Holder):          Long = super.get(holder)
   override def set(a: Long, holder: Holder): Unit = super.set(a, holder)
@@ -138,9 +149,9 @@ object LongNBTProperty {
 
 case class FloatNBTProperty[Holder](key: String, holderToNbt: Holder => NBTTagCompound, default: () => Float = () => 0)
     extends NBTProperty[Float, Holder] {
-  override def tpe:                                      Int   = Constants.NBT.TAG_FLOAT
-  override def getNbt(holder: NBTTagCompound):           Float = holder.getFloat(key)
-  override def setNbt(a: Float, holder: NBTTagCompound): Unit  = holder.setFloat(key, a)
+  override def tpe:                                                Int   = Constants.NBT.TAG_FLOAT
+  protected override def getNbt(holder: NBTTagCompound):           Float = holder.getFloat(key)
+  protected override def setNbt(a: Float, holder: NBTTagCompound): Unit  = holder.setFloat(key, a)
 
   override def get(holder: Holder):           Float = super.get(holder)
   override def set(a: Float, holder: Holder): Unit  = super.set(a, holder)
@@ -159,9 +170,9 @@ object FloatNBTProperty {
 
 case class DoubleNBTProperty[Holder](key: String, holderToNbt: Holder => NBTTagCompound, default: () => Double = () => 0)
     extends NBTProperty[Double, Holder] {
-  override def tpe:                                       Int    = Constants.NBT.TAG_DOUBLE
-  override def getNbt(holder: NBTTagCompound):            Double = holder.getDouble(key)
-  override def setNbt(a: Double, holder: NBTTagCompound): Unit   = holder.setDouble(key, a)
+  override def tpe:                                                 Int    = Constants.NBT.TAG_DOUBLE
+  protected override def getNbt(holder: NBTTagCompound):            Double = holder.getDouble(key)
+  protected override def setNbt(a: Double, holder: NBTTagCompound): Unit   = holder.setDouble(key, a)
 
   override def get(holder: Holder):            Double = super.get(holder)
   override def set(a: Double, holder: Holder): Unit   = super.set(a, holder)
@@ -181,9 +192,9 @@ object DoubleNBTProperty {
 
 case class StringNBTProperty[Holder](key: String, holderToNbt: Holder => NBTTagCompound, default: () => String = () => "")
     extends NBTProperty[String, Holder] {
-  override def tpe:                                       Int    = Constants.NBT.TAG_STRING
-  override def getNbt(holder: NBTTagCompound):            String = holder.getString(key)
-  override def setNbt(a: String, holder: NBTTagCompound): Unit   = holder.setString(key, a)
+  override def tpe:                                                 Int    = Constants.NBT.TAG_STRING
+  protected override def getNbt(holder: NBTTagCompound):            String = holder.getString(key)
+  protected override def setNbt(a: String, holder: NBTTagCompound): Unit   = holder.setString(key, a)
 
   override def get(holder: Holder):            String = super.get(holder)
   override def set(a: String, holder: Holder): Unit   = super.set(a, holder)
@@ -203,9 +214,9 @@ object StringNBTProperty {
 
 case class ByteArrayNBTProperty[Holder](key: String, holderToNbt: Holder => NBTTagCompound, default: () => Array[Byte] = () => Array.empty)
     extends NBTProperty[Array[Byte], Holder] {
-  override def tpe:                                            Int         = Constants.NBT.TAG_DOUBLE
-  override def getNbt(holder: NBTTagCompound):                 Array[Byte] = holder.getByteArray(key)
-  override def setNbt(a: Array[Byte], holder: NBTTagCompound): Unit        = holder.setByteArray(key, a)
+  override def tpe:                                                      Int         = Constants.NBT.TAG_DOUBLE
+  protected override def getNbt(holder: NBTTagCompound):                 Array[Byte] = holder.getByteArray(key)
+  protected override def setNbt(a: Array[Byte], holder: NBTTagCompound): Unit        = holder.setByteArray(key, a)
 
   override def get(holder: Holder):                 Array[Byte] = super.get(holder)
   override def set(a: Array[Byte], holder: Holder): Unit        = super.set(a, holder)
@@ -224,9 +235,9 @@ object ByteArrayNBTProperty {
 
 case class IntArrayNBTProperty[Holder](key: String, holderToNbt: Holder => NBTTagCompound, default: () => Array[Int] = () => Array.empty)
     extends NBTProperty[Array[Int], Holder] {
-  override def tpe:                                           Int        = Constants.NBT.TAG_DOUBLE
-  override def getNbt(holder: NBTTagCompound):                Array[Int] = holder.getIntArray(key)
-  override def setNbt(a: Array[Int], holder: NBTTagCompound): Unit       = holder.setIntArray(key, a)
+  override def tpe:                                                     Int        = Constants.NBT.TAG_DOUBLE
+  protected override def getNbt(holder: NBTTagCompound):                Array[Int] = holder.getIntArray(key)
+  protected override def setNbt(a: Array[Int], holder: NBTTagCompound): Unit       = holder.setIntArray(key, a)
 
   override def get(holder: Holder):                Array[Int] = super.get(holder)
   override def set(a: Array[Int], holder: Holder): Unit       = super.set(a, holder)
@@ -244,9 +255,9 @@ object IntArrayNBTProperty {
 
 case class CompoundNBTProperty[Holder](key: String, holderToNbt: Holder => NBTTagCompound, default: () => NBTTagCompound = () => new NBTTagCompound)
     extends NBTProperty[NBTTagCompound, Holder] {
-  override def tpe:                                               Int            = Constants.NBT.TAG_COMPOUND
-  override def getNbt(holder: NBTTagCompound):                    NBTTagCompound = holder.getCompoundTag(key)
-  override def setNbt(a: NBTTagCompound, holder: NBTTagCompound): Unit           = holder.setTag(key, a)
+  override def tpe:                                                         Int            = Constants.NBT.TAG_COMPOUND
+  protected override def getNbt(holder: NBTTagCompound):                    NBTTagCompound = holder.getCompoundTag(key)
+  protected override def setNbt(a: NBTTagCompound, holder: NBTTagCompound): Unit           = holder.setTag(key, a)
 
   override def get(holder: Holder):                    NBTTagCompound = super.get(holder)
   override def set(a: NBTTagCompound, holder: Holder): Unit           = super.set(a, holder)
@@ -267,9 +278,9 @@ object CompoundNBTProperty {
 
 case class ListNBTProperty[Holder](key: String, holderToNbt: Holder => NBTTagCompound, listTpe: Int, default: () => NBTTagList = () => new NBTTagList)
     extends NBTProperty[NBTTagList, Holder] {
-  override def tpe:                                           Int        = Constants.NBT.TAG_LIST
-  override def getNbt(holder: NBTTagCompound):                NBTTagList = holder.getTagList(key, listTpe)
-  override def setNbt(a: NBTTagList, holder: NBTTagCompound): Unit       = holder.setTag(key, a)
+  override def tpe:                                                     Int        = Constants.NBT.TAG_LIST
+  protected override def getNbt(holder: NBTTagCompound):                NBTTagList = holder.getTagList(key, listTpe)
+  protected override def setNbt(a: NBTTagList, holder: NBTTagCompound): Unit       = holder.setTag(key, a)
 
   override def get(holder: Holder):                NBTTagList = super.get(holder)
   override def set(a: NBTTagList, holder: Holder): Unit       = super.set(a, holder)
