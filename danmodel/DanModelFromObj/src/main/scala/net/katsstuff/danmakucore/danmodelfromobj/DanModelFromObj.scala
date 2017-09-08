@@ -106,7 +106,12 @@ object DanModelFromObj {
     us.write(array)
   }
 
-  def writeMesh(model: OBJModel, mesh: OBJMesh, material: MTLMaterial, isDanmakuColor: Boolean): (Array[Byte], GLMode) = {
+  def writeMesh(
+      model: OBJModel,
+      mesh: OBJMesh,
+      material: MTLMaterial,
+      isDanmakuColor: Boolean
+  ): (Array[Byte], GLMode) = {
     val bytes          = new ByteArrayOutputStream()
     val us             = new DataOutputStream(bytes)
     val faceReferences = mesh.getFaces.asScala.map(_.getReferences.asScala)

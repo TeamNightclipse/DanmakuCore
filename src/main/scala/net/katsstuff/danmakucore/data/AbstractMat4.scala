@@ -147,7 +147,11 @@ object Mat4 {
     fromAxes(right, newUp, forwardNormalized, pos)
   }
 
-  def fromAxes(xAxis: AbstractVector3, yAxis: AbstractVector3, zAxis: AbstractVector3, pos: AbstractVector3): Mat4 = {
-    Mat4(xAxis.x, xAxis.y, xAxis.z, pos.x, yAxis.x, yAxis.y, yAxis.z, pos.y, zAxis.x, zAxis.y, zAxis.z, pos.z, 0, 0, 0, 1)
-  }
+  def fromAxes(xAxis: AbstractVector3, yAxis: AbstractVector3, zAxis: AbstractVector3, pos: AbstractVector3): Mat4 =
+    Mat4(
+      xAxis.x, xAxis.y, xAxis.z, pos.x,
+      yAxis.x, yAxis.y, yAxis.z, pos.y,
+      zAxis.x, zAxis.y, zAxis.z, pos.z,
+      0, 0, 0, 1
+    )
 }

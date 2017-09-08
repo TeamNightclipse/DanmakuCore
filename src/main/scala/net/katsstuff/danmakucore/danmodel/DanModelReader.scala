@@ -25,7 +25,9 @@ object DanModelReader {
     readModel(resource).map { case (_, model) => new FormDanModel(name, model) }
 
   def readModel(resource: ResourceLocation): Try[(DanModelDescription, DanModel)] = Try {
-    val rawIs = classOf[DanmakuCore].getResourceAsStream(s"/assets/${resource.getResourceDomain}/${resource.getResourcePath}.danmodel")
+    val rawIs = classOf[DanmakuCore].getResourceAsStream(
+      s"/assets/${resource.getResourceDomain}/${resource.getResourcePath}.danmodel"
+    )
     if (rawIs == null) throw new IllegalArgumentException("No model at that location")
     val is: DataInput = new DataInputStream(rawIs)
 

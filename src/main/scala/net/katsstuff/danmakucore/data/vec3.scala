@@ -289,7 +289,8 @@ sealed trait AbstractVector3 extends Any {
     s"Vector3(${format.format(x)}, ${format.format(y)}, ${format.format(z)})"
 }
 
-final case class MutableVector3(@BeanProperty var x: Double, @BeanProperty var y: Double, @BeanProperty var z: Double) extends AbstractVector3 {
+final case class MutableVector3(@BeanProperty var x: Double, @BeanProperty var y: Double, @BeanProperty var z: Double)
+    extends AbstractVector3 {
 
   override type Self = MutableVector3
 
@@ -473,7 +474,8 @@ final case class MutableVector3(@BeanProperty var x: Double, @BeanProperty var y
   override def transformDirection(mat: AbstractMat4): MutableVector3 = super.transformDirection(mat)
 }
 
-final case class Vector3(@BeanProperty x: Double, @BeanProperty y: Double, @BeanProperty z: Double) extends AbstractVector3 {
+final case class Vector3(@BeanProperty x: Double, @BeanProperty y: Double, @BeanProperty z: Double)
+    extends AbstractVector3 {
 
   override type Self = Vector3
 
@@ -566,7 +568,8 @@ object Vector3 {
 
   /* ============================== Position ============================== */
 
-  def fromEntityCenter(entity: Entity): Vector3 = Vector3(entity.posX, (entity.posY - entity.getYOffset) + entity.height / 2, entity.posZ)
+  def fromEntityCenter(entity: Entity): Vector3 =
+    Vector3(entity.posX, (entity.posY - entity.getYOffset) + entity.height / 2, entity.posZ)
 
   def posRandom(pos: Vector3): Vector3 = pos * randomVector
 
@@ -600,13 +603,17 @@ object Vector3 {
 
   private def directionToPosNotNormalized(posA: AbstractVector3, posB: AbstractVector3): posB.Self = posB - posA
 
-  def directionToPos(posA: AbstractVector3, posB: AbstractVector3): AbstractVector3 = directionToPosNotNormalized(posA, posB).normalize
+  def directionToPos(posA: AbstractVector3, posB: AbstractVector3): AbstractVector3 =
+    directionToPosNotNormalized(posA, posB).normalize
 
-  def directionToEntity(from: AbstractVector3, to: Entity): Vector3 = directionToPosNotNormalized(from, new Vector3(to)).normalize
+  def directionToEntity(from: AbstractVector3, to: Entity): Vector3 =
+    directionToPosNotNormalized(from, new Vector3(to)).normalize
 
-  def directionToEntity(from: Entity, to: Entity): Vector3 = directionToPosNotNormalized(new Vector3(from), new Vector3(to)).normalize
+  def directionToEntity(from: Entity, to: Entity): Vector3 =
+    directionToPosNotNormalized(new Vector3(from), new Vector3(to)).normalize
 
-  def directionToLiving(from: AbstractVector3, to: EntityLivingBase): Vector3 = directionToPosNotNormalized(from, new Vector3(to)).normalize
+  def directionToLiving(from: AbstractVector3, to: EntityLivingBase): Vector3 =
+    directionToPosNotNormalized(from, new Vector3(to)).normalize
 
   def directionToLiving(from: EntityLivingBase, to: EntityLivingBase): Vector3 =
     directionToPosNotNormalized(new Vector3(from), new Vector3(to)).normalize
@@ -682,7 +689,11 @@ object Vector3 {
 
   //We only use java classes for return and entry to make it easier to call from java
   //From Psi
-  def getEntityLookedAt(sourceEntity: Entity, filter: Predicate[Entity] = _ => true, distanceReach: Double = 32D): Optional[Entity] = {
+  def getEntityLookedAt(
+      sourceEntity: Entity,
+      filter: Predicate[Entity] = _ => true,
+      distanceReach: Double = 32D
+  ): Optional[Entity] = {
     val posSource = sourceEntity match {
       case living: EntityLivingBase => new Vector3(living)
       case _                        => new Vector3(sourceEntity)

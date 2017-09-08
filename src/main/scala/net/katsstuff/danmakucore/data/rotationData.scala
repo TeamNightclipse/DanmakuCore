@@ -47,8 +47,11 @@ abstract sealed class AbstractRotationData {
   }
 }
 
-final case class MutableRotationData(@BooleanBeanProperty var enabled: Boolean, @BeanProperty var rotationQuat: Quat, @BeanProperty var endTime: Int)
-    extends AbstractRotationData {
+final case class MutableRotationData(
+    @BooleanBeanProperty var enabled: Boolean,
+    @BeanProperty var rotationQuat: Quat,
+    @BeanProperty var endTime: Int
+) extends AbstractRotationData {
 
   def setRotationVec(vector: Vector3): MutableRotationData = {
     val angle = rotationQuat.computeAngle
@@ -64,8 +67,11 @@ final case class MutableRotationData(@BooleanBeanProperty var enabled: Boolean, 
 
   def copyObj: MutableRotationData = copy()
 }
-final case class RotationData(@BooleanBeanProperty enabled: Boolean, @BeanProperty rotationQuat: Quat, @BeanProperty endTime: Int)
-    extends AbstractRotationData {
+final case class RotationData(
+    @BooleanBeanProperty enabled: Boolean,
+    @BeanProperty rotationQuat: Quat,
+    @BeanProperty endTime: Int
+) extends AbstractRotationData {
 
   def setEnabled(enabled: Boolean):        RotationData = copy(enabled = enabled)
   def setRotationQuat(rotationQuat: Quat): RotationData = copy(rotationQuat = rotationQuat)

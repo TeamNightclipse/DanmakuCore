@@ -81,7 +81,8 @@ final case class MovementData(
   def setSpeedAcceleration(speedAcceleration: Double): MovementData = copy(speedAcceleration = speedAcceleration)
   def setGravity(gravity: Vector3):                    MovementData = copy(gravity = gravity)
 
-  def setConstant(speed: Double): MovementData = copy(speedOriginal = speed, upperSpeedLimit = speed, speedAcceleration = 0D)
+  def setConstant(speed: Double): MovementData =
+    copy(speedOriginal = speed, upperSpeedLimit = speed, speedAcceleration = 0D)
 }
 
 object MovementData {

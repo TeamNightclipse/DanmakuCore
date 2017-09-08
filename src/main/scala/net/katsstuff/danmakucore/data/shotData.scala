@@ -187,10 +187,11 @@ final case class MutableShotData(
     sizeZ = tag.getFloat(ShotData.NbtSizeZ)
     delay = tag.getInteger(ShotData.NbtDelay)
     end = tag.getInteger(ShotData.NbtEnd)
-    subEntity = Option(DanmakuRegistry.SUB_ENTITY.getValue(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))).getOrElse {
-      LogHelper.warn("Found null subEntity type. Setting to default")
-      LibSubEntities.DEFAULT_TYPE
-    }
+    subEntity = Option(DanmakuRegistry.SUB_ENTITY.getValue(new ResourceLocation(tag.getString(ShotData.NbtSubEntity))))
+      .getOrElse {
+        LogHelper.warn("Found null subEntity type. Setting to default")
+        LibSubEntities.DEFAULT_TYPE
+      }
   }
 
   def copyObj: MutableShotData = copy()
@@ -244,7 +245,9 @@ final case class ShotData(
       sizeZ = tag.getFloat(ShotData.NbtSizeZ),
       delay = tag.getInteger(ShotData.NbtDelay),
       end = tag.getInteger(ShotData.NbtEnd),
-      subEntity = Option(DanmakuRegistry.SUB_ENTITY.getValue(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))).getOrElse {
+      subEntity = Option(
+        DanmakuRegistry.SUB_ENTITY.getValue(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))
+      ).getOrElse {
         LogHelper.warn("Found null subEntity type. Setting to default")
         LibSubEntities.DEFAULT_TYPE
       }
@@ -292,7 +295,8 @@ final case class ShotData(
   def scaleSize(scaleX: Float, scaleY: Float, scaleZ: Float): ShotData =
     copy(sizeX = sizeX * scaleX, sizeY = sizeY * scaleY, sizeZ = sizeZ * scaleZ)
 
-  override def asMutable: MutableShotData = MutableShotData(form, color, damage, sizeX, sizeY, sizeZ, delay, end, subEntity)
+  override def asMutable: MutableShotData =
+    MutableShotData(form, color, damage, sizeX, sizeY, sizeZ, delay, end, subEntity)
 
   override def asImmutable: ShotData = this
 }

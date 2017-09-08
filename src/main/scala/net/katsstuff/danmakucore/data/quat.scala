@@ -258,8 +258,12 @@ abstract sealed class AbstractQuat {
     s"Quat(${format.format(x)}, ${format.format(y)}, ${format.format(z)}, ${format.format(w)})"
 }
 
-final case class MutableQuat(@BeanProperty var x: Double, @BeanProperty var y: Double, @BeanProperty var z: Double, @BeanProperty var w: Double)
-    extends AbstractQuat {
+final case class MutableQuat(
+    @BeanProperty var x: Double,
+    @BeanProperty var y: Double,
+    @BeanProperty var z: Double,
+    @BeanProperty var w: Double
+) extends AbstractQuat {
 
   override type Self = MutableQuat
 
@@ -369,7 +373,12 @@ final case class MutableQuat(@BeanProperty var x: Double, @BeanProperty var y: D
   override def mulLeft(x: Double, y: Double, z: Double, w: Double): MutableQuat = super.mulLeft(x, y, z, w)
 }
 
-final case class Quat(@BeanProperty x: Double, @BeanProperty y: Double, @BeanProperty z: Double, @BeanProperty w: Double) extends AbstractQuat {
+final case class Quat(
+    @BeanProperty x: Double,
+    @BeanProperty y: Double,
+    @BeanProperty z: Double,
+    @BeanProperty w: Double
+) extends AbstractQuat {
 
   override type Self = Quat
 
