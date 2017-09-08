@@ -123,7 +123,7 @@ public class HUDHandler {
 
 		fadeStars(lives, bombs);
 		renderStars(mc, LIFE_FULL, LIFE_EMPTY, lives, 13, res);
-		renderStars(mc, BOMB_FULL, BOMB_EMPTY, lives, 0, res);
+		renderStars(mc, BOMB_FULL, BOMB_EMPTY, bombs, 0, res);
 	}
 
 	private void fadeStars(int lives, int bombs) {
