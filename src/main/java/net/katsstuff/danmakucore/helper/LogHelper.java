@@ -9,6 +9,7 @@
 package net.katsstuff.danmakucore.helper;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.minecraftforge.fml.common.FMLLog;
@@ -16,12 +17,21 @@ import net.minecraftforge.fml.common.FMLLog;
 @SuppressWarnings("unused")
 public class LogHelper {
 
+	private static Logger log;
+
+	public static void setLog(Logger log) {
+		if(LogHelper.log != null) {
+			throw new IllegalStateException("Log has already been set");
+		}
+		LogHelper.log = log;
+	}
+
 	private static void log(Level logLevel, Object obj) {
-		FMLLog.log(LibMod.NAME, logLevel, String.valueOf(obj));
+		log.log(logLevel, obj);
 	}
 
 	private static void log(Level logLevel, Exception e, Object obj) {
-		FMLLog.log(LibMod.NAME, logLevel, e, String.valueOf(obj));
+		log.log(logLevel, obj, e);
 	}
 
 	public static void debug(Object obj) {
