@@ -58,11 +58,13 @@ public class ItemDanmaku extends ItemBase {
 	public static final DoubleNBTProperty<ItemStack> GRAVITYY = DoubleNBTProperty.ofStack("gravityy");
 	public static final DoubleNBTProperty<ItemStack> GRAVITYZ = DoubleNBTProperty.ofStack("gravityz");
 	public static final DoubleNBTProperty<ItemStack> SPEED = DoubleNBTProperty.ofStack("speed", 0.4D);
-	public static final IntNBTProperty<ItemStack> PATTERN = IntNBTProperty.ofStack("pattern");
+	public static final NBTProperty<Pattern, ItemStack> PATTERN = IntNBTProperty.ofStack("pattern").modify(
+			(int i) -> Pattern.class.getEnumConstants()[i], Enum::ordinal);
 	public static final IntNBTProperty<ItemStack> AMOUNT = IntNBTProperty.ofStack("amount", 1);
 	public static final BooleanNBTProperty<ItemStack> INFINITY = BooleanNBTProperty.ofStack("infinity");
 	public static final BooleanNBTProperty<ItemStack> CUSTOM = BooleanNBTProperty.ofStack("custom");
-	public static final StringNBTProperty<ItemStack> VARIANT = StringNBTProperty.ofStack("variant", () -> LibDanmakuVariants.DEFAULT_TYPE.getFullNameString());
+	public static final NBTProperty<ResourceLocation, ItemStack> VARIANT = StringNBTProperty.ofStack("variant",
+			() -> LibDanmakuVariants.DEFAULT_TYPE.getFullNameString()).modify((String s) -> new ResourceLocation(s), ResourceLocation::toString);
 
 	public ItemDanmaku() {
 		super(LibItemName.DANMAKU);
@@ -72,10 +74,7 @@ public class ItemDanmaku extends ItemBase {
 
 	@Override
 	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
-		subItems.addAll(DanmakuRegistry.DANMAKU_VARIANT.getValues().stream()
-				.sorted()
-				.map(ItemDanmaku::createStack)
-				.collect(Collectors.toList()));
+		subItems.addAll(DanmakuRegistry.DANMAKU_VARIANT.getValues().stream().sorted().map(ItemDanmaku::createStack).collect(Collectors.toList()));
 	}
 
 	@Override
@@ -119,7 +118,7 @@ public class ItemDanmaku extends ItemBase {
 		if(!getController(stack).onShootDanmaku(player, alternateMode, pos, direction)) return false;
 		int amount = AMOUNT.get(stack);
 		double shotSpeed = SPEED.get(stack);
-		Pattern danmakuPattern = getPattern(stack);
+		Pattern danmakuPattern = PATTERN.get(stack);
 		ShotData shot = ShotData.fromNBTItemStack(stack);
 		Vector3 gravity = getGravity(stack);
 
@@ -183,7 +182,7 @@ public class ItemDanmaku extends ItemBase {
 		ShotData shot = ShotData.fromNBTItemStack(stack);
 		int amount = AMOUNT.get(stack);
 		double shotSpeed = SPEED.get(stack);
-		Pattern danmakuPattern = getPattern(stack);
+		Pattern danmakuPattern = PATTERN.get(stack);
 		Vector3 gravity = getGravity(stack);
 		boolean isInfinity = INFINITY.get(stack);
 		boolean custom = CUSTOM.get(stack);
@@ -237,21 +236,12 @@ public class ItemDanmaku extends ItemBase {
 		GRAVITYZ.set(gravity.z(), stack);
 	}
 
-	@SuppressWarnings("WeakerAccess")
-	public static Pattern getPattern(ItemStack stack) {
-		return Pattern.class.getEnumConstants()[PATTERN.get(stack)];
-	}
-
-	public static void setPattern(ItemStack stack, Pattern pattern) {
-		PATTERN.set(pattern.ordinal(), stack);
-	}
-
 	public static DanmakuVariant getVariant(ItemStack stack) {
-		DanmakuVariant variant = DanmakuRegistry.DANMAKU_VARIANT.getValue(new ResourceLocation(VARIANT.get(stack)));
+		DanmakuVariant variant = DanmakuRegistry.DANMAKU_VARIANT.getValue(VARIANT.get(stack));
 		if(variant == null) {
 			variant = LibDanmakuVariants.DEFAULT_TYPE;
 			LogHelper.warn("Found null variant. Changing to default");
-			VARIANT.set(variant.getFullNameString(), stack);
+			VARIANT.set(variant.getFullName(), stack);
 		}
 
 		return variant;
@@ -269,7 +259,7 @@ public class ItemDanmaku extends ItemBase {
 	public static ItemStack createStack(DanmakuVariant variant) {
 		ShotData shot = variant.getShotData().setColor(DanmakuHelper.randomSaturatedColor());
 		ItemStack stack = new ItemStack(LibItems.DANMAKU, 1);
-		VARIANT.set(variant.getFullNameString(), stack);
+		VARIANT.set(variant.getFullName(), stack);
 		setGravity(variant.getMovementData().gravity(), stack);
 		SPEED.set(variant.getMovementData().speedOriginal(), stack);
 		CUSTOM.set(false, stack);
