@@ -75,4 +75,9 @@ public class ParticleGlow extends Particle implements IGlowParticle {
 	public boolean isAdditive() {
 		return true;
 	}
+
+	@Override
+	public boolean ignoreDepth() {
+		return false;
+	}
 }

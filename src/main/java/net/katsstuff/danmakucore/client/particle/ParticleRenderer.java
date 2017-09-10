@@ -25,7 +25,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ParticleRenderer {
 
-	private ArrayList<Particle> particles = new ArrayList<>();
+	private ArrayList<IGlowParticle> particles = new ArrayList<>();
 
 	@SubscribeEvent
 	public void onTextureStitch(TextureStitchEvent event) {
@@ -55,8 +55,8 @@ public class ParticleRenderer {
 		boolean doRemove;
 		for(int i = 0; i < particles.size(); i++) {
 			doRemove = true;
-			Particle particle = particles.get(i);
-			if(particle != null && particle instanceof IGlowParticle && ((IGlowParticle)particle).alive()) {
+			IGlowParticle particle = particles.get(i);
+			if(particle != null && particle.alive()) {
 				particle.onUpdate();
 				doRemove = false;
 			}
@@ -68,22 +68,24 @@ public class ParticleRenderer {
 
 	@SuppressWarnings("squid:S2696")
 	private void renderParticles(float partialTicks) {
-		float f = ActiveRenderInfo.getRotationX();
-		float f1 = ActiveRenderInfo.getRotationZ();
-		float f2 = ActiveRenderInfo.getRotationYZ();
-		float f3 = ActiveRenderInfo.getRotationXY();
-		float f4 = ActiveRenderInfo.getRotationXZ();
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		if(player != null) {
+			float f = ActiveRenderInfo.getRotationX();
+			float f1 = ActiveRenderInfo.getRotationZ();
+			float f2 = ActiveRenderInfo.getRotationYZ();
+			float f3 = ActiveRenderInfo.getRotationXY();
+			float f4 = ActiveRenderInfo.getRotationXZ();
+
 			Particle.interpPosX = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
 			Particle.interpPosY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
 			Particle.interpPosZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
 			Particle.cameraViewDir = player.getLook(partialTicks);
+
 			GlStateManager.enableAlpha();
 			GlStateManager.enableBlend();
-			GlStateManager.alphaFunc(516, 0.003921569F);
+			GlStateManager.alphaFunc(GL11.GL_ALWAYS, 0);
 			GlStateManager.disableCull();
-
+			GlStateManager.disableLighting();
 			GlStateManager.depthMask(false);
 
 			Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
@@ -94,8 +96,8 @@ public class ParticleRenderer {
 			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
 			//noinspection ForLoopReplaceableByForEach
 			for(int i = 0; i < particles.size(); i++) {
-				Particle particle = particles.get(i);
-				if(!((IGlowParticle)particle).isAdditive()) {
+				IGlowParticle particle = particles.get(i);
+				if(!particle.isAdditive()) {
 					particle.renderParticle(buffer, player, partialTicks, f, f4, f1, f2, f3);
 				}
 			}
@@ -105,13 +107,25 @@ public class ParticleRenderer {
 			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
 			//noinspection ForLoopReplaceableByForEach
 			for(int i = 0; i < particles.size(); i++) {
-				Particle particle = particles.get(i);
-				if(((IGlowParticle)particle).isAdditive()) {
+				IGlowParticle particle = particles.get(i);
+				if(particle.isAdditive()) {
 					particle.renderParticle(buffer, player, partialTicks, f, f4, f1, f2, f3);
 				}
 			}
 			tess.draw();
 
+			GlStateManager.disableDepth();
+			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+			//noinspection ForLoopReplaceableByForEach
+			for(int i = 0; i < particles.size(); i++) {
+				IGlowParticle particle = particles.get(i);
+				if(particle.ignoreDepth()) {
+					particle.renderParticle(buffer, player, partialTicks, f, f4, f1, f2, f3);
+				}
+			}
+			tess.draw();
+
+			GlStateManager.enableDepth();
 			GlStateManager.enableCull();
 			GlStateManager.depthMask(true);
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -120,7 +134,7 @@ public class ParticleRenderer {
 		}
 	}
 
-	public <T extends IGlowParticle> void addParticle(T particle) {
-		particles.add((Particle)particle);
+	public void addParticle(IGlowParticle particle) {
+		particles.add(particle);
 	}
 }
