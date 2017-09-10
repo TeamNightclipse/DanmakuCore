@@ -9,6 +9,7 @@
 package net.katsstuff.danmakucore.helper;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import net.katsstuff.danmakucore.lib.LibMod;
@@ -17,12 +18,15 @@ import net.minecraftforge.fml.common.FMLLog;
 @SuppressWarnings("unused")
 public class LogHelper {
 
-	private static Logger log;
+	//We use a separate logger until we receive one from Forge
+	private static Logger log = LogManager.getLogger(LibMod.MODID);
+	private static boolean setLogger = false;
 
 	public static void setLog(Logger log) {
-		if(LogHelper.log != null) {
+		if(setLogger) {
 			throw new IllegalStateException("Log has already been set");
 		}
+		setLogger = true;
 		LogHelper.log = log;
 	}
 
