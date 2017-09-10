@@ -8,7 +8,7 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.World;
 
-public class ParticleGlow extends Particle implements IGlowParticle {
+public class ParticleGlow extends AbstractParticleGlow implements IGlowParticle {
 
 	private float initScale = 0;
 
@@ -54,8 +54,8 @@ public class ParticleGlow extends Particle implements IGlowParticle {
 	}
 
 	@Override
-	public void onUpdate() {
-		super.onUpdate();
+	public void onUpdateGlow() {
+		super.onUpdateGlow();
 		if(ThreadLocalRandom.current().nextInt(6) == 0) {
 			this.particleAge++;
 		}

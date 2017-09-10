@@ -57,7 +57,7 @@ public class ParticleRenderer {
 			doRemove = true;
 			IGlowParticle particle = particles.get(i);
 			if(particle != null && particle.alive()) {
-				particle.onUpdate();
+				particle.onUpdateGlow();
 				doRemove = false;
 			}
 			if(doRemove) {
@@ -98,7 +98,7 @@ public class ParticleRenderer {
 			for(int i = 0; i < particles.size(); i++) {
 				IGlowParticle particle = particles.get(i);
 				if(!particle.isAdditive()) {
-					particle.renderParticle(buffer, player, partialTicks, f, f4, f1, f2, f3);
+					particle.renderParticleGlow(buffer, player, partialTicks, f, f4, f1, f2, f3);
 				}
 			}
 			tess.draw();
@@ -109,7 +109,7 @@ public class ParticleRenderer {
 			for(int i = 0; i < particles.size(); i++) {
 				IGlowParticle particle = particles.get(i);
 				if(particle.isAdditive()) {
-					particle.renderParticle(buffer, player, partialTicks, f, f4, f1, f2, f3);
+					particle.renderParticleGlow(buffer, player, partialTicks, f, f4, f1, f2, f3);
 				}
 			}
 			tess.draw();
@@ -120,7 +120,7 @@ public class ParticleRenderer {
 			for(int i = 0; i < particles.size(); i++) {
 				IGlowParticle particle = particles.get(i);
 				if(particle.ignoreDepth()) {
-					particle.renderParticle(buffer, player, partialTicks, f, f4, f1, f2, f3);
+					particle.renderParticleGlow(buffer, player, partialTicks, f, f4, f1, f2, f3);
 				}
 			}
 			tess.draw();
