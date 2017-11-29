@@ -15,10 +15,10 @@ import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss;
 import net.katsstuff.danmakucore.handler.ConfigHandler;
 import net.katsstuff.danmakucore.lib.LibMod;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.BossInfoClient;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.BossInfoLerping;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -32,7 +32,7 @@ public class BossBarHandler {
 
 	@SubscribeEvent
 	public void onBossBar(RenderGameOverlayEvent.BossInfo event) {
-		BossInfoLerping bossInfo = event.getBossInfo();
+		BossInfoClient bossInfo = event.getBossInfo();
 		Minecraft mc = Minecraft.getMinecraft();
 
 		//ConcurrentModificationException

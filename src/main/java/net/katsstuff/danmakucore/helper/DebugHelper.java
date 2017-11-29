@@ -34,7 +34,7 @@ public class DebugHelper {
 			pathTarget.set(path, path.getFinalPathPoint());
 		}
 		catch(IllegalAccessException e) {
-			e.printStackTrace();
+			LogHelper.error("Could not access debug helper", e);
 		}
 		((DebugRendererPathfinding)Minecraft.getMinecraft().debugRenderer.pathfinding).addPath(entityId, path, 0.1F);
 	}

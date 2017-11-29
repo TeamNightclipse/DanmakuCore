@@ -16,7 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 @SuppressWarnings("UnusedParameters")
 public abstract class RegistryValueItemStack<T extends IForgeRegistryEntry<T>> extends RegistryValue<T> implements Comparable<T>, ITranslatable {

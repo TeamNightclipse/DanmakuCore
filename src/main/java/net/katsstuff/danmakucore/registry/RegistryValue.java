@@ -9,7 +9,7 @@
 package net.katsstuff.danmakucore.registry;
 
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public abstract class RegistryValue<T extends IForgeRegistryEntry<T>> extends IForgeRegistryEntry.Impl<T> {
 

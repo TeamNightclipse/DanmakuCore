@@ -19,9 +19,9 @@ import org.lwjgl.util.glu.Sphere;
 
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -131,7 +131,7 @@ public class RenderHelper {
 		float g = (color >> 8 & 255) / 255.0F;
 		float b = (color & 255) / 255.0F;
 		Tessellator tes = Tessellator.getInstance();
-		VertexBuffer vb = tes.getBuffer();
+		BufferBuilder bb = tes.getBuffer();
 
 		float drho = (float)(Math.PI / stacks);
 		float dtheta = (float)(2.0f * Math.PI / slices);
@@ -139,14 +139,14 @@ public class RenderHelper {
 		GlStateManager.disableCull();
 		GlStateManager.depthMask(false);
 
-		vb.begin(GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
-		vb.pos(0F, 0F, radius).color(r, g, b, alpha).endVertex();
+		bb.begin(GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
+		bb.pos(0F, 0F, radius).color(r, g, b, alpha).endVertex();
 		for (int j = 0; j <= slices; j++) {
 			float theta = (j == slices) ? 0.0f : j * dtheta;
 			float x = -MathHelper.sin(theta) * MathHelper.sin(drho);
 			float y = MathHelper.cos(theta) * MathHelper.sin(drho);
 			float z = MathHelper.cos(drho);
-			vb.pos(x * radius, y * radius, z * radius).color(r, g, b, alpha).endVertex();
+			bb.pos(x * radius, y * radius, z * radius).color(r, g, b, alpha).endVertex();
 		}
 		tes.draw();
 
@@ -156,17 +156,17 @@ public class RenderHelper {
 		for (int i = imin; i < imax; i++) {
 			alpha = Math.max(alpha - i * dropOffRate, 0F);
 			float rho = i * drho;
-			vb.begin(GL_QUAD_STRIP, DefaultVertexFormats.POSITION_COLOR);
+			bb.begin(GL_QUAD_STRIP, DefaultVertexFormats.POSITION_COLOR);
 			for (int j = 0; j <= slices; j++) {
 				float theta = (j == slices) ? 0.0f : j * dtheta;
 				float x = -MathHelper.sin(theta) * MathHelper.sin(rho);
 				float y = MathHelper.cos(theta) * MathHelper.sin(rho);
 				float z = MathHelper.cos(rho);
-				vb.pos(x * radius, y * radius, z * radius).color(r, g, b, alpha).endVertex();
+				bb.pos(x * radius, y * radius, z * radius).color(r, g, b, alpha).endVertex();
 				x = -MathHelper.sin(theta) * MathHelper.sin(rho + drho);
 				y = MathHelper.cos(theta) * MathHelper.sin(rho + drho);
 				z = MathHelper.cos(rho + drho);
-				vb.pos(x * radius, y * radius, z * radius).color(r, g, b, alpha).endVertex();
+				bb.pos(x * radius, y * radius, z * radius).color(r, g, b, alpha).endVertex();
 			}
 
 			tes.draw();

@@ -12,11 +12,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.entity.living.TouhouCharacter;
 import net.katsstuff.danmakucore.entity.spellcard.EntitySpellcard;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
-import net.katsstuff.danmakucore.helper.ItemNBTHelper;
 import net.katsstuff.danmakucore.helper.StringNBTProperty;
 import net.katsstuff.danmakucore.helper.TouhouHelper;
 import net.katsstuff.danmakucore.lib.LibItemName;
@@ -24,9 +25,9 @@ import net.katsstuff.danmakucore.lib.data.LibItems;
 import net.katsstuff.danmakucore.lib.data.LibSpellcards;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
@@ -50,7 +51,7 @@ public class ItemSpellcard extends ItemBase implements IOwnedBy {
 	}
 
 	@Override
-	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
 		subItems.addAll(DanmakuRegistry.SPELLCARD.getValues().stream()
 				.sorted()
 				.map(ItemSpellcard::createStack)
@@ -76,8 +77,8 @@ public class ItemSpellcard extends ItemBase implements IOwnedBy {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean bool) {
-		super.addInformation(stack, player, list, bool);
+	public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag) {
+		super.addInformation(stack, world, list, flag);
 
 		Spellcard type = getSpellcard(stack);
 		String item = "item.spellcard";

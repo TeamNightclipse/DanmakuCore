@@ -8,6 +8,7 @@
  */
 package net.katsstuff.danmakucore.helper;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -39,15 +40,23 @@ public class DanmakuHelper {
 
 	public static final double GRAVITY_DEFAULT = -0.03D;
 
-	public static final int[] SATURATED_COLORS =
+	private static final int[] SATURATED_COLORS =
 			{LibColor.COLOR_SATURATED_BLUE, LibColor.COLOR_SATURATED_CYAN, LibColor.COLOR_SATURATED_GREEN, LibColor.COLOR_SATURATED_MAGENTA,
 					LibColor.COLOR_SATURATED_ORANGE, LibColor.COLOR_SATURATED_RED, LibColor.COLOR_WHITE, LibColor.COLOR_SATURATED_YELLOW};
 
-	public static final int[] VANILLA_COLORS =
+	private static final int[] VANILLA_COLORS =
 			{LibColor.COLOR_VANILLA_WHITE, LibColor.COLOR_VANILLA_ORANGE, LibColor.COLOR_VANILLA_MAGENTA, LibColor.COLOR_VANILLA_LIGHT_BLUE,
 					LibColor.COLOR_VANILLA_YELLOW, LibColor.COLOR_VANILLA_LIME, LibColor.COLOR_VANILLA_PINK, LibColor.COLOR_VANILLA_GRAY,
 					LibColor.COLOR_VANILLA_SILVER, LibColor.COLOR_VANILLA_CYAN, LibColor.COLOR_VANILLA_PURPLE, LibColor.COLOR_VANILLA_BLUE,
 					LibColor.COLOR_VANILLA_BROWN, LibColor.COLOR_VANILLA_GREEN, LibColor.COLOR_VANILLA_RED, LibColor.COLOR_VANILLA_BLACK};
+
+	public static int[] getSaturatedColors() {
+		return Arrays.copyOf(SATURATED_COLORS, SATURATED_COLORS.length);
+	}
+
+	public static int[] getVanillaColors() {
+		return Arrays.copyOf(VANILLA_COLORS, VANILLA_COLORS.length);
+	}
 
 	private static final Random RAND = new Random();
 
@@ -92,7 +101,7 @@ public class DanmakuHelper {
 		List<EntityLivingBase> list = deadEntity.world.getEntitiesWithinAABB(EntityLivingBase.class,
 				deadEntity.getEntityBoundingBox().grow(range), e -> e instanceof IAllyDanmaku && !e.equals(deadEntity));
 		for(Entity entity : list) {
-			double distance = entity.getDistanceToEntity(deadEntity);
+			double distance = entity.getDistance(deadEntity);
 
 			if(distance <= range) {
 				float damage = (float)(maxDamage * (1.0F - (distance / range)));

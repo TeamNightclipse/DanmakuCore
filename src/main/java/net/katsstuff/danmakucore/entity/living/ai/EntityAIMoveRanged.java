@@ -66,7 +66,7 @@ public class EntityAIMoveRanged extends EntityAIBase {
 			}
 
 			if(d0 <= this.maxAttackDistance && seeTime >= 20) {
-				entity.getNavigator().clearPathEntity();
+				entity.getNavigator().clearPath();
 				++strafingTime;
 			}
 			else {

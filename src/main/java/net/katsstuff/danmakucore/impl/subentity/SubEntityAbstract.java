@@ -26,7 +26,7 @@ import net.katsstuff.danmakucore.helper.MathUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.boss.EntityDragonPart;
+import net.minecraft.entity.IEntityMultiPart;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -61,7 +61,7 @@ public abstract class SubEntityAbstract extends SubEntity {
 		Optional<EntityLivingBase> optUser = danmaku.getUser();
 
 		if(hitEntity instanceof EntityLivingBase && !(hitEntity instanceof EntityAgeable) && !(optUser.orElse(null) instanceof IAllyDanmaku
-				&& hitEntity instanceof IAllyDanmaku) || hitEntity instanceof EntityDragonPart) {
+				&& hitEntity instanceof IAllyDanmaku) || (hitEntity instanceof IEntityMultiPart && !(hitEntity instanceof EntityDanmaku))) {
 			attackEntity(danmaku, hitEntity);
 		}
 	}

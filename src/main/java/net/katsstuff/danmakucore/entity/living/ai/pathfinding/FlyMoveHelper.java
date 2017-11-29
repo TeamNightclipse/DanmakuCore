@@ -33,49 +33,58 @@ public class FlyMoveHelper extends EntityMoveHelper {
 
 	@Override
 	public void onUpdateMoveHelper() {
-		if(isEntityFlying()) {
-			if(this.action == EntityMoveHelper.Action.MOVE_TO && !danmakuEntity.getNavigator().noPath()) {
-				double d0 = this.posX - this.danmakuEntity.posX;
-				double d1 = this.posY - this.danmakuEntity.posY;
-				double d2 = this.posZ - this.danmakuEntity.posZ;
-				double d3 = d0 * d0 + d1 * d1 + d2 * d2;
-				d3 = MathHelper.sqrt(d3);
-				d1 = d1 / d3;
-				float f = (float)(MathHelper.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
-				this.danmakuEntity.rotationYaw = this.limitAngle(this.danmakuEntity.rotationYaw, f, 90.0F);
-				this.danmakuEntity.renderYawOffset = this.danmakuEntity.rotationYaw;
-				float f1 = (float)(this.speed * this.danmakuEntity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
-				this.danmakuEntity.setAIMoveSpeed(this.danmakuEntity.getAIMoveSpeed() + (f1 - this.danmakuEntity.getAIMoveSpeed()) * 0.125F);
-				double d4 = MathHelper.sin((float)((this.danmakuEntity.ticksExisted + this.danmakuEntity.getEntityId()) * 0.5D)) * 0.05D;
-				double d5 = MathHelper.cos((this.danmakuEntity.rotationYaw * 0.017453292F));
-				double d6 = MathHelper.sin((this.danmakuEntity.rotationYaw * 0.017453292F));
-				this.danmakuEntity.motionX += d4 * d5;
-				this.danmakuEntity.motionZ += d4 * d6;
-				d4 = MathHelper.sin((float)((this.danmakuEntity.ticksExisted + this.danmakuEntity.getEntityId()) * 0.75D)) * 0.05D;
-				this.danmakuEntity.motionY += d4 * (d6 + d5) * 0.25D;
-				this.danmakuEntity.motionY += this.danmakuEntity.getAIMoveSpeed() * d1 * 0.1D;
-				EntityLookHelper entitylookhelper = this.danmakuEntity.getLookHelper();
-				double d7 = this.danmakuEntity.posX + d0 / d3 * 2.0D;
-				double d8 = this.danmakuEntity.getEyeHeight() + this.danmakuEntity.posY + d1 / d3;
-				double d9 = this.danmakuEntity.posZ + d2 / d3 * 2.0D;
-				double d10 = entitylookhelper.getLookPosX();
-				double d11 = entitylookhelper.getLookPosY();
-				double d12 = entitylookhelper.getLookPosZ();
+		if (isEntityFlying()) {
+			if ((this.action == EntityMoveHelper.Action.MOVE_TO) && !danmakuEntity.getNavigator().noPath()) {
+				double dx = posX - danmakuEntity.posX;
+				double dy = posY - danmakuEntity.posY;
+				double dz = posZ - danmakuEntity.posZ;
 
-				if(!entitylookhelper.getIsLooking()) {
-					d10 = d7;
-					d11 = d8;
-					d12 = d9;
+				float dist = MathHelper.sqrt(dx * dx + dy * dy + dz * dz);
+				float f    = (float)(MathHelper.atan2(dz, dx) * (180D / Math.PI)) - 90F;
+
+				dy = dy / dist;
+
+				danmakuEntity.rotationYaw = limitAngle(danmakuEntity.rotationYaw, f, 90.0F);
+				danmakuEntity.renderYawOffset = danmakuEntity.rotationYaw;
+				float acceleration = (float)(speed * danmakuEntity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
+				this.danmakuEntity.setAIMoveSpeed(danmakuEntity.getAIMoveSpeed() + (acceleration - danmakuEntity.getAIMoveSpeed()) * 0.125F);
+
+				float f2 = 0.0025F;
+				float f3 = MathHelper.cos(danmakuEntity.rotationYaw * 0.017453292F);
+				float f4 = MathHelper.sin(danmakuEntity.rotationYaw * 0.017453292F);
+
+				danmakuEntity.motionX += f2 * f3;
+				danmakuEntity.motionZ += f2 * f4;
+
+				danmakuEntity.motionY += f2 * (f4 + f3) * 0.25D;
+				danmakuEntity.motionY += danmakuEntity.getAIMoveSpeed() * dy * 0.1D;
+
+				double d7 = danmakuEntity.posX + dx / dist * 2.0D;
+				double d8 = danmakuEntity.getEyeHeight() + danmakuEntity.posY + dy / dist;
+				double d9 = danmakuEntity.posZ + dz / dist * 2.0D;
+
+				EntityLookHelper lookHelper = danmakuEntity.getLookHelper();
+				double d10 = d7;
+				double d11 = d8;
+				double d12 = d9;
+
+				if (lookHelper.getIsLooking()) {
+					d10 = lookHelper.getLookPosX();
+					d11 = lookHelper.getLookPosY();
+					d12 = lookHelper.getLookPosZ();
 				}
 
-				this.danmakuEntity.getLookHelper().setLookPosition(d10 + (d7 - d10) * 0.125D, d11 + (d8 - d11) * 0.125D, d12 + (d9 - d12) * 0.125D,
-						10.0F, 40.0F);
-			}
-			else {
+				danmakuEntity.getLookHelper().setLookPosition(
+						d10 + (d7 - d10) * 0.125D,
+						d11 + (d8 - d11) * 0.125D,
+						d12 + (d9 - d12) * 0.125D,
+						10.0F,
+						40.0F
+				);
+			} else {
 				this.danmakuEntity.setAIMoveSpeed(0.0F);
 			}
-		}
-		else super.onUpdateMoveHelper();
+		} else super.onUpdateMoveHelper();
 	}
 
 	private boolean isEntityFlying() {

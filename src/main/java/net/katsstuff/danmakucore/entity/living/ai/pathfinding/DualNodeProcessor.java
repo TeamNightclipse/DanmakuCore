@@ -30,10 +30,10 @@ public class DualNodeProcessor extends NodeProcessor {
 	}
 
 	@Override
-	public void initProcessor(IBlockAccess sourceIn, EntityLiving mob) {
-		super.initProcessor(sourceIn, mob);
-		if(decide.test(entity)) first.initProcessor(sourceIn, mob);
-		else second.initProcessor(sourceIn, mob);
+	public void init(IBlockAccess sourceIn, EntityLiving mob) {
+		super.init(sourceIn, mob);
+		if(decide.test(entity)) first.init(sourceIn, mob);
+		else second.init(sourceIn, mob);
 	}
 
 	@Override
@@ -79,9 +79,9 @@ public class DualNodeProcessor extends NodeProcessor {
 	}
 
 	@Override
-	public void setCanBreakDoors(boolean canBreakDoorsIn) {
-		if(decide.test(entity)) first.setCanBreakDoors(canBreakDoorsIn);
-		else second.setCanBreakDoors(canBreakDoorsIn);
+	public void setCanOpenDoors(boolean canBreakDoorsIn) {
+		if(decide.test(entity)) first.setCanOpenDoors(canBreakDoorsIn);
+		else second.setCanOpenDoors(canBreakDoorsIn);
 	}
 
 	@Override
@@ -96,8 +96,8 @@ public class DualNodeProcessor extends NodeProcessor {
 	}
 
 	@Override
-	public boolean getCanBreakDoors() {
-		return decide.test(entity) ? first.getCanBreakDoors() : second.getCanBreakDoors();
+	public boolean getCanOpenDoors() {
+		return decide.test(entity) ? first.getCanOpenDoors() : second.getCanOpenDoors();
 	}
 
 	@Override

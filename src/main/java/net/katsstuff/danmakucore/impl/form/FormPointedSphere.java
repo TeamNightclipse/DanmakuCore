@@ -15,9 +15,9 @@ import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
 import net.katsstuff.danmakucore.lib.LibFormName;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
@@ -41,7 +41,7 @@ public class FormPointedSphere extends FormGeneric {
 			public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks,
 					RenderManager rendermanager) {
 				Tessellator tes = Tessellator.getInstance();
-				VertexBuffer vb = tes.getBuffer();
+				BufferBuilder bb = tes.getBuffer();
 				ShotData shot = danmaku.getShotData();
 				int color = shot.getColor();
 				float sizeZ = shot.getSizeZ();
@@ -52,21 +52,21 @@ public class FormPointedSphere extends FormGeneric {
 				RenderHelper.transformEntity(danmaku);
 				GL11.glTranslatef(0, 0, (-sizeZ / 6) * 4);
 
-				createPointedSphere(tes, vb, 0xFFFFFF, 1F, centerZ1 - centerZ2, sizeZ);
+				createPointedSphere(tes, bb, 0xFFFFFF, 1F, centerZ1 - centerZ2, sizeZ);
 
 				GlStateManager.scale(1.2F, 1.2F, 1.2F);
 				GlStateManager.depthMask(false);
 				GlStateManager.enableBlend();
 				GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 
-				createPointedSphere(tes, vb, color, 0.6F, 0.0F, sizeZ);
+				createPointedSphere(tes, bb, color, 0.6F, 0.0F, sizeZ);
 
 				GlStateManager.depthMask(true);
 				GlStateManager.disableBlend();
 			}
 
 			@SideOnly(Side.CLIENT)
-			private void createPointedSphere(Tessellator tes, VertexBuffer vb, int color, float alpha, float zPos, float sizeZ) {
+			private void createPointedSphere(Tessellator tes, BufferBuilder vb, int color, float alpha, float zPos, float sizeZ) {
 				float r = (color >> 16 & 255) / 255.0F;
 				float g = (color >> 8 & 255) / 255.0F;
 				float b = (color & 255) / 255.0F;

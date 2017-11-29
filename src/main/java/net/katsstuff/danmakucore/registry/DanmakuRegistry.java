@@ -8,6 +8,7 @@
  */
 package net.katsstuff.danmakucore.registry;
 
+import java.util.List;
 import java.util.Random;
 
 import jline.internal.Nullable;
@@ -16,9 +17,9 @@ import net.katsstuff.danmakucore.entity.danmaku.form.Form;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.common.registry.IForgeRegistry;
+import net.minecraftforge.registries.ForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistry;
 
 public final class DanmakuRegistry {
 
@@ -29,15 +30,17 @@ public final class DanmakuRegistry {
 	public static final IForgeRegistry<PhaseType> PHASE = GameRegistry.findRegistry(PhaseType.class);
 
 	public static <T extends RegistryValue<T>> int getId(Class<T> clazz, T value) {
-		return ((FMLControlledNamespacedRegistry<T>)GameRegistry.findRegistry(clazz)).getId(value);
+		return ((ForgeRegistry<T>)GameRegistry.findRegistry(clazz)).getID(value);
 	}
 
 	@Nullable
 	public static <T extends RegistryValue<T>> T getObjById(Class<T> clazz, int id) {
-		return ((FMLControlledNamespacedRegistry<T>)GameRegistry.findRegistry(clazz)).getObjectById(id);
+		return ((ForgeRegistry<T>)GameRegistry.findRegistry(clazz)).getValue(id);
 	}
 
 	public static <T extends RegistryValue<T>> T getRandomObject(Class<T> clazz, Random rng) {
-		return ((FMLControlledNamespacedRegistry<T>)GameRegistry.findRegistry(clazz)).getRandomObject(rng);
+		List<T> values = GameRegistry.findRegistry(clazz).getValues();
+		int idx = rng.nextInt(values.size());
+		return values.get(idx);
 	}
 }

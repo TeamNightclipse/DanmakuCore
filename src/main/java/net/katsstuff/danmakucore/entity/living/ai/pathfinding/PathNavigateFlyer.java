@@ -50,8 +50,7 @@ public class PathNavigateFlyer<T extends EntityCreature> extends PathNavigateGro
 		walkNodeProcessor.setCanEnterDoors(true);
 		nodeProcessor = new DualNodeProcessor(new FlyNodeProcessor(), walkNodeProcessor,
 				living -> living instanceof EntityDanmakuMob && ((EntityDanmakuMob)living).isFlying());
-		return new PathFinder(new DualNodeProcessor(new FlyNodeProcessor(), walkNodeProcessor,
-				living -> living instanceof EntityDanmakuMob && ((EntityDanmakuMob)living).isFlying()));
+		return new PathFinder(nodeProcessor);
 	}
 
 	@Override

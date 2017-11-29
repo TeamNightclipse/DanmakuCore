@@ -8,7 +8,6 @@
  */
 package net.katsstuff.danmakucore.item;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,10 +36,10 @@ import net.katsstuff.danmakucore.lib.data.LibSubEntities;
 import net.katsstuff.danmakucore.registry.DanmakuRegistry;
 import net.katsstuff.danmakucore.registry.RegistryValueShootable;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
@@ -64,7 +63,7 @@ public class ItemDanmaku extends ItemBase {
 	public static final BooleanNBTProperty<ItemStack> INFINITY = BooleanNBTProperty.ofStack("infinity");
 	public static final BooleanNBTProperty<ItemStack> CUSTOM = BooleanNBTProperty.ofStack("custom");
 	public static final NBTProperty<ResourceLocation, ItemStack> VARIANT = StringNBTProperty.ofStack("variant",
-			() -> LibDanmakuVariants.DEFAULT_TYPE.getFullNameString()).modify((String s) -> new ResourceLocation(s), ResourceLocation::toString);
+			() -> LibDanmakuVariants.DEFAULT_TYPE.getFullNameString()).modify(ResourceLocation::new, ResourceLocation::toString);
 
 	public ItemDanmaku() {
 		super(LibItemName.DANMAKU);
@@ -73,7 +72,7 @@ public class ItemDanmaku extends ItemBase {
 	}
 
 	@Override
-	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
 		subItems.addAll(DanmakuRegistry.DANMAKU_VARIANT.getValues().stream().sorted().map(ItemDanmaku::createStack).collect(Collectors.toList()));
 	}
 
@@ -177,8 +176,8 @@ public class ItemDanmaku extends ItemBase {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean bool) {
-		super.addInformation(stack, player, list, bool);
+	public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flagIn) {
+		super.addInformation(stack, world, list, flagIn);
 		ShotData shot = ShotData.fromNBTItemStack(stack);
 		int amount = AMOUNT.get(stack);
 		double shotSpeed = SPEED.get(stack);
@@ -187,11 +186,9 @@ public class ItemDanmaku extends ItemBase {
 		boolean isInfinity = INFINITY.get(stack);
 		boolean custom = CUSTOM.get(stack);
 
-		float powerDamage = BigDecimal.valueOf(DanmakuHelper.adjustDamageCoreData(player, shot.damage()) - shot.damage()).setScale(4,
-				BigDecimal.ROUND_HALF_UP).floatValue();
 		String item = "item.danmaku";
 
-		list.add(I18n.format(item + ".damage") + " : " + shot.damage() + " + " + powerDamage);
+		list.add(I18n.format(item + ".damage") + " : " + shot.damage()); //TODO: Show power adjusted damage
 		list.add(I18n.format(item + ".size") + " : " + shot.sizeX() + ", " + shot.sizeY() + " " + shot.sizeZ());
 		list.add(I18n.format(item + ".amount") + " : " + amount);
 		if(custom) {

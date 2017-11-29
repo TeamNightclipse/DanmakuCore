@@ -172,7 +172,7 @@ public class EntitySpellcard extends Entity {
 	}
 
 	@Override
-	public float getBrightness(float par1) {
+	public float getBrightness() {
 		return 0.5F;
 	}
 

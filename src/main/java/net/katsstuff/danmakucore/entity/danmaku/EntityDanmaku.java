@@ -33,8 +33,10 @@ import net.katsstuff.danmakucore.lib.data.LibSubEntities;
 import net.katsstuff.danmakucore.misc.LogicalSideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityMultiPart;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.MoverType;
+import net.minecraft.entity.MultiPartEntityPart;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -48,7 +50,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditionalSpawnData {
+public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditionalSpawnData, IEntityMultiPart {
 
 	private static final String NBT_SHOT_DATA = "shotData";
 	private static final String NBT_DIRECTION = "direction";
@@ -73,6 +75,9 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	private RotationData rotation;
 
 	private SubEntity subEntity;
+
+	@Nullable
+	private MultiPartEntityPart[] hitboxes;
 
 	public EntityDanmaku(World world) {
 		super(world);
@@ -157,7 +162,7 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	}
 
 	@Override
-	public void setThrowableHeading(double x, double y, double z, float velocity, float inaccuracy) {
+	public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
 		Vector3 vec = new Vector3(x, y, z);
 		double length = vec.length();
 		x = x / length;
@@ -404,6 +409,16 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		}
 	}
 
+	@Nullable
+	@Override
+	public MultiPartEntityPart[] getParts() {
+		return hitboxes;
+	}
+
+	public void setParts(@Nullable MultiPartEntityPart[] parts) {
+		this.hitboxes = parts;
+	}
+
 	private AxisAlignedBB getRoughScaledBoundingBox(double x, double y, double z) {
 		ShotData shot = getShotData();
 		Quat danmakuRotation = Quat.fromEuler(rotationYaw, rotationPitch, getRoll());
@@ -542,13 +557,13 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 	}
 
 	@Override
-	public float getBrightness(float f) {
+	public float getBrightness() {
 		return 1.0F;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public int getBrightnessForRender(float f) {
+	public int getBrightnessForRender() {
 		return 0xf000f0;
 	}
 
@@ -565,5 +580,15 @@ public class EntityDanmaku extends Entity implements IProjectile, IEntityAdditio
 		Quat orientation = Quat.fromEuler(rotationYaw, rotationPitch, getRoll());
 		AxisAlignedBB aabb = getRoughScaledBoundingBox(posX, posY, posZ);
 		return new OrientedBoundingBox(aabb, new Vector3(this), orientation);
+	}
+
+	@Override
+	public World getWorld() {
+		return world;
+	}
+
+	@Override
+	public boolean attackEntityFromPart(MultiPartEntityPart dragonPart, DamageSource source, float damage) {
+		return attackEntityFrom(source, damage);
 	}
 }

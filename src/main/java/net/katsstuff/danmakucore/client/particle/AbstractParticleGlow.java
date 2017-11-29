@@ -1,7 +1,7 @@
 package net.katsstuff.danmakucore.client.particle;
 
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
@@ -22,7 +22,7 @@ public abstract class AbstractParticleGlow extends Particle implements IGlowPart
 	}
 
 	@Override
-	public void renderParticleGlow(VertexBuffer buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ,
+	public void renderParticleGlow(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ,
 			float rotationXY, float rotationXZ) {
 		super.renderParticle(buffer, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
 	}

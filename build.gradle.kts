@@ -14,7 +14,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath("net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT")
+        classpath("net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT")
     }
 }
 
@@ -27,7 +27,7 @@ plugins {
     //We apply these to get pretty build script
     java
     idea
-    id("org.sonarqube").version("2.5")
+    id("org.sonarqube").version("2.6")
 }
 
 val configFile = file("build.properties")
@@ -62,18 +62,14 @@ val minecraft = the<ForgeExtension>()
 
 configure<ForgeExtension> {
     version = "${config["mc_version"]}-${config["forge_version"]}"
-    if (file("../run1.11").exists()) {
-        runDir = "../run1.11"
-    } else {
-        runDir = "run"
-    }
+    runDir = if (file("../run1.11").exists()) "../run1.11" else "run"
 
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
     // stable_#            stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not allways work.
     // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20170612"
+    mappings = "snapshot_20171128"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     replace("@VERSION@", project.version)

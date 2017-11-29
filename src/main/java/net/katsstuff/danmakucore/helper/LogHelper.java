@@ -13,7 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import net.katsstuff.danmakucore.lib.LibMod;
-import net.minecraftforge.fml.common.FMLLog;
 
 @SuppressWarnings("unused")
 public class LogHelper {

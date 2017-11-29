@@ -34,6 +34,11 @@ public class CoreDataSerializers {
 		public DataParameter<ShotData> createKey(int id) {
 			return new DataParameter<>(id, this);
 		}
+
+		@Override
+		public ShotData copyValue(ShotData value) {
+			return value;
+		}
 	};
 
 	@SuppressWarnings("WeakerAccess")
@@ -54,6 +59,11 @@ public class CoreDataSerializers {
 		@Override
 		public DataParameter<Vector3> createKey(int id) {
 			return new DataParameter<>(id, this);
+		}
+
+		@Override
+		public Vector3 copyValue(Vector3 value) {
+			return value;
 		}
 	};
 
@@ -78,6 +88,11 @@ public class CoreDataSerializers {
 		@Override
 		public DataParameter<T> createKey(int id) {
 			return new DataParameter<>(id, this);
+		}
+
+		@Override
+		public T copyValue(T value) {
+			return value;
 		}
 	}
 }

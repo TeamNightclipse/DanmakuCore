@@ -12,10 +12,10 @@ import org.lwjgl.opengl.GL11;
 
 import net.katsstuff.danmakucore.entity.EntityFallingData;
 import net.katsstuff.danmakucore.lib.LibMod;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -60,12 +60,12 @@ public class RenderFallingData extends Render<EntityFallingData> {
 		}
 
 		Tessellator tes = Tessellator.getInstance();
-		VertexBuffer vb = tes.getBuffer();
-		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
-		vb.pos(size, size, 0D).tex(upperU, upperV).normal(0F, 1F, 0F).endVertex();
-		vb.pos(-size, size, 0D).tex(lowerU, upperV).normal(0F, 1F, 0F).endVertex();
-		vb.pos(-size, -size, 0D).tex(lowerU, lowerV).normal(0F, 1F, 0F).endVertex();
-		vb.pos(size, -size, 0D).tex(upperU, lowerV).normal(0F, 1F, 0F).endVertex();
+		BufferBuilder bb = tes.getBuffer();
+		bb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
+		bb.pos(size, size, 0D).tex(upperU, upperV).normal(0F, 1F, 0F).endVertex();
+		bb.pos(-size, size, 0D).tex(lowerU, upperV).normal(0F, 1F, 0F).endVertex();
+		bb.pos(-size, -size, 0D).tex(lowerU, lowerV).normal(0F, 1F, 0F).endVertex();
+		bb.pos(size, -size, 0D).tex(upperU, lowerV).normal(0F, 1F, 0F).endVertex();
 		tes.draw();
 
 		if(alpha) {

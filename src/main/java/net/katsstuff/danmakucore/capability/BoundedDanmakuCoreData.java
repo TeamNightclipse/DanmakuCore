@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.capability;
 
 import java.math.BigDecimal;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 import net.minecraft.util.math.MathHelper;
 
@@ -57,7 +57,7 @@ public class BoundedDanmakuCoreData extends AbstractDanmakuCoreData {
 
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(this).add("power", power).add("score", score).add("lives", lives).add("bombs", bombs).add("powerBound",
-				powerBound).add("lifeBombBound", lifeBombBound).toString();
+		return MoreObjects.toStringHelper(this).add("powerBound", powerBound).add("lifeBombBound", lifeBombBound).add("power", power).add("score",
+				score).add("lives", lives).add("bombs", bombs).toString();
 	}
 }

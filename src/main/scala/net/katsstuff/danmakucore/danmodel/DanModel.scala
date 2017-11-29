@@ -14,12 +14,12 @@ import scala.annotation.tailrec
 
 import org.lwjgl.opengl.GL11
 
-import net.minecraft.client.renderer.{GlStateManager, Tessellator, VertexBuffer}
+import net.minecraft.client.renderer.{GlStateManager, Tessellator, BufferBuilder}
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 
 class DanModel(private[this] val data: Array[Byte], private[this] val pieces: Int, private[this] val danAlpha: Float) {
 
-  def render(vb: VertexBuffer, tes: Tessellator, danmakuColor: Int): Unit = {
+  def render(vb: BufferBuilder, tes: Tessellator, danmakuColor: Int): Unit = {
     val buf = ByteBuffer.wrap(data)
 
     val danRed   = (danmakuColor >> 16 & 255) / 255F

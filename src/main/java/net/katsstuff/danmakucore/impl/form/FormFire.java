@@ -8,8 +8,8 @@
  */
 package net.katsstuff.danmakucore.impl.form;
 
+import net.katsstuff.danmakucore.DanmakuCore;
 import net.katsstuff.danmakucore.client.particle.GlowTexture;
-import net.katsstuff.danmakucore.client.particle.ParticleUtil;
 import net.katsstuff.danmakucore.data.ShotData;
 import net.katsstuff.danmakucore.data.Vector3;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
@@ -39,7 +39,7 @@ public class FormFire extends FormSphere {
 				Vector3 motion = new Vector3(0.0125f * (danmaku.getRNG().nextFloat() - 0.5f), 0.0125f * (danmaku.getRNG().nextFloat() - 0.5f),
 						0.0125f * (danmaku.getRNG().nextFloat() - 0.5f));
 
-				ParticleUtil.spawnParticleGlow(danmaku.world, pos, motion, r, g, b, size * 15F, 10, GlowTexture.MOTE);
+				DanmakuCore.proxy.createParticleGlow(danmaku.world, pos, motion, r, g, b, size * 15F, 10, GlowTexture.MOTE);
 			}
 		}
 	}

@@ -17,6 +17,7 @@ import net.minecraft.entity.MoverType;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -40,20 +41,20 @@ public class EntityDanmakuCreature extends EntityCreature {
 	}
 
 	@Override
-	public void moveEntityWithHeading(float strafe, float forward) {
+	public void travel(float strafe, float vertical, float forward) {
 		if(isFlying()) {
 			if(this.isServerWorld()) {
-				this.moveRelative(strafe, forward, 0.1F);
-				this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
-				this.motionX *= 0.9D;
-				this.motionY *= 0.9D;
-				this.motionZ *= 0.9D;
+				moveRelative(strafe, vertical, forward, 0.1F);
+				move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
+				motionX *= 0.9D;
+				motionY *= 0.9D;
+				motionZ *= 0.9D;
 			}
 			else {
-				super.moveEntityWithHeading(strafe, forward);
+				super.travel(strafe, vertical, forward);
 			}
 		}
-		else super.moveEntityWithHeading(strafe, forward);
+		else super.travel(strafe, vertical, forward);
 	}
 
 	@Override
@@ -121,7 +122,7 @@ public class EntityDanmakuCreature extends EntityCreature {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound() {
+	protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
 		return SoundEvents.ENTITY_BAT_HURT;
 	}
 

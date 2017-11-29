@@ -16,9 +16,9 @@ import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
 import net.katsstuff.danmakucore.lib.LibFormName;
 import net.katsstuff.danmakucore.lib.LibMod;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
@@ -49,7 +49,7 @@ public class FormKunai extends FormGeneric {
 			public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks,
 					RenderManager rendermanager) {
 				Tessellator tes = Tessellator.getInstance();
-				VertexBuffer vb = tes.getBuffer();
+				BufferBuilder bb = tes.getBuffer();
 				ShotData shotData = danmaku.getShotData();
 				int color = shotData.getColor();
 
@@ -69,22 +69,22 @@ public class FormKunai extends FormGeneric {
 				RenderHelper.transformEntity(danmaku);
 
 				GlStateManager.disableCull();
-				vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-				vb.pos(width, 0.0F, length).tex(u2, v1).endVertex();
-				vb.pos(-width, 0.0F, length).tex(u1, v1).endVertex();
-				vb.pos(-width, 0.0F, -length).tex(u1, v2).endVertex();
-				vb.pos(width, 0.0F, -length).tex(u2, v2).endVertex();
+				bb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+				bb.pos(width, 0.0F, length).tex(u2, v1).endVertex();
+				bb.pos(-width, 0.0F, length).tex(u1, v1).endVertex();
+				bb.pos(-width, 0.0F, -length).tex(u1, v2).endVertex();
+				bb.pos(width, 0.0F, -length).tex(u2, v2).endVertex();
 				tes.draw();
 
 				//What we really want here is to use the luminance as the saturation, and set the luminance to 1 for the texture
 				GlStateManager.enableBlend();
 				GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
 				for(int i = 0; i < 4; i++) {
-					vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-					vb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
-					vb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();
-					vb.pos(-width, 0D, -length).tex(u1, v2).color(red, green, blue, alpha).endVertex();
-					vb.pos(width, 0D, -length).tex(u2, v2).color(red, green, blue, alpha).endVertex();
+					bb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+					bb.pos(width, 0D, length).tex(u2, v1).color(red, green, blue, alpha).endVertex();
+					bb.pos(-width, 0D, length).tex(u1, v1).color(red, green, blue, alpha).endVertex();
+					bb.pos(-width, 0D, -length).tex(u1, v2).color(red, green, blue, alpha).endVertex();
+					bb.pos(width, 0D, -length).tex(u2, v2).color(red, green, blue, alpha).endVertex();
 					tes.draw();
 				}
 

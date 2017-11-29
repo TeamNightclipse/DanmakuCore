@@ -14,9 +14,9 @@ import net.katsstuff.danmakucore.client.helper.RenderHelper;
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku;
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm;
 import net.katsstuff.danmakucore.lib.LibFormName;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.fml.relauncher.Side;
@@ -47,7 +47,7 @@ public class FormStar extends FormGeneric {
 			public void renderForm(EntityDanmaku danmaku, double x, double y, double z, float entityYaw, float partialTicks,
 					RenderManager rendermanager) {
 				Tessellator tes = Tessellator.getInstance();
-				VertexBuffer buf = tes.getBuffer();
+				BufferBuilder buf = tes.getBuffer();
 				int color = danmaku.getShotData().getColor();
 
 				GlStateManager.rotate((danmaku.ticksExisted + partialTicks) * 5F, 1F, 1F, 1F);
@@ -83,7 +83,7 @@ public class FormStar extends FormGeneric {
 			}
 
 			@SideOnly(Side.CLIENT)
-			private void renderTetrahedron(Tessellator tes, VertexBuffer buf, float r, float g, float b, float a) {
+			private void renderTetrahedron(Tessellator tes, BufferBuilder buf, float r, float g, float b, float a) {
 				buf.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_COLOR);
 				for(int i = 0; i < 6; i++) {
 					buf.pos(points[tetraIndicies[i]][0], points[tetraIndicies[i]][1], points[tetraIndicies[i]][2]).color(r, g, b, a).endVertex();
