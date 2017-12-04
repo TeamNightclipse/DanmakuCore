@@ -42,11 +42,10 @@ object DanmakuTemplate {
         else throw new IllegalArgumentException("Could not find a pos for builder, and neither source or user is set")
 
       if (direction == null)
-        if (source != null) direction = Vector3.directionEntity(source)
+        if (user != null) direction = Vector3.directionEntity(user)
+        else if (source != null) direction = Vector3.directionEntity(source)
         else
-          throw new IllegalArgumentException(
-            "could not find an direction for builder, and neither source or user is set"
-          )
+          throw new IllegalArgumentException("could not find an direction for builder, and neither source or user is set")
 
       if (shot == null) throw new IllegalArgumentException("Make sure that shot is set")
 
