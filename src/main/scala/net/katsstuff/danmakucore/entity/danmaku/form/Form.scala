@@ -9,14 +9,17 @@
 package net.katsstuff.danmakucore.entity.danmaku.form
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData}
+import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity
-import net.katsstuff.danmakucore.entity.spellcard.Spellcard
+import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.registry.RegistryValueWithItemModel
+import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
 import net.minecraft.client.renderer.block.model.{ModelResourceLocation => MRL}
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.{EnumHand, ResourceLocation}
+import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 /**
@@ -46,6 +49,14 @@ abstract class Form extends RegistryValueWithItemModel[Form] {
   def getRenderer(danmaku: EntityDanmaku): IRenderForm
 
   override def canRightClick(player: EntityPlayer, hand: EnumHand) = true
+
+  def playShotSound(user: EntityLivingBase, shotData: ShotData): Unit = {
+    user.playSound(LibSounds.SHOT1, 0.1F, 1F)
+  }
+
+  def playShotSound(world: World, pos: Vector3, shotData: ShotData): Unit = {
+    DanmakuHelper.playSoundAt(world, pos, LibSounds.SHOT1, 0.1F, 1F)
+  }
 
   /**
     * Called each tick for danmaku that uses this form. While you can emulate the most of a

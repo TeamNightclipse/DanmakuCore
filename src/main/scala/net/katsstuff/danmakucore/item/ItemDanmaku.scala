@@ -275,10 +275,10 @@ class ItemDanmaku extends ItemBase(LibItemName.DANMAKU) {
     val stack   = player.getHeldItem(hand)
     var success = false
 
+    val shot = ShotData.fromNBTItemStack(stack)
     if (!world.isRemote) {
       if (player.capabilities.isCreativeMode) ItemDanmaku.Infinity.set(value = true, stack)
 
-      val shot = ShotData.fromNBTItemStack(stack)
       success = ItemDanmaku.shootDanmaku(
         stack = stack,
         world = world,
@@ -292,7 +292,8 @@ class ItemDanmaku extends ItemBase(LibItemName.DANMAKU) {
 
       if (!ItemDanmaku.Infinity.get(stack) && success) stack.shrink(1)
     }
-    DanmakuHelper.playShotSound(player)
+
+    shot.form.playShotSound(player, shot)
     new ActionResult[ItemStack](
       if (success || world.isRemote) EnumActionResult.SUCCESS
       else EnumActionResult.FAIL,

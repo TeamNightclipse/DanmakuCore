@@ -17,9 +17,9 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-class FormDanModel(name: String, model: DanModel) extends FormGeneric(name) {
+private[danmakucore] class FormDanModel(name: String, model: DanModel) extends FormGeneric(name) {
   @SideOnly(Side.CLIENT)
-  override protected def createRenderer(): IRenderForm = {
+  override protected def createRenderer: IRenderForm = {
     (
         danmaku: EntityDanmaku,
         x: Double,

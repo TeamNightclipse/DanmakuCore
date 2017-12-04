@@ -133,7 +133,7 @@ trait TTouhouHelper {
       b: Float,
       lifetime: Int
   ): Unit = {
-    entity.playSound(LibSounds.POWER, 1F, 1F)
+    entity.playSound(LibSounds.ENEMY_POWER, 1F, 1F)
     val center            = new Vector3(entity.posX, entity.posY + (entity.height / 2), entity.posZ)
     val offsetPos         = center.offset(Vector3.randomVector, offset)
     val directionToCenter = Vector3.directionToPos(offsetPos, center).asInstanceOf[Vector3].divide(divSpeed)

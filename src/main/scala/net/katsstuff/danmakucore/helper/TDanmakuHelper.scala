@@ -25,18 +25,9 @@ import net.minecraft.world.World
 trait TDanmakuHelper {
   val GravityDefault: Double = -0.03D
 
-  /**
-    * Plays the iconic shot sound
-    */
-  def playShotSound(entity: Entity): Unit = entity.playSound(LibSounds.SHOT1, 2.0F, 1.2F)
-
-  def playShotSound(world: World, pos: Vector3): Unit =
-    world.playSound(null, pos.x, pos.y, pos.z, LibSounds.SHOT1, SoundCategory.NEUTRAL, 2F, 1.2F)
-
-  def playLaserSound(entity: Entity): Unit = entity.playSound(LibSounds.LASER2, 2.0F, 1.2F)
-
-  def playLaserSound(world: World, pos: Vector3): Unit =
-    world.playSound(null, pos.x, pos.y, pos.z, LibSounds.LASER2, SoundCategory.NEUTRAL, 2F, 1.2F)
+  def playSoundAt(world: World, pos: Vector3, sound: SoundEvent, volume: Float, pitch: Float): Unit = {
+    world.playSound(null, pos.x, pos.y, pos.z, sound, SoundCategory.NEUTRAL, volume, pitch)
+  }
 
   private def explosionEffect(world: World, pos: Vector3, explosionSize: Float, sound: SoundEvent): Unit = {
     world.playSound(null, pos.toBlockPos, sound, SoundCategory.HOSTILE, 2.0F, 3.0F)

@@ -11,11 +11,15 @@ package net.katsstuff.danmakucore.impl.form
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.client.helper.RenderHelper
+import net.katsstuff.danmakucore.data.{ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
-import net.katsstuff.danmakucore.lib.LibFormName
+import net.katsstuff.danmakucore.lib.{LibFormName, LibSounds}
+import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
@@ -71,6 +75,17 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
       GL11.glRotatef(180, 0F, 1F, 0F)
       RenderHelper.drawDisk(color, alpha)
       GL11.glPopMatrix()
+    }
+  }
+
+  override def playShotSound(user: EntityLivingBase, shotData: ShotData): Unit = ()
+
+  override def playShotSound(world: World, pos: Vector3, shotData: ShotData): Unit = ()
+
+  override def onTick(danmaku: EntityDanmaku): Unit = {
+    //The danmaku exits delay here
+    if (danmaku.ticksExisted == 2) {
+      danmaku.playSound(LibSounds.LASER1, 0.1F, 1F)
     }
   }
 }

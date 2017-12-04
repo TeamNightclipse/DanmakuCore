@@ -32,6 +32,7 @@ import net.katsstuff.danmakucore.lib.data.LibShotData
 import net.katsstuff.danmakucore.misc.IdState
 import net.katsstuff.danmakucore.network.SpellcardInfoPacket
 import net.minecraft.entity.Entity
+import net.minecraft.init.SoundEvents
 import net.minecraft.item.Item
 import net.minecraft.util.{ResourceLocation, SoundEvent}
 import net.minecraft.world.World
@@ -48,6 +49,9 @@ object CommonProxy {
 
   @SubscribeEvent
   def registerForms(event: RegistryEvent.Register[Form]): Unit = {
+    def noteForm(name: String, sound: SoundEvent, location: String) =
+      new FormNote(name, sound, DanModelReader.readModel(DanmakuCore.resource(location)).get._2)
+
     event.getRegistry
       .registerAll(
         new FormCrystal1,
@@ -64,7 +68,7 @@ object CommonProxy {
         new FormFire,
         new FormLaser,
         DanModelReader.createForm(new ResourceLocation(LibMod.Id, "models/form/heart"), LibFormName.HEART).get,
-        DanModelReader.createForm(new ResourceLocation(LibMod.Id, "models/form/note1"), LibFormName.NOTE1).get
+        noteForm(LibFormName.NOTE1, SoundEvents.BLOCK_NOTE_HARP, "models/form/note1")
       )
   }
 
@@ -162,8 +166,9 @@ object CommonProxy {
   @SubscribeEvent
   def registerSounds(event: RegistryEvent.Register[SoundEvent]): Unit = {
     event.getRegistry.registerAll(
-      LibSounds.POWER,
+      LibSounds.ENEMY_POWER,
       LibSounds.DAMAGE,
+      LibSounds.DAMAGE_LOW,
       LibSounds.BOSS_EXPLODE,
       LibSounds.TIMEOUT,
       LibSounds.SHADOW,

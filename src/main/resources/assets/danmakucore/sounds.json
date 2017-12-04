@@ -1,14 +1,19 @@
 {
-  "power": {
+  "power.enemy": {
 	"category": "hostile",
 	"sounds": [
 	  "danmakucore:power0"
 	]
   },
-  "damage": {
+  "damage.normal": {
 	"category": "neutral",
 	"sounds": [
-	  "danmakucore:damage00",
+	  "danmakucore:damage00"
+	]
+  },
+  "damage.low": {
+	"category": "neutral",
+	"sounds": [
 	  "danmakucore:damage01"
 	]
   },

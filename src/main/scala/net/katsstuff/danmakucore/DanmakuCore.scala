@@ -12,7 +12,7 @@ import net.katsstuff.danmakucore.capability.DanmakuCoreDataHandler
 import net.katsstuff.danmakucore.capability.dancoredata.{CapabilityDanCoreDataS, DanmakuCoreDataHandler}
 import net.katsstuff.danmakucore.capability.danmakuhit.DanmakuHitBehaviorHandler
 import net.katsstuff.danmakucore.client.ClientProxy
-import net.katsstuff.danmakucore.data.Vector3
+import net.katsstuff.danmakucore.data.{ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.EntityFallingData
 import net.katsstuff.danmakucore.handler.PlayerChangeHandler
 import net.katsstuff.danmakucore.helper.LogHelper
@@ -20,7 +20,6 @@ import net.katsstuff.danmakucore.item.ItemDanmaku
 import net.katsstuff.danmakucore.lib.LibMod
 import net.katsstuff.danmakucore.lib.data.LibItems
 import net.katsstuff.danmakucore.network.{DanCorePacketHandler, ShotDataSerializer, Vector3Serializer}
-import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
 import net.katsstuff.danmakucore.server.commands.DanmakuCoreCmd
 import net.katsstuff.danmakucore.shape.ShapeHandler
 import net.minecraft.block.BlockDispenser
@@ -78,7 +77,8 @@ object DanmakuCore {
       if (ItemDanmaku.shootDanmaku(stack, source.getWorld, None, None, alternateMode = false, pos, direction, 0)) {
         stack.shrink(1)
       }
-      DanmakuHelper.playShotSound(source.getWorld, pos)
+      val shot = ShotData.fromNBTItemStack(stack)
+      shot.form.playShotSound(source.getWorld, pos, shot)
       stack
     })
   }
