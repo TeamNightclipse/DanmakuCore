@@ -315,7 +315,7 @@ class EntityDanmaku(
       this.posX = x
       this.posY = y
       this.posZ = z
-      this.setEntityBoundingBox(getRoughScaledBoundingBox(x, y, z))
+      this.setEntityBoundingBox(getRoughScaledBoundingBox(x, y, z, rotate = true))
     } else super.setPosition(x, y, z)
 
   @Nullable
@@ -323,14 +323,23 @@ class EntityDanmaku(
 
   def setParts(@Nullable parts: Array[Entity]): Unit = this.hitboxes = parts
 
-  private def getRoughScaledBoundingBox(x: Double, y: Double, z: Double) = {
+  private def getRoughScaledBoundingBox(x: Double, y: Double, z: Double, rotate: Boolean) = {
     val shot            = shotData
-    val danmakuRotation = Quat.fromEuler(rotationYaw, rotationPitch, roll)
-    val size            = new Vector3(shot.sizeX, shot.sizeY, shot.sizeZ).rotate(danmakuRotation)
-    val xSize           = size.x / 2F
-    val zSize           = size.z / 2F
-    val ySize           = size.y / 2F
-    new AxisAlignedBB(x - xSize, y - ySize, z - zSize, x + xSize, y + ySize, z + zSize)
+
+    if(rotate) {
+      val danmakuRotation = Quat.fromEuler(rotationYaw, rotationPitch, roll)
+      val size            = new Vector3(shot.sizeX, shot.sizeY, shot.sizeZ).rotate(danmakuRotation)
+      val xSize           = size.x / 2F
+      val ySize           = size.y / 2F
+      val zSize           = size.z / 2F
+      new AxisAlignedBB(x - xSize, y - ySize, z - zSize, x + xSize, y + ySize, z + zSize)
+    }
+    else {
+      val xSize           = shot.sizeX / 2F
+      val ySize           = shot.sizeY / 2F
+      val zSize           = shot.sizeZ / 2F
+      new AxisAlignedBB(x - xSize, y - ySize, z - zSize, x + xSize, y + ySize, z + zSize)
+    }
   }
 
   override def writeEntityToNBT(nbtTag: NBTTagCompound): Unit = {
@@ -419,7 +428,7 @@ class EntityDanmaku(
 
   def getOrientedBoundingBox: OrientedBoundingBox = {
     val orientation = Quat.fromEuler(rotationYaw, rotationPitch, roll)
-    val aabb        = getRoughScaledBoundingBox(posX, posY, posZ)
+    val aabb        = getRoughScaledBoundingBox(posX, posY, posZ, rotate = false)
     new OrientedBoundingBox(aabb, new Vector3(this), orientation)
   }
 
