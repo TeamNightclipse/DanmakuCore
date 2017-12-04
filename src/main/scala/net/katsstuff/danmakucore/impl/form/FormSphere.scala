@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 //Name parameter for adding special effects to sphere
-private[danmakucore] class FormSphere(name: String = LibFormName.DEFAULT) extends FormGeneric(LibFormName.DEFAULT) {
+private[danmakucore] class FormSphere(name: String = LibFormName.DEFAULT) extends FormGeneric(name) {
 
   //noinspection ConvertExpressionToSAM
   @SideOnly(Side.CLIENT)

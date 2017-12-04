@@ -111,7 +111,7 @@ private[danmakucore] class FormPointedSphere extends FormGeneric(LibFormName.SPH
         yPos2Old = MathHelper.sin(angleZ) * widthOld
         angleZ = angleSpanZ
 
-        for (_ <- 0 until resolutionXY) {
+        for (_ <- 0 to resolutionXY) {
           xPos = MathHelper.cos(angleZ) * width
           yPos = MathHelper.sin(angleZ) * width
           xPos2 = MathHelper.cos(angleZ) * widthOld

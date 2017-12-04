@@ -48,7 +48,7 @@ private[danmakucore] class FormScale extends FormGeneric(LibFormName.SCALE) {
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE)
 
-      RenderHelper.drawDropOffSphere(1F, 8, 8, 0.03F, color, alpha)
+      RenderHelper.drawDropOffSphere(1F, 8, 8, 0.06F, color, alpha)
 
       GlStateManager.disableBlend()
     }
