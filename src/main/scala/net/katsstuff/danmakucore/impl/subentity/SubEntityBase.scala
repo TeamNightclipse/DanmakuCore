@@ -11,16 +11,18 @@ package net.katsstuff.danmakucore.impl.subentity
 import java.util.Random
 import java.util.function.Predicate
 
+import scala.annotation.tailrec
+
+import net.katsstuff.danmakucore.capability.danmakuhit.{CapabilityDanmakuHitBehaviorJ, DanmakuHitBehavior}
 import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity
 import net.katsstuff.danmakucore.entity.danmaku.{DamageSourceDanmaku, EntityDanmaku}
-import net.katsstuff.danmakucore.entity.living.DanmakuAlly
 import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.helper.MathUtil._
 import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
-import net.minecraft.entity.{Entity, EntityAgeable, EntityLivingBase, IEntityMultiPart}
+import net.minecraft.entity.{Entity, EntityAgeable, EntityLivingBase, IEntityMultiPart, MultiPartEntityPart}
 import net.minecraft.init.Blocks
 import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.math.RayTraceResult
@@ -40,16 +42,7 @@ abstract class SubEntityBase(world: World, danmaku: EntityDanmaku) extends SubEn
   /**
     * Called when the danmaku hits an entity.
     */
-  protected def impactEntity(raytrace: RayTraceResult): Unit = {
-    val hitEntity = raytrace.entityHit
-    val optUser   = danmaku.getUser
-    if (hitEntity.isInstanceOf[EntityLivingBase] && !hitEntity
-          .isInstanceOf[EntityAgeable] && !(optUser.orElse(null).isInstanceOf[DanmakuAlly] && hitEntity
-          .isInstanceOf[DanmakuAlly]) || (hitEntity.isInstanceOf[IEntityMultiPart] && !hitEntity
-          .isInstanceOf[EntityDanmaku])) {
-      attackEntity(danmaku, hitEntity)
-    }
-  }
+  protected def impactEntity(raytrace: RayTraceResult): Unit = attackEntity(danmaku, raytrace.entityHit)
 
   protected def attackEntity(danmaku: EntityDanmaku, entity: Entity): Unit = {
     val user        = danmaku.user
@@ -57,11 +50,34 @@ abstract class SubEntityBase(world: World, danmaku: EntityDanmaku) extends SubEn
     val shot        = danmaku.shotData
     val averageSize = (shot.sizeY + shot.sizeX + shot.sizeZ) / 3
 
-    entity.attackEntityFrom(
-      DamageSourceDanmaku.causeDanmakuDamage(danmaku, indirect),
+    val source = DamageSourceDanmaku.causeDanmakuDamage(danmaku, indirect)
+    val damage =
       DanmakuHelper.adjustDanmakuDamage(user, entity, danmaku.shotData.damage, ConfigHandler.danmaku.danmakuLevel)
-    )
-    entity.playSound(LibSounds.DAMAGE, 1F, 1F)
+
+    if (entity.hasCapability(CapabilityDanmakuHitBehaviorJ.HIT_BEHAVIOR, null)) {
+      entity.getCapability(CapabilityDanmakuHitBehaviorJ.HIT_BEHAVIOR, null).onHit(danmaku, entity, damage, source)
+    } else {
+      entity.attackEntityFrom(source, damage)
+    }
+
+    @tailrec
+    def hasLittleHealth(entity: Entity): Boolean = {
+      entity match {
+        case living: EntityLivingBase => living.getHealth / living.getMaxHealth < 0.1
+        case multiPart: MultiPartEntityPart =>
+          multiPart.parent match {
+            case parent: EntityLivingBase => hasLittleHealth(parent)
+            case _                        => false
+          }
+        case _ => false
+      }
+    }
+
+    if (hasLittleHealth(entity)) {
+      entity.playSound(LibSounds.DAMAGE_LOW, 1F, 1F)
+    } else {
+      entity.playSound(LibSounds.DAMAGE, 1F, 1F)
+    }
 
     if (averageSize < 0.7F) danmaku.delete()
   }

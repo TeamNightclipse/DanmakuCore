@@ -6,19 +6,18 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danmakucore.capability
+package net.katsstuff.danmakucore.capability.dancoredata
 
 import javax.annotation.Nullable
 
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmaku
 import net.katsstuff.danmakucore.handler.ConfigHandler
-import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.{EnumFacing, SoundCategory}
+import net.minecraft.util.EnumFacing
 import net.minecraftforge.common.capabilities.{Capability, ICapabilitySerializable}
 import net.minecraftforge.event.AttachCapabilitiesEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
@@ -26,30 +25,29 @@ import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
 import net.minecraftforge.fml.common.gameevent.{PlayerEvent => GamePlayerEvent}
 
-object DanmakuCoreDataHandler {
+class DanmakuCoreDataProvider extends ICapabilitySerializable[NBTTagCompound] {
   val CoreData: Capability[IDanmakuCoreData] = CapabilityDanCoreDataJ.CORE_DATA
 
-  class DanmakuCoreDataProvider extends ICapabilitySerializable[NBTTagCompound] {
-    final private val data = BoundedDanmakuCoreData(
-      0F,
-      0,
-      ConfigHandler.gameplay.defaultLivesAmount,
-      ConfigHandler.gameplay.defaultBombsAmount,
-      4F,
-      9
-    )
-    override def hasCapability(capability: Capability[_], @Nullable facing: EnumFacing): Boolean =
-      capability == CoreData
+  final private val data = BoundedDanmakuCoreData(
+    0F,
+    0,
+    ConfigHandler.gameplay.defaultLivesAmount,
+    ConfigHandler.gameplay.defaultBombsAmount,
+    4F,
+    9
+  )
+  override def hasCapability(capability: Capability[_], @Nullable facing: EnumFacing): Boolean =
+    capability == CoreData
 
-    override def getCapability[T](capability: Capability[T], @Nullable facing: EnumFacing): T =
-      if (capability == CoreData) CoreData.cast(data) else null.asInstanceOf[T]
+  override def getCapability[T](capability: Capability[T], @Nullable facing: EnumFacing): T =
+    if (capability == CoreData) CoreData.cast(data) else CoreData.cast(null)
 
-    override def serializeNBT: NBTTagCompound = CoreData.writeNBT(data, null).asInstanceOf[NBTTagCompound]
+  override def serializeNBT: NBTTagCompound = CoreData.writeNBT(data, null).asInstanceOf[NBTTagCompound]
 
-    override def deserializeNBT(nbt: NBTTagCompound): Unit = CoreData.readNBT(data, null, nbt)
-  }
+  override def deserializeNBT(nbt: NBTTagCompound): Unit = CoreData.readNBT(data, null, nbt)
 }
-class DanmakuCoreDataHandler {
+
+object DanmakuCoreDataHandler {
   @SubscribeEvent
   def onLogin(event: GamePlayerEvent.PlayerLoggedInEvent): Unit =
     TouhouHelper.getDanmakuCoreData(event.player).foreach { data =>
@@ -71,7 +69,7 @@ class DanmakuCoreDataHandler {
   @SubscribeEvent
   def attachPlayer(event: AttachCapabilitiesEvent[Entity]): Unit =
     if (event.getObject.isInstanceOf[EntityPlayer])
-      event.addCapability(DanmakuCore.resource("DanmakuCoreData"), new DanmakuCoreDataHandler.DanmakuCoreDataProvider)
+      event.addCapability(DanmakuCore.resource("DanmakuCoreData"), new DanmakuCoreDataProvider)
 
   @SubscribeEvent(priority = EventPriority.HIGHEST)
   def onDeath(event: LivingDeathEvent): Unit = {
@@ -98,7 +96,7 @@ class DanmakuCoreDataHandler {
           2F,
           1F
         )
-        */
+         */
         event.setCanceled(true)
 
       case _ =>

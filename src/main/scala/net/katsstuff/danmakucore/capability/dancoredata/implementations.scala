@@ -6,7 +6,7 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danmakucore.capability
+package net.katsstuff.danmakucore.capability.dancoredata
 
 case class BoundlessDanmakuCoreData(var power: Float, var score: Int, var lives: Int, var bombs: Int) extends IDanmakuCoreData {
 

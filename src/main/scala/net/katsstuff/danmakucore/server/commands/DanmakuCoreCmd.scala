@@ -8,7 +8,7 @@
  */
 package net.katsstuff.danmakucore.server.commands
 
-import net.katsstuff.danmakucore.capability.IDanmakuCoreData
+import net.katsstuff.danmakucore.capability.dancoredata.IDanmakuCoreData
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper
 import net.minecraft.command.{CommandBase, ICommandSender}
 import net.minecraft.entity.player.EntityPlayer

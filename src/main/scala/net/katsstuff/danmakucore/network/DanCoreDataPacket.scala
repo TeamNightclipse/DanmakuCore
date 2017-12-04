@@ -11,7 +11,8 @@ package net.katsstuff.danmakucore.network
 import java.util.UUID
 
 import io.netty.buffer.ByteBuf
-import net.katsstuff.danmakucore.capability.{BoundlessDanmakuCoreData, IDanmakuCoreData}
+import net.katsstuff.danmakucore.capability.IDanmakuCoreData
+import net.katsstuff.danmakucore.capability.dancoredata.{BoundlessDanmakuCoreData, IDanmakuCoreData}
 import net.katsstuff.danmakucore.helper.NBTHelper
 import net.katsstuff.danmakucore.network.scalachannel.{ClientMessageHandler, MessageConverter}
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper

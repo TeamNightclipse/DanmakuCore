@@ -9,7 +9,7 @@
 package net.katsstuff.danmakucore.client.handler
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.capability.IDanmakuCoreData
+import net.katsstuff.danmakucore.capability.dancoredata.IDanmakuCoreData
 import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.helper.MathUtil._
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper

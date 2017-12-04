@@ -8,7 +8,9 @@
  */
 package net.katsstuff.danmakucore
 
-import net.katsstuff.danmakucore.capability.{CapabilityDanCoreDataS, DanmakuCoreDataHandler}
+import net.katsstuff.danmakucore.capability.DanmakuCoreDataHandler
+import net.katsstuff.danmakucore.capability.dancoredata.{CapabilityDanCoreDataS, DanmakuCoreDataHandler}
+import net.katsstuff.danmakucore.capability.danmakuhit.DanmakuHitBehaviorHandler
 import net.katsstuff.danmakucore.client.ClientProxy
 import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.entity.EntityFallingData
@@ -66,7 +68,8 @@ object DanmakuCore {
     proxy.bakeRenderModels()
     DanCorePacketHandler.load()
     MinecraftForge.EVENT_BUS.register(ShapeHandler)
-    MinecraftForge.EVENT_BUS.register(new DanmakuCoreDataHandler)
+    MinecraftForge.EVENT_BUS.register(DanmakuCoreDataHandler)
+    MinecraftForge.EVENT_BUS.register(DanmakuHitBehaviorHandler)
     BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(LibItems.DANMAKU, (source: IBlockSource, stack: ItemStack) => {
       val iPos         = BlockDispenser.getDispensePosition(source)
       val directionVec = source.getBlockState.getValue(BlockDispenser.FACING).getDirectionVec

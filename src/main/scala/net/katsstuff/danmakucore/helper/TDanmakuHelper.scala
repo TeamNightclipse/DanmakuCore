@@ -8,9 +8,13 @@
  */
 package net.katsstuff.danmakucore.helper
 
+import net.katsstuff.danmakucore.capability.danmakuhit.{
+  AllyDanmakuHitBehavior,
+  CapabilityDanmakuHitBehaviorJ,
+  DanmakuHitBehavior
+}
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.{DamageSourceDanmaku, EntityDanmaku}
-import net.katsstuff.danmakucore.entity.living.DanmakuAlly
 import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
 import net.minecraft.entity.player.EntityPlayer
@@ -48,12 +52,16 @@ trait TDanmakuHelper {
     explosionEffect(world, pos, explosionSize, LibSounds.SHOT2)
 
   /**
-    * Create a chain explosion, damaging any [[DanmakuAlly]] in the vicinity.
+    * Create a chain explosion, damaging any entity with [[AllyDanmakuHitBehavior]] in the vicinity.
     */
   def chainExplosion(deadEntity: Entity, range: Float, maxDamage: Float): Unit = {
+    val behavior = CapabilityDanmakuHitBehaviorJ.HIT_BEHAVIOR
+
     deadEntity.world
       .collectEntitiesWithinAABBExcludingEntity(Some(deadEntity), deadEntity.getEntityBoundingBox.grow(range)) {
-        case e: EntityLivingBase if e.isInstanceOf[DanmakuAlly] => e
+        case e: EntityLivingBase
+            if AllyDanmakuHitBehavior == e.getCapability(behavior, null) =>
+          e
       }
       .foreach { entity =>
         val distance = entity.getDistance(deadEntity)

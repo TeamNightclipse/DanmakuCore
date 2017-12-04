@@ -8,7 +8,7 @@
  */
 package net.katsstuff.danmakucore.scalastuff
 
-import net.katsstuff.danmakucore.capability.{CapabilityDanCoreDataJ, IDanmakuCoreData}
+import net.katsstuff.danmakucore.capability.dancoredata.{CapabilityDanCoreDataJ, IDanmakuCoreData}
 import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.entity.spellcard.{EntitySpellcard, Spellcard}
 import net.katsstuff.danmakucore.entity.{EntityFallingData, FallingDataTypes}

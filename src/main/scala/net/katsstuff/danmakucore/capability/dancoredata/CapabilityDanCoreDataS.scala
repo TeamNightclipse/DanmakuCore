@@ -6,7 +6,7 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danmakucore.capability
+package net.katsstuff.danmakucore.capability.dancoredata
 
 import java.util.concurrent.Callable
 
