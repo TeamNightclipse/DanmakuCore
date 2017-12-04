@@ -24,7 +24,7 @@ import net.katsstuff.danmakucore.lib.data.{LibDanmakuVariants, LibItems, LibSubE
 import net.katsstuff.danmakucore.lib.{LibColor, LibItemName}
 import net.katsstuff.danmakucore.misc._
 import net.katsstuff.danmakucore.registry.{DanmakuRegistry, RegistryValueWithItemModel}
-import net.katsstuff.danmakucore.scalastuff.{DanmakuCreationHelper, DanmakuHelper}
+import net.katsstuff.danmakucore.scalastuff.DanmakuCreationHelper
 import net.minecraft.client.resources.I18n
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs
@@ -172,6 +172,7 @@ object ItemDanmaku {
         offset: Double
     ): Set[EntityDanmaku] = {
       val danmaku = template.toBuilder
+      danmaku.pos = danmaku.pos.offset(danmaku.direction, offset)
       val res = for (i <- 1 to amount) yield {
         danmaku.setMovementData(shotSpeed / amount * i)
         val entity = danmaku.build.asEntity

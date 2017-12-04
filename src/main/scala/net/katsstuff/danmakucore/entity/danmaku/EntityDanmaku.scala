@@ -73,18 +73,13 @@ class EntityDanmaku(
   isImmuneToFire = true
   ignoreFrustumCheck = true
 
-  setPosition(_pos.x, _pos.y, _pos.z)
-  resetMotion()
+  if(_pos != null) {
+    setPosition(_pos.x, _pos.y, _pos.z)
+    resetMotion()
+  }
 
   if (_shot != null) {
     shotData = _shot
-  }
-
-  user.foreach { usr =>
-    setLocationAndAngles(usr.posX, usr.posY + usr.getEyeHeight, usr.posZ, usr.rotationYaw, usr.rotationPitch)
-    posX -= MathHelper.cos(Math.toRadians(rotationYaw).toFloat) * 0.16F
-    posY -= 0.1D
-    posZ -= MathHelper.sin(Math.toRadians(rotationYaw).toFloat) * 0.16F
   }
 
   setRoll(_roll)
