@@ -54,8 +54,11 @@ class ItemSpellcard extends ItemBase(LibItemName.SPELLCARD) with OwnedBy {
   setMaxDamage(0)
   setCreativeTab(SpellcardsCreativeTab)
 
-  override def getSubItems(tab: CreativeTabs, subItems: NonNullList[ItemStack]): Unit =
-    subItems.addAll(DanmakuRegistry.Spellcard.getValues.asScala.sorted.map(ItemSpellcard.createStack).asJava)
+  override def getSubItems(tab: CreativeTabs, subItems: NonNullList[ItemStack]): Unit = {
+    if(isInCreativeTab(tab)) {
+      subItems.addAll(DanmakuRegistry.Spellcard.getValues.asScala.sorted.map(ItemSpellcard.createStack).asJava)
+    }
+  }
 
   override def onItemRightClick(world: World, player: EntityPlayer, hand: EnumHand): ActionResult[ItemStack] = {
     val stack     = player.getHeldItem(hand)

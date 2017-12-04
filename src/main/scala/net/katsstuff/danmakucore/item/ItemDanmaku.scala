@@ -264,8 +264,11 @@ class ItemDanmaku extends ItemBase(LibItemName.DANMAKU) {
   setMaxDamage(0)
   setCreativeTab(DanmakuCreativeTab)
 
-  override def getSubItems(tab: CreativeTabs, subItems: NonNullList[ItemStack]): Unit =
-    subItems.addAll(DanmakuRegistry.DanmakuVariant.getValues.asScala.sorted.map(ItemDanmaku.createStack).asJava)
+  override def getSubItems(tab: CreativeTabs, subItems: NonNullList[ItemStack]): Unit = {
+    if(isInCreativeTab(tab)) {
+      subItems.addAll(DanmakuRegistry.DanmakuVariant.getValues.asScala.sorted.map(ItemDanmaku.createStack).asJava)
+    }
+  }
 
   @SideOnly(Side.CLIENT) override def hasEffect(stack: ItemStack): Boolean = ItemDanmaku.Infinity.get(stack)
   override def getUnlocalizedName(stack: ItemStack): String =
