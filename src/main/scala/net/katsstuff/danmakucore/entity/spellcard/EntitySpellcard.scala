@@ -39,25 +39,26 @@ class EntitySpellcard(
     target: Option[EntityLivingBase],
     @LogicalSideOnly(Side.SERVER) spellcardTpe: Spellcard,
     sendNamePacket: Boolean
-) extends Entity(user.world) {
+) extends Entity(world) {
   private val NbtSpellcardType = "spellcardType"
   private val NbtSpellcardData = "spellcardData"
   private val NbtUser          = "user"
-
-  if (user != null) {
-    setPosition(user.posX, user.posY + user.getEyeHeight, user.posZ)
-    setRotation(user.rotationYaw, user.rotationPitch)
-  }
 
   private var _spellcardEntity = if (spellcardTpe != null) {
     spellcardId = DanmakuRegistry.getId(classOf[Spellcard], spellcardTpe)
     spellcardTpe.instantiate(this, target)
   } else null
 
-  private val spellcardInfo = if (sendNamePacket) new SpellcardInfoServer(_spellcardEntity.name) else null
-
   preventEntitySpawning = true
   setSize(0.4F, 0.6F)
+
+  if (user != null) {
+    setPosition(user.posX, user.posY + user.getEyeHeight, user.posZ)
+    setRotation(user.rotationYaw, user.rotationPitch)
+  }
+
+  private val spellcardInfo =
+    if (sendNamePacket && _spellcardEntity != null) new SpellcardInfoServer(_spellcardEntity.name) else null
 
   def this(world: World) = this(world, null, None, null, true)
 
@@ -66,17 +67,23 @@ class EntitySpellcard(
   }
 
   override def onUpdate(): Unit = {
-    if (!world.isRemote && (_spellcardEntity == null || ticksExisted >= spellcardTpe.endTime || user == null || user.isDead)) {
+    if (!world.isRemote && (_spellcardEntity == null || ticksExisted >= spellcardTpe.endTime || user == null)) {
       setDead()
     } else {
       super.onUpdate()
       if (spellcardInfo != null) spellcardInfo.tick()
 
       if (!world.isRemote) {
-        _spellcardEntity.onUpdate()
+        if(user.isDead) {
+          DanmakuHelper.removeDanmaku(user, 40F, RemoveMode.Enemy, dropBonus = true)
+          setDead()
+        }
+        else {
+          _spellcardEntity.onUpdate()
 
-        if (user.isInstanceOf[EntityPlayer] && ticksExisted < spellcardTpe.removeTime) {
-          DanmakuHelper.removeDanmaku(user, 40.0F, RemoveMode.Other, dropBonus = true)
+          if (user.isInstanceOf[EntityPlayer] && ticksExisted < spellcardTpe.removeTime) {
+            DanmakuHelper.removeDanmaku(user, 40.0F, RemoveMode.Other, dropBonus = true)
+          }
         }
       }
     }

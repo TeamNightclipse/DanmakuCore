@@ -40,7 +40,7 @@ abstract class SpellcardEntity(
 
   def onSpellcardUpdate(): Unit
 
-  def user: EntityLivingBase = cardEntity.getUser
+  def user: EntityLivingBase = cardEntity.user
 
   def name: TextComponentTranslation = new TextComponentTranslation(spellcard.unlocalizedName)
 
