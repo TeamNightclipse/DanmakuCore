@@ -14,5 +14,5 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 public class CapabilityDanmakuHitBehaviorJ {
 
 	@CapabilityInject(DanmakuHitBehavior.class)
-	public static Capability<DanmakuHitBehavior> HIT_BEHAVIOR;
+	public static final Capability<DanmakuHitBehavior> HIT_BEHAVIOR = null;
 }

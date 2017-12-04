@@ -8,9 +8,8 @@
  */
 package net.katsstuff.danmakucore
 
-import net.katsstuff.danmakucore.capability.DanmakuCoreDataHandler
 import net.katsstuff.danmakucore.capability.dancoredata.{CapabilityDanCoreDataS, DanmakuCoreDataHandler}
-import net.katsstuff.danmakucore.capability.danmakuhit.DanmakuHitBehaviorHandler
+import net.katsstuff.danmakucore.capability.danmakuhit.{CapabilityDanmakuHitBehaviorS, DanmakuHitBehaviorHandler}
 import net.katsstuff.danmakucore.client.ClientProxy
 import net.katsstuff.danmakucore.data.{ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.EntityFallingData
@@ -35,7 +34,6 @@ import net.minecraftforge.fml.relauncher.Side
 @Mod(modid = LibMod.Id, name = LibMod.Name, version = LibMod.Version, modLanguage = "scala")
 object DanmakuCore {
   MinecraftForge.EVENT_BUS.register(CommonProxy)
-  MinecraftForge.EVENT_BUS.register(PlayerChangeHandler)
 
   if (FMLCommonHandler.instance().getSide == Side.CLIENT) {
     MinecraftForge.EVENT_BUS.register(ClientProxy)
@@ -60,6 +58,7 @@ object DanmakuCore {
     proxy.registerColors()
     proxy.registerRenderers()
     CapabilityDanCoreDataS.register()
+    CapabilityDanmakuHitBehaviorS.register()
   }
 
   @Mod.EventHandler
@@ -69,6 +68,7 @@ object DanmakuCore {
     MinecraftForge.EVENT_BUS.register(ShapeHandler)
     MinecraftForge.EVENT_BUS.register(DanmakuCoreDataHandler)
     MinecraftForge.EVENT_BUS.register(DanmakuHitBehaviorHandler)
+    MinecraftForge.EVENT_BUS.register(PlayerChangeHandler)
     BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(LibItems.DANMAKU, (source: IBlockSource, stack: ItemStack) => {
       val iPos         = BlockDispenser.getDispensePosition(source)
       val directionVec = source.getBlockState.getValue(BlockDispenser.FACING).getDirectionVec
