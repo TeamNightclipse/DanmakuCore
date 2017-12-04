@@ -11,6 +11,7 @@ package net.katsstuff.danmakucore.helper
 import net.katsstuff.danmakucore.client.particle.{GlowTexture, ParticleUtil}
 import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.entity.{EntityFallingData, FallingDataTypes}
+import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.network.scalachannel.TargetPoint
 import net.katsstuff.danmakucore.network.{ChargeSpherePacket, DanCorePacketHandler}
 import net.minecraft.entity.Entity
@@ -132,6 +133,7 @@ trait TTouhouHelper {
       b: Float,
       lifetime: Int
   ): Unit = {
+    entity.playSound(LibSounds.POWER, 1F, 1F)
     val center            = new Vector3(entity.posX, entity.posY + (entity.height / 2), entity.posZ)
     val offsetPos         = center.offset(Vector3.randomVector, offset)
     val directionToCenter = Vector3.directionToPos(offsetPos, center).asInstanceOf[Vector3].divide(divSpeed)

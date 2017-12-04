@@ -11,10 +11,10 @@ package net.katsstuff.danmakucore.helper
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.{DamageSourceDanmaku, EntityDanmaku}
 import net.katsstuff.danmakucore.entity.living.DanmakuAlly
+import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{Entity, EntityLivingBase}
-import net.minecraft.init.SoundEvents
 import net.minecraft.util.{EnumParticleTypes, SoundCategory, SoundEvent}
 import net.minecraft.world.World
 
@@ -24,10 +24,15 @@ trait TDanmakuHelper {
   /**
     * Plays the iconic shot sound
     */
-  def playShotSound(entity: Entity): Unit = entity.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 2.0F, 1.2F)
+  def playShotSound(entity: Entity): Unit = entity.playSound(LibSounds.SHOT1, 2.0F, 1.2F)
 
   def playShotSound(world: World, pos: Vector3): Unit =
-    world.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 2F, 1.2F)
+    world.playSound(null, pos.x, pos.y, pos.z, LibSounds.SHOT1, SoundCategory.NEUTRAL, 2F, 1.2F)
+
+  def playLaserSound(entity: Entity): Unit = entity.playSound(LibSounds.LASER2, 2.0F, 1.2F)
+
+  def playLaserSound(world: World, pos: Vector3): Unit =
+    world.playSound(null, pos.x, pos.y, pos.z, LibSounds.LASER2, SoundCategory.NEUTRAL, 2F, 1.2F)
 
   private def explosionEffect(world: World, pos: Vector3, explosionSize: Float, sound: SoundEvent): Unit = {
     world.playSound(null, pos.toBlockPos, sound, SoundCategory.HOSTILE, 2.0F, 3.0F)
@@ -37,10 +42,10 @@ trait TDanmakuHelper {
   }
 
   def explosionEffect(world: World, pos: Vector3, explosionSize: Float): Unit =
-    explosionEffect(world, pos, explosionSize, SoundEvents.ENTITY_GENERIC_EXPLODE)
+    explosionEffect(world, pos, explosionSize, LibSounds.BOSS_EXPLODE)
 
   def explosionEffect2(world: World, pos: Vector3, explosionSize: Float): Unit =
-    explosionEffect(world, pos, explosionSize, SoundEvents.ENTITY_FIREWORK_BLAST)
+    explosionEffect(world, pos, explosionSize, LibSounds.SHOT2)
 
   /**
     * Create a chain explosion, damaging any [[DanmakuAlly]] in the vicinity.

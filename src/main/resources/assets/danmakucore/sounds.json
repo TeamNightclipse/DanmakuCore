@@ -1,0 +1,88 @@
+{
+  "power": {
+	"category": "hostile",
+	"sounds": [
+	  "danmakucore:power0"
+	]
+  },
+  "damage": {
+	"category": "neutral",
+	"sounds": [
+	  "danmakucore:damage00",
+	  "danmakucore:damage01"
+	]
+  },
+  "boss.explode": {
+	"category": "hostile",
+	"sounds": [
+	  "danmakucore:enep01"
+	]
+  },
+  "timeout": {
+	"category": "player",
+	"sounds": [
+	  "danmakucore:timeout",
+	  "danmakucore:timeout02"
+	]
+  },
+  "shadow": {
+	"category": "neutral",
+	"sounds": [
+	  "danmakucore:shadow"
+	]
+  },
+  "shadow.hidden": {
+	"category": "neutral",
+	"sounds": [
+	  "danmakucore:hidden"
+	]
+  },
+  "shadow.sudden": {
+	"category": "neutral",
+	"sounds": [
+	  "danmakucore:sudden"
+	]
+  },
+  "laser.laser1": {
+	"category": "neutral",
+	"sounds": [
+	  "danmakucore:lazer00_"
+	]
+  },
+  "laser.laser2": {
+	"category": "neutral",
+	"sounds": [
+	  "danmakucore:lazer01"
+	]
+  },
+  "shot.shot1": {
+	"category": "neutral",
+	"sounds": [
+	  "danmakucore:tan00"
+	]
+  },
+  "shot.shot2": {
+	"category": "neutral",
+	"sounds": [
+	  "danmakucore:tan01"
+	]
+  },
+  "shot.shot3": {
+	"category": "neutral",
+	"sounds": [
+	  "danmakucore:tan02"
+	]
+  },
+  "graze": {
+	"category": "player",
+	"sounds": [
+	  "danmakucore:graze"
+	]
+  },
+  "score": {
+	"category": "player",
+	"sounds": [
+	  "danmakucore:score"
+	]
+  }
+}

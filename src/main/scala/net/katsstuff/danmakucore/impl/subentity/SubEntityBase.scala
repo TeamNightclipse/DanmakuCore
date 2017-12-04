@@ -17,6 +17,7 @@ import net.katsstuff.danmakucore.entity.danmaku.{DamageSourceDanmaku, EntityDanm
 import net.katsstuff.danmakucore.entity.living.DanmakuAlly
 import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.helper.MathUtil._
+import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
 import net.minecraft.entity.{Entity, EntityAgeable, EntityLivingBase, IEntityMultiPart}
@@ -60,6 +61,7 @@ abstract class SubEntityBase(world: World, danmaku: EntityDanmaku) extends SubEn
       DamageSourceDanmaku.causeDanmakuDamage(danmaku, indirect),
       DanmakuHelper.adjustDanmakuDamage(user, entity, danmaku.shotData.damage, ConfigHandler.danmaku.danmakuLevel)
     )
+    entity.playSound(LibSounds.DAMAGE, 1F, 1F)
 
     if (averageSize < 0.7F) danmaku.delete()
   }

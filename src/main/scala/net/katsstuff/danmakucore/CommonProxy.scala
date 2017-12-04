@@ -33,7 +33,7 @@ import net.katsstuff.danmakucore.misc.IdState
 import net.katsstuff.danmakucore.network.SpellcardInfoPacket
 import net.minecraft.entity.Entity
 import net.minecraft.item.Item
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.{ResourceLocation, SoundEvent}
 import net.minecraft.world.World
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -157,6 +157,26 @@ object CommonProxy {
       } yield Seq(danmaku, spellcard, falling)
     }: _*)
 
+  }
+
+  @SubscribeEvent
+  def registerSounds(event: RegistryEvent.Register[SoundEvent]): Unit = {
+    event.getRegistry.registerAll(
+      LibSounds.POWER,
+      LibSounds.DAMAGE,
+      LibSounds.BOSS_EXPLODE,
+      LibSounds.TIMEOUT,
+      LibSounds.SHADOW,
+      LibSounds.HIDDEN,
+      LibSounds.SUDDEN,
+      LibSounds.LASER1,
+      LibSounds.LASER2,
+      LibSounds.SHOT1,
+      LibSounds.SHOT2,
+      LibSounds.SHOT3,
+      LibSounds.GRAZE,
+      LibSounds.SCORE
+    )
   }
 
   @SubscribeEvent

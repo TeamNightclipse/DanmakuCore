@@ -13,10 +13,10 @@ import javax.annotation.Nullable
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmaku
 import net.katsstuff.danmakucore.handler.ConfigHandler
+import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
-import net.minecraft.init.SoundEvents
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.{EnumFacing, SoundCategory}
 import net.minecraftforge.common.capabilities.{Capability, ICapabilitySerializable}
@@ -87,20 +87,21 @@ class DanmakuCoreDataHandler {
         player.isDead = false
         player.setHealth(player.getMaxHealth)
         player.hurtResistantTime = 50
-        //TODO: Fancy sound and animation
+        /*
         player.world.playSound(
           null,
           player.posX,
           player.posY,
           player.posZ,
-          SoundEvents.BLOCK_GLASS_BREAK,
+          LibSounds.DEATH, //TODO
           SoundCategory.PLAYERS,
           2F,
           1F
         )
+        */
         event.setCanceled(true)
 
-      case _                                                                                                    =>
+      case _ =>
     }
   }
 

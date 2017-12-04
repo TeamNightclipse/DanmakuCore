@@ -12,13 +12,12 @@ import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.entity.EntityFallingData.DataType
 import net.katsstuff.danmakucore.entity.EntityFallingData.DataType.{BigPower, Bomb, Life, Power, ScoreBlue, ScoreGreen}
 import net.katsstuff.danmakucore.helper.NBTHelper
-import net.katsstuff.danmakucore.lib.LibEntityName
+import net.katsstuff.danmakucore.lib.{LibEntityName, LibSounds}
 import net.katsstuff.danmakucore.misc.LogicalSideOnly
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.init.SoundEvents
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.network.datasync.{DataSerializer, DataSerializers, EntityDataManager}
 import net.minecraft.util.math.BlockPos
@@ -121,14 +120,15 @@ class EntityFallingData(
     dataType match {
       case DataType.ScoreGreen | DataType.ScoreBlue =>
         TouhouHelper.changeAndSyncPlayerData(_.addScore(amount.toInt), player)
+        player.playSound(LibSounds.SCORE, 1F, 1F)
       case DataType.Power | DataType.BigPower =>
         TouhouHelper.changeAndSyncPlayerData(_.addPower(amount), player)
       case DataType.Life =>
         TouhouHelper.changeAndSyncPlayerData(_.addLives(amount.toInt), player)
+        //player.playSound(LibSounds.EXTEND, 1F, 1F) //TODO: Extend
       case DataType.Bomb =>
         TouhouHelper.changeAndSyncPlayerData(_.addBombs(amount.toInt), player)
     }
-    this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 0.75F, 1.3F)
     setDead()
   }
 
