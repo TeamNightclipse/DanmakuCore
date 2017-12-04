@@ -14,8 +14,8 @@ import scala.annotation.tailrec
 
 import org.lwjgl.opengl.GL11
 
-import net.minecraft.client.renderer.{GlStateManager, Tessellator, BufferBuilder}
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.renderer.{BufferBuilder, GlStateManager, Tessellator}
 
 class DanModel(private[this] val data: Array[Byte], private[this] val pieces: Int, private[this] val danAlpha: Float) {
 

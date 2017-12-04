@@ -11,10 +11,11 @@ package net.katsstuff.danmakucore.lib.data;
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.entity.spellcard.SpellcardDummy;
 import net.katsstuff.danmakucore.lib.LibMod;
+import net.katsstuff.danmakucore.lib.LibModJ;
 import net.katsstuff.danmakucore.lib.LibSpellcardName;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
-@ObjectHolder(LibMod.MODID)
+@ObjectHolder(LibModJ.ID)
 public final class LibSpellcards {
 
 	@ObjectHolder(LibSpellcardName.DELUSION_OF_ENLIGHTENMENT)

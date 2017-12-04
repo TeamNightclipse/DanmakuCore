@@ -10,10 +10,11 @@ package net.katsstuff.danmakucore.lib.data;
 
 import net.katsstuff.danmakucore.lib.LibItemName;
 import net.katsstuff.danmakucore.lib.LibMod;
+import net.katsstuff.danmakucore.lib.LibModJ;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
-@ObjectHolder(LibMod.MODID)
+@ObjectHolder(LibModJ.ID)
 public class LibItems {
 
 	@ObjectHolder(LibItemName.DANMAKU)

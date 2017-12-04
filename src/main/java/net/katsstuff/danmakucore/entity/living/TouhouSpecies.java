@@ -15,7 +15,7 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-import net.katsstuff.danmakucore.misc.ITranslatable;
+import net.katsstuff.danmakucore.misc.Translatable;
 
 /**
  * All the different species. Naming should be done like this TYPE_SUPERSPECIES_SPECIES TYPE refers
@@ -24,7 +24,7 @@ import net.katsstuff.danmakucore.misc.ITranslatable;
  * different species colliding.
  */
 @SuppressWarnings("unused")
-public class TouhouSpecies implements ITranslatable {
+public class TouhouSpecies implements Translatable {
 
 	private static final Map<String, TouhouSpecies> byName = new HashMap<>();
 
@@ -172,7 +172,7 @@ public class TouhouSpecies implements ITranslatable {
 	}
 
 	@Override
-	public String getUnlocalizedName() {
+	public String unlocalizedName() {
 		return "touhouCharacter.name." + name;
 	}
 }

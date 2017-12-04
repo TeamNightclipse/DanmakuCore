@@ -13,11 +13,11 @@ import java.util.function.Predicate
 import java.util.{Optional, Random}
 
 import scala.beans.BeanProperty
-import scala.collection.JavaConverters._
 
 import com.google.common.base.{Predicate => GPredicate}
 
-import net.katsstuff.danmakucore.helper.DanmakuHelper
+import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
+import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.util.math.{BlockPos, MathHelper, Vec3d}
 
@@ -551,7 +551,7 @@ object Vector3 {
   final val One    = Vector3(1D, 1D, 1D)
 
   final val GravityZero    = Zero
-  final val GravityDefault = Vector3(0D, DanmakuHelper.GRAVITY_DEFAULT, 0D)
+  final val GravityDefault = Vector3(0D, DanmakuHelper.GravityDefault, 0D)
   final val RotateDefault  = Vector3(0D, 1D, 0D)
 
   final val Up    = Vector3(0, 1, 0)
@@ -687,13 +687,10 @@ object Vector3 {
 
   implicit def toVec3d(vector3: AbstractVector3): Vec3d = vector3.toVec3d
 
-  //We only use java classes for return and entry to make it easier to call from java
   //From Psi
-  def getEntityLookedAt(
-      sourceEntity: Entity,
-      filter: Predicate[Entity] = _ => true,
-      distanceReach: Double = 32D
-  ): Optional[Entity] = {
+  def collectEntityLookedAt[A <: Entity](sourceEntity: Entity, distanceReach: Double = 32D)(
+      collect: PartialFunction[Entity, A]
+  ): Option[A] = {
     val posSource = sourceEntity match {
       case living: EntityLivingBase => new Vector3(living)
       case _                        => new Vector3(sourceEntity)
@@ -706,18 +703,15 @@ object Vector3 {
 
     val distance = if (rayTrace != null) rayTrace.hitVec.distanceTo(posSourceVec3d) else distanceReach
 
-    val foundEntities: Seq[Entity] = sourceEntity.world
-      .getEntitiesInAABBexcluding(
-        sourceEntity,
-        sourceEntity.getEntityBoundingBox
-          .expand(direction.x * distanceReach, direction.y * distanceReach, direction.z * distanceReach)
-          .grow(1F),
-        (entity => filter.test(entity)): GPredicate[Entity]
-      )
-      .asScala
+    val bb = sourceEntity.getEntityBoundingBox
+      .expand(direction.x * distanceReach, direction.y * distanceReach, direction.z * distanceReach)
+      .grow(1F)
+    val foundEntities = sourceEntity.world.collectEntitiesWithinAABBExcludingEntity(Some(sourceEntity), bb) {
+      case e if e.canBeCollidedWith && !e.noClip && collect.isDefinedAt(e) => collect(e)
+    }
 
-    val (foundEntity, distanceTo) = foundEntities.foldRight((None: Option[Entity], 0D)) {
-      case (potentialEntity, prev @ (_, minDistance)) if potentialEntity.canBeCollidedWith && !potentialEntity.noClip =>
+    val (foundEntity, distanceTo) = foundEntities.foldRight((None: Option[A], 0D)) {
+      case (potentialEntity, prev @ (_, minDistance)) =>
         val hitbox            = potentialEntity.getEntityBoundingBox.grow(potentialEntity.getCollisionBorderSize)
         val interceptPosition = hitbox.calculateIntercept(posSourceVec3d, posReach)
 
@@ -727,9 +721,11 @@ object Vector3 {
           val distanceToEntity = posSourceVec3d.distanceTo(interceptPosition.hitVec)
           if (distanceToEntity < minDistance || minDistance == 0.0D) (Some(potentialEntity), distanceToEntity) else prev
         } else prev
-      case (_, prev) => prev
     }
 
-    if (distanceTo < distance || rayTrace == null) Optional.ofNullable(foundEntity.orNull) else Optional.empty()
+    if (distanceTo < distance || rayTrace == null) foundEntity else None
   }
+
+  def getEntityLookedAt(sourceEntity: Entity, filter: Predicate[Entity], distanceReach: Double): Optional[Entity] =
+    collectEntityLookedAt[Entity](sourceEntity, distanceReach)({ case e if filter.test(e) => e }).toOptional
 }

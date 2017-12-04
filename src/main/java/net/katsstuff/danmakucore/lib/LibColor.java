@@ -9,7 +9,9 @@
 package net.katsstuff.danmakucore.lib;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.google.common.collect.ImmutableList;
 
@@ -45,8 +47,41 @@ public class LibColor {
 	public static final int COLOR_SATURATED_ORANGE  = 0xFF8C00;
 	public static final int COLOR_WHITE             = COLOR_VANILLA_WHITE;
 
+	private static final int[] SATURATED_COLORS = new int[] {LibColor.COLOR_SATURATED_BLUE, LibColor.COLOR_SATURATED_CYAN,
+			LibColor.COLOR_SATURATED_GREEN, LibColor.COLOR_SATURATED_MAGENTA, LibColor.COLOR_SATURATED_ORANGE, LibColor.COLOR_SATURATED_RED,
+			LibColor.COLOR_WHITE, LibColor.COLOR_SATURATED_YELLOW};
+
+	private static final int[] VANILLA_COLORS = new int[] {LibColor.COLOR_VANILLA_WHITE, LibColor.COLOR_VANILLA_ORANGE,
+			LibColor.COLOR_VANILLA_MAGENTA, LibColor.COLOR_VANILLA_LIGHT_BLUE, LibColor.COLOR_VANILLA_YELLOW, LibColor.COLOR_VANILLA_LIME,
+			LibColor.COLOR_VANILLA_PINK, LibColor.COLOR_VANILLA_GRAY, LibColor.COLOR_VANILLA_SILVER, LibColor.COLOR_VANILLA_CYAN,
+			LibColor.COLOR_VANILLA_PURPLE, LibColor.COLOR_VANILLA_BLUE, LibColor.COLOR_VANILLA_BROWN, LibColor.COLOR_VANILLA_GREEN,
+			LibColor.COLOR_VANILLA_RED, LibColor.COLOR_VANILLA_BLACK};
+
 	private static int getColor(EnumDyeColor color) {
 		return ReflectionHelper.getPrivateValue(EnumDyeColor.class, color, "colorValue", "field_176787_t");
+	}
+
+	public static int[] saturatedColors() {
+		return Arrays.copyOf(SATURATED_COLORS, SATURATED_COLORS.length);
+	}
+
+	public static int[] vanillaColors() {
+		return Arrays.copyOf(VANILLA_COLORS, VANILLA_COLORS.length);
+	}
+
+	/**
+	 * Check if a color is registered
+	 */
+	public static boolean isNormalColor(int color) {
+		return VALID_COLOR.contains(color);
+	}
+
+	public static int randomSaturatedColor() {
+		return SATURATED_COLORS[ThreadLocalRandom.current().nextInt(SATURATED_COLORS.length)];
+	}
+
+	public static int randomVanillaColor() {
+		return VANILLA_COLORS[ThreadLocalRandom.current().nextInt(VANILLA_COLORS.length)];
 	}
 
 	private static final List<Integer> VALID_COLOR = new ArrayList<>();

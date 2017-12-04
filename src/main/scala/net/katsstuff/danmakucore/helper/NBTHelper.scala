@@ -13,7 +13,7 @@ import java.util.{Optional, UUID}
 import scala.collection.JavaConverters._
 
 import net.katsstuff.danmakucore.data.{AbstractVector3, Vector3}
-import net.katsstuff.danmakucore.helper.Implicits._
+import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
 import net.minecraft.entity.Entity
 import net.minecraft.nbt.{NBTTagCompound, NBTTagDouble, NBTTagList}
 import net.minecraft.world.World

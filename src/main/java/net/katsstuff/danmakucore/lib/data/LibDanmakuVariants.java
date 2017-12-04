@@ -12,9 +12,10 @@ import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariantDummy;
 import net.katsstuff.danmakucore.lib.LibDanmakuVariantName;
 import net.katsstuff.danmakucore.lib.LibMod;
+import net.katsstuff.danmakucore.lib.LibModJ;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
-@ObjectHolder(LibMod.MODID)
+@ObjectHolder(LibModJ.ID)
 public final class LibDanmakuVariants {
 
 	@ObjectHolder(LibDanmakuVariantName.DEFAULT)

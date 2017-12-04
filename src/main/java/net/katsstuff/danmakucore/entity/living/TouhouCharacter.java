@@ -17,13 +17,13 @@ import java.util.Optional;
 
 import com.google.common.collect.ImmutableList;
 
-import net.katsstuff.danmakucore.misc.ITranslatable;
+import net.katsstuff.danmakucore.misc.Translatable;
 
 /**
  * The different Touhou characters. Currently only used for localizing spellcards.
  */
 @SuppressWarnings("unused")
-public class TouhouCharacter implements ITranslatable {
+public class TouhouCharacter implements Translatable {
 
 	private static final Map<String, TouhouCharacter> byFullName = new HashMap<>();
 	private static final Map<String, TouhouCharacter> byShortName = new HashMap<>();
@@ -291,7 +291,7 @@ public class TouhouCharacter implements ITranslatable {
 	}
 
 	@Override
-	public String getUnlocalizedName() {
+	public String unlocalizedName() {
 		return "touhouCharacter.name." + fullName;
 	}
 }

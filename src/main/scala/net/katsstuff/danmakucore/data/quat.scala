@@ -10,8 +10,6 @@ package net.katsstuff.danmakucore.data
 
 import java.text.NumberFormat
 
-import javax.vecmath.Quat4f
-
 import scala.beans.BeanProperty
 
 import org.lwjgl.util.vector.Quaternion

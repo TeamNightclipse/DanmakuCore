@@ -11,10 +11,11 @@ package net.katsstuff.danmakucore.lib.data;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityTypeDummy;
 import net.katsstuff.danmakucore.lib.LibMod;
+import net.katsstuff.danmakucore.lib.LibModJ;
 import net.katsstuff.danmakucore.lib.LibSubEntityName;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
-@ObjectHolder(LibMod.MODID)
+@ObjectHolder(LibModJ.ID)
 public final class LibSubEntities {
 
 	@ObjectHolder(LibSubEntityName.DEFAULT)

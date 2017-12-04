@@ -90,7 +90,7 @@ abstract sealed class AbstractShotData {
 
   def serializeNBT: NBTTagCompound = {
     val tag = new NBTTagCompound
-    tag.setString(ShotData.NbtForm, form.getFullNameString)
+    tag.setString(ShotData.NbtForm, form.fullNameString)
     tag.setInteger(ShotData.NbtColor, color)
     tag.setFloat(ShotData.NbtDamage, damage)
     tag.setFloat(ShotData.NbtSizeX, sizeX)
@@ -98,7 +98,7 @@ abstract sealed class AbstractShotData {
     tag.setFloat(ShotData.NbtSizeZ, sizeZ)
     tag.setInteger(ShotData.NbtDelay, delay)
     tag.setInteger(ShotData.NbtEnd, end)
-    tag.setString(ShotData.NbtSubEntity, subEntity.getFullNameString)
+    tag.setString(ShotData.NbtSubEntity, subEntity.fullNameString)
     tag
   }
 
@@ -176,7 +176,7 @@ final case class MutableShotData(
   }
 
   override def deserializeNBT(tag: NBTTagCompound): Unit = {
-    form = Option(DanmakuRegistry.FORM.getValue(new ResourceLocation(tag.getString(ShotData.NbtForm)))).getOrElse {
+    form = Option(DanmakuRegistry.Form.getValue(new ResourceLocation(tag.getString(ShotData.NbtForm)))).getOrElse {
       LogHelper.warn("Found null form. Setting to default")
       LibForms.SPHERE
     }
@@ -187,7 +187,7 @@ final case class MutableShotData(
     sizeZ = tag.getFloat(ShotData.NbtSizeZ)
     delay = tag.getInteger(ShotData.NbtDelay)
     end = tag.getInteger(ShotData.NbtEnd)
-    subEntity = Option(DanmakuRegistry.SUB_ENTITY.getValue(new ResourceLocation(tag.getString(ShotData.NbtSubEntity))))
+    subEntity = Option(DanmakuRegistry.SubEntity.getValue(new ResourceLocation(tag.getString(ShotData.NbtSubEntity))))
       .getOrElse {
         LogHelper.warn("Found null subEntity type. Setting to default")
         LibSubEntities.DEFAULT_TYPE
@@ -234,7 +234,7 @@ final case class ShotData(
 
   def this(tag: NBTTagCompound) {
     this(
-      form = Option(DanmakuRegistry.FORM.getValue(new ResourceLocation(tag.getString(ShotData.NbtForm)))).getOrElse {
+      form = Option(DanmakuRegistry.Form.getValue(new ResourceLocation(tag.getString(ShotData.NbtForm)))).getOrElse {
         LogHelper.warn("Found null form. Setting to default")
         LibForms.SPHERE
       },
@@ -246,7 +246,7 @@ final case class ShotData(
       delay = tag.getInteger(ShotData.NbtDelay),
       end = tag.getInteger(ShotData.NbtEnd),
       subEntity = Option(
-        DanmakuRegistry.SUB_ENTITY.getValue(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))
+        DanmakuRegistry.SubEntity.getValue(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))
       ).getOrElse {
         LogHelper.warn("Found null subEntity type. Setting to default")
         LibSubEntities.DEFAULT_TYPE

@@ -9,11 +9,11 @@
 package net.katsstuff.danmakucore.handler;
 
 import net.katsstuff.danmakucore.EnumDanmakuLevel;
-import net.katsstuff.danmakucore.lib.LibMod;
+import net.katsstuff.danmakucore.lib.LibModJ;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.Config.Comment;
 
-@Config(modid = LibMod.MODID)
+@Config(modid = LibModJ.ID)
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class ConfigHandler {
 

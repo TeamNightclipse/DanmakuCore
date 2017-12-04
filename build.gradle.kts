@@ -1,5 +1,7 @@
 import groovy.util.ConfigObject
 import groovy.util.ConfigSlurper
+import net.minecraftforge.gradle.user.IReobfuscator
+import net.minecraftforge.gradle.user.ReobfTaskFactory
 import net.minecraftforge.gradle.user.patcherUser.forge.ForgeExtension
 import org.gradle.api.internal.HasConvention
 import org.gradle.jvm.tasks.Jar
@@ -38,11 +40,11 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-getTask<JavaCompile>("compileJava") {
+tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
-getTask<ScalaCompile>("compileScala") {
+tasks.withType<ScalaCompile> {
     scalaCompileOptions.additionalParameters = listOf("-Xexperimental")
 }
 
@@ -76,13 +78,38 @@ configure<ForgeExtension> {
     replaceIn("LibMod.Java")
 }
 
+val reobf: NamedDomainObjectContainer<IReobfuscator> by extensions
+
+reobf {
+    "jar" {
+        extraLines.add("PK: shapeless net/katsstuff/spookyharvestmoon/shade/shapeless")
+    }
+}
+
+val shade by configurations.creating
+configurations.compile.extendsFrom(shade)
+
 dependencies {
+    shade("com.chuusai:shapeless_2.11:2.3.2") {
+        exclude(group = "org.scala-lang")
+    }
+
     testCompile("junit:junit:4.12")
     testCompile("org.scalatest:scalatest_2.11:3.0.1")
     testCompile("org.scalacheck:scalacheck_2.11:1.13.4")
 }
 
-getTask<ProcessResources>("processResources") {
+tasks.withType<Jar> {
+    shade.forEach { dep ->
+        from(project.zipTree(dep)) {
+            exclude("META_INF", "META_INF/**")
+        }
+    }
+
+    exclude("**/*.psd")
+}
+
+tasks.withType<ProcessResources> {
     inputs.property("version", project.version)
     inputs.property("mcversion", minecraft.version)
 
@@ -114,11 +141,4 @@ fun parseConfig(config: File): ConfigObject {
 
 idea.module.inheritOutputDirs = true
 
-getTask<Jar>("jar") {
-    exclude("**/*.psd")
-}
-
 defaultTasks("clean", "build", "incrementBuildNumber")
-
-@Suppress("UNCHECKED_CAST")
-fun <T: Task> Project.getTask(name: String, configuration: T.() -> Unit) = (tasks.get(name) as T).apply(configuration)

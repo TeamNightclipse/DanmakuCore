@@ -19,8 +19,8 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class FormDanModel(name: String, model: DanModel) extends FormGeneric(name) {
   @SideOnly(Side.CLIENT)
-  override protected def createRenderer() = new IRenderForm {
-    override def renderForm(
+  override protected def createRenderer(): IRenderForm = {
+    (
         danmaku: EntityDanmaku,
         x: Double,
         y: Double,
@@ -28,12 +28,12 @@ class FormDanModel(name: String, model: DanModel) extends FormGeneric(name) {
         entityYaw: Float,
         partialTicks: Float,
         man: RenderManager
-    ): Unit = {
+    ) =>
       val tes      = Tessellator.getInstance
       val vb       = tes.getBuffer
       val pitch    = danmaku.rotationPitch
       val yaw      = danmaku.rotationYaw
-      val roll     = danmaku.getRoll
+      val roll     = danmaku.roll
       val shotData = danmaku.getShotData
       val sizeX    = shotData.getSizeX
       val sizeY    = shotData.getSizeY
@@ -46,6 +46,5 @@ class FormDanModel(name: String, model: DanModel) extends FormGeneric(name) {
       GL11.glScalef(sizeX, sizeY, sizeZ)
 
       model.render(vb, tes, color)
-    }
   }
 }

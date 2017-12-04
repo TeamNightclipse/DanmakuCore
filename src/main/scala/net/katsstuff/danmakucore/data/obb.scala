@@ -8,8 +8,6 @@
  */
 package net.katsstuff.danmakucore.data
 
-import javax.annotation.Nullable
-
 import net.minecraft.util.math.AxisAlignedBB
 
 case class OrientedBoundingBox(boundingBox: AxisAlignedBB, pos: Vector3, orientation: Quat) {

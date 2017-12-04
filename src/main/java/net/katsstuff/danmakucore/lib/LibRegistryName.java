@@ -8,17 +8,14 @@
  */
 package net.katsstuff.danmakucore.lib;
 
+import net.katsstuff.danmakucore.DanmakuCore;
 import net.minecraft.util.ResourceLocation;
 
 public class LibRegistryName {
 
-	public static final ResourceLocation FORMS = resource("form");
-	public static final ResourceLocation SUB_ENTITIES = resource("sub_entity");
-	public static final ResourceLocation VARIANTS = resource("danmaku_variant");
-	public static final ResourceLocation SPELLCARDS = resource("spellcard");
-	public static final ResourceLocation PHASES = resource("phase");
-
-	private static ResourceLocation resource(String path) {
-		return new ResourceLocation(LibMod.MODID, path);
-	}
+	public static final ResourceLocation FORMS = DanmakuCore.resource("form");
+	public static final ResourceLocation SUB_ENTITIES = DanmakuCore.resource("sub_entity");
+	public static final ResourceLocation VARIANTS = DanmakuCore.resource("danmaku_variant");
+	public static final ResourceLocation SPELLCARDS = DanmakuCore.resource("spellcard");
+	public static final ResourceLocation PHASES = DanmakuCore.resource("phase");
 }
