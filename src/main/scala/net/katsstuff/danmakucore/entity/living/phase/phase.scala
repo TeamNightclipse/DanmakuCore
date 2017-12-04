@@ -39,7 +39,7 @@ abstract class Phase(val manager: PhaseManager) extends INBTSerializable[NBTTagC
     * this phase is invulnerable, and provided data that can be used on the
     * client.
     */
-  protected var counter = 0
+  protected var _counter = 0
 
   /**
     * The set amount of time that this phase will use to reset the counter.
@@ -57,8 +57,9 @@ abstract class Phase(val manager: PhaseManager) extends INBTSerializable[NBTTagC
   private var _isActive = false
   private var spellcardInfo: Option[SpellcardInfoServer] = None
 
-  protected def getCounter:         Int  = counter
-  protected def setCounter(i: Int): Unit = counter = i
+  def counter:                      Int  = _counter
+  def getCounter:                   Int  = counter
+  protected def setCounter(i: Int): Unit = _counter = i
 
   protected def getInterval:         Int  = interval
   protected def setInterval(i: Int): Unit = interval = i
@@ -71,7 +72,7 @@ abstract class Phase(val manager: PhaseManager) extends INBTSerializable[NBTTagC
     */
   def init(): Unit = {
     _isActive = true
-    counter = 0
+    _counter = 0
     interval = 40
 
     spellcardName.foreach { name =>
@@ -97,14 +98,14 @@ abstract class Phase(val manager: PhaseManager) extends INBTSerializable[NBTTagC
 
   @LogicalSideOnly(Side.CLIENT)
   def clientUpdate(): Unit = {
-    counter += 1
-    if (counter > interval) counter = 0
+    _counter += 1
+    if (_counter > interval) _counter = 0
   }
 
   @LogicalSideOnly(Side.SERVER)
   def serverUpdate(): Unit = {
-    counter += 1
-    if (counter > interval) counter = 0
+    _counter += 1
+    if (_counter > interval) _counter = 0
 
     spellcardInfo.foreach(_.tick())
 
@@ -119,7 +120,7 @@ abstract class Phase(val manager: PhaseManager) extends INBTSerializable[NBTTagC
         oldInterval = -1
       }
     }
-    if (counter % 10 == 0 || interval < 10) {
+    if (_counter % 10 == 0 || interval < 10) {
       spellcardName.foreach { name =>
         spellcardInfo match {
           case Some(info) => info.setName(name)
@@ -145,7 +146,7 @@ abstract class Phase(val manager: PhaseManager) extends INBTSerializable[NBTTagC
     * If you want to do some action every x ticks, set
     * the interval to x and test for this.
     */
-  protected def isCounterStart: Boolean = counter == 0
+  protected def isCounterStart: Boolean = _counter == 0
 
   def entity: EntityDanmakuMob = manager.entity
 
@@ -154,16 +155,16 @@ abstract class Phase(val manager: PhaseManager) extends INBTSerializable[NBTTagC
   def phaseType: PhaseType
 
   /**
-    * Check if this is a spellcard. Used to get the amount of starts to show for bosses.
+    * Check if this is a spellcard. Used to get the amount of stars to show for bosses.
     */
-  def isSpellcard = false
+  def isSpellcard: Boolean = spellcard.nonEmpty
 
   /**
     * Returns the name to render in spellcard like fashion.
     * Doesn't actually need to be a real spellcard.
     */
   def spellcardName: Option[ITextComponent] =
-    spellcard.map(card => new TextComponentTranslation(card.getUnlocalizedName))
+    spellcard.map(card => new TextComponentTranslation(card.unlocalizedName))
 
   /**
     * If this [[Phase]] represents a spellcard, returns the spellcard.
@@ -175,14 +176,14 @@ abstract class Phase(val manager: PhaseManager) extends INBTSerializable[NBTTagC
   override def serializeNBT: NBTTagCompound = {
     val tag = new NBTTagCompound
     tag.setString(Phase.NbtName, phaseType.fullNameString)
-    tag.setInteger(NbtCounter, counter)
+    tag.setInteger(NbtCounter, _counter)
     tag.setInteger(NbtInterval, interval)
     tag.setInteger(NbtOldInterval, oldInterval)
     tag
   }
 
   override def deserializeNBT(nbt: NBTTagCompound): Unit = {
-    counter = nbt.getInteger(NbtCounter)
+    _counter = nbt.getInteger(NbtCounter)
     interval = nbt.getInteger(NbtInterval)
     oldInterval = nbt.getInteger(NbtOldInterval)
   }
@@ -190,6 +191,10 @@ abstract class Phase(val manager: PhaseManager) extends INBTSerializable[NBTTagC
 abstract class PhaseType extends RegistryValue[PhaseType] {
   def instantiate(phaseManager: PhaseManager): Phase
 }
+object PhaseType {
+  implicit val ordering: Ordering[PhaseType] = Ordering.by((card: PhaseType) => card.fullNameString)
+}
+
 //Java-API for Phase
 abstract class AbstractPhase(manager: PhaseManager) extends Phase(manager) {
 
@@ -200,5 +205,5 @@ abstract class AbstractPhase(manager: PhaseManager) extends Phase(manager) {
   def spellcardJ: Optional[Spellcard] = Optional.empty()
 
   def spellcardNameJ: Optional[_ <: ITextComponent] =
-    spellcard.map((card: Spellcard) => new TextComponentTranslation(card.getUnlocalizedName)).toOptional
+    spellcard.map((card: Spellcard) => new TextComponentTranslation(card.unlocalizedName)).toOptional
 }

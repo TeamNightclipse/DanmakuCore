@@ -22,7 +22,7 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @SideOnly(Side.CLIENT)
-class SpellcardHandler {
+private[danmakucore] class SpellcardHandler {
 
   private val spellcards = new mutable.HashMap[UUID, SpellcardInfoClient]
   @SubscribeEvent
@@ -61,7 +61,7 @@ class SpellcardHandler {
     GlStateManager.popMatrix()
   }
 
-  private[danmakucore] def handlePacket(packet: SpellcardInfoPacket): Unit = {
+  def handlePacket(packet: SpellcardInfoPacket): Unit = {
     packet match {
       case add: AddSpellcardInfo =>
         spellcards.put(add.uuid, new SpellcardInfoClient(add))

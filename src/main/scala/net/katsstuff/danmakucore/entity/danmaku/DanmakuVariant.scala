@@ -10,6 +10,7 @@ package net.katsstuff.danmakucore.entity.danmaku
 
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData, Vector3}
+import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType
 import net.katsstuff.danmakucore.registry.RegistryValueItemCreatable
 import net.minecraft.client.renderer.block.model.{ModelResourceLocation => MRL}
 import net.minecraft.entity.EntityLivingBase
@@ -24,7 +25,7 @@ import net.minecraft.util.{EnumHand, ResourceLocation}
   * Remember to not load the ShotData (and thus Form and SubEntity) before everything
   * there has finished to register. One approach is to make it lazy.
   */
-abstract class DanmakuVariant() extends RegistryValueItemCreatable[DanmakuVariant, DanmakuTemplate] {
+abstract class DanmakuVariant extends RegistryValueItemCreatable[DanmakuVariant, DanmakuTemplate] {
   def this(name: String) {
     this()
     setRegistryName(name)
@@ -44,6 +45,9 @@ abstract class DanmakuVariant() extends RegistryValueItemCreatable[DanmakuVarian
   ): Option[DanmakuTemplate] =
     Some(DanmakuTemplate.builder.setVariant(this).setUser(user).setDirection(direction).setPos(pos).build)
 
-  override def getUnlocalizedName: String = "danmakuvariant." + modId + "." + name
-  override def getItemModel: MRL = new MRL(new ResourceLocation(modId, "danmaku/variant/" + name), "inventory")
+  override def unlocalizedName: String = "danmakuvariant." + modId + "." + name
+  override def itemModel:       MRL    = new MRL(new ResourceLocation(modId, "danmaku/variant/" + name), "inventory")
+}
+object DanmakuVariant {
+  implicit val ordering: Ordering[DanmakuVariant] = Ordering.by((variant: DanmakuVariant) => variant.fullNameString)
 }

@@ -17,6 +17,6 @@ object SubEntityTypeDummy extends SubEntityType {
   override def instantiate(world: World, entityDanmaku: EntityDanmaku) = new SubEntityDummy(world, entityDanmaku)
 }
 
-private class SubEntityDummy(val world: World, val danmaku: EntityDanmaku) extends SubEntity(world, danmaku) {
+private[subentity] class SubEntityDummy(world: World, danmaku: EntityDanmaku) extends SubEntity(world, danmaku) {
   override def subEntityTick(): Unit = {}
 }

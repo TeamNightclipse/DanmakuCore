@@ -8,8 +8,8 @@
  */
 package net.katsstuff.danmakucore.capability
 
-import net.katsstuff.danmakucore.network.{DanCoreDataPacket, DanCorePacketHandler}
 import net.katsstuff.danmakucore.network.scalachannel.TargetPoint
+import net.katsstuff.danmakucore.network.{DanCoreDataPacket, DanCorePacketHandler}
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayerMP
 

@@ -9,7 +9,6 @@
 package net.katsstuff.danmakucore.entity.living.ai
 
 import net.minecraft.entity.EntityLiving
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.ai.EntityAIBase
 
 //EntityAIAttackRangedBow without attack part

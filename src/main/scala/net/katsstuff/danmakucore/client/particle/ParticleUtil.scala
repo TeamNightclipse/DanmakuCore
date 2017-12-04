@@ -12,8 +12,8 @@ import java.util.Random
 
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.data.Vector3
-import net.katsstuff.danmakucore.network.{DanCorePacketHandler, ParticlePacket}
 import net.katsstuff.danmakucore.network.scalachannel.TargetPoint
+import net.katsstuff.danmakucore.network.{DanCorePacketHandler, ParticlePacket}
 import net.minecraft.client.Minecraft
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}

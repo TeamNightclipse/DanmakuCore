@@ -12,6 +12,7 @@ import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData}
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity
+import net.katsstuff.danmakucore.entity.spellcard.Spellcard
 import net.katsstuff.danmakucore.registry.RegistryValueWithItemModel
 import net.minecraft.client.renderer.block.model.{ModelResourceLocation => MRL}
 import net.minecraft.entity.player.EntityPlayer
@@ -82,7 +83,10 @@ abstract class Form extends RegistryValueWithItemModel[Form] {
     */
   def onRotationDataChange(oldRotation: RotationData, newRotation: RotationData): RotationData = newRotation
 
-  override def getUnlocalizedName: String = "form." + modId + "." + name
+  override def unlocalizedName: String = "form." + modId + "." + name
 
-  override def getItemModel: MRL = new MRL(new ResourceLocation(modId, "danmaku/form/" + name), "inventory")
+  override def itemModel: MRL = new MRL(new ResourceLocation(modId, "danmaku/form/" + name), "inventory")
+}
+object Form {
+  implicit val ordering: Ordering[Form] = Ordering.by((form: Form) => form.fullNameString)
 }

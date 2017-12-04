@@ -21,8 +21,6 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.ITextComponent
 import shapeless._
-import shapeless.ops.coproduct.IsCCons
-import shapeless.ops.hlist.IsHCons
 
 @implicitNotFound("A discriminator is needed to create a message converter for ${A}")
 case class Discriminator[A](byte: Byte)

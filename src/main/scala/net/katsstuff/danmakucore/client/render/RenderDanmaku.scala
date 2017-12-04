@@ -43,7 +43,7 @@ class RenderDanmaku(val renderManagerIn: RenderManager) extends Render[EntityDan
       val renderForm = form.getRenderer(entity)
       if (renderForm != null) renderForm.renderForm(entity, x, y, z, entityYaw, partialTicks, renderManager)
       else if (!invalidForms.contains(form)) {
-        LogHelper.error("Invalid renderer for " + I18n.format(form.getUnlocalizedName))
+        LogHelper.error("Invalid renderer for " + I18n.format(form.unlocalizedName))
         invalidForms.add(form)
       }
 

@@ -17,7 +17,7 @@ import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.text.ITextComponent
 
-class SpellcardInfoServer(val uuid: UUID, val name: ITextComponent, val mirrorText: Boolean)
+class SpellcardInfoServer(uuid: UUID, name: ITextComponent, mirrorText: Boolean)
     extends SpellcardInfo(uuid, name, mirrorText) {
   final val DestinationHeight = 0.02F
 

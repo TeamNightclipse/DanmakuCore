@@ -9,7 +9,6 @@
 package net.katsstuff.danmakucore.impl.subentity
 
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
-import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.world.World
@@ -19,10 +18,10 @@ private[danmakucore] class SubEntityTypeFire(name: String, multiplier: Float) ex
     new SubEntityFire(world, entityDanmaku, multiplier)
 }
 
-private class SubEntityFire(world: World, danmaku: EntityDanmaku, multiplier: Float)
-    extends SubEntityTypeDefault.SubEntityDefault(world, danmaku) {
+private[subentity] class SubEntityFire(world: World, danmaku: EntityDanmaku, multiplier: Float)
+    extends SubEntityDefault(world, danmaku) {
   override def impactEntity(rayTrace: RayTraceResult): Unit = {
     super.impactEntity(rayTrace)
-    rayTrace.entityHit.setFire((danmaku.getShotData.damage * multiplier).asInstanceOf[Int])
+    rayTrace.entityHit.setFire((danmaku.getShotData.damage * multiplier).toInt)
   }
 }

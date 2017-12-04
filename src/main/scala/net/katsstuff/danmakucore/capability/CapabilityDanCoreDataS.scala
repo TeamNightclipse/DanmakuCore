@@ -8,17 +8,20 @@
  */
 package net.katsstuff.danmakucore.capability
 
+import java.util.concurrent.Callable
+
 import net.minecraft.nbt.{NBTBase, NBTTagCompound}
 import net.minecraft.util.EnumFacing
 import net.minecraftforge.common.capabilities.{Capability, CapabilityManager}
 
 object CapabilityDanCoreDataS {
 
-  def register(): Unit =
+  def register(): Unit = {
+    val factory: Callable[_ <: IDanmakuCoreData] = () => new BoundedDanmakuCoreData()
     CapabilityManager.INSTANCE
-      .register(
+      .register[IDanmakuCoreData](
         classOf[IDanmakuCoreData],
-        new Capability.IStorage[IDanmakuCoreData]() {
+        new Capability.IStorage[IDanmakuCoreData] {
 
           override def writeNBT(
               capability: Capability[IDanmakuCoreData],
@@ -46,6 +49,7 @@ object CapabilityDanCoreDataS {
             instance.setBombs(compound.getInteger("bombs"))
           }
         },
-        () => new BoundedDanmakuCoreData
+        factory
       )
+  }
 }

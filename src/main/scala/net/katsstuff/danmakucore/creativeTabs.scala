@@ -14,12 +14,12 @@ import net.minecraft.item.ItemStack
 object DanmakuCreativeTab extends DanCoreCreativeTab("danmaku") {
   override def getTabIconItem: ItemStack = new ItemStack(LibItems.DANMAKU)
 }
-object SpellcardCreativeTab extends DanCoreCreativeTab("spellcard") {
+object SpellcardsCreativeTab extends DanCoreCreativeTab("spellcard") {
   override def getTabIconItem: ItemStack = new ItemStack(LibItems.SPELLCARD)
 }
 
 //JAVA API
 object DanCoreCreativeTabs {
   def danmaku:    DanmakuCreativeTab.type   = DanmakuCreativeTab
-  def spellcards: SpellcardCreativeTab.type = SpellcardCreativeTab
+  def spellcards: SpellcardsCreativeTab.type = SpellcardsCreativeTab
 }

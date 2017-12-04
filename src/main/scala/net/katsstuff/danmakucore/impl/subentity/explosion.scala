@@ -18,8 +18,8 @@ private[danmakucore] class SubEntityTypeExplosion(name: String, strength: Float)
     new SubEntityExplosion(world, entityDanmaku, strength)
 }
 
-private class SubEntityExplosion(world: World, danmaku: EntityDanmaku, strength: Float)
-    extends SubEntityTypeDefault.SubEntityDefault(world, danmaku) {
+private[subentity] class SubEntityExplosion(world: World, danmaku: EntityDanmaku, strength: Float)
+    extends SubEntityDefault(world, danmaku) {
 
   override protected def impact(rayTrace: RayTraceResult): Unit = {
     super.impact(rayTrace)

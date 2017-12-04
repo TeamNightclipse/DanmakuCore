@@ -10,6 +10,7 @@ package net.katsstuff.danmakucore.entity.danmaku.subentity
 
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData}
 import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.entity.spellcard.Spellcard
 import net.katsstuff.danmakucore.misc.Translatable
 import net.katsstuff.danmakucore.registry.RegistryValue
 import net.minecraft.world.World
@@ -73,5 +74,8 @@ abstract class SubEntityType extends RegistryValue[SubEntityType] with Translata
 
   def instantiate(world: World, entityDanmaku: EntityDanmaku): SubEntity
 
-  override def getUnlocalizedName: String = "subentity." + modId + "." + name
+  override def unlocalizedName: String = "subentity." + modId + "." + name
+}
+object SubEntityType {
+  implicit val ordering: Ordering[SubEntityType] = Ordering.by((subEntity: SubEntityType) => subEntity.fullNameString)
 }

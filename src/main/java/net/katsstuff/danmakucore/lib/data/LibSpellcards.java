@@ -10,7 +10,6 @@ package net.katsstuff.danmakucore.lib.data;
 
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard;
 import net.katsstuff.danmakucore.entity.spellcard.SpellcardDummy;
-import net.katsstuff.danmakucore.lib.LibMod;
 import net.katsstuff.danmakucore.lib.LibModJ;
 import net.katsstuff.danmakucore.lib.LibSpellcardName;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
@@ -19,5 +18,5 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 public final class LibSpellcards {
 
 	@ObjectHolder(LibSpellcardName.DELUSION_OF_ENLIGHTENMENT)
-	public static final Spellcard DELUSION_OF_ENLIGHTENMENT = new SpellcardDummy();
+	public static final Spellcard DELUSION_OF_ENLIGHTENMENT = SpellcardDummy.instance();
 }

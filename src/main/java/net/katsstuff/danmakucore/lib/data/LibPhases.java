@@ -14,7 +14,6 @@ import net.katsstuff.danmakucore.impl.phase.PhaseTypeShapeCircle;
 import net.katsstuff.danmakucore.impl.phase.PhaseTypeShapeRing;
 import net.katsstuff.danmakucore.impl.phase.PhaseTypeShapeWide;
 import net.katsstuff.danmakucore.impl.phase.PhaseTypeSpellcard;
-import net.katsstuff.danmakucore.lib.LibMod;
 import net.katsstuff.danmakucore.lib.LibModJ;
 import net.katsstuff.danmakucore.lib.LibPhaseName;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
@@ -23,7 +22,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 public class LibPhases {
 
 	@ObjectHolder(LibPhaseName.FALLBACK)
-	public static final PhaseType FALLBACK = new PhaseTypeDummy(); //Default
+	public static final PhaseType FALLBACK = PhaseTypeDummy.instance(); //Default
 	@ObjectHolder(LibPhaseName.SPELLCARD)
 	public static final PhaseTypeSpellcard SPELLCARD = null;
 

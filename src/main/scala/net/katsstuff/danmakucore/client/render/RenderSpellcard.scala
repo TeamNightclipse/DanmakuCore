@@ -18,7 +18,7 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms
 import net.minecraft.client.renderer.entity.{Render, RenderManager}
 import net.minecraft.util.ResourceLocation
 
-class RenderSpellcard(val renderManager: RenderManager) extends Render[EntitySpellcard](renderManager) {
+class RenderSpellcard(renderManager: RenderManager) extends Render[EntitySpellcard](renderManager) {
 
   override def doRender(
       entity: EntitySpellcard,

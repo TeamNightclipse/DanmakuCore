@@ -20,10 +20,11 @@ import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant
 import net.katsstuff.danmakucore.entity.danmaku.form.Form
 import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard
-import net.katsstuff.danmakucore.helper.{ItemNBTHelper, TouhouHelper}
+import net.katsstuff.danmakucore.helper.ItemNBTHelper
 import net.katsstuff.danmakucore.item.{ItemDanmaku, ItemSpellcard}
 import net.katsstuff.danmakucore.lib.data.LibItems
 import net.katsstuff.danmakucore.network.SpellcardInfoPacket
+import net.katsstuff.danmakucore.scalastuff.TouhouHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.ModelBakery
 import net.minecraft.client.renderer.color.IItemColor
@@ -43,9 +44,9 @@ object ClientProxy {
   @SubscribeEvent
   def registerModels(event: ModelRegistryEvent): Unit = {
     ModelLoader
-      .setCustomMeshDefinition(LibItems.DANMAKU, (stack: ItemStack) => ItemDanmaku.getController(stack).getItemModel)
+      .setCustomMeshDefinition(LibItems.DANMAKU, (stack: ItemStack) => ItemDanmaku.getController(stack).itemModel)
     ModelLoader
-      .setCustomMeshDefinition(LibItems.SPELLCARD, (stack: ItemStack) => ItemSpellcard.getSpellcard(stack).getItemModel)
+      .setCustomMeshDefinition(LibItems.SPELLCARD, (stack: ItemStack) => ItemSpellcard.getSpellcard(stack).itemModel)
   }
 }
 class ClientProxy extends CommonProxy {
@@ -55,13 +56,13 @@ class ClientProxy extends CommonProxy {
   val particleRenderer         = new ParticleRenderer
 
   override private[danmakucore] def bakeDanmakuVariant(variant: DanmakuVariant): Unit =
-    ModelBakery.registerItemVariants(LibItems.DANMAKU, variant.getItemModel)
+    ModelBakery.registerItemVariants(LibItems.DANMAKU, variant.itemModel)
 
   override private[danmakucore] def bakeDanmakuForm(form: Form): Unit =
-    ModelBakery.registerItemVariants(LibItems.DANMAKU, form.getItemModel)
+    ModelBakery.registerItemVariants(LibItems.DANMAKU, form.itemModel)
 
   override private[danmakucore] def bakeSpellcard(spellcard: Spellcard): Unit =
-    ModelBakery.registerItemVariants(LibItems.SPELLCARD, spellcard.getItemModel)
+    ModelBakery.registerItemVariants(LibItems.SPELLCARD, spellcard.itemModel)
 
   override private[danmakucore] def registerRenderers(): Unit = {
     registerEntityRenderer(new RenderDanmaku(_))
@@ -96,10 +97,10 @@ class ClientProxy extends CommonProxy {
   }
 
   override private[danmakucore] def addDanmakuBoss(boss: EntityDanmakuBoss): Unit =
-    bossBarHandler.danmakuBosses.add(boss)
+    bossBarHandler.danmakuBosses += boss
 
   override private[danmakucore] def removeDanmakuBoss(boss: EntityDanmakuBoss): Unit =
-    bossBarHandler.danmakuBosses.remove(boss)
+    bossBarHandler.danmakuBosses -= boss
 
   override private[danmakucore] def handleSpellcardInfo(packet: SpellcardInfoPacket): Unit =
     spellcardHandler.handlePacket(packet)
@@ -116,9 +117,8 @@ class ClientProxy extends CommonProxy {
       b: Float,
       scale: Float,
       lifetime: Int,
-      `type`: GlowTexture
-  ): Unit =
-    ParticleUtil.spawnParticleGlow(world, pos, motion, r, g, b, scale, lifetime, `type`)
+      texture: GlowTexture
+  ): Unit = ParticleUtil.spawnParticleGlow(world, pos, motion, r, g, b, scale, lifetime, texture)
 
   override def createChargeSphere(
       entity: Entity,
@@ -129,7 +129,6 @@ class ClientProxy extends CommonProxy {
       g: Float,
       b: Float,
       lifetime: Int
-  ): Unit =
-    TouhouHelper.createChargeSphere(entity, amount, offset, divSpeed, r, g, b, lifetime)
+  ): Unit = TouhouHelper.createChargeSphere(entity, amount, offset, divSpeed, r, g, b, lifetime)
 
 }

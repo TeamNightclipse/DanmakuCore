@@ -11,10 +11,11 @@ package net.katsstuff.danmakucore.client.render
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.entity.{FallingDataTypes, EntityFallingData}
-import net.minecraft.client.renderer.{GlStateManager, RenderHelper, Tessellator}
+import net.katsstuff.danmakucore.entity.EntityFallingData
+import net.katsstuff.danmakucore.entity.EntityFallingData.DataType._
 import net.minecraft.client.renderer.entity.{Render, RenderManager}
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.renderer.{GlStateManager, RenderHelper, Tessellator}
 import net.minecraft.util.ResourceLocation
 
 object RenderFallingData {
@@ -56,7 +57,7 @@ class RenderFallingData(renderManager: RenderManager) extends Render[EntityFalli
     val lowerU = 0F
     val size   = 0.35F
 
-    val alpha = entity.dataType eq FallingDataTypes.scoreGreen
+    val alpha = entity.dataType == ScoreGreen
 
     if (alpha) {
       GlStateManager.enableBlend()
@@ -77,7 +78,6 @@ class RenderFallingData(renderManager: RenderManager) extends Render[EntityFalli
     GlStateManager.popMatrix()
   }
 
-  import EntityFallingData.DataType._
   override protected def getEntityTexture(entity: EntityFallingData): ResourceLocation = entity.dataType match {
     case ScoreGreen => RenderFallingData.ScoreGreenLocation
     case ScoreBlue  => RenderFallingData.ScoreBlueLocation

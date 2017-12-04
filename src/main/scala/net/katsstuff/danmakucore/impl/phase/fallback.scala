@@ -19,7 +19,7 @@ class PhaseTypeFallback extends PhaseType {
   override def instantiate(phaseManager: PhaseManager) = new PhaseFallback(phaseManager, this)
 }
 
-private class PhaseFallback(manager: PhaseManager, val phaseType: PhaseTypeFallback) extends Phase(manager) {
+private[phase] class PhaseFallback(manager: PhaseManager, val phaseType: PhaseTypeFallback) extends Phase(manager) {
   final private val variant = DanmakuRegistry.getRandomObject(classOf[DanmakuVariant], entity.getRNG)
 
   final private val amount = entity.getRNG.nextInt(8)

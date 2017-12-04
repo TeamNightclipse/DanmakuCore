@@ -42,8 +42,8 @@ object EntityDanmaku {
     override def name: String = LibEntityName.DANMAKU
   }
 
-  private val ShotDataKey   = EntityDataManager.createKey(classOf[EntityDanmaku], DanCoreDataSerializers.shotData)
-  private val RollKey       = EntityDataManager.createKey(classOf[EntityDanmaku], DataSerializers.FLOAT)
+  private val ShotDataKey = EntityDataManager.createKey(classOf[EntityDanmaku], DanCoreDataSerializers.shotData)
+  private val RollKey     = EntityDataManager.createKey(classOf[EntityDanmaku], DataSerializers.FLOAT)
 }
 class EntityDanmaku(
     world: World,
@@ -54,7 +54,7 @@ class EntityDanmaku(
     @LogicalSideOnly(Side.SERVER) var direction: Vector3,
     @LogicalSideOnly(Side.SERVER) private var _rotation: RotationData = RotationData.none,
     @LogicalSideOnly(Side.SERVER) private var _movement: MovementData = MovementData.constant(0.4D),
-    @LogicalSideOnly(Side.SERVER) _roll: Float,
+    @LogicalSideOnly(Side.SERVER) _roll: Float
 ) extends Entity(world)
     with IProjectile
     with IEntityAdditionalSpawnData
@@ -67,8 +67,8 @@ class EntityDanmaku(
   private val NbtUserUUID   = "userUUID"
   private val NBTRoll       = "roll"
 
-  private var subEntity:          SubEntity                  = _
-  @Nullable private var hitboxes: Array[MultiPartEntityPart] = _
+  private var subEntity:          SubEntity     = _
+  @Nullable private var hitboxes: Array[Entity] = _
 
   isImmuneToFire = true
   ignoreFrustumCheck = true
@@ -209,8 +209,8 @@ class EntityDanmaku(
   def shotData:    ShotData = dataManager.get(EntityDanmaku.ShotDataKey)
   def getShotData: ShotData = shotData
 
-  def shotData_=(shot: ShotData, forceNewSubEntity: Boolean): Unit = setShotData(shot, forceNewSubEntity = false)
-  def setShotData(shot: ShotData):                            Unit = shotData = shot
+  def shotData_=(shot: ShotData):  Unit = setShotData(shot, forceNewSubEntity = false)
+  def setShotData(shot: ShotData): Unit = shotData = shot
 
   def setShotData(shot: ShotData, forceNewSubEntity: Boolean): Unit = {
     val oldShot = shotData
@@ -318,9 +318,10 @@ class EntityDanmaku(
       this.setEntityBoundingBox(getRoughScaledBoundingBox(x, y, z))
     } else super.setPosition(x, y, z)
 
-  @Nullable override def getParts: Array[MultiPartEntityPart] = hitboxes
+  @Nullable
+  override def getParts: Array[Entity] = hitboxes
 
-  def setParts(@Nullable parts: Array[MultiPartEntityPart]): Unit = this.hitboxes = parts
+  def setParts(@Nullable parts: Array[Entity]): Unit = this.hitboxes = parts
 
   private def getRoughScaledBoundingBox(x: Double, y: Double, z: Double) = {
     val shot            = shotData
@@ -392,7 +393,7 @@ class EntityDanmaku(
 
     val launchDirection = target.fold(Vector3.Down)(to => Vector3.directionToEntity(this, to))
     if (shot.sizeZ > 1F && shot.sizeZ / shot.sizeX > 3 && shot.sizeZ / shot.sizeY > 3) {
-      for (zPos <- 0 until shot.sizeZ) {
+      for (zPos <- 0 until shot.sizeZ.toInt) {
         val realPos = pos.offset(launchDirection, zPos)
         world.spawnEntity(TouhouHelper.createScoreGreen(world, target, realPos, launchDirection))
       }

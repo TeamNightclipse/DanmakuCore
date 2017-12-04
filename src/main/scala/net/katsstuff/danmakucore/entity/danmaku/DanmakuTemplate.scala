@@ -9,13 +9,9 @@
 package net.katsstuff.danmakucore.entity.danmaku
 
 import javax.annotation.Nullable
-import net.katsstuff.danmakucore.data.MovementData
-import net.katsstuff.danmakucore.data.Quat
-import net.katsstuff.danmakucore.data.RotationData
-import net.katsstuff.danmakucore.data.ShotData
-import net.katsstuff.danmakucore.data.Vector3
-import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityLivingBase
+
+import net.katsstuff.danmakucore.data.{MovementData, Quat, RotationData, ShotData, Vector3}
+import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.world.World
 
 object DanmakuTemplate {
@@ -30,26 +26,31 @@ object DanmakuTemplate {
       var direction: Vector3 = null,
       var roll: Float = 0F,
       var movement: MovementData = MovementData.constant(0.4D),
-      var rotation: RotationData = RotationData.none,
+      var rotation: RotationData = RotationData.none
   ) {
 
     def build: DanmakuTemplate = {
       if (source == null && user != null) source = user
+
       if (world == null)
         if (source != null) world = source.world
         else throw new IllegalArgumentException("Could not find a world for builder, and neither source or user is set")
+
       if (pos == null)
         if (user != null) pos = new Vector3(user)
         else if (source != null) pos = new Vector3(source)
         else throw new IllegalArgumentException("Could not find a pos for builder, and neither source or user is set")
+
       if (direction == null)
         if (source != null) direction = Vector3.directionEntity(source)
         else
           throw new IllegalArgumentException(
             "could not find an direction for builder, and neither source or user is set"
           )
+
       if (shot == null) throw new IllegalArgumentException("Make sure that shot is set")
-      new DanmakuTemplate(world, user, source, shot, pos, direction, roll, movement, rotation)
+
+      new DanmakuTemplate(world, Option(user), Option(source), shot, pos, direction, roll, movement, rotation)
     }
 
     def setWorld(world: World): Builder = {
@@ -62,8 +63,18 @@ object DanmakuTemplate {
       this
     }
 
+    def setUser(user: Option[EntityLivingBase]): Builder = {
+      this.user = user.orNull
+      this
+    }
+
     def setSource(@Nullable source: Entity): Builder = {
       this.source = source
+      this
+    }
+
+    def setSource(source: Option[Entity]): Builder = {
+      this.source = source.orNull
       this
     }
 
@@ -155,8 +166,8 @@ object DanmakuTemplate {
 
 final case class DanmakuTemplate(
     world: World,
-    user: EntityLivingBase,
-    source: Entity,
+    user: Option[EntityLivingBase],
+    source: Option[Entity],
     shot: ShotData,
     pos: Vector3,
     direction: Vector3,
@@ -165,6 +176,7 @@ final case class DanmakuTemplate(
     rotation: RotationData
 ) {
 
-  def asEntity  = new EntityDanmaku(world, user, source, shot, pos, direction, roll, movement, rotation)
-  def toBuilder = DanmakuTemplate.Builder(world, user, source, shot, pos, direction, roll, movement, rotation)
+  def asEntity = new EntityDanmaku(world, shot, pos, user, source, direction, rotation, movement, roll)
+  def toBuilder =
+    DanmakuTemplate.Builder(world, user.orNull, source.orNull, shot, pos, direction, roll, movement, rotation)
 }

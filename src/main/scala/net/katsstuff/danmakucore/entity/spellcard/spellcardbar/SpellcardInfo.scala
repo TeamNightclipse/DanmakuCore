@@ -12,7 +12,7 @@ import java.util.UUID
 
 import net.minecraft.util.text.ITextComponent
 
-abstract class SpellcardInfo(val uuid: UUID, var name: ITextComponent, var mirrorText: Boolean) {
+abstract class SpellcardInfo(val uuid: UUID, private var name: ITextComponent, private var mirrorText: Boolean) {
   def getUuid: UUID = uuid
 
   def getName:                       ITextComponent = name

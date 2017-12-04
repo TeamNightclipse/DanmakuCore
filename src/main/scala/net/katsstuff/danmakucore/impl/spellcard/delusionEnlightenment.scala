@@ -17,7 +17,8 @@ import net.katsstuff.danmakucore.lib.{LibColor, LibSpellcardName}
 import net.katsstuff.danmakucore.scalastuff.{DanmakuCreationHelper, DanmakuHelper}
 import net.minecraft.entity.EntityLivingBase
 
-private[danmakucore] class SpellcardDelusionEnlightenment extends Spellcard(LibSpellcardName.DELUSION_OF_ENLIGHTENMENT) {
+private[danmakucore] class SpellcardDelusionEnlightenment
+    extends Spellcard(LibSpellcardName.DELUSION_OF_ENLIGHTENMENT) {
   override def instantiate(card: EntitySpellcard, target: Option[EntityLivingBase]) =
     new SpellcardEntityDelusionEnlightenment(this, card, target)
   override def level      = 1
@@ -26,7 +27,7 @@ private[danmakucore] class SpellcardDelusionEnlightenment extends Spellcard(LibS
   override def touhouUser: TouhouCharacter = TouhouCharacter.YOUMU_KONPAKU
 }
 
-private class SpellcardEntityDelusionEnlightenment private (
+private[spellcard] class SpellcardEntityDelusionEnlightenment(
     spellcard: SpellcardDelusionEnlightenment,
     card: EntitySpellcard,
     target: Option[EntityLivingBase]

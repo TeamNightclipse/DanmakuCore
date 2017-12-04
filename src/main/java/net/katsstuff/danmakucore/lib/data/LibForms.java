@@ -11,7 +11,6 @@ package net.katsstuff.danmakucore.lib.data;
 import net.katsstuff.danmakucore.entity.danmaku.form.Form;
 import net.katsstuff.danmakucore.entity.danmaku.form.FormDummy;
 import net.katsstuff.danmakucore.lib.LibFormName;
-import net.katsstuff.danmakucore.lib.LibMod;
 import net.katsstuff.danmakucore.lib.LibModJ;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
@@ -19,33 +18,33 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 public final class LibForms {
 
 	@ObjectHolder(LibFormName.DEFAULT)
-	public static final Form SPHERE = new FormDummy(); //Default
+	public static final Form SPHERE = FormDummy.instance(); //Default
 	@ObjectHolder(LibFormName.SPHERE_DARK)
-	public static final Form SPHERE_DARK = new FormDummy();
+	public static final Form SPHERE_DARK = FormDummy.instance();
 	@ObjectHolder(LibFormName.CRYSTAL1)
-	public static final Form CRYSTAL_1 = new FormDummy();
+	public static final Form CRYSTAL_1 = FormDummy.instance();
 	@ObjectHolder(LibFormName.CRYSTAL2)
-	public static final Form CRYSTAL_2 = new FormDummy();
+	public static final Form CRYSTAL_2 = FormDummy.instance();
 	@ObjectHolder(LibFormName.CIRCLE)
-	public static final Form SPHERE_CIRCLE = new FormDummy();
+	public static final Form SPHERE_CIRCLE = FormDummy.instance();
 	@ObjectHolder(LibFormName.PELLET)
-	public static final Form PELLET = new FormDummy();
+	public static final Form PELLET = FormDummy.instance();
 	@ObjectHolder(LibFormName.SCALE)
-	public static final Form SCALE = new FormDummy();
+	public static final Form SCALE = FormDummy.instance();
 	@ObjectHolder(LibFormName.STAR)
-	public static final Form STAR = new FormDummy();
+	public static final Form STAR = FormDummy.instance();
 	@ObjectHolder(LibFormName.KUNAI)
-	public static final Form KUNAI = new FormDummy();
+	public static final Form KUNAI = FormDummy.instance();
 	@ObjectHolder(LibFormName.SPHERE_POINTED)
-	public static final Form SPHERE_POINTED = new FormDummy();
+	public static final Form SPHERE_POINTED = FormDummy.instance();
 	@ObjectHolder(LibFormName.CONTROL)
-	public static final Form CONTROL = new FormDummy();
+	public static final Form CONTROL = FormDummy.instance();
 	@ObjectHolder(LibFormName.FIRE)
-	public static final Form FIRE = new FormDummy();
+	public static final Form FIRE = FormDummy.instance();
 	@ObjectHolder(LibFormName.LASER)
-	public static final Form LASER = new FormDummy();
+	public static final Form LASER = FormDummy.instance();
 	@ObjectHolder(LibFormName.HEART)
-	public static final Form HEART = new FormDummy();
+	public static final Form HEART = FormDummy.instance();
 	@ObjectHolder(LibFormName.NOTE1)
-	public static final Form NOTE1 = new FormDummy();
+	public static final Form NOTE1 = FormDummy.instance();
 }
