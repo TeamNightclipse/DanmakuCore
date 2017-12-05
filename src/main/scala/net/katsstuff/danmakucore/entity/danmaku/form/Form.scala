@@ -9,9 +9,9 @@
 package net.katsstuff.danmakucore.entity.danmaku.form
 
 import net.katsstuff.danmakucore.DanmakuCore
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity
-import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.registry.RegistryValueWithItemModel
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
@@ -65,7 +65,7 @@ abstract class Form extends RegistryValueWithItemModel[Form] {
     * danmaku would probably always be dragged down a slight bit by gravity, even if it doesn't have normal
     * gravity.
     */
-  def onTick(danmaku: DanmakuState): Option[DanmakuState] = Some(danmaku)
+  def onTick(danmaku: DanmakuState): Option[DanmakuUpdate] = Some(DanmakuUpdate.none(danmaku))
 
   /**
     * Callback that is executed whenever [[ShotData]] is set on the underlying entity

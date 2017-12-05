@@ -14,10 +14,11 @@ import java.util.function.Predicate
 import scala.annotation.tailrec
 
 import net.katsstuff.danmakucore.capability.danmakuhit.CapabilityDanmakuHitBehaviorJ
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmaku
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity
-import net.katsstuff.danmakucore.handler.{ConfigHandler, DanmakuState}
+import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
@@ -31,18 +32,19 @@ abstract class SubEntityBase extends SubEntity {
   /**
     * Called when the danmaku hits a block.
     */
-  protected def impactBlock(danmaku: DanmakuState, raytrace: RayTraceResult): Option[DanmakuState] = {
+  protected def impactBlock(danmaku: DanmakuState, raytrace: RayTraceResult): Option[DanmakuUpdate] = {
     val shot = danmaku.shot
-    if (shot.sizeZ <= 1F || shot.sizeZ / shot.sizeX <= 3 || shot.sizeZ / shot.sizeY <= 3) None else Some(danmaku)
+    if (shot.sizeZ <= 1F || shot.sizeZ / shot.sizeX <= 3 || shot.sizeZ / shot.sizeY <= 3) None
+    else Some(DanmakuUpdate.none(danmaku))
   }
 
   /**
     * Called when the danmaku hits an entity.
     */
-  protected def impactEntity(danmaku: DanmakuState, raytrace: RayTraceResult): Option[DanmakuState] =
+  protected def impactEntity(danmaku: DanmakuState, raytrace: RayTraceResult): Option[DanmakuUpdate] =
     attackEntity(danmaku, raytrace.entityHit)
 
-  protected def attackEntity(danmaku: DanmakuState, entity: Entity): Option[DanmakuState] = {
+  protected def attackEntity(danmaku: DanmakuState, entity: Entity): Option[DanmakuUpdate] = {
     val shot        = danmaku.shot
     val averageSize = (shot.sizeY + shot.sizeX + shot.sizeZ) / 3
 
@@ -82,13 +84,14 @@ abstract class SubEntityBase extends SubEntity {
         }
       })
 
-    if (averageSize < 0.7F) None else Some(danmaku)
+    if (averageSize < 0.7F) None else Some(DanmakuUpdate.none(danmaku))
   }
 
   /**
     * Called on any impact. Called after [[impactBlock]] and [[impactEntity]].
     */
-  protected def impact(danmaku: DanmakuState, raytrace: RayTraceResult): Option[DanmakuState] = Some(danmaku)
+  protected def impact(danmaku: DanmakuState, raytrace: RayTraceResult): Option[DanmakuUpdate] =
+    Some(DanmakuUpdate.none(danmaku))
 
   /**
     * Add the gravity to the motion.
@@ -96,44 +99,48 @@ abstract class SubEntityBase extends SubEntity {
   protected def updateMotionWithGravity(danmaku: DanmakuState, motion: Vector3): Vector3 =
     motion + danmaku.movement.getGravity
 
-  protected def hitCheck(danmaku: DanmakuState, exclude: Predicate[Entity]): Unit = hitCheck(danmaku, exclude.asScala)
+  protected def hitCheck(danmaku: DanmakuState, exclude: Predicate[Entity]): Option[DanmakuUpdate] =
+    hitCheck(danmaku, exclude.asScala)
 
-  protected def hitCheck(danmaku: DanmakuState, exclude: Entity => Boolean): Option[DanmakuState] = {
+  protected def hitCheck(danmaku: DanmakuState, exclude: Entity => Boolean): Option[DanmakuUpdate] = {
     val direction   = danmaku.direction
     val shot        = danmaku.shot
     val motion      = danmaku.motion
-    val boundingBox = danmaku.boundingBox
+    val boundingBox = danmaku.orientedBoundingBox
 
     val start = danmaku.pos.offset(direction, -shot.sizeZ / 2)
     val end   = start.offset(direction, shot.sizeZ).add(motion)
 
-    val bb = boundingBox.aabb.expand(motion.x, motion.y, motion.z).grow(1D)
+    val bb = danmaku.roughBoundingBox.expand(motion.x, motion.y, motion.z).grow(1D)
     val potentialHits = danmaku.world.collectEntitiesWithinAABB[Entity, Entity](bb) {
       case e if e.canBeCollidedWith && !e.noClip && exclude(e) => e
     }
 
     var groundRay: RayTraceResult = null
-    val afterEntityImpact = potentialHits.foldLeft[Option[DanmakuState]](Some(danmaku)) { (optState, potentialHit) =>
-      optState match {
-        case Some(state) =>
-          val entityAabb = potentialHit.getEntityBoundingBox
+    val afterEntityImpact =
+      potentialHits.foldLeft[Option[DanmakuUpdate]](Some(DanmakuUpdate.none(danmaku))) { (optState, potentialHit) =>
+        optState match {
+          case Some(DanmakuUpdate(state, signals, callbacks)) =>
+            val entityAabb = potentialHit.getEntityBoundingBox
 
-          if (boundingBox.intersects(entityAabb)) {
-            val rayTraceResult = entityAabb.calculateIntercept(start.toVec3d, end.toVec3d)
-            if (rayTraceResult != null) {
-              val rayToHit = danmaku.world.rayTraceBlocks(start.toVec3d, rayTraceResult.hitVec, false, true, false)
-              if (rayToHit != null && (rayToHit.typeOfHit == RayTraceResult.Type.BLOCK)) {
-                groundRay = rayToHit
-                optState
-              } else {
-                val rayHit = new RayTraceResult(potentialHit)
-                impactEntity(state, rayHit).flatMap(impact(_, rayHit))
-              }
+            if (boundingBox.intersects(entityAabb)) {
+              val rayTraceResult = entityAabb.calculateIntercept(start.toVec3d, end.toVec3d)
+              if (rayTraceResult != null) {
+                val rayToHit = danmaku.world.rayTraceBlocks(start.toVec3d, rayTraceResult.hitVec, false, true, false)
+                if (rayToHit != null && (rayToHit.typeOfHit == RayTraceResult.Type.BLOCK)) {
+                  groundRay = rayToHit
+                  optState
+                } else {
+                  val rayHit = new RayTraceResult(potentialHit)
+                  DanmakuUpdate
+                    .andThen(impactEntity(state, rayHit))(impact(_, rayHit))
+                    .map(update => update.copy(signals = update.signals ++ signals, callbacks = callbacks))
+                }
+              } else optState
             } else optState
-          } else optState
-        case None => None
+          case None => None
+        }
       }
-    }
 
     if (groundRay == null) {
       val ray = danmaku.world.rayTraceBlocks(start.toVec3d, end.toVec3d, false, true, false)
@@ -141,7 +148,7 @@ abstract class SubEntityBase extends SubEntity {
     }
 
     if (groundRay != null) {
-      afterEntityImpact.flatMap(impactBlock(_, groundRay)).flatMap(impact(_, groundRay))
+      DanmakuUpdate.andThen(DanmakuUpdate.andThen(afterEntityImpact)(impactBlock(_, groundRay)))(impact(_, groundRay))
     } else afterEntityImpact
   }
 

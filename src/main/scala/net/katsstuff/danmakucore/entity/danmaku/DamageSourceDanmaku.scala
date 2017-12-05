@@ -8,7 +8,7 @@
  */
 package net.katsstuff.danmakucore.entity.danmaku
 
-import net.katsstuff.danmakucore.handler.DanmakuState
+import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.item.ItemStack
 import net.minecraft.util.{DamageSource, EntityDamageSourceIndirect}

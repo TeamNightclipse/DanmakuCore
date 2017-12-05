@@ -10,8 +10,8 @@ package net.katsstuff.danmakucore.entity.danmaku
 
 import javax.annotation.Nullable
 
+import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.{MovementData, Quat, RotationData, ShotData, Vector3}
-import net.katsstuff.danmakucore.handler.DanmakuState
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.world.World
 
@@ -188,6 +188,7 @@ final case class DanmakuTemplate(
 
   def asEntity: DanmakuState = {
     DanmakuState(
+      DanmakuState.nextId(),
       world,
       world.isRemote,
       pos,

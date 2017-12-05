@@ -9,9 +9,9 @@
 package net.katsstuff.danmakucore.danmodel
 
 import net.katsstuff.danmakucore.client.helper.RenderHelper
+import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
-import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.impl.form.FormGeneric
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.entity.RenderManager
@@ -19,20 +19,12 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 private[danmakucore] class FormDanModel(name: String, model: DanModel) extends FormGeneric(name) {
   @SideOnly(Side.CLIENT)
-  override protected def createRenderer: IRenderForm = {
-    (
-        danmaku: DanmakuState,
-        _: Double,
-        _: Double,
-        _: Double,
-        orientation: Quat,
-        _: Float,
-        _: RenderManager
-    ) =>
+  override protected def createRenderer: IRenderForm =
+    (danmaku: DanmakuState, _: Double, _: Double, _: Double, orientation: Quat, _: Float, _: RenderManager) => {
       val tes = Tessellator.getInstance
       val vb  = tes.getBuffer
 
       RenderHelper.transformDanmaku(danmaku.shot, orientation)
       model.render(vb, tes, danmaku.shot.getColor)
-  }
+    }
 }

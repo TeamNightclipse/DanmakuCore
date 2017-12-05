@@ -8,7 +8,7 @@
  */
 package net.katsstuff.danmakucore.entity.danmaku.subentity
 
-import net.katsstuff.danmakucore.handler.DanmakuState
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 
 object SubEntityTypeDummy extends SubEntityType {
   def instance: SubEntityTypeDummy.type = this
@@ -17,5 +17,6 @@ object SubEntityTypeDummy extends SubEntityType {
 }
 
 private[subentity] class SubEntityDummy extends SubEntity {
-  override def subEntityTick(danmaku: DanmakuState): Option[DanmakuState] = Some(danmaku)
+  override def subEntityTick(danmaku: DanmakuState): Option[DanmakuUpdate] =
+    Some(DanmakuUpdate.none(danmaku))
 }

@@ -11,9 +11,9 @@ package net.katsstuff.danmakucore.impl.form
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.client.helper.RenderHelper
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate, DanmakuUpdateSignal}
 import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
-import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.lib.{LibFormName, LibSounds}
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
 import net.minecraft.client.renderer.GlStateManager
@@ -83,7 +83,7 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
 
   override def playShotSound(world: World, pos: Vector3, shotData: ShotData): Unit = ()
 
-  override def onTick(danmaku: DanmakuState): Option[DanmakuState] = {
+  override def onTick(danmaku: DanmakuState): Option[DanmakuUpdate] = {
     //The danmaku exits delay here
     if (danmaku.ticksExisted == 2) {
       FMLCommonHandler
@@ -94,6 +94,6 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
         })
     }
 
-    Some(danmaku)
+    Some(DanmakuUpdate.none(danmaku))
   }
 }

@@ -8,8 +8,8 @@
  */
 package net.katsstuff.danmakucore.entity.danmaku.subentity
 
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData}
-import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.misc.Translatable
 import net.katsstuff.danmakucore.registry.RegistryValue
 
@@ -22,7 +22,7 @@ abstract class SubEntity {
   /**
     * Called each tick as long as the danmaku is alive, and it's delay is 0.
     */
-  def subEntityTick(danmaku: DanmakuState): Option[DanmakuState]
+  def subEntityTick(danmaku: DanmakuState): Option[DanmakuUpdate]
 
   /**
     * Callback that is executed whenever [[ShotData]] is set on the underlying entity

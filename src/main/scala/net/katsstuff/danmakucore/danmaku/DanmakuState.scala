@@ -6,24 +6,27 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danmakucore.handler
-
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.parallel.immutable.ParVector
+package net.katsstuff.danmakucore.danmaku
 
 import net.katsstuff.danmakucore.data.{MovementData, OrientedBoundingBox, Quat, RotationData, ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity
-import net.katsstuff.danmakucore.helper.MathUtil._
-import net.minecraft.client.Minecraft
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.world.World
-import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
-import net.minecraftforge.fml.common.gameevent.TickEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase
-import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
+import net.katsstuff.danmakucore.helper.MathUtil._
+
+object DanmakuState {
+  private var id: Int = 0
+
+  def nextId(): Int = {
+    val next = id
+    id += 1
+    next
+  }
+}
 case class DanmakuState(
+    id: Int,
     world: World,
     isRemote: Boolean,
     pos: Vector3,
@@ -42,27 +45,38 @@ case class DanmakuState(
     renderBrightness: Float
 ) {
 
-  private def aabb = {
-    val xSize = shot.sizeX / 2F
-    val ySize = shot.sizeY / 2F
-    val zSize = shot.sizeZ / 2F
-    new AxisAlignedBB(pos.x - xSize, pos.y - ySize, pos.z - zSize, pos.x + xSize, pos.y + ySize, pos.z + zSize)
+  lazy val orientedBoundingBox = OrientedBoundingBox(roughScaledBoundingBox(rotate = false), pos, orientation)
+
+  lazy val roughBoundingBox: AxisAlignedBB = roughScaledBoundingBox(rotate = true)
+
+  private def roughScaledBoundingBox(rotate: Boolean) = {
+    val x = pos.x
+    val y = pos.y
+    val z = pos.z
+    if (rotate) {
+      val size  = new Vector3(shot.sizeX, shot.sizeY, shot.sizeZ).rotate(orientation)
+      val xSize = size.x / 2F
+      val ySize = size.y / 2F
+      val zSize = size.z / 2F
+      new AxisAlignedBB(x - xSize, y - ySize, z - zSize, x + xSize, y + ySize, z + zSize)
+    } else {
+      val xSize = shot.sizeX / 2F
+      val ySize = shot.sizeY / 2F
+      val zSize = shot.sizeZ / 2F
+      new AxisAlignedBB(x - xSize, y - ySize, z - zSize, x + xSize, y + ySize, z + zSize)
+    }
   }
 
-  lazy val boundingBox = OrientedBoundingBox(aabb, pos, orientation)
-
   //noinspection MutatorLikeMethodIsParameterless
-  def updateForm: Option[DanmakuState] =
+  def updateForm: Option[DanmakuUpdate] =
     shot.form.onTick(this)
 
   //noinspection MutatorLikeMethodIsParameterless
-  def updateSubEntity: Option[DanmakuState] = subEntity.subEntityTick(this)
+  def updateSubEntity: Option[DanmakuUpdate] = subEntity.subEntityTick(this)
 
-  def update: Option[DanmakuState] = {
+  def update: Option[DanmakuUpdate] = {
     if (ticksExisted > shot.end) None
-    else {
-      updateSubEntity.flatMap(_.updateForm)
-    }
+    else DanmakuUpdate.andThen(updateSubEntity)(_.updateForm)
   }
 
   def currentSpeed: Double = motion.length
@@ -90,53 +104,5 @@ case class DanmakuState(
       setSpeed(movement.getSpeedOriginal),
       Quat.fromEuler(direction.yaw.toFloat, direction.pitch.toFloat, orientation.roll.toFloat)
     )
-  }
-}
-
-trait DanmakuHandler {
-  private var _danmaku   = Vector.empty[DanmakuState]
-  private var newDanmaku = new ArrayBuffer[DanmakuState]
-  var working: ParVector[DanmakuState] = _
-
-  def danmaku: Vector[DanmakuState] = _danmaku
-
-  def start(): Unit = {
-    working = _danmaku.par.flatMap(_.update) ++ newDanmaku.par.flatMap(_.update)
-    newDanmaku.clear()
-  }
-
-  def stop(): Unit = {
-    _danmaku = working.seq
-    working = null
-  }
-
-  def spawnDanmaku(state: DanmakuState): Unit = newDanmaku += state
-}
-
-@SideOnly(Side.SERVER)
-class ServerDanmakuHandler extends DanmakuHandler {
-
-  @SubscribeEvent(priority = EventPriority.HIGHEST)
-  def onTick(event: TickEvent.ServerTickEvent): Unit = {
-    if (event.phase == Phase.START) {
-      start()
-    } else if (event.phase == Phase.END) {
-      stop()
-    }
-  }
-}
-
-@SideOnly(Side.CLIENT)
-class ClientDanmakuHandler extends DanmakuHandler {
-
-  @SubscribeEvent(priority = EventPriority.HIGHEST)
-  def onTick(event: TickEvent.ClientTickEvent): Unit = {
-    if (!Minecraft.getMinecraft.isGamePaused) {
-      if (event.phase == Phase.START) {
-        start()
-      } else if (event.phase == Phase.END) {
-        stop()
-      }
-    }
   }
 }

@@ -8,15 +8,15 @@
  */
 package net.katsstuff.danmakucore.impl.subentity
 
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate, DanmakuUpdateSignal}
 import net.katsstuff.danmakucore.entity.danmaku.subentity.{SubEntity, SubEntityType}
-import net.katsstuff.danmakucore.handler.DanmakuState
 
 class SubEntityTypeDefault(name: String) extends SubEntityType(name) {
   override def instantiate: SubEntity = new SubEntityDefault
 }
 class SubEntityDefault extends SubEntityBase {
 
-  override def subEntityTick(danmaku: DanmakuState): Option[DanmakuState] = {
+  override def subEntityTick(danmaku: DanmakuState): Option[DanmakuUpdate] = {
     val shot  = danmaku.shot
     val delay = shot.delay
 
@@ -27,16 +27,19 @@ class SubEntityDefault extends SubEntityBase {
         } else {
           val (newMotion, newOrientation) = danmaku.resetMotion
 
+          //Think we can get away with not sending an update here
           Some(
-            danmaku.copy(
-              shot = shot.copy(delay = delay - 1),
-              motion = newMotion,
-              orientation = newOrientation,
-              prevOrientation = danmaku.orientation
+            DanmakuUpdate.none(
+              danmaku.copy(
+                shot = shot.copy(delay = delay - 1),
+                motion = newMotion,
+                orientation = newOrientation,
+                prevOrientation = danmaku.orientation
+              )
             )
           )
         }
-      } else Some(danmaku.copy(shot = shot.copy(delay = delay - 1)))
+      } else Some(DanmakuUpdate.none(danmaku.copy(shot = shot.copy(delay = delay - 1))))
     } else {
       val rotation = danmaku.rotation
       val newDirection =

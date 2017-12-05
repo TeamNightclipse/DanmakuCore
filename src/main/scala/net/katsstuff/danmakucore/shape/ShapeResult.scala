@@ -13,7 +13,7 @@ import java.util
 import scala.collection.JavaConverters._
 import scala.concurrent.{Future, Promise}
 
-import net.katsstuff.danmakucore.handler.DanmakuState
+import net.katsstuff.danmakucore.danmaku.DanmakuState
 
 /**
   * The result of a shape drawing for a single tick.

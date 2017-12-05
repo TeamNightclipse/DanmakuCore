@@ -12,16 +12,22 @@ import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 
 import net.katsstuff.danmakucore.client.particle.{GlowTexture, IGlowParticle}
+import net.katsstuff.danmakucore.danmaku.{
+  ClientDanmakuHandler,
+  DanmakuChanges,
+  DanmakuHandler,
+  DanmakuState,
+  ServerDanmakuHandler
+}
 import net.katsstuff.danmakucore.danmodel.DanModelReader
 import net.katsstuff.danmakucore.data.Vector3
+import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant
 import net.katsstuff.danmakucore.entity.danmaku.form.Form
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType
-import net.katsstuff.danmakucore.entity.danmaku.{DanmakuVariant, EntityDanmaku}
 import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType
 import net.katsstuff.danmakucore.entity.spellcard.{EntitySpellcard, Spellcard}
 import net.katsstuff.danmakucore.entity.{EntityFallingData, EntityInfo}
-import net.katsstuff.danmakucore.handler.{ClientDanmakuHandler, DanmakuHandler, DanmakuState, ServerDanmakuHandler}
 import net.katsstuff.danmakucore.impl.danmakuvariant.DanmakuVariantGeneric
 import net.katsstuff.danmakucore.impl.form._
 import net.katsstuff.danmakucore.impl.phase._
@@ -209,7 +215,7 @@ object CommonProxy {
 }
 class CommonProxy {
 
-  val danmakuHandler: DanmakuHandler =
+  protected val danmakuHandler: DanmakuHandler =
     if (FMLCommonHandler.instance().getSide == Side.CLIENT) new ClientDanmakuHandler else new ServerDanmakuHandler
   MinecraftForge.EVENT_BUS.register(danmakuHandler)
 
@@ -293,5 +299,10 @@ class CommonProxy {
 
   def addParticle[T <: IGlowParticle](particle: T): Unit = {}
 
+  def danmaku: Iterable[DanmakuState] = danmakuHandler.danmaku
+
   def spawnDanmaku(state: DanmakuState): Unit = danmakuHandler.spawnDanmaku(state)
+
+  def handleDanmakuChange(changes: DanmakuChanges): Unit =
+    danmakuHandler.handleDanmakuChange(changes)
 }

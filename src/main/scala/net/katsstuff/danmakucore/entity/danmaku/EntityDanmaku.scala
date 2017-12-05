@@ -16,11 +16,9 @@ import scala.collection.JavaConverters._
 
 import io.netty.buffer.ByteBuf
 import net.katsstuff.danmakucore.data.{MovementData, OrientedBoundingBox, Quat, RotationData, ShotData, Vector3}
-import net.katsstuff.danmakucore.entity.EntityInfo
 import net.katsstuff.danmakucore.entity.danmaku.subentity.{SubEntity, SubEntityType}
 import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.helper.{LogHelper, MathUtil, NBTHelper}
-import net.katsstuff.danmakucore.lib.LibEntityName
 import net.katsstuff.danmakucore.lib.data.LibSubEntities
 import net.katsstuff.danmakucore.misc.LogicalSideOnly
 import net.katsstuff.danmakucore.network.DanCoreDataSerializers

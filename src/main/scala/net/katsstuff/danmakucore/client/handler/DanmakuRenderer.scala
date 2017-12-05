@@ -14,9 +14,9 @@ import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.client.helper.RenderHelper
-import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
+import net.katsstuff.danmakucore.danmaku.{DanmakuHandler, DanmakuState}
+import net.katsstuff.danmakucore.data.{Quat, ShotData}
 import net.katsstuff.danmakucore.entity.danmaku.form.Form
-import net.katsstuff.danmakucore.handler.{DanmakuHandler, DanmakuState}
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.entity.RenderManager
@@ -111,7 +111,7 @@ class DanmakuRenderer(handler: DanmakuHandler) {
         GlStateManager.disableBlend()
         GL11.glTranslated(x, y + shot.sizeY / 2, z)
 
-        val obb  = danmaku.boundingBox
+        val obb  = danmaku.orientedBoundingBox
         val aabb = obb.aabb
 
         GlStateManager.rotate(obb.orientation.toQuaternion)

@@ -8,8 +8,8 @@
  */
 package net.katsstuff.danmakucore.impl.subentity
 
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate, DanmakuUpdateSignal}
 import net.katsstuff.danmakucore.entity.danmaku.subentity.{SubEntity, SubEntityType}
-import net.katsstuff.danmakucore.handler.DanmakuState
 import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.fml.common.FMLCommonHandler
 
@@ -19,7 +19,7 @@ private[danmakucore] class SubEntityTypeFire(name: String, multiplier: Float) ex
 }
 
 private[subentity] class SubEntityFire(multiplier: Float) extends SubEntityDefault {
-  override def impactEntity(danmaku: DanmakuState, rayTrace: RayTraceResult): Option[DanmakuState] = {
+  protected override def impactEntity(danmaku: DanmakuState, rayTrace: RayTraceResult): Option[DanmakuUpdate] = {
     FMLCommonHandler
       .instance()
       .getMinecraftServerInstance

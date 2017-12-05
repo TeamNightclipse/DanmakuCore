@@ -8,8 +8,8 @@
  */
 package net.katsstuff.danmakucore.impl.subentity
 
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate, DanmakuUpdateSignal}
 import net.katsstuff.danmakucore.entity.danmaku.subentity.{SubEntity, SubEntityType}
-import net.katsstuff.danmakucore.handler.DanmakuState
 import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.fml.common.FMLCommonHandler
 
@@ -20,7 +20,7 @@ private[danmakucore] class SubEntityTypeExplosion(name: String, strength: Float)
 
 private[subentity] class SubEntityExplosion(strength: Float) extends SubEntityDefault {
 
-  override protected def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): Option[DanmakuState] = {
+  override protected def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): Option[DanmakuUpdate] = {
     if (!danmaku.world.isRemote) {
       val cause = danmaku.user.orElse(danmaku.source).orNull
       FMLCommonHandler

@@ -8,8 +8,8 @@
  */
 package net.katsstuff.danmakucore.impl.subentity
 
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate, DanmakuUpdateSignal}
 import net.katsstuff.danmakucore.entity.danmaku.subentity.{SubEntity, SubEntityType}
-import net.katsstuff.danmakucore.handler.DanmakuState
 import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.fml.common.FMLCommonHandler
 
@@ -19,7 +19,7 @@ private[danmakucore] class SubEntityTypeTeleport(name: String) extends SubEntity
 }
 
 private[subentity] class SubEntityTeleport extends SubEntityDefault {
-  override def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): Option[DanmakuState] = {
+  protected override def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): Option[DanmakuUpdate] = {
     danmaku.user.foreach { usr =>
       FMLCommonHandler
         .instance()

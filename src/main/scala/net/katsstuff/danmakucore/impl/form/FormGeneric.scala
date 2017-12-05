@@ -9,9 +9,8 @@
 package net.katsstuff.danmakucore.impl.form
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.entity.danmaku.form.{Form, IRenderForm}
-import net.katsstuff.danmakucore.handler.DanmakuState
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 

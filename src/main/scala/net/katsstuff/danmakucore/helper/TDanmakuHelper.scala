@@ -8,9 +8,11 @@
  */
 package net.katsstuff.danmakucore.helper
 
+import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.capability.danmakuhit.{AllyDanmakuHitBehavior, CapabilityDanmakuHitBehaviorJ}
+import net.katsstuff.danmakucore.danmaku.{DanmakuChanges, DanmakuState, DanmakuUpdateSignal}
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.{DamageSourceDanmakuChainDeath, EntityDanmaku}
+import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmakuChainDeath
 import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
 import net.minecraft.entity.player.EntityPlayer
@@ -21,9 +23,8 @@ import net.minecraft.world.World
 trait TDanmakuHelper {
   val GravityDefault: Double = -0.03D
 
-  def playSoundAt(world: World, pos: Vector3, sound: SoundEvent, volume: Float, pitch: Float): Unit = {
+  def playSoundAt(world: World, pos: Vector3, sound: SoundEvent, volume: Float, pitch: Float): Unit =
     world.playSound(null, pos.x, pos.y, pos.z, sound, SoundCategory.NEUTRAL, volume, pitch)
-  }
 
   private def explosionEffect(world: World, pos: Vector3, explosionSize: Float, sound: SoundEvent): Unit = {
     world.playSound(null, pos.toBlockPos, sound, SoundCategory.HOSTILE, 2.0F, 3.0F)
@@ -46,8 +47,7 @@ trait TDanmakuHelper {
 
     deadEntity.world
       .collectEntitiesWithinAABBExcludingEntity(Some(deadEntity), deadEntity.getEntityBoundingBox.grow(range)) {
-        case e: EntityLivingBase
-            if AllyDanmakuHitBehavior == e.getCapability(behavior, null) =>
+        case e: EntityLivingBase if AllyDanmakuHitBehavior == e.getCapability(behavior, null) =>
           e
       }
       .foreach { entity =>
@@ -69,37 +69,39 @@ trait TDanmakuHelper {
     * @return The amount of danmaku removed
     */
   def removeDanmaku(centerEntity: Entity, range: Double, mode: RemoveMode, dropBonus: Boolean): Int = {
-    val present = centerEntity.world
-      .collectEntitiesWithinAABBExcludingEntity(Some(centerEntity), centerEntity.getEntityBoundingBox.grow(range)) {
-        case e: EntityDanmaku if e.getUser.isPresent => e -> e.getUser.get()
-      }
+    val present = DanmakuCore.proxy.danmaku.collect {
+      case danmaku if danmaku.user.isDefined => danmaku -> danmaku.user.get
+    }
 
     present.foreach {
       case (danmaku, user) =>
-        mode match {
+        val update = mode match {
           case RemoveMode.All =>
-            finishOrKillDanmaku(danmaku, dropBonus)
+            Some(finishOrKillDanmaku(danmaku, dropBonus))
           case RemoveMode.Enemy =>
             if (!user.isInstanceOf[EntityPlayer]) {
-              finishOrKillDanmaku(danmaku, dropBonus)
-            }
+              Some(finishOrKillDanmaku(danmaku, dropBonus))
+            } else None
           case RemoveMode.Player =>
             if (user.isInstanceOf[EntityPlayer]) {
-              finishOrKillDanmaku(danmaku, dropBonus)
-            }
+              Some(finishOrKillDanmaku(danmaku, dropBonus))
+            } else None
           case RemoveMode.Other =>
             if (!(user == centerEntity)) {
-              finishOrKillDanmaku(danmaku, dropBonus)
-            }
+              Some(finishOrKillDanmaku(danmaku, dropBonus))
+            } else None
         }
+
+        update.foreach(DanmakuCore.proxy.handleDanmakuChange)
     }
+
 
     present.size
   }
 
-  private def finishOrKillDanmaku(entity: EntityDanmaku, dropBonus: Boolean): Unit =
-    if (dropBonus) entity.danmakuFinishBonus()
-    else entity.setDead()
+  private def finishOrKillDanmaku(entity: DanmakuState, dropBonus: Boolean): DanmakuChanges =
+    if (dropBonus) DanmakuChanges(entity.id, Seq(DanmakuUpdateSignal.Finish))
+    else DanmakuChanges(entity.id, Seq(DanmakuUpdateSignal.SetDead))
 
   def adjustDamageTarget(base: Float, target: Entity): Float =
     if (target.isInstanceOf[EntityPlayer]) base * 3.5F

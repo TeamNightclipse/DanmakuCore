@@ -10,9 +10,9 @@ package net.katsstuff.danmakucore.scalastuff
 
 import scala.collection.JavaConverters._
 
+import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
-import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.impl.shape.{ShapeCircle, ShapeRandomRing, ShapeRing, ShapeSphere, ShapeWide}
 import net.katsstuff.danmakucore.shape.Shape
 

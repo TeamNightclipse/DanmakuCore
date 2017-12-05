@@ -8,7 +8,7 @@
  */
 package net.katsstuff.danmakucore.capability.danmakuhit
 
-import net.katsstuff.danmakucore.handler.DanmakuState
+import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.minecraft.entity.Entity
 import net.minecraft.util.DamageSource
 
