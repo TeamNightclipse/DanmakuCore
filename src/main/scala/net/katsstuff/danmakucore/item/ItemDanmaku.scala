@@ -14,10 +14,9 @@ import javax.annotation.Nullable
 
 import scala.collection.JavaConverters._
 
-import net.katsstuff.danmakucore.{DanmakuCore, DanmakuCreativeTab}
-import net.katsstuff.danmakucore.data.{OrientedBoundingBox, Quat, ShotData, Vector3}
+import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.form.Form
-import net.katsstuff.danmakucore.entity.danmaku.{DanmakuTemplate, DanmakuVariant, EntityDanmaku}
+import net.katsstuff.danmakucore.entity.danmaku.{DanmakuTemplate, DanmakuVariant}
 import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.katsstuff.danmakucore.helper.MathUtil._
@@ -26,13 +25,13 @@ import net.katsstuff.danmakucore.lib.{LibColor, LibItemName}
 import net.katsstuff.danmakucore.misc._
 import net.katsstuff.danmakucore.registry.{DanmakuRegistry, RegistryValueWithItemModel}
 import net.katsstuff.danmakucore.scalastuff.DanmakuCreationHelper
+import net.katsstuff.danmakucore.{DanmakuCore, DanmakuCreativeTab}
 import net.minecraft.client.resources.I18n
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
-import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.{ActionResult, EnumActionResult, EnumHand, NonNullList, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -143,7 +142,7 @@ object ItemDanmaku {
         alternateMode: Boolean,
         orientation: Quat,
         offset: Double
-    ): Set[EntityDanmaku]
+    ): Set[DanmakuState]
   }
   object Pattern {
     def idOf(pattern: Pattern): Byte = pattern match {
@@ -172,13 +171,13 @@ object ItemDanmaku {
         alternateMode: Boolean,
         orientation: Quat,
         offset: Double
-    ): Set[EntityDanmaku] = {
+    ): Set[DanmakuState] = {
       val danmaku = template.toBuilder
       danmaku.pos = danmaku.pos.offset(danmaku.direction, offset)
       val res = for (i <- 1 to amount) yield {
         danmaku.setMovementData(shotSpeed / amount * i)
         val entity = danmaku.build.asEntity
-        danmaku.world.spawnEntity(entity)
+        DanmakuCore.proxy.spawnDanmaku(entity)
         entity
       }
       res.toSet
@@ -194,7 +193,7 @@ object ItemDanmaku {
         alternateMode: Boolean,
         orientation: Quat,
         offset: Double
-    ): Set[EntityDanmaku] = {
+    ): Set[DanmakuState] = {
       val wide = if (alternateMode) 60F else 120F
       DanmakuCreationHelper.createRandomRingShot(orientation, template, amount, wide, offset)
     }
@@ -209,7 +208,7 @@ object ItemDanmaku {
         alternateMode: Boolean,
         orientation: Quat,
         offset: Double
-    ): Set[EntityDanmaku] = {
+    ): Set[DanmakuState] = {
       val wide = if (alternateMode) amount * 4F else amount * 8F
       DanmakuCreationHelper.createWideShot(orientation, template, amount, wide, 0F, offset)
     }
@@ -224,7 +223,7 @@ object ItemDanmaku {
         alternateMode: Boolean,
         orientation: Quat,
         offset: Double
-    ): Set[EntityDanmaku] = DanmakuCreationHelper.createCircleShot(orientation, template, amount, 0F, offset)
+    ): Set[DanmakuState] = DanmakuCreationHelper.createCircleShot(orientation, template, amount, 0F, offset)
   }
   def circle: Pattern = Circle
 
@@ -236,7 +235,7 @@ object ItemDanmaku {
         alternateMode: Boolean,
         orientation: Quat,
         offset: Double
-    ): Set[EntityDanmaku] = {
+    ): Set[DanmakuState] = {
       val wide = if (alternateMode) 7.5F else 15F
       DanmakuCreationHelper.createRingShot(
         orientation,
@@ -258,7 +257,7 @@ object ItemDanmaku {
         alternateMode: Boolean,
         orientation: Quat,
         offset: Double
-    ): Set[EntityDanmaku] =
+    ): Set[DanmakuState] =
       DanmakuCreationHelper.createSphereShot(orientation, template, amount, amount / 2, 0F, offset)
   }
   def sphere: Pattern = Sphere
@@ -278,22 +277,6 @@ class ItemDanmaku extends ItemBase(LibItemName.DANMAKU) {
 
   override def onItemRightClick(world: World, player: EntityPlayer, hand: EnumHand): ActionResult[ItemStack] = {
     val stack = player.getHeldItem(hand)
-    DanmakuCore.proxy.spawnDanmaku(
-      DanmakuState(
-        player.dimension,
-        new Vector3(player),
-        new Vector3(player),
-        Vector3.directionEntity(player),
-        Quat.orientationOf(player),
-        Quat.orientationOf(player),
-        ShotData(),
-        0,
-        1F
-      )
-    )
-
-    new ActionResult[ItemStack](EnumActionResult.SUCCESS, stack)
-    /*
     var success = false
 
     val shot = ShotData.fromNBTItemStack(stack)
@@ -320,7 +303,6 @@ class ItemDanmaku extends ItemBase(LibItemName.DANMAKU) {
       else EnumActionResult.FAIL,
       stack
     )
-   */
   }
 
   @SideOnly(Side.CLIENT)

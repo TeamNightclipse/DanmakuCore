@@ -8,6 +8,7 @@
  */
 package net.katsstuff.danmakucore.impl.spellcard
 
+import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.data.{Quat, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
 import net.katsstuff.danmakucore.entity.living.TouhouCharacter
@@ -78,7 +79,7 @@ private[spellcard] class SpellcardEntityDelusionEnlightenment(
     }
   }
 
-  private def spawnGroundDanmaku() = {
+  private def spawnGroundDanmaku(): Unit = {
     val direction = Vector3.getVecWithoutY(Vector3.randomVector)
 
     val posSource = posUser.offset(direction, rng.nextDouble * 24)
@@ -99,6 +100,6 @@ private[spellcard] class SpellcardEntityDelusionEnlightenment(
       .build
       .asEntity
 
-    world.spawnEntity(danmaku)
+    DanmakuCore.proxy.spawnDanmaku(danmaku)
   }
 }

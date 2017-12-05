@@ -9,16 +9,17 @@
 package net.katsstuff.danmakucore.entity.danmaku.form
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.data.Quat
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.util.ResourceLocation
 
 object FormDummy extends Form {
 
   //JAVA-API
-  def instance: FormDummy.type  = this
+  def instance: FormDummy.type = this
 
-  override def getTexture(danmaku: EntityDanmaku): ResourceLocation = DanmakuCore.resource("textures/white.png")
-  override def getRenderer(danmaku: EntityDanmaku): IRenderForm =
-    (_: EntityDanmaku, _: Double, _: Double, _: Double, _: Float, _: Float, _: RenderManager) => { /*NO-OP*/ }
+  override def getTexture(danmaku: DanmakuState): ResourceLocation = DanmakuCore.resource("textures/white.png")
+  override def getRenderer(danmaku: DanmakuState): IRenderForm =
+    (_: DanmakuState, _: Double, _: Double, _: Double, _: Quat, _: Float, _: RenderManager) => () //NO-OP
 }

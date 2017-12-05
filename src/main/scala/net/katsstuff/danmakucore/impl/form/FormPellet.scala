@@ -13,8 +13,9 @@ import java.awt.Color
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.client.helper.RenderHelper
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.lib.LibFormName
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
@@ -26,16 +27,8 @@ private[danmakucore] class FormPellet extends FormGeneric(LibFormName.PELLET) {
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm() {
     @SideOnly(Side.CLIENT)
-    override def renderForm(
-        danmaku: EntityDanmaku,
-        x: Double,
-        y: Double,
-        z: Double,
-        entityYaw: Float,
-        partialTicks: Float,
-        rendermanager: RenderManager
-    ): Unit = {
-      val color = danmaku.shotData.getColor
+    override def renderForm(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
+      val color = danmaku.shot.color
       val alpha = 0.3F
 
       val colorObj = new Color(color)
@@ -44,7 +37,7 @@ private[danmakucore] class FormPellet extends FormGeneric(LibFormName.PELLET) {
       hsb(1) = 0.15F
       hsb(2) = 1.0F
 
-      RenderHelper.transformEntity(danmaku)
+      RenderHelper.transformDanmaku(danmaku.shot, orientation)
 
       RenderHelper.drawSphere(Color.getHSBColor(hsb(0), hsb(1), hsb(2)).getRGB, 1F)
       GlStateManager.enableBlend()

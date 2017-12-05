@@ -8,37 +8,31 @@
  */
 package net.katsstuff.danmakucore.entity.danmaku
 
-import javax.annotation.Nullable
-
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.item.ItemStack
-import net.minecraft.util.EntityDamageSourceIndirect
+import net.minecraft.util.{DamageSource, EntityDamageSourceIndirect}
 import net.minecraft.util.text.translation.I18n
-import net.minecraft.util.text.{ITextComponent, TextComponentTranslation}
+import net.minecraft.util.text.{ITextComponent, TextComponentString, TextComponentTranslation}
 
 object DamageSourceDanmaku {
-  def causeDanmakuDamage(entity: Entity, @Nullable indirectEntityIn: Entity) =
-    new DamageSourceDanmaku(entity, indirectEntityIn)
-
-  def causeDanmakuDamage(entity: Entity, indirectEntityIn: Option[Entity]) =
-    new DamageSourceDanmaku(entity, indirectEntityIn)
+  def create(danmaku: DanmakuState) = new DamageSourceDanmaku(danmaku)
 }
 
-class DamageSourceDanmaku private (val entity: Entity, @Nullable val indirectEntityIn: Entity)
-    extends EntityDamageSourceIndirect("danmaku", entity, indirectEntityIn) {
-  def this(entity: Entity, indirectEntityIn: Option[Entity]) = this(entity, indirectEntityIn.orNull)
-
+class DamageSourceDanmaku private (danmaku: DanmakuState) extends DamageSource("danmaku") {
   setProjectile()
   setDamageBypassesArmor()
   setDamageIsAbsolute()
   setMagicDamage()
 
+  override def getTrueSource: Entity = danmaku.user.orElse(danmaku.source).orNull
+
   /**
     * Gets the death message that is displayed when the player dies
     */
   override def getDeathMessage(target: EntityLivingBase): ITextComponent = {
-    val indirect       = getImmediateSource
-    val iTextComponent = if (indirect == null) getTrueSource.getDisplayName else indirect.getDisplayName
+    val indirect       = getTrueSource
+    val iTextComponent = if (indirect != null) indirect.getDisplayName else new TextComponentString("Danmaku") //TODO: Localize
     val stack = indirect match {
       case base: EntityLivingBase => base.getHeldItemMainhand
       case _                      => ItemStack.EMPTY
@@ -50,3 +44,10 @@ class DamageSourceDanmaku private (val entity: Entity, @Nullable val indirectEnt
     else new TextComponentTranslation(s, target.getDisplayName, iTextComponent)
   }
 }
+
+object DamageSourceDanmakuChainDeath {
+  def create(immediateSource: Entity, trueSource: Entity) =
+    new DamageSourceDanmakuChainDeath(immediateSource, trueSource)
+}
+class DamageSourceDanmakuChainDeath private (immediateSource: Entity, trueSource: Entity)
+  extends EntityDamageSourceIndirect("chainExplosion", immediateSource, trueSource) {}

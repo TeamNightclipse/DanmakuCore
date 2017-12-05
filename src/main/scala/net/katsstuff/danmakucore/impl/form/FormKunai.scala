@@ -12,8 +12,9 @@ import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.client.helper.RenderHelper
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.lib.LibFormName
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -24,25 +25,16 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 private[danmakucore] class FormKunai extends FormGeneric(LibFormName.KUNAI) {
 
   private val texture = DanmakuCore.resource("textures/entity/danmaku/kunai.png")
-  override def getTexture(danmaku: EntityDanmaku): ResourceLocation = texture
+  override def getTexture(danmaku: DanmakuState): ResourceLocation = texture
 
   //noinspection ConvertExpressionToSAM
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm() {
     @SideOnly(Side.CLIENT)
-    override def renderForm(
-        danmaku: EntityDanmaku,
-        x: Double,
-        y: Double,
-        z: Double,
-        entityYaw: Float,
-        partialTicks: Float,
-        rendermanager: RenderManager
-    ): Unit = {
+    override def renderForm(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
       val tes      = Tessellator.getInstance
       val bb       = tes.getBuffer
-      val shotData = danmaku.shotData
-      val color    = shotData.getColor
+      val color    = danmaku.shot.color
 
       val red      = (color >> 16 & 255) / 255.0F
       val green    = (color >> 8 & 255) / 255.0F
@@ -57,7 +49,7 @@ private[danmakucore] class FormKunai extends FormGeneric(LibFormName.KUNAI) {
       val width    = 1.0D
       val length   = 2.0D
 
-      RenderHelper.transformEntity(danmaku)
+      RenderHelper.transformDanmaku(danmaku.shot, orientation)
 
       GlStateManager.disableCull()
       bb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)

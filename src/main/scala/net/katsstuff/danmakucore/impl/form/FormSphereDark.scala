@@ -11,8 +11,9 @@ package net.katsstuff.danmakucore.impl.form
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.client.helper.RenderHelper
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.lib.LibFormName
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
@@ -24,19 +25,11 @@ private[danmakucore] class FormSphereDark extends FormGeneric(LibFormName.SPHERE
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm() {
     @SideOnly(Side.CLIENT)
-    override def renderForm(
-        danmaku: EntityDanmaku,
-        x: Double,
-        y: Double,
-        z: Double,
-        entityYaw: Float,
-        partialTicks: Float,
-        rendermanager: RenderManager
-    ): Unit = {
-      RenderHelper.transformEntity(danmaku)
-
-      val color = danmaku.shotData.getColor
+    override def renderForm(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
+      val color = danmaku.shot.color
       val alpha = 0.3F
+
+      RenderHelper.transformDanmaku(danmaku.shot, orientation)
 
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)

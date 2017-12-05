@@ -8,48 +8,50 @@
  */
 package net.katsstuff.danmakucore.impl.subentity
 
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
-import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType
-import net.minecraft.world.World
+import net.katsstuff.danmakucore.entity.danmaku.subentity.{SubEntity, SubEntityType}
+import net.katsstuff.danmakucore.handler.DanmakuState
 
 class SubEntityTypeDefault(name: String) extends SubEntityType(name) {
-  override def instantiate(world: World, entityDanmaku: EntityDanmaku) = new SubEntityDefault(world, entityDanmaku)
+  override def instantiate: SubEntity = new SubEntityDefault
 }
-class SubEntityDefault(world: World, danmaku: EntityDanmaku)
-  extends SubEntityBase(world, danmaku) {
+class SubEntityDefault extends SubEntityBase {
 
-  override def subEntityTick(): Unit = {
-    val shot = danmaku.getShotData
+  override def subEntityTick(danmaku: DanmakuState): Option[DanmakuState] = {
+    val shot  = danmaku.shot
     val delay = shot.delay
 
     if (delay > 0) {
-      danmaku.ticksExisted -= 1
-      if (delay - 1 == 0) if (shot.end == 1) {
-        danmaku.delete()
-        return
-      }
-      else if (!danmaku.world.isRemote) danmaku.resetMotion()
-      else {
-        danmaku.motionX = 0
-        danmaku.motionY = 0
-        danmaku.motionZ = 0
-      }
+      if (delay - 1 == 0) {
+        if (shot.end == 1) {
+          None
+        } else {
+          val (newMotion, newOrientation) = danmaku.resetMotion
 
-      danmaku.setShotData(shot.setDelay(delay - 1))
-    }
-    else {
-      if (!world.isRemote) {
-        val rotation = danmaku.rotation
-        if (rotation.isEnabled && danmaku.ticksExisted < rotation.getEndTime) rotate()
+          Some(
+            danmaku.copy(
+              shot = shot.copy(delay = delay - 1),
+              motion = newMotion,
+              orientation = newOrientation,
+              prevOrientation = danmaku.orientation
+            )
+          )
+        }
+      } else Some(danmaku.copy(shot = shot.copy(delay = delay - 1)))
+    } else {
+      val rotation = danmaku.rotation
+      val newDirection =
+        if (rotation.isEnabled && danmaku.ticksExisted < rotation.getEndTime) rotate(danmaku) else danmaku.direction
 
-        danmaku.accelerate(danmaku.getCurrentSpeed)
-        updateMotionWithGravity()
-        hitCheck(entity => !danmaku.user.contains(entity) && !danmaku.source.contains(entity))
-      }
+      val newMotion = updateMotionWithGravity(danmaku, danmaku.accelerate)
+      val updated = danmaku.copy(
+        motion = newMotion,
+        pos = danmaku.pos + newMotion,
+        prevPos = danmaku.pos,
+        direction = newDirection,
+        ticksExisted = danmaku.ticksExisted + 1
+      )
 
-      rotateTowardsMovement()
-
-      if (danmaku.isInWater) waterMovement()
+      hitCheck(updated, entity => !danmaku.user.contains(entity) && !danmaku.source.contains(entity))
     }
   }
 }

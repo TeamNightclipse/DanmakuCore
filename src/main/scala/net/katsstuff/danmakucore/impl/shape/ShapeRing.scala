@@ -8,8 +8,10 @@
  */
 package net.katsstuff.danmakucore.impl.shape
 
+import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.data.{Quat, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.{DanmakuTemplate, EntityDanmaku}
+import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
 import net.minecraft.util.math.MathHelper
 
@@ -33,14 +35,14 @@ class ShapeRing(template: DanmakuTemplate, amount: Int, radius: Float, baseAngle
         )
         builder.direction = Vector3.Forward.rotate(rotate)
         builder.pos = pos.offset(builder.direction, distance)
-        builder.roll = (orientation.pitch * MathHelper.sin(rotateAngle.toFloat)).toFloat
+        builder.orientation = Quat.fromEuler(0F, 0F, (orientation.pitch * MathHelper.sin(rotateAngle.toFloat)).toFloat)
         rotateAngle += stepSize
         val spawned = builder.build.asEntity
-        template.world.spawnEntity(spawned)
+        DanmakuCore.proxy.spawnDanmaku(spawned)
         spawned
       }
 
       ShapeResult.done(res.toSet)
-    } else ShapeResult.done(Set.empty[EntityDanmaku])
+    } else ShapeResult.done(Set.empty[DanmakuState])
   }
 }

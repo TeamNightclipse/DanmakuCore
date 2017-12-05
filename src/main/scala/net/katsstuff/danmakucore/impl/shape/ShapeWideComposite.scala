@@ -9,7 +9,7 @@
 package net.katsstuff.danmakucore.impl.shape
 
 import net.katsstuff.danmakucore.data.{Quat, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
 import net.minecraft.world.World
 
@@ -29,6 +29,6 @@ class ShapeWideComposite(world: World, shape: Shape, amount: Int, wideAngle: Flo
       val spawned = res.flatMap(_.spawnedDanmaku).toSet
 
       ShapeResult(done, spawned)
-    } else ShapeResult.done(Set.empty[EntityDanmaku])
+    } else ShapeResult.done(Set.empty[DanmakuState])
   }
 }

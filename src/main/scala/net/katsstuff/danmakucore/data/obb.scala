@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.data
 
 import net.minecraft.util.math.AxisAlignedBB
 
-case class OrientedBoundingBox(boundingBox: AxisAlignedBB, pos: Vector3, orientation: Quat) {
+case class OrientedBoundingBox(aabb: AxisAlignedBB, pos: Vector3, orientation: Quat) {
 
   //http://www.dyn4j.org/2010/01/sat/
   def intersects(thatBoundingBox: AxisAlignedBB): Boolean = {
@@ -44,9 +44,9 @@ case class OrientedBoundingBox(boundingBox: AxisAlignedBB, pos: Vector3, orienta
     }
 
     if (rotated.distanceSquared(Vector3.Forward) < 0.1 * 0.1) {
-      boundingBox.intersects(thatBoundingBox)
+      aabb.intersects(thatBoundingBox)
     } else {
-      val thisPoints = points(boundingBox).map(p => (orientation * (p - pos)) + pos)
+      val thisPoints = points(aabb).map(p => (orientation * (p - pos)) + pos)
       val thatPoints = points(thatBoundingBox)
 
       val usedAxes = Array.concat(OrientedBoundingBox.IdentityAxes, getAxes)

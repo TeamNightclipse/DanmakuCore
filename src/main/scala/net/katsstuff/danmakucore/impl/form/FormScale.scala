@@ -11,8 +11,9 @@ package net.katsstuff.danmakucore.impl.form
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.client.helper.RenderHelper
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.lib.LibFormName
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
@@ -24,21 +25,13 @@ private[danmakucore] class FormScale extends FormGeneric(LibFormName.SCALE) {
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm() {
     @SideOnly(Side.CLIENT)
-    override def renderForm(
-        danmaku: EntityDanmaku,
-        x: Double,
-        y: Double,
-        z: Double,
-        entityYaw: Float,
-        partialTicks: Float,
-        rendermanager: RenderManager
-    ): Unit = {
-      val color = danmaku.shotData.getColor
+    override def renderForm(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
+      val color = danmaku.shot.color
 
       val length = 2F
       val alpha  = 0.35F
 
-      RenderHelper.transformEntity(danmaku)
+      RenderHelper.transformDanmaku(danmaku.shot, orientation)
 
       GL11.glScalef(0.5F, 0.5F, length * 0.4F)
       RenderHelper.drawSphere(0xFFFFFF, 1F)

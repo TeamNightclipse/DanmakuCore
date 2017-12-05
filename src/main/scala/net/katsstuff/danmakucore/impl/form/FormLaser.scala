@@ -11,15 +11,16 @@ package net.katsstuff.danmakucore.impl.form
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.client.helper.RenderHelper
-import net.katsstuff.danmakucore.data.{ShotData, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.lib.{LibFormName, LibSounds}
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.world.World
+import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
@@ -28,21 +29,21 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
   override protected def createRenderer: IRenderForm = new IRenderForm() {
     @SideOnly(Side.CLIENT)
     override def renderForm(
-        danmaku: EntityDanmaku,
+        danmaku: DanmakuState,
         x: Double,
         y: Double,
         z: Double,
-        entityYaw: Float,
+        orientation: Quat,
         partialTicks: Float,
-        rendermanager: RenderManager
+        manager: RenderManager
     ): Unit = {
-      val shotData = danmaku.shotData
-      val color    = shotData.getColor
+      val shot  = danmaku.shot
+      val color = shot.color
 
-      RenderHelper.transformEntity(danmaku)
+      RenderHelper.transformDanmaku(shot, orientation)
 
-      if (shotData.delay > 0) {
-        val scale = 0.025F * Math.min(shotData.delay, 20)
+      if (shot.delay > 0) {
+        val scale = 0.025F * Math.min(shot.delay, 20)
 
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
@@ -82,10 +83,17 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
 
   override def playShotSound(world: World, pos: Vector3, shotData: ShotData): Unit = ()
 
-  override def onTick(danmaku: EntityDanmaku): Unit = {
+  override def onTick(danmaku: DanmakuState): Option[DanmakuState] = {
     //The danmaku exits delay here
     if (danmaku.ticksExisted == 2) {
-      danmaku.playSound(LibSounds.LASER1, 0.1F, 1F)
+      FMLCommonHandler
+        .instance()
+        .getMinecraftServerInstance
+        .addScheduledTask(() => {
+          DanmakuHelper.playSoundAt(danmaku.world, danmaku.pos, LibSounds.LASER1, 0.1F, 1F)
+        })
     }
+
+    Some(danmaku)
   }
 }

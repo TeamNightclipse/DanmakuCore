@@ -8,24 +8,30 @@
  */
 package net.katsstuff.danmakucore.impl.subentity
 
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
-import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType
+import net.katsstuff.danmakucore.entity.danmaku.subentity.{SubEntity, SubEntityType}
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.minecraft.util.math.RayTraceResult
-import net.minecraft.world.World
+import net.minecraftforge.fml.common.FMLCommonHandler
 
 private[danmakucore] class SubEntityTypeExplosion(name: String, strength: Float) extends SubEntityType(name) {
-  override def instantiate(world: World, entityDanmaku: EntityDanmaku) =
-    new SubEntityExplosion(world, entityDanmaku, strength)
+  override def instantiate: SubEntity =
+    new SubEntityExplosion(strength)
 }
 
-private[subentity] class SubEntityExplosion(world: World, danmaku: EntityDanmaku, strength: Float)
-    extends SubEntityDefault(world, danmaku) {
+private[subentity] class SubEntityExplosion(strength: Float) extends SubEntityDefault {
 
-  override protected def impact(rayTrace: RayTraceResult): Unit = {
-    super.impact(rayTrace)
-    if (!world.isRemote) {
+  override protected def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): Option[DanmakuState] = {
+    if (!danmaku.world.isRemote) {
       val cause = danmaku.user.orElse(danmaku.source).orNull
-      world.createExplosion(cause, rayTrace.hitVec.x, rayTrace.hitVec.y, rayTrace.hitVec.z, strength, false)
+      FMLCommonHandler
+        .instance()
+        .getMinecraftServerInstance
+        .addScheduledTask(
+          () =>
+            danmaku.world
+              .createExplosion(cause, rayTrace.hitVec.x, rayTrace.hitVec.y, rayTrace.hitVec.z, strength, false)
+        )
     }
+    super.impact(danmaku, rayTrace)
   }
 }

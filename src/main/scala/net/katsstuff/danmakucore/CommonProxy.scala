@@ -21,7 +21,7 @@ import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType
 import net.katsstuff.danmakucore.entity.spellcard.{EntitySpellcard, Spellcard}
 import net.katsstuff.danmakucore.entity.{EntityFallingData, EntityInfo}
-import net.katsstuff.danmakucore.handler.{DanmakuHandler, DanmakuState}
+import net.katsstuff.danmakucore.handler.{ClientDanmakuHandler, DanmakuHandler, DanmakuState, ServerDanmakuHandler}
 import net.katsstuff.danmakucore.impl.danmakuvariant.DanmakuVariantGeneric
 import net.katsstuff.danmakucore.impl.form._
 import net.katsstuff.danmakucore.impl.phase._
@@ -39,8 +39,10 @@ import net.minecraft.util.{ResourceLocation, SoundEvent}
 import net.minecraft.world.World
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.RegistryEvent
+import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.registry.{EntityEntry, EntityEntryBuilder}
+import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.registries.{IForgeRegistryEntry, RegistryBuilder}
 
 object CommonProxy {
@@ -157,10 +159,9 @@ object CommonProxy {
 
     event.getRegistry.registerAll(IdState.run0 {
       for {
-        danmaku   <- registerEntity[EntityDanmaku]
         spellcard <- registerEntity[EntitySpellcard]
         falling   <- registerEntity[EntityFallingData]
-      } yield Seq(danmaku, spellcard, falling)
+      } yield Seq(spellcard, falling)
     }: _*)
 
   }
@@ -208,7 +209,8 @@ object CommonProxy {
 }
 class CommonProxy {
 
-  val danmakuHandler = new DanmakuHandler
+  val danmakuHandler: DanmakuHandler =
+    if (FMLCommonHandler.instance().getSide == Side.CLIENT) new ClientDanmakuHandler else new ServerDanmakuHandler
   MinecraftForge.EVENT_BUS.register(danmakuHandler)
 
   private[danmakucore] def bakeDanmakuVariant(variant: DanmakuVariant): Unit = {}

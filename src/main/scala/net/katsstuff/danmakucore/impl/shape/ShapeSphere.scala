@@ -9,7 +9,8 @@
 package net.katsstuff.danmakucore.impl.shape
 
 import net.katsstuff.danmakucore.data.{Quat, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.{DanmakuTemplate, EntityDanmaku}
+import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
 
 class ShapeSphere(danmaku: DanmakuTemplate, rings: Int, bands: Int, baseAngle: Float, distance: Double) extends Shape {
@@ -27,6 +28,6 @@ class ShapeSphere(danmaku: DanmakuTemplate, rings: Int, bands: Int, baseAngle: F
       }
 
       ShapeResult.done(res.toSet.flatten)
-    } else ShapeResult.done(Set.empty[EntityDanmaku])
+    } else ShapeResult.done(Set.empty[DanmakuState])
   }
 }

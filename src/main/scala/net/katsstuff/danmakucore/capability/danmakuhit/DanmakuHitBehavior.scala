@@ -8,7 +8,7 @@
  */
 package net.katsstuff.danmakucore.capability.danmakuhit
 
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.minecraft.entity.Entity
 import net.minecraft.util.DamageSource
 
@@ -17,5 +17,5 @@ import net.minecraft.util.DamageSource
   */
 trait DanmakuHitBehavior {
 
-  def onHit(danmaku: EntityDanmaku, hitEntity: Entity, damage: Float, source: DamageSource): Unit
+  def onHit(danmaku: DanmakuState, hitEntity: Entity, damage: Float, source: DamageSource): Unit
 }

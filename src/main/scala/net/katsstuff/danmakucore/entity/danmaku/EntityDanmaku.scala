@@ -30,21 +30,17 @@ import net.minecraft.entity.{Entity, EntityLivingBase, IEntityMultiPart, IProjec
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.network.datasync.{DataSerializers, EntityDataManager}
 import net.minecraft.util.DamageSource
-import net.minecraft.util.math.{AxisAlignedBB, MathHelper, Vec3d}
+import net.minecraft.util.math.{AxisAlignedBB, Vec3d}
 import net.minecraft.world.World
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 object EntityDanmaku {
-  implicit val info: EntityInfo[EntityDanmaku] = new EntityInfo[EntityDanmaku] {
-    override def create(world: World): EntityDanmaku = new EntityDanmaku(world)
-
-    override def name: String = LibEntityName.DANMAKU
-  }
-
   private val ShotDataKey = EntityDataManager.createKey(classOf[EntityDanmaku], DanCoreDataSerializers.shotData)
   private val RollKey     = EntityDataManager.createKey(classOf[EntityDanmaku], DataSerializers.FLOAT)
 }
+
+@Deprecated
 class EntityDanmaku(
     world: World,
     @LogicalSideOnly(Side.SERVER) _shot: ShotData,
@@ -145,8 +141,8 @@ class EntityDanmaku(
       if (!world.isRemote) danmakuFinishBonus()
     } else {
       super.onUpdate()
-      shot.getForm.onTick(this)
-      subEntity.subEntityTick()
+      //shot.getForm.onTick(this)
+      //subEntity.subEntityTick()
       setPosition(posX + motionX, posY + motionY, posZ + motionZ)
     }
   }
@@ -217,7 +213,7 @@ class EntityDanmaku(
     val oldSubEntity = oldShot.subEntity
     dataManager.set(EntityDanmaku.ShotDataKey, toUse)
     if ((toUse.subEntity != oldSubEntity) || first || forceNewSubEntity) {
-      subEntity = toUse.subEntity.instantiate(world, this)
+      subEntity = null //toUse.subEntity.instantiate()
     }
   }
 

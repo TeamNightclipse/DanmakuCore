@@ -31,7 +31,7 @@ object DanmakuHitBehaviorHandler {
   @SubscribeEvent
   def attachEntity(event: AttachCapabilitiesEvent[Entity]): Unit = {
     val toAttach = event.getObject match {
-      case _: EntityAgeable | _: EntityDanmaku          => IgnoreHitBehavior
+      case _: EntityAgeable                             => IgnoreHitBehavior
       case _: EntityLivingBase | _: MultiPartEntityPart => DefaultHitBehavior
       case _                                            => IgnoreHitBehavior
     }

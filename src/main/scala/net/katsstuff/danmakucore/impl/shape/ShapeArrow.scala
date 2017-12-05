@@ -8,8 +8,10 @@
  */
 package net.katsstuff.danmakucore.impl.shape
 
+import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.data.{Quat, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.{DanmakuTemplate, EntityDanmaku}
+import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
 
 /**
@@ -36,15 +38,15 @@ class ShapeArrow(template: DanmakuTemplate, amount: Int, distance: Double, width
         val newPosNeutral = pos.offset(localForward, newDistance)
         builder.pos = newPosNeutral.offset(localLeft, newWidth)
         val createdLeft = builder.build.asEntity
-        builder.world.spawnEntity(createdLeft)
+        DanmakuCore.proxy.spawnDanmaku(createdLeft)
         builder.pos = newPosNeutral.offset(localRight, newWidth)
         val createdRight = builder.build.asEntity
-        builder.world.spawnEntity(createdRight)
+        DanmakuCore.proxy.spawnDanmaku(createdRight)
 
         Set(createdLeft, createdRight)
       }
 
       ShapeResult.done(res.toSet.flatten)
-    } else ShapeResult.done(Set.empty[EntityDanmaku])
+    } else ShapeResult.done(Set.empty[DanmakuState])
   }
 }

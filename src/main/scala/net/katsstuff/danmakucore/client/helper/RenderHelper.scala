@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.{GL_QUAD_STRIP, GL_TRIANGLE_FAN}
 import org.lwjgl.util.glu.{Cylinder, Disk, GLU, Sphere}
 
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.data.{Quat, ShotData}
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{GlStateManager, Tessellator}
 import net.minecraft.util.math.MathHelper
@@ -90,18 +90,9 @@ object RenderHelper {
 
   def drawDisk(color: Int, alpha: Float): Unit = drawObj(color, alpha, diskId)
 
-  def transformEntity(danmaku: EntityDanmaku): Unit = {
-    val shotData = danmaku.getShotData
-    rotateDanmaku(danmaku)
-    GL11.glScalef(shotData.getSizeX, shotData.getSizeY, shotData.getSizeZ)
-  }
-
-  def rotateDanmaku(danmaku: EntityDanmaku): Unit = rotate(-danmaku.rotationYaw, danmaku.rotationPitch, danmaku.roll)
-
-  def rotate(yaw: Float, pitch: Float, roll: Float): Unit = {
-    GL11.glRotatef(yaw, 0F, 1F, 0F)
-    GL11.glRotatef(pitch, 1F, 0F, 0F)
-    GL11.glRotatef(roll, 0F, 0F, 1F)
+  def transformDanmaku(shot: ShotData, orientation: Quat): Unit = {
+    GlStateManager.rotate(orientation.toQuaternion)
+    GL11.glScalef(shot.getSizeX, shot.getSizeY, shot.getSizeZ)
   }
 
   //Adapted from Glu Sphere

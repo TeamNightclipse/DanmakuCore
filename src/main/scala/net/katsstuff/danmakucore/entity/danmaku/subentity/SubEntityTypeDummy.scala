@@ -8,15 +8,14 @@
  */
 package net.katsstuff.danmakucore.entity.danmaku.subentity
 
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
-import net.minecraft.world.World
+import net.katsstuff.danmakucore.handler.DanmakuState
 
 object SubEntityTypeDummy extends SubEntityType {
   def instance: SubEntityTypeDummy.type = this
 
-  override def instantiate(world: World, entityDanmaku: EntityDanmaku) = new SubEntityDummy(world, entityDanmaku)
+  override def instantiate: SubEntity = new SubEntityDummy
 }
 
-private[subentity] class SubEntityDummy(world: World, danmaku: EntityDanmaku) extends SubEntity(world, danmaku) {
-  override def subEntityTick(): Unit = {}
+private[subentity] class SubEntityDummy extends SubEntity {
+  override def subEntityTick(danmaku: DanmakuState): Option[DanmakuState] = Some(danmaku)
 }

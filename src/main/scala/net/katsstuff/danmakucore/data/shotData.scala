@@ -24,55 +24,55 @@ import net.minecraftforge.common.util.INBTSerializable
 
 /**
 	* Holds general information about the effect
-	* and behavior of a [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+	* and behavior of a [[net.katsstuff.danmakucore.handler.DanmakuState]]
 	*/
 abstract sealed class AbstractShotData {
 
   /**
-		* The physical appearance of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* The physical appearance of the [[net.katsstuff.danmakucore.handler.DanmakuState]]
 		*/
   def form: Form
 
   /**
-		* The color of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* The color of the [[net.katsstuff.danmakucore.handler.DanmakuState]]
 		*/
   def color: Int
 
   /**
-		* The damage the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* The damage the [[net.katsstuff.danmakucore.handler.DanmakuState]]
 		* will cause on hit.
 		*/
   def damage: Float
 
   /**
-		* The size on the x axis of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* The size on the x axis of the [[net.katsstuff.danmakucore.handler.DanmakuState]]
 		*/
   def sizeX: Float
 
   /**
-		* The size on the y axis of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* The size on the y axis of the [[net.katsstuff.danmakucore.handler.DanmakuState]]
 		*/
   def sizeY: Float
 
   /**
-		* The size on the z axis of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* The size on the z axis of the [[net.katsstuff.danmakucore.handler.DanmakuState]]
 		*/
   def sizeZ: Float
 
   /**
-		* How long the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* How long the [[net.katsstuff.danmakucore.handler.DanmakuState]]
 		* will stand still before activating.
 		*/
   def delay: Int
 
   /**
-		* How long the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* How long the [[net.katsstuff.danmakucore.handler.DanmakuState]]
 		* will last before it's killed.
 		*/
   def end: Int
 
   /**
-		* The [[SubEntityType]] of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]].
+		* The [[SubEntityType]] of the [[net.katsstuff.danmakucore.handler.DanmakuState]].
 		* This is kind of like the AI of the entity, and where all the hard work happens.
 		*/
   def subEntity: SubEntityType

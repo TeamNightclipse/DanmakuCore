@@ -10,8 +10,8 @@ package net.katsstuff.danmakucore.entity.danmaku.form
 
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.registry.RegistryValueWithItemModel
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
@@ -23,7 +23,7 @@ import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 /**
-  * Something that dictates the appearance and the logic that comes from that of a [[EntityDanmaku]].
+  * Something that dictates the appearance and the logic that comes from that of a [[DanmakuState]].
   *
   * Please note that even though both this and [[SubEntity]] have callbacks
   * for tick and changes, the callbacks here should only be used if the logic is
@@ -40,13 +40,13 @@ abstract class Form extends RegistryValueWithItemModel[Form] {
   /**
     * @return The ResourceLocation assigned to this registration.
     */
-  def getTexture(danmaku: EntityDanmaku): ResourceLocation
+  def getTexture(danmaku: DanmakuState): ResourceLocation
 
   /**
     * @return The IRenderForm assigned to this registration.
     */
   @SideOnly(Side.CLIENT)
-  def getRenderer(danmaku: EntityDanmaku): IRenderForm
+  def getRenderer(danmaku: DanmakuState): IRenderForm
 
   override def canRightClick(player: EntityPlayer, hand: EnumHand) = true
 
@@ -65,7 +65,7 @@ abstract class Form extends RegistryValueWithItemModel[Form] {
     * danmaku would probably always be dragged down a slight bit by gravity, even if it doesn't have normal
     * gravity.
     */
-  def onTick(danmaku: EntityDanmaku): Unit = {}
+  def onTick(danmaku: DanmakuState): Option[DanmakuState] = Some(danmaku)
 
   /**
     * Callback that is executed whenever [[ShotData]] is set on the underlying entity

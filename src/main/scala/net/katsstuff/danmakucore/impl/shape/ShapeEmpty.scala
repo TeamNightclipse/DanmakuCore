@@ -9,10 +9,10 @@
 package net.katsstuff.danmakucore.impl.shape
 
 import net.katsstuff.danmakucore.data.{Quat, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
 
 class ShapeEmpty extends Shape {
   override def draw(pos: Vector3, orientation: Quat, tick: Int): ShapeResult =
-    ShapeResult.done(Set.empty[EntityDanmaku])
+    ShapeResult.done(Set.empty[DanmakuState])
 }

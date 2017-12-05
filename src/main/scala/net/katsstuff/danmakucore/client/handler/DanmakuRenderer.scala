@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.client.helper.RenderHelper
-import net.katsstuff.danmakucore.data.{Quat, ShotData}
+import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.form.Form
 import net.katsstuff.danmakucore.handler.{DanmakuHandler, DanmakuState}
 import net.katsstuff.danmakucore.helper.LogHelper
@@ -52,6 +52,14 @@ class DanmakuRenderer(handler: DanmakuHandler) {
       val orientation = danmaku.prevOrientation.slerp(danmaku.orientation, partialTicks)
       val i           = danmaku.renderBrightness
 
+      /*
+      println(s"pos    ${danmaku.pos}")
+      println(s"prev   ${danmaku.prevPos}")
+      println(s"render ${new Vector3(x, y, z)}")
+      println(partialTicks)
+      */
+
+
       val j = i % 65536
       val k = i / 65536
       OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j, k)
@@ -77,18 +85,14 @@ class DanmakuRenderer(handler: DanmakuHandler) {
     if (danmaku.ticksExisted <= shot.end) {
       GL11.glPushMatrix()
       renderManager.renderEngine.bindTexture(DanmakuCore.resource("textures/white.png"))
-      //renderManager.renderEngine.bindTexture(shot.form.getTexture(null))
+      renderManager.renderEngine.bindTexture(shot.form.getTexture(danmaku))
       GL11.glTranslated(x, y + shot.sizeY / 2, z)
       GlStateManager.disableLighting()
 
       val form       = shot.form
-      val renderForm = form.getRenderer(null)
+      val renderForm = form.getRenderer(danmaku)
       if (renderForm != null) {
-
-        renderSphere(shot, orientation)
-        //renderLaser(shot, orientation)
-
-        //renderForm.renderForm(entity, x, y, z, orientation, partialTicks, renderManager)
+        renderForm.renderForm(danmaku, x, y, z, orientation, partialTicks, renderManager)
       } else if (!invalidForms.contains(form)) {
         LogHelper.error("Invalid renderer for " + I18n.format(form.unlocalizedName))
         invalidForms.add(form)
@@ -108,7 +112,7 @@ class DanmakuRenderer(handler: DanmakuHandler) {
         GL11.glTranslated(x, y + shot.sizeY / 2, z)
 
         val obb  = danmaku.boundingBox
-        val aabb = obb.boundingBox
+        val aabb = obb.aabb
 
         GlStateManager.rotate(obb.orientation.toQuaternion)
         RenderGlobal.drawSelectionBoundingBox(

@@ -8,13 +8,9 @@
  */
 package net.katsstuff.danmakucore.helper
 
-import net.katsstuff.danmakucore.capability.danmakuhit.{
-  AllyDanmakuHitBehavior,
-  CapabilityDanmakuHitBehaviorJ,
-  DanmakuHitBehavior
-}
+import net.katsstuff.danmakucore.capability.danmakuhit.{AllyDanmakuHitBehavior, CapabilityDanmakuHitBehaviorJ}
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.{DamageSourceDanmaku, EntityDanmaku}
+import net.katsstuff.danmakucore.entity.danmaku.{DamageSourceDanmakuChainDeath, EntityDanmaku}
 import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
 import net.minecraft.entity.player.EntityPlayer
@@ -58,7 +54,7 @@ trait TDanmakuHelper {
         val distance = entity.getDistance(deadEntity)
         if (distance <= range) {
           val damage = maxDamage * (1.0F - (distance / range))
-          entity.attackEntityFrom(DamageSourceDanmaku.causeDanmakuDamage(entity, deadEntity), damage)
+          entity.attackEntityFrom(DamageSourceDanmakuChainDeath.create(entity, deadEntity), damage)
         }
       }
   }

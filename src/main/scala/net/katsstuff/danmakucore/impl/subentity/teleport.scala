@@ -8,23 +8,28 @@
  */
 package net.katsstuff.danmakucore.impl.subentity
 
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
-import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType
+import net.katsstuff.danmakucore.entity.danmaku.subentity.{SubEntity, SubEntityType}
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.minecraft.util.math.RayTraceResult
-import net.minecraft.world.World
+import net.minecraftforge.fml.common.FMLCommonHandler
 
 private[danmakucore] class SubEntityTypeTeleport(name: String) extends SubEntityType(name) {
-  override def instantiate(world: World, entityDanmaku: EntityDanmaku) =
-    new SubEntityTeleport(world, entityDanmaku)
+  override def instantiate: SubEntity =
+    new SubEntityTeleport
 }
 
-private[subentity] class SubEntityTeleport(world: World, danmaku: EntityDanmaku) extends SubEntityDefault(world, danmaku) {
-  override def impact(rayTrace: RayTraceResult): Unit = {
+private[subentity] class SubEntityTeleport extends SubEntityDefault {
+  override def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): Option[DanmakuState] = {
     danmaku.user.foreach { usr =>
-      usr.rotationYaw = danmaku.rotationYaw
-      usr.rotationPitch = danmaku.rotationPitch
-      usr.setPositionAndUpdate(danmaku.posX, danmaku.posY, danmaku.posZ)
+      FMLCommonHandler
+        .instance()
+        .getMinecraftServerInstance
+        .addScheduledTask(() => {
+          usr.rotationYaw = danmaku.orientation.yaw.toFloat
+          usr.rotationPitch = danmaku.orientation.pitch.toFloat
+          usr.setPositionAndUpdate(danmaku.pos.x, danmaku.pos.y, danmaku.pos.z)
+        })
     }
-    super.impact(rayTrace)
+    super.impact(danmaku, rayTrace)
   }
 }

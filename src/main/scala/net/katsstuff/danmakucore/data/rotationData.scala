@@ -14,7 +14,7 @@ import net.minecraft.nbt.{NBTTagCompound, NBTTagDouble, NBTTagList}
 import net.minecraftforge.common.util.Constants
 
 /**
-	* If a [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]] rotates, defines how.
+	* If a [[net.katsstuff.danmakucore.handler.DanmakuState]] rotates, defines how.
 	*/
 abstract sealed class AbstractRotationData {
 
