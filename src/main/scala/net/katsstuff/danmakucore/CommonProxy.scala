@@ -21,6 +21,7 @@ import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType
 import net.katsstuff.danmakucore.entity.spellcard.{EntitySpellcard, Spellcard}
 import net.katsstuff.danmakucore.entity.{EntityFallingData, EntityInfo}
+import net.katsstuff.danmakucore.handler.{DanmakuHandler, DanmakuState}
 import net.katsstuff.danmakucore.impl.danmakuvariant.DanmakuVariantGeneric
 import net.katsstuff.danmakucore.impl.form._
 import net.katsstuff.danmakucore.impl.phase._
@@ -36,6 +37,7 @@ import net.minecraft.init.SoundEvents
 import net.minecraft.item.Item
 import net.minecraft.util.{ResourceLocation, SoundEvent}
 import net.minecraft.world.World
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.registry.{EntityEntry, EntityEntryBuilder}
@@ -206,6 +208,9 @@ object CommonProxy {
 }
 class CommonProxy {
 
+  val danmakuHandler = new DanmakuHandler
+  MinecraftForge.EVENT_BUS.register(danmakuHandler)
+
   private[danmakucore] def bakeDanmakuVariant(variant: DanmakuVariant): Unit = {}
 
   private[danmakucore] def bakeDanmakuForm(form: Form): Unit = {}
@@ -285,4 +290,6 @@ class CommonProxy {
   ): Unit = {}
 
   def addParticle[T <: IGlowParticle](particle: T): Unit = {}
+
+  def spawnDanmaku(state: DanmakuState): Unit = danmakuHandler.spawnDanmaku(state)
 }

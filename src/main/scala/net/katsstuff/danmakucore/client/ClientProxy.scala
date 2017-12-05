@@ -11,7 +11,7 @@ package net.katsstuff.danmakucore.client
 import scala.reflect.ClassTag
 
 import net.katsstuff.danmakucore.CommonProxy
-import net.katsstuff.danmakucore.client.handler.{BossBarHandler, HUDHandler, SpellcardHandler}
+import net.katsstuff.danmakucore.client.handler.{BossBarHandler, DanmakuRenderer, HUDHandler, SpellcardHandler}
 import net.katsstuff.danmakucore.client.helper.RenderHelper
 import net.katsstuff.danmakucore.client.particle.{GlowTexture, IGlowParticle, ParticleRenderer, ParticleUtil}
 import net.katsstuff.danmakucore.client.render.{RenderDanmaku, RenderFallingData, RenderSpellcard}
@@ -55,6 +55,8 @@ class ClientProxy extends CommonProxy {
   private val spellcardHandler = new SpellcardHandler
   val particleRenderer         = new ParticleRenderer
 
+  val danmakuRenderer = new DanmakuRenderer(danmakuHandler)
+
   override private[danmakucore] def bakeDanmakuVariant(variant: DanmakuVariant): Unit =
     ModelBakery.registerItemVariants(LibItems.DANMAKU, variant.itemModel)
 
@@ -72,6 +74,7 @@ class ClientProxy extends CommonProxy {
     MinecraftForge.EVENT_BUS.register(bossBarHandler)
     MinecraftForge.EVENT_BUS.register(spellcardHandler)
     MinecraftForge.EVENT_BUS.register(particleRenderer)
+    MinecraftForge.EVENT_BUS.register(danmakuRenderer)
   }
 
   private def registerEntityRenderer[A <: Entity: ClassTag](f: RenderManager => Render[A]): Unit = {

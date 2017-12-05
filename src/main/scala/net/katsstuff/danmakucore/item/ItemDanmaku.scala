@@ -14,10 +14,11 @@ import javax.annotation.Nullable
 
 import scala.collection.JavaConverters._
 
-import net.katsstuff.danmakucore.DanmakuCreativeTab
-import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
+import net.katsstuff.danmakucore.{DanmakuCore, DanmakuCreativeTab}
+import net.katsstuff.danmakucore.data.{OrientedBoundingBox, Quat, ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.form.Form
 import net.katsstuff.danmakucore.entity.danmaku.{DanmakuTemplate, DanmakuVariant, EntityDanmaku}
+import net.katsstuff.danmakucore.handler.DanmakuState
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.katsstuff.danmakucore.helper.MathUtil._
 import net.katsstuff.danmakucore.lib.data.{LibDanmakuVariants, LibItems, LibSubEntities}
@@ -31,6 +32,7 @@ import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
+import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.{ActionResult, EnumActionResult, EnumHand, NonNullList, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -265,18 +267,33 @@ class ItemDanmaku extends ItemBase(LibItemName.DANMAKU) {
   setMaxDamage(0)
   setCreativeTab(DanmakuCreativeTab)
 
-  override def getSubItems(tab: CreativeTabs, subItems: NonNullList[ItemStack]): Unit = {
-    if(isInCreativeTab(tab)) {
+  override def getSubItems(tab: CreativeTabs, subItems: NonNullList[ItemStack]): Unit =
+    if (isInCreativeTab(tab)) {
       subItems.addAll(DanmakuRegistry.DanmakuVariant.getValues.asScala.sorted.map(ItemDanmaku.createStack).asJava)
     }
-  }
 
   @SideOnly(Side.CLIENT) override def hasEffect(stack: ItemStack): Boolean = ItemDanmaku.Infinity.get(stack)
   override def getUnlocalizedName(stack: ItemStack): String =
     s"${getUnlocalizedName()}.${ItemDanmaku.getController(stack).unlocalizedName}"
 
   override def onItemRightClick(world: World, player: EntityPlayer, hand: EnumHand): ActionResult[ItemStack] = {
-    val stack   = player.getHeldItem(hand)
+    val stack = player.getHeldItem(hand)
+    DanmakuCore.proxy.spawnDanmaku(
+      DanmakuState(
+        player.dimension,
+        new Vector3(player),
+        new Vector3(player),
+        Vector3.directionEntity(player),
+        Quat.orientationOf(player),
+        Quat.orientationOf(player),
+        ShotData(),
+        0,
+        1F
+      )
+    )
+
+    new ActionResult[ItemStack](EnumActionResult.SUCCESS, stack)
+    /*
     var success = false
 
     val shot = ShotData.fromNBTItemStack(stack)
@@ -303,6 +320,7 @@ class ItemDanmaku extends ItemBase(LibItemName.DANMAKU) {
       else EnumActionResult.FAIL,
       stack
     )
+   */
   }
 
   @SideOnly(Side.CLIENT)
