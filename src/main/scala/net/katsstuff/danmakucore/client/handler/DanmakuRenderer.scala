@@ -13,7 +13,7 @@ import scala.collection.mutable
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.danmaku.{ClientDanmakuHandler, DanmakuHandler, DanmakuState}
+import net.katsstuff.danmakucore.danmaku.{DanmakuHandler, DanmakuState}
 import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.Form
 import net.katsstuff.danmakucore.helper.LogHelper
@@ -43,7 +43,7 @@ class DanmakuRenderer(handler: DanmakuHandler) {
     val renderPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks
     val renderPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks
 
-    handler.danmaku.values.foreach { danmaku =>
+    handler.allDanmaku.foreach { danmaku =>
       val x           = danmaku.prevPos.x + (danmaku.pos.x - danmaku.prevPos.x) * partialTicks
       val y           = danmaku.prevPos.y + (danmaku.pos.y - danmaku.prevPos.y) * partialTicks
       val z           = danmaku.prevPos.z + (danmaku.pos.z - danmaku.prevPos.z) * partialTicks
