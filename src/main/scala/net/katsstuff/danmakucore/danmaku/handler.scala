@@ -8,126 +8,244 @@
  */
 package net.katsstuff.danmakucore.danmaku
 
+import scala.collection.JavaConverters._
 import scala.collection.immutable.HashMap
-import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.parallel.immutable.ParMap
+import scala.collection.{immutable, mutable}
 
-import net.katsstuff.danmakucore.data.Vector3
-import net.katsstuff.danmakucore.scalastuff.TouhouHelper
+import net.katsstuff.danmakucore.network.{DanCorePacketHandler, DanmakuCreatePacket, DanmakuUpdatePacket}
 import net.minecraft.client.Minecraft
-import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.EntityPlayerMP
+import net.minecraft.profiler.Profiler
+import net.minecraft.util.math.{AxisAlignedBB, ChunkPos, MathHelper}
+import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
+object DanmakuHandler {
+  var maxDanmakuRadius: Float = 3F
+}
+class DanmakuChunk {
+
+  private val danmakuList: Vector[ArrayBuffer[DanmakuState]] = Vector.fill(16)(ArrayBuffer.empty)
+
+  def collectDanmakuInAABB[A](aabb: AxisAlignedBB)(f: PartialFunction[DanmakuState, A]): immutable.IndexedSeq[A] = {
+    val maxRadius = DanmakuHandler.maxDanmakuRadius
+
+    val minY = MathHelper.clamp(MathHelper.floor((aabb.minY - maxRadius) / 16D), 0, danmakuList.length - 1)
+    val maxY = MathHelper.clamp(MathHelper.floor((aabb.maxY + maxRadius) / 16D), 0, danmakuList.length - 1)
+
+    val res = for {
+      y <- minY to maxY
+      if danmakuList(y).nonEmpty
+      danmaku <- danmakuList(y)
+      if danmaku.encompassingAABB.intersects(aabb)
+      if danmaku.boundingBoxes.exists(_.intersects(aabb))
+    } yield danmaku
+
+    res.collect(f)
+  }
+
+  def addDanmaku(danmaku: DanmakuState): Unit = {
+    val y = MathHelper.clamp(danmaku.pos.y / 16D, 0, danmakuList.length - 1).toInt
+    danmakuList(y) += danmaku
+  }
+}
+
 trait DanmakuHandler {
 
-  private var _danmaku: Map[Int, DanmakuState] = HashMap.empty[Int, DanmakuState]
-  private var newDanmaku     = new ArrayBuffer[DanmakuState]
-  private var danmakuChanges = new ArrayBuffer[DanmakuChanges]
+  def profiler: Profiler
+
+  protected var isReady:              Boolean                          = false
+  protected var danmaku:                        Map[Int, DanmakuState]           = HashMap.empty[Int, DanmakuState]
+  protected var newDanmaku:           ArrayBuffer[DanmakuState]        = ArrayBuffer.empty[DanmakuState]
+  protected var danmakuChanges:       ArrayBuffer[DanmakuChanges]      = ArrayBuffer.empty[DanmakuChanges]
+  protected var forcedDanmakuUpdates: ArrayBuffer[(Int, DanmakuState)] = ArrayBuffer.empty[(Int, DanmakuState)]
+  protected val chunkMap:             mutable.LongMap[DanmakuChunk]    = mutable.LongMap.empty[DanmakuChunk]
+  protected var isChunkMapPolpulated: Boolean                          = false
+
   var working: ParMap[Int, DanmakuUpdate] = _
 
-  def danmaku: Iterable[DanmakuState] = _danmaku.values
-
-  def processChange(
-      id: Int,
-      signal: DanmakuUpdateSignal,
-      map: mutable.HashMap[Int, Option[DanmakuState]]
-  ): Option[DanmakuState] = {
-    map.get(id).orElse(_danmaku.get(id).map(Some.apply))
-
-    map.get(id).orElse(_danmaku.get(id).map(Some.apply)).flatten.flatMap { state =>
-      signal match {
-        case DanmakuUpdateSignal.ChangedPos(pos)                   => Some(state.copy(pos = pos, prevPos = pos))
-        case DanmakuUpdateSignal.ChangedMotion(motion)             => Some(state.copy(motion = motion))
-        case DanmakuUpdateSignal.ChangedDirection(direction)       => Some(state.copy(direction = direction))
-        case DanmakuUpdateSignal.ChangedOrientation(orientation)   => Some(state.copy(orientation = orientation))
-        case DanmakuUpdateSignal.ChangedShotData(shotData)         => Some(state.copy(shot = shotData))
-        case DanmakuUpdateSignal.ChangedMovementData(movementData) => Some(state.copy(movement = movementData))
-        case DanmakuUpdateSignal.ChangedRotationData(rotationData) => Some(state.copy(rotation = rotationData))
-        case DanmakuUpdateSignal.SetDead                           => None
-        case DanmakuUpdateSignal.Finish =>
-          val shot  = state.shot
-          val world = state.world
-          val pos   = state.pos
-
-          val target =
-            state.user.flatMap(u => Option(u.getLastDamageSource)).flatMap(s => Option(s.getImmediateSource)).collect {
-              case living: EntityLivingBase => living
-            }
-
-          val launchDirection = target.fold(Vector3.Down)(to => Vector3.directionToEntity(pos, to))
-          if (shot.sizeZ > 1F && shot.sizeZ / shot.sizeX > 3 && shot.sizeZ / shot.sizeY > 3) {
-            for (zPos <- 0 until shot.sizeZ.toInt) {
-              val realPos = pos.offset(launchDirection, zPos)
-              world.spawnEntity(TouhouHelper.createScoreGreen(world, target, realPos, launchDirection))
-            }
-          } else {
-            world.spawnEntity(TouhouHelper.createScoreGreen(world, target, pos, launchDirection))
-          }
-
-          None
-      }
+  protected def updateStates(
+      tempMap: mutable.Map[Int, DanmakuState],
+      updates: ArrayBuffer[(Int, Option[DanmakuState])]
+  ): Unit = {
+    updates.foreach {
+      case (id, Some(state)) => tempMap.put(id, state)
+      case (id, None)        => tempMap.remove(id)
     }
   }
 
-  def start(): Unit = {
-    val temp = mutable.HashMap.empty[Int, Option[DanmakuState]]
-
-    //Handle changes
-    danmakuChanges.foreach {
-      case DanmakuChanges(id, signals) =>
-        signals.foreach { signal =>
-          temp.put(id, processChange(id, signal, temp))
+  protected def processSignalsAndForcedDanmaku(
+      stateToSignals: ArrayBuffer[(DanmakuState, Seq[DanmakuUpdateSignal])]
+  ): Unit = {
+    val processedSignals = stateToSignals.map {
+      case (state, signals) =>
+        state.id -> signals.foldLeft[Option[DanmakuState]](Some(state)) {
+          case (Some(currentState), signal) => signal.process(currentState)
+          case (None, _)                    => None
         }
     }
 
-    val (updates, removes) = temp.partition(_._2.isDefined)
-    val updatesWithState   = updates.mapValues(_.get)
-    val removeKeys         = removes.keySet
+    val mutableDanmaku = mutable.HashMap(danmaku.toSeq: _*)
+    updateStates(mutableDanmaku, processedSignals)
 
-    val mutableDanmaku = mutable.HashMap(_danmaku.toSeq: _*)
-    removeKeys.foreach(mutableDanmaku.remove)
-    updatesWithState.foreach {
-      case (id, state) =>
-        mutableDanmaku.put(id, state)
+    forcedDanmakuUpdates.foreach {
+      case (id, state) => mutableDanmaku.put(id, state)
     }
 
-    _danmaku = mutableDanmaku.toMap
-
-    working = _danmaku.par.flatMap(t => t._2.update.map(t => (t.state.id, t))) ++ newDanmaku.par.flatMap(
-      _.update.map(t => (t.state.id, t))
-    )
-    newDanmaku.clear()
+    danmaku = mutableDanmaku.toMap
   }
 
-  def stop(): Iterable[DanmakuChanges] = {
+  protected def start(): Unit = {
+    profiler.startSection("danmaku")
+
+    profiler.startSection("processChanges")
+    processSignalsAndForcedDanmaku(danmakuChanges.flatMap(c => danmaku.get(c.id).map(_ -> c.signals)))
+
+    profiler.endStartSection("startUpdates")
+
+    working = danmaku.par.flatMap(t => t._2.update.map(t => (t.state.id, t))) ++ newDanmaku.par.flatMap(
+      _.update.map(t => (t.state.id, t))
+    )
+
+    danmakuChanges.clear()
+    newDanmaku.clear()
+    forcedDanmakuUpdates.clear()
+    isReady = true
+    profiler.endSection()
+  }
+
+  protected def stop(): Unit = {
+    profiler.startSection("danmaku")
+    profiler.startSection("gatherUpdates")
     val updated = working.seq
-    val updates = updated.flatMap {
+
+    profiler.endStartSection("processCallbacks")
+    danmakuChanges ++= updated.flatMap {
       case (_, DanmakuUpdate(state, stateUpdates, callbacks)) =>
         callbacks.foreach(_.apply())
         if (stateUpdates.nonEmpty) Some(DanmakuChanges(state.id, stateUpdates)) else None
     }
 
-    _danmaku = updated.map(t => t._1 -> t._2.state)
+    danmaku = updated.map(t => t._1 -> t._2.state)
     working = null
+    chunkMap.clear()
+    isChunkMapPolpulated = false
 
-    updates
+    profiler.endSection()
+    profiler.endSection()
+  }
+
+  protected def populateChunkMap(): Unit = {
+    danmaku.values.foreach { danmaku =>
+      val chunk = chunkMap.getOrElseUpdate(ChunkPos.asLong(danmaku.chunkPosX, danmaku.chunkPosZ), new DanmakuChunk)
+      chunk.addDanmaku(danmaku)
+    }
   }
 
   def spawnDanmaku(state: DanmakuState): Unit = newDanmaku += state
 
-  def handleDanmakuChange(changes: DanmakuChanges): Unit = danmakuChanges += changes
+  def addDanmakuChange(changes: DanmakuChanges): Unit = danmakuChanges += changes
+
+  def allDanmaku: Iterable[DanmakuState] = danmaku.values
+
+  def collectDanmakuInAABB[A](aabb: AxisAlignedBB)(f: PartialFunction[DanmakuState, A]): immutable.IndexedSeq[A] = {
+    if (!isChunkMapPolpulated) {
+      populateChunkMap()
+    }
+
+    val maxRadius = DanmakuHandler.maxDanmakuRadius
+
+    val minX = MathHelper.floor((aabb.minX - maxRadius) / 16.0D)
+    val maxX = MathHelper.ceil((aabb.maxX + maxRadius) / 16.0D)
+    val minZ = MathHelper.floor((aabb.minZ - maxRadius) / 16.0D)
+    val maxZ = MathHelper.ceil((aabb.maxZ + maxRadius) / 16.0D)
+
+    for {
+      x        <- minX until maxX
+      z        <- minZ until maxZ
+      chunkMap <- danmakuChunkAt(x, z).toSeq
+      danmaku  <- chunkMap.collectDanmakuInAABB(aabb)(f)
+    } yield danmaku
+  }
+
+  protected def danmakuChunkAt(x: Int, z: Int): Option[DanmakuChunk] = chunkMap.get(ChunkPos.asLong(x, z))
+
+  def forceUpdateDanmaku(state: DanmakuState): Unit = forcedDanmakuUpdates += ((state.id, state))
+
+  def updateDanmaku(changes: DanmakuChanges): Unit = danmakuChanges += changes
 }
 
-@SideOnly(Side.SERVER)
 class ServerDanmakuHandler extends DanmakuHandler {
+
+  val profiler: Profiler = FMLCommonHandler.instance().getMinecraftServerInstance.profiler
+  private val removedPlayers = mutable.ArrayBuffer.empty[EntityPlayerMP]
+
+  override protected def processSignalsAndForcedDanmaku(
+      stateToSignals: ArrayBuffer[(DanmakuState, Seq[DanmakuUpdateSignal])]
+  ): Unit = {
+    val newDanmakuMap     = mutable.Map.empty[EntityPlayerMP, mutable.Buffer[DanmakuState]]
+    val danmakuChangesMap = mutable.Map.empty[EntityPlayerMP, mutable.Buffer[DanmakuChanges]]
+
+    newDanmaku.transform { danmaku =>
+      val newTracking = danmaku.updatePlayerEntities(danmaku.world.playerEntities.asScala.collect {
+        case playerMP: EntityPlayerMP => playerMP
+      })
+
+      newTracking.trackingPlayers.foreach { player =>
+        newDanmakuMap.getOrElseUpdate(player, mutable.Buffer.empty) += danmaku
+      }
+
+      danmaku.copy(tracking = newTracking)
+    }
+
+    stateToSignals.foreach {
+      case (state, signals) =>
+        state.tracking.trackingPlayers.foreach { player =>
+          danmakuChangesMap.getOrElseUpdate(player, mutable.Buffer.empty) += DanmakuChanges(state.id, signals)
+        }
+    }
+
+    newDanmakuMap.foreach {
+      case (player, states) =>
+        DanCorePacketHandler.sendTo(DanmakuCreatePacket(states), player)
+    }
+
+    danmakuChangesMap.foreach {
+      case (player, changes) =>
+        DanCorePacketHandler.sendTo(DanmakuUpdatePacket(changes), player)
+
+    }
+
+    super.processSignalsAndForcedDanmaku(stateToSignals)
+  }
+
+  def removePlayer(playerMP: EntityPlayerMP): Unit = removedPlayers += playerMP
 
   @SubscribeEvent(priority = EventPriority.HIGHEST)
   def onTick(event: TickEvent.ServerTickEvent): Unit = {
     if (event.phase == Phase.START) {
+      danmaku = danmaku.transform {
+        case (_, state) =>
+          val newTracking = state.updatePlayerList(state.world.playerEntities.asScala.collect {
+            case playerMP: EntityPlayerMP => playerMP
+          })
+
+          removedPlayers.foreach { player =>
+            if (newTracking.trackingPlayers.contains(player)) {
+              danmakuChanges += DanmakuChanges(state.id, Seq(SetDeadDanmaku()))
+            }
+          }
+
+          state.copy(tracking = newTracking.copy(trackingPlayers = newTracking.trackingPlayers -- removedPlayers))
+      }
+
+      removedPlayers.clear()
+
       start()
     } else if (event.phase == Phase.END) {
       stop()
@@ -138,12 +256,15 @@ class ServerDanmakuHandler extends DanmakuHandler {
 @SideOnly(Side.CLIENT)
 class ClientDanmakuHandler extends DanmakuHandler {
 
+  val profiler: Profiler = Minecraft.getMinecraft.mcProfiler
+
   @SubscribeEvent(priority = EventPriority.HIGHEST)
   def onTick(event: TickEvent.ClientTickEvent): Unit = {
-    if (!Minecraft.getMinecraft.isGamePaused) {
+    val integrated = Minecraft.getMinecraft.isIntegratedServerRunning
+    if (integrated && !Minecraft.getMinecraft.isGamePaused || !integrated) {
       if (event.phase == Phase.START) {
         start()
-      } else if (event.phase == Phase.END) {
+      } else if (event.phase == Phase.END && isReady) {
         stop()
       }
     }

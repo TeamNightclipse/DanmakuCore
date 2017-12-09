@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.helper
 
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.capability.danmakuhit.{AllyDanmakuHitBehavior, CapabilityDanmakuHitBehaviorJ}
-import net.katsstuff.danmakucore.danmaku.{DanmakuChanges, DanmakuState, DanmakuUpdateSignal}
+import net.katsstuff.danmakucore.danmaku._
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmakuChainDeath
 import net.katsstuff.danmakucore.lib.LibSounds
@@ -69,39 +69,18 @@ trait TDanmakuHelper {
     * @return The amount of danmaku removed
     */
   def removeDanmaku(centerEntity: Entity, range: Double, mode: RemoveMode, dropBonus: Boolean): Int = {
-    val present = DanmakuCore.proxy.danmaku.collect {
-      case danmaku if danmaku.user.isDefined => danmaku -> danmaku.user.get
+    val present = DanmakuCore.proxy.collectDanmakuInAABB(centerEntity.getEntityBoundingBox.grow(range)) {
+      case danmaku if mode.shouldRemove(danmaku, centerEntity) => danmaku
     }
 
-    present.foreach {
-      case (danmaku, user) =>
-        val update = mode match {
-          case RemoveMode.All =>
-            Some(finishOrKillDanmaku(danmaku, dropBonus))
-          case RemoveMode.Enemy =>
-            if (!user.isInstanceOf[EntityPlayer]) {
-              Some(finishOrKillDanmaku(danmaku, dropBonus))
-            } else None
-          case RemoveMode.Player =>
-            if (user.isInstanceOf[EntityPlayer]) {
-              Some(finishOrKillDanmaku(danmaku, dropBonus))
-            } else None
-          case RemoveMode.Other =>
-            if (!(user == centerEntity)) {
-              Some(finishOrKillDanmaku(danmaku, dropBonus))
-            } else None
-        }
-
-        update.foreach(DanmakuCore.proxy.handleDanmakuChange)
-    }
-
+    present.foreach(danmaku => DanmakuCore.proxy.updateDanmaku(finishOrKillDanmaku(danmaku, dropBonus)))
 
     present.size
   }
 
   private def finishOrKillDanmaku(entity: DanmakuState, dropBonus: Boolean): DanmakuChanges =
-    if (dropBonus) DanmakuChanges(entity.id, Seq(DanmakuUpdateSignal.Finish))
-    else DanmakuChanges(entity.id, Seq(DanmakuUpdateSignal.SetDead))
+    if (dropBonus) DanmakuChanges(entity.id, Seq(FinishDanmaku()))
+    else DanmakuChanges(entity.id, Seq(SetDeadDanmaku()))
 
   def adjustDamageTarget(base: Float, target: Entity): Float =
     if (target.isInstanceOf[EntityPlayer]) base * 3.5F

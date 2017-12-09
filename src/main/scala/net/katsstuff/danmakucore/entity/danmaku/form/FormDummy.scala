@@ -13,6 +13,7 @@ import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 object FormDummy extends Form {
 
@@ -20,6 +21,8 @@ object FormDummy extends Form {
   def instance: FormDummy.type = this
 
   override def getTexture(danmaku: DanmakuState): ResourceLocation = DanmakuCore.resource("textures/white.png")
+
+  @SideOnly(Side.CLIENT)
   override def getRenderer(danmaku: DanmakuState): IRenderForm =
     (_: DanmakuState, _: Double, _: Double, _: Double, _: Quat, _: Float, _: RenderManager) => () //NO-OP
 }

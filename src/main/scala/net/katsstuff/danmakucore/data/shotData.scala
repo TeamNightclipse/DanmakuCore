@@ -16,6 +16,7 @@ import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.katsstuff.danmakucore.lib.LibColor
 import net.katsstuff.danmakucore.lib.data.{LibForms, LibSubEntities}
+import net.katsstuff.danmakucore.network.scalachannel.MessageConverter
 import net.katsstuff.danmakucore.registry.DanmakuRegistry
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
@@ -245,12 +246,11 @@ final case class ShotData(
       sizeZ = tag.getFloat(ShotData.NbtSizeZ),
       delay = tag.getInteger(ShotData.NbtDelay),
       end = tag.getInteger(ShotData.NbtEnd),
-      subEntity = Option(
-        DanmakuRegistry.SubEntity.getValue(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))
-      ).getOrElse {
-        LogHelper.warn("Found null subEntity type. Setting to default")
-        LibSubEntities.DEFAULT_TYPE
-      }
+      subEntity = Option(DanmakuRegistry.SubEntity.getValue(new ResourceLocation(tag.getString(ShotData.NbtSubEntity))))
+        .getOrElse {
+          LogHelper.warn("Found null subEntity type. Setting to default")
+          LibSubEntities.DEFAULT_TYPE
+        }
     )
   }
 
@@ -327,4 +327,7 @@ object ShotData {
     stack.setTagCompound(rootTag)
     stack
   }
+
+  implicit val converter: MessageConverter[ShotData] =
+    MessageConverter[NBTTagCompound].modify(new ShotData(_))(_.serializeNBT)
 }

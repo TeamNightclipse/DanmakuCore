@@ -9,16 +9,11 @@
 package net.katsstuff.danmakucore
 
 import scala.collection.JavaConverters._
+import scala.collection.immutable
 import scala.reflect.ClassTag
 
 import net.katsstuff.danmakucore.client.particle.{GlowTexture, IGlowParticle}
-import net.katsstuff.danmakucore.danmaku.{
-  ClientDanmakuHandler,
-  DanmakuChanges,
-  DanmakuHandler,
-  DanmakuState,
-  ServerDanmakuHandler
-}
+import net.katsstuff.danmakucore.danmaku.{DanmakuChanges, DanmakuState, ServerDanmakuHandler}
 import net.katsstuff.danmakucore.danmodel.DanModelReader
 import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant
@@ -41,14 +36,15 @@ import net.katsstuff.danmakucore.network.SpellcardInfoPacket
 import net.minecraft.entity.Entity
 import net.minecraft.init.SoundEvents
 import net.minecraft.item.Item
-import net.minecraft.util.{ResourceLocation, SoundEvent}
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.{IThreadListener, ResourceLocation, SoundEvent}
 import net.minecraft.world.World
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.fml.common.FMLCommonHandler
+import net.minecraftforge.fml.common.event.{FMLServerStartingEvent, FMLServerStoppedEvent}
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.registry.{EntityEntry, EntityEntryBuilder}
-import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.registries.{IForgeRegistryEntry, RegistryBuilder}
 
 object CommonProxy {
@@ -215,9 +211,21 @@ object CommonProxy {
 }
 class CommonProxy {
 
-  protected val danmakuHandler: DanmakuHandler =
-    if (FMLCommonHandler.instance().getSide == Side.CLIENT) new ClientDanmakuHandler else new ServerDanmakuHandler
-  MinecraftForge.EVENT_BUS.register(danmakuHandler)
+  def defaultWorld: World = FMLCommonHandler.instance().getMinecraftServerInstance.getEntityWorld
+
+  def scheduler: IThreadListener = FMLCommonHandler.instance().getMinecraftServerInstance
+
+  protected var serverDanmakuHandler: ServerDanmakuHandler = _
+
+  def serverStarting(event: FMLServerStartingEvent): Unit = {
+    serverDanmakuHandler = new ServerDanmakuHandler
+    MinecraftForge.EVENT_BUS.register(serverDanmakuHandler)
+  }
+
+  def serverStopped(event: FMLServerStoppedEvent): Unit = {
+    MinecraftForge.EVENT_BUS.unregister(serverDanmakuHandler)
+    serverDanmakuHandler = null
+  }
 
   private[danmakucore] def bakeDanmakuVariant(variant: DanmakuVariant): Unit = {}
 
@@ -299,10 +307,13 @@ class CommonProxy {
 
   def addParticle[T <: IGlowParticle](particle: T): Unit = {}
 
-  def danmaku: Iterable[DanmakuState] = danmakuHandler.danmaku
+  def updateDanmaku(changes: DanmakuChanges):                             Unit = serverDanmakuHandler.updateDanmaku(changes)
+  def spawnDanmaku(state: DanmakuState):                                  Unit = serverDanmakuHandler.spawnDanmaku(state)
 
-  def spawnDanmaku(state: DanmakuState): Unit = danmakuHandler.spawnDanmaku(state)
+  private[danmakucore] def forceUpdateDanmakuClient(state: DanmakuState): Unit = ()
+  private[danmakucore] def updateDanmakuClient(changes: DanmakuChanges):  Unit = ()
+  private[danmakucore] def spawnDanmakuClient(state: DanmakuState):       Unit = ()
 
-  def handleDanmakuChange(changes: DanmakuChanges): Unit =
-    danmakuHandler.handleDanmakuChange(changes)
+  def collectDanmakuInAABB[A](aabb: AxisAlignedBB)(f: PartialFunction[DanmakuState, A]): immutable.IndexedSeq[A] =
+    serverDanmakuHandler.collectDanmakuInAABB(aabb)(f)
 }

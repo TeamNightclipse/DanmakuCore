@@ -48,41 +48,43 @@ abstract class SubEntityBase extends SubEntity {
     val shot        = danmaku.shot
     val averageSize = (shot.sizeY + shot.sizeX + shot.sizeZ) / 3
 
-    FMLCommonHandler
-      .instance()
-      .getMinecraftServerInstance
-      .addScheduledTask(() => {
-        val source = DamageSourceDanmaku.create(danmaku)
-        val damage =
-          DanmakuHelper.adjustDanmakuDamage(danmaku.user, entity, shot.damage, ConfigHandler.danmaku.danmakuLevel)
+    if(!danmaku.world.isRemote) {
+      FMLCommonHandler
+        .instance()
+        .getMinecraftServerInstance
+        .addScheduledTask(() => {
+          val source = DamageSourceDanmaku.create(danmaku)
+          val damage =
+            DanmakuHelper.adjustDanmakuDamage(danmaku.user, entity, shot.damage, ConfigHandler.danmaku.danmakuLevel)
 
-        if (entity.hasCapability(CapabilityDanmakuHitBehaviorJ.HIT_BEHAVIOR, null)) {
-          entity
-            .getCapability(CapabilityDanmakuHitBehaviorJ.HIT_BEHAVIOR, null)
-            .onHit(danmaku, entity, damage, source)
-        } else {
-          entity.attackEntityFrom(source, damage)
-        }
-
-        @tailrec
-        def hasLittleHealth(entity: Entity): Boolean = {
-          entity match {
-            case living: EntityLivingBase => living.getHealth / living.getMaxHealth < 0.1
-            case multiPart: MultiPartEntityPart =>
-              multiPart.parent match {
-                case parent: EntityLivingBase => hasLittleHealth(parent)
-                case _                        => false
-              }
-            case _ => false
+          if (entity.hasCapability(CapabilityDanmakuHitBehaviorJ.HIT_BEHAVIOR, null)) {
+            entity
+              .getCapability(CapabilityDanmakuHitBehaviorJ.HIT_BEHAVIOR, null)
+              .onHit(danmaku, entity, damage, source)
+          } else {
+            entity.attackEntityFrom(source, damage)
           }
-        }
 
-        if (hasLittleHealth(entity)) {
-          entity.playSound(LibSounds.DAMAGE_LOW, 1F, 1F)
-        } else {
-          entity.playSound(LibSounds.DAMAGE, 1F, 1F)
-        }
-      })
+          @tailrec
+          def hasLittleHealth(entity: Entity): Boolean = {
+            entity match {
+              case living: EntityLivingBase => living.getHealth / living.getMaxHealth < 0.1
+              case multiPart: MultiPartEntityPart =>
+                multiPart.parent match {
+                  case parent: EntityLivingBase => hasLittleHealth(parent)
+                  case _                        => false
+                }
+              case _ => false
+            }
+          }
+
+          if (hasLittleHealth(entity)) {
+            entity.playSound(LibSounds.DAMAGE_LOW, 1F, 1F)
+          } else {
+            entity.playSound(LibSounds.DAMAGE, 1F, 1F)
+          }
+        })
+    }
 
     if (averageSize < 0.7F) None else Some(DanmakuUpdate.none(danmaku))
   }
@@ -103,15 +105,15 @@ abstract class SubEntityBase extends SubEntity {
     hitCheck(danmaku, exclude.asScala)
 
   protected def hitCheck(danmaku: DanmakuState, exclude: Entity => Boolean): Option[DanmakuUpdate] = {
-    val direction   = danmaku.direction
-    val shot        = danmaku.shot
-    val motion      = danmaku.motion
-    val boundingBox = danmaku.orientedBoundingBox
+    val direction     = danmaku.direction
+    val shot          = danmaku.shot
+    val motion        = danmaku.motion
+    val boundingBoxes = danmaku.boundingBoxes
 
     val start = danmaku.pos.offset(direction, -shot.sizeZ / 2)
     val end   = start.offset(direction, shot.sizeZ).add(motion)
 
-    val bb = danmaku.roughBoundingBox.expand(motion.x, motion.y, motion.z).grow(1D)
+    val bb = danmaku.encompassingAABB.expand(motion.x, motion.y, motion.z).grow(1D)
     val potentialHits = danmaku.world.collectEntitiesWithinAABB[Entity, Entity](bb) {
       case e if e.canBeCollidedWith && !e.noClip && exclude(e) => e
     }
@@ -122,8 +124,7 @@ abstract class SubEntityBase extends SubEntity {
         optState match {
           case Some(DanmakuUpdate(state, signals, callbacks)) =>
             val entityAabb = potentialHit.getEntityBoundingBox
-
-            if (boundingBox.intersects(entityAabb)) {
+            if (boundingBoxes.exists(_.intersects(entityAabb))) {
               val rayTraceResult = entityAabb.calculateIntercept(start.toVec3d, end.toVec3d)
               if (rayTraceResult != null) {
                 val rayToHit = danmaku.world.rayTraceBlocks(start.toVec3d, rayTraceResult.hitVec, false, true, false)

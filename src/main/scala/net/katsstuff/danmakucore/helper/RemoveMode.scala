@@ -8,13 +8,21 @@
  */
 package net.katsstuff.danmakucore.helper
 
-sealed trait RemoveMode
+import net.katsstuff.danmakucore.danmaku.DanmakuState
+import net.minecraft.entity.Entity
+import net.minecraft.entity.player.EntityPlayer
+
+sealed trait RemoveMode {
+  def shouldRemove(state: DanmakuState, centerEntity: Entity): Boolean
+}
 object RemoveMode {
 
   /**
     * Remove all danmaku.
     */
-  object All extends RemoveMode
+  object All extends RemoveMode {
+    override def shouldRemove(state: DanmakuState, centerEntity: Entity): Boolean = true
+  }
 
   /**
     * Remove all danmaku.
@@ -24,7 +32,9 @@ object RemoveMode {
   /**
     * Removes all danmaku except that which is created by players.
     */
-  object Enemy extends RemoveMode
+  object Enemy extends RemoveMode {
+    override def shouldRemove(state: DanmakuState, centerEntity: Entity): Boolean = !state.user.exists(_.isInstanceOf[EntityPlayer])
+  }
 
   /**
     * Removes all danmaku except that which is created by players.
@@ -34,7 +44,9 @@ object RemoveMode {
   /**
     * Removes all danmaku created by players.
     */
-  object Player extends RemoveMode
+  object Player extends RemoveMode {
+    override def shouldRemove(state: DanmakuState, centerEntity: Entity): Boolean = state.user.exists(_.isInstanceOf[EntityPlayer])
+  }
 
   /**
     * Removes all danmaku created by players.
@@ -44,7 +56,9 @@ object RemoveMode {
   /**
     * Remove all danmaku that wasn't created by the user.
     */
-  object Other extends RemoveMode
+  object Other extends RemoveMode {
+    override def shouldRemove(state: DanmakuState, centerEntity: Entity): Boolean = state.user.exists(_ != centerEntity)
+  }
 
   /**
     * Remove all danmaku that wasn't created by the user.

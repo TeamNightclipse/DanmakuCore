@@ -10,10 +10,11 @@ package net.katsstuff.danmakucore.entity.danmaku
 
 import javax.annotation.Nullable
 
-import net.katsstuff.danmakucore.danmaku.DanmakuState
-import net.katsstuff.danmakucore.data.{MovementData, Quat, RotationData, ShotData, Vector3}
+import net.katsstuff.danmakucore.danmaku.{DanmakuEntityData, DanmakuState, ExtraDanmakuData, TrackerData}
+import net.katsstuff.danmakucore.data.{MovementData, OrientedBoundingBox, Quat, RotationData, ShotData, Vector3}
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.world.World
+import net.minecraftforge.fml.common.FMLCommonHandler
 
 object DanmakuTemplate {
   def builder = new Builder
@@ -27,40 +28,66 @@ object DanmakuTemplate {
       var direction: Vector3 = null,
       var orientation: Quat = null,
       var movement: MovementData = MovementData.constant(0.4D),
-      var rotation: RotationData = RotationData.none
+      var rotation: RotationData = RotationData.none,
+      @Nullable var rawBoundingBoxes: Seq[OrientedBoundingBox] = null
   ) {
 
     def build: DanmakuTemplate = {
       if (source == null && user != null) source = user
 
-      if (world == null)
+      if (world == null) {
         if (source != null) world = source.world
         else throw new IllegalArgumentException("Could not find a world for builder, and neither source or user is set")
+      }
 
-      if (pos == null)
+      if (pos == null) {
         if (user != null) pos = new Vector3(user)
         else if (source != null) pos = new Vector3(source)
         else throw new IllegalArgumentException("Could not find a pos for builder, and neither source or user is set")
+      }
 
-      if (direction == null)
+      if (direction == null) {
         if (user != null) direction = Vector3.directionEntity(user)
         else if (source != null) direction = Vector3.directionEntity(source)
         else
           throw new IllegalArgumentException(
             "could not find a direction for builder, and neither source or user is set"
           )
+      }
 
-      if (orientation == null)
+      if (orientation == null) {
         if (user != null) orientation = Quat.orientationOf(user)
         else if (source != null) orientation = Quat.orientationOf(source)
         else
           throw new IllegalArgumentException(
             "could not find a orientation for builder, and neither source or user is set"
           )
+      }
+
+      if (rawBoundingBoxes == null) {
+        rawBoundingBoxes = Seq(
+          OrientedBoundingBox(
+            DanmakuState.createRawBoundingBox(shot, rotate = false, orientation),
+            Vector3.Zero,
+            orientation
+          )
+        )
+      }
 
       if (shot == null) throw new IllegalArgumentException("Make sure that shot is set")
 
-      new DanmakuTemplate(world, Option(user), Option(source), shot, pos, direction, orientation, movement, rotation)
+      new DanmakuTemplate(
+        world,
+        Option(user),
+        Option(source),
+        shot,
+        pos,
+        direction,
+        orientation,
+        movement,
+        rotation,
+        rawBoundingBoxes
+      )
     }
 
     def setWorld(world: World): Builder = {
@@ -183,30 +210,55 @@ final case class DanmakuTemplate(
     direction: Vector3,
     orientation: Quat,
     movement: MovementData,
-    rotation: RotationData
+    rotation: RotationData,
+    rawBoundingBoxes: Seq[OrientedBoundingBox]
 ) {
 
   def asEntity: DanmakuState = {
-    DanmakuState(
-      DanmakuState.nextId(),
-      world,
-      world.isRemote,
-      pos,
-      pos,
-      Vector3.Zero,
-      direction,
-      orientation,
-      orientation,
-      user,
-      source,
-      shot,
-      shot.subEntity.instantiate,
-      movement,
-      rotation,
-      0,
-      1F
+    val entityData = DanmakuEntityData(
+      id = DanmakuState.nextId(),
+      world = world,
+      ticksExisted = 0,
+      renderBrightness = 1F,
+      pos = pos,
+      prevPos = pos,
+      orientation = orientation,
+      prevOrientation = orientation,
+      motion = Vector3.Zero,
+      direction = direction,
+      rawBoundingBoxes = rawBoundingBoxes,
+      rawEncompassingAABB = DanmakuState.createRawEncompassingBB(rawBoundingBoxes)
     )
+
+    val extraData = ExtraDanmakuData(
+      user = user,
+      source = source,
+      shot = shot,
+      subEntity = shot.subEntity.instantiate,
+      movement = movement,
+      rotation = rotation
+    )
+
+    val trackingData = TrackerData(
+      pos = pos,
+      range = 64,
+      maxRange = FMLCommonHandler.instance().getMinecraftServerInstance.getPlayerList.getViewDistance,
+      updateFrequency = 10
+    )
+
+    DanmakuState(entityData, extraData, trackingData)
   }
   def toBuilder =
-    DanmakuTemplate.Builder(world, user.orNull, source.orNull, shot, pos, direction, orientation, movement, rotation)
+    DanmakuTemplate.Builder(
+      world,
+      user.orNull,
+      source.orNull,
+      shot,
+      pos,
+      direction,
+      orientation,
+      movement,
+      rotation,
+      rawBoundingBoxes
+    )
 }

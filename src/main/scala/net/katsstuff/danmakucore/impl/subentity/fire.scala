@@ -20,12 +20,14 @@ private[danmakucore] class SubEntityTypeFire(name: String, multiplier: Float) ex
 
 private[subentity] class SubEntityFire(multiplier: Float) extends SubEntityDefault {
   protected override def impactEntity(danmaku: DanmakuState, rayTrace: RayTraceResult): Option[DanmakuUpdate] = {
-    FMLCommonHandler
-      .instance()
-      .getMinecraftServerInstance
-      .addScheduledTask(() => {
-        rayTrace.entityHit.setFire((danmaku.shot.damage * multiplier).toInt)
-      })
+    if(!danmaku.world.isRemote) {
+      FMLCommonHandler
+        .instance()
+        .getMinecraftServerInstance
+        .addScheduledTask(() => {
+          rayTrace.entityHit.setFire((danmaku.shot.damage * multiplier).toInt)
+        })
+    }
     super.impactEntity(danmaku, rayTrace)
   }
 }

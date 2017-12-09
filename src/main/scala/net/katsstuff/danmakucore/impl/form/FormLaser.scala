@@ -85,7 +85,7 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
 
   override def onTick(danmaku: DanmakuState): Option[DanmakuUpdate] = {
     //The danmaku exits delay here
-    if (danmaku.ticksExisted == 2) {
+    if (!danmaku.world.isRemote && danmaku.ticksExisted == 2) {
       FMLCommonHandler
         .instance()
         .getMinecraftServerInstance

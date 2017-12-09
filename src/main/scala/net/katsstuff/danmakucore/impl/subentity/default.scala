@@ -8,7 +8,7 @@
  */
 package net.katsstuff.danmakucore.impl.subentity
 
-import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate, DanmakuUpdateSignal}
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.danmakucore.entity.danmaku.subentity.{SubEntity, SubEntityType}
 
 class SubEntityTypeDefault(name: String) extends SubEntityType(name) {
@@ -31,15 +31,14 @@ class SubEntityDefault extends SubEntityBase {
           Some(
             DanmakuUpdate.none(
               danmaku.copy(
-                shot = shot.copy(delay = delay - 1),
-                motion = newMotion,
-                orientation = newOrientation,
-                prevOrientation = danmaku.orientation
+                entity = danmaku.entity
+                  .copy(motion = newMotion, orientation = newOrientation, prevOrientation = danmaku.orientation),
+                extra = danmaku.extra.copy(shot = shot.copy(delay = delay - 1))
               )
             )
           )
         }
-      } else Some(DanmakuUpdate.none(danmaku.copy(shot = shot.copy(delay = delay - 1))))
+      } else Some(DanmakuUpdate.none(danmaku.copy(extra = danmaku.extra.copy(shot = shot.copy(delay = delay - 1)))))
     } else {
       val rotation = danmaku.rotation
       val newDirection =
@@ -47,11 +46,13 @@ class SubEntityDefault extends SubEntityBase {
 
       val newMotion = updateMotionWithGravity(danmaku, danmaku.accelerate)
       val updated = danmaku.copy(
-        motion = newMotion,
-        pos = danmaku.pos + newMotion,
-        prevPos = danmaku.pos,
-        direction = newDirection,
-        ticksExisted = danmaku.ticksExisted + 1
+        entity = danmaku.entity.copy(
+          motion = newMotion,
+          pos = danmaku.pos + newMotion,
+          prevPos = danmaku.pos,
+          direction = newDirection,
+          ticksExisted = danmaku.ticksExisted + 1
+        )
       )
 
       hitCheck(updated, entity => !danmaku.user.contains(entity) && !danmaku.source.contains(entity))
