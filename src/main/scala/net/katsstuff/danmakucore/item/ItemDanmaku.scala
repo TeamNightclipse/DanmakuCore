@@ -82,13 +82,13 @@ object ItemDanmaku {
           .setMovementData(shotSpeed, gravity)
           .setPos(pos)
           .setDirection(direction)
-        danmakuPattern.makeDanmaku(DanmakuTemplate.builder.build, amount, shotSpeed, alternateMode, orientation, offset)
+        danmakuPattern.makeDanmaku(DanmakuTemplate.builder.build, amount, shotSpeed, alternateMode, offset)
         true
       } else false
     } else {
       getVariant(stack).create(user, alternateMode, pos, direction, hand).exists { template =>
         val newTemplate = template.toBuilder.setShot(shot).setMovementData(shotSpeed, gravity).build
-        danmakuPattern.makeDanmaku(newTemplate, amount, shotSpeed, alternateMode, orientation, offset)
+        danmakuPattern.makeDanmaku(newTemplate, amount, shotSpeed, alternateMode, offset)
         true
       }
     }
@@ -140,7 +140,6 @@ object ItemDanmaku {
         amount: Int,
         shotSpeed: Double,
         alternateMode: Boolean,
-        orientation: Quat,
         offset: Double
     ): Set[DanmakuState]
   }
@@ -169,7 +168,6 @@ object ItemDanmaku {
         amount: Int,
         shotSpeed: Double,
         alternateMode: Boolean,
-        orientation: Quat,
         offset: Double
     ): Set[DanmakuState] = {
       val danmaku = template.toBuilder
@@ -191,11 +189,10 @@ object ItemDanmaku {
         amount: Int,
         shotSpeed: Double,
         alternateMode: Boolean,
-        orientation: Quat,
         offset: Double
     ): Set[DanmakuState] = {
       val wide = if (alternateMode) 60F else 120F
-      DanmakuCreationHelper.createRandomRingShot(orientation, template, amount, wide, offset)
+      DanmakuCreationHelper.createRandomRingShot(template, amount, wide, offset)
     }
   }
   def randomRing: Pattern = RandomRing
@@ -206,11 +203,10 @@ object ItemDanmaku {
         amount: Int,
         shotSpeed: Double,
         alternateMode: Boolean,
-        orientation: Quat,
         offset: Double
     ): Set[DanmakuState] = {
       val wide = if (alternateMode) amount * 4F else amount * 8F
-      DanmakuCreationHelper.createWideShot(orientation, template, amount, wide, 0F, offset)
+      DanmakuCreationHelper.createWideShot(template, amount, wide, 0F, offset)
     }
   }
   def wide: Pattern = Wide
@@ -221,9 +217,8 @@ object ItemDanmaku {
         amount: Int,
         shotSpeed: Double,
         alternateMode: Boolean,
-        orientation: Quat,
         offset: Double
-    ): Set[DanmakuState] = DanmakuCreationHelper.createCircleShot(orientation, template, amount, 0F, offset)
+    ): Set[DanmakuState] = DanmakuCreationHelper.createCircleShot(template, amount, 0F, offset)
   }
   def circle: Pattern = Circle
 
@@ -233,18 +228,10 @@ object ItemDanmaku {
         amount: Int,
         shotSpeed: Double,
         alternateMode: Boolean,
-        orientation: Quat,
         offset: Double
     ): Set[DanmakuState] = {
       val wide = if (alternateMode) 7.5F else 15F
-      DanmakuCreationHelper.createRingShot(
-        orientation,
-        template,
-        amount,
-        wide,
-        template.world.rand.nextFloat * 360,
-        offset
-      )
+      DanmakuCreationHelper.createRingShot(template, amount, wide, template.world.rand.nextFloat * 360, offset)
     }
   }
   def ring: Pattern = Ring
@@ -255,10 +242,9 @@ object ItemDanmaku {
         amount: Int,
         shotSpeed: Double,
         alternateMode: Boolean,
-        orientation: Quat,
         offset: Double
     ): Set[DanmakuState] =
-      DanmakuCreationHelper.createSphereShot(orientation, template, amount, amount / 2, 0F, offset)
+      DanmakuCreationHelper.createSphereShot(template, amount, amount / 2, 0F, offset)
   }
   def sphere: Pattern = Sphere
 }

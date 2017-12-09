@@ -11,7 +11,6 @@ package net.katsstuff.danmakucore.scalastuff
 import scala.collection.JavaConverters._
 
 import net.katsstuff.danmakucore.danmaku.DanmakuState
-import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
 import net.katsstuff.danmakucore.impl.shape.{ShapeCircle, ShapeRandomRing, ShapeRing, ShapeSphere, ShapeWide}
 import net.katsstuff.danmakucore.shape.Shape
@@ -22,52 +21,47 @@ import net.katsstuff.danmakucore.shape.Shape
 object DanmakuCreationHelper {
 
   def createWideShot(
-      orientation: Quat,
       danmaku: DanmakuTemplate,
       amount: Int,
       wideAngle: Float,
       baseAngle: Float,
       distance: Double
   ): Set[DanmakuState] =
-    drawSingle(danmaku, orientation, new ShapeWide(danmaku, amount, wideAngle, baseAngle, distance))
+    drawSingle(danmaku, new ShapeWide(danmaku, amount, wideAngle, baseAngle, distance))
 
   def createCircleShot(
-      orientation: Quat,
       danmaku: DanmakuTemplate,
       amount: Int,
       baseAngle: Float,
       distance: Double
-  ): Set[DanmakuState] = drawSingle(danmaku, orientation, new ShapeCircle(danmaku, amount, baseAngle, distance))
+  ): Set[DanmakuState] = drawSingle(danmaku, new ShapeCircle(danmaku, amount, baseAngle, distance))
 
   def createRingShot(
-      orientation: Quat,
       danmaku: DanmakuTemplate,
       amount: Int,
       size: Float,
       baseAngle: Float,
       distance: Double
   ): Set[DanmakuState] =
-    drawSingle(danmaku, orientation, new ShapeRing(danmaku, amount, size, baseAngle, distance))
+    drawSingle(danmaku, new ShapeRing(danmaku, amount, size, baseAngle, distance))
 
   def createRandomRingShot(
-      orientation: Quat,
       danmaku: DanmakuTemplate,
       amount: Int,
       size: Float,
       distance: Double
-  ): Set[DanmakuState] = drawSingle(danmaku, orientation, new ShapeRandomRing(danmaku, amount, size, distance))
+  ): Set[DanmakuState] = drawSingle(danmaku, new ShapeRandomRing(danmaku, amount, size, distance))
 
   def createSphereShot(
-      orientation: Quat,
       danmaku: DanmakuTemplate,
       rings: Int,
       bands: Int,
       baseAngle: Float,
       distance: Double
   ): Set[DanmakuState] =
-    drawSingle(danmaku, orientation, new ShapeSphere(danmaku, rings, bands, baseAngle, distance))
+    drawSingle(danmaku, new ShapeSphere(danmaku, rings, bands, baseAngle, distance))
 
-  private def drawSingle(danmaku: DanmakuTemplate, orientation: Quat, shape: Shape): Set[DanmakuState] =
-    shape.draw(danmaku.pos, orientation, 0).getSpawnedDanmaku.asScala.toSet
+  private def drawSingle(danmaku: DanmakuTemplate, shape: Shape): Set[DanmakuState] =
+    shape.draw(danmaku.pos, danmaku.orientation, 0).getSpawnedDanmaku.asScala.toSet
 
 }

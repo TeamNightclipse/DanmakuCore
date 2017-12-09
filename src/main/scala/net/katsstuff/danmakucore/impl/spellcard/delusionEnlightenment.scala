@@ -9,7 +9,7 @@
 package net.katsstuff.danmakucore.impl.spellcard
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.data.{Quat, Vector3}
+import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
 import net.katsstuff.danmakucore.entity.living.TouhouCharacter
 import net.katsstuff.danmakucore.entity.spellcard.{EntitySpellcard, Spellcard, SpellcardEntity}
@@ -60,8 +60,7 @@ private[spellcard] class SpellcardEntityDelusionEnlightenment(
           .setShot(LibShotData.SHOT_MEDIUM.setColor(LibColor.COLOR_SATURATED_RED).setDelay(place))
           .build
 
-        DanmakuCreationHelper
-          .createWideShot(Quat.orientationOf(user), danmaku, danmakuLevelMultiplier * 2, 120F, 180F, 1.25D)
+        DanmakuCreationHelper.createWideShot(danmaku, danmakuLevelMultiplier * 2, 120F, 180F, 1.25D)
       }
 
       if (time40 == 1) {
@@ -73,7 +72,7 @@ private[spellcard] class SpellcardEntityDelusionEnlightenment(
             .setShot(LibShotData.SHOT_MEDIUM.setColor(LibColor.COLOR_SATURATED_RED))
             .build
 
-          DanmakuCreationHelper.createWideShot(Quat.orientationOf(user), danmaku, danmakuLevelMultiplier, 30F, 0F, 0.5D)
+          DanmakuCreationHelper.createWideShot(danmaku, danmakuLevelMultiplier, 30F, 0F, 0.5D)
         }
       }
     }
