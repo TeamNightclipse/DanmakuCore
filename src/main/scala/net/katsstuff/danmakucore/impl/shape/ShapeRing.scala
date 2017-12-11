@@ -35,7 +35,7 @@ class ShapeRing(template: DanmakuTemplate, amount: Int, radius: Float, baseAngle
         )
         builder.direction = Vector3.Forward.rotate(rotate)
         builder.pos = pos.offset(builder.direction, distance)
-        builder.orientation = Quat.fromEuler(0F, 0F, (orientation.pitch * MathHelper.sin(rotateAngle.toFloat)).toFloat)
+        builder.orientation = rotate
         rotateAngle += stepSize
         val spawned = builder.build.asEntity
         DanmakuCore.proxy.spawnDanmaku(spawned)
