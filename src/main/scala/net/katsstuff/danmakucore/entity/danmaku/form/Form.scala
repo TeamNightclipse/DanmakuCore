@@ -34,16 +34,21 @@ abstract class Form extends RegistryValueWithItemModel[Form] {
   def this(name: String) {
     this()
     setRegistryName(name)
-    DanmakuCore.proxy.bakeDanmakuForm(this)
+    DanmakuCore.proxy.initForm(this)
   }
 
   /**
-    * @return The ResourceLocation assigned to this registration.
+    * Performs some initialization logic when the game starts on the client.
+    */
+  def initClient(): Unit = ()
+
+  /**
+    * The ResourceLocation assigned to this registration.
     */
   def getTexture(danmaku: DanmakuState): ResourceLocation
 
   /**
-    * @return The IRenderForm assigned to this registration.
+    * The IRenderForm assigned to this registration.
     */
   @SideOnly(Side.CLIENT)
   def getRenderer(danmaku: DanmakuState): IRenderForm

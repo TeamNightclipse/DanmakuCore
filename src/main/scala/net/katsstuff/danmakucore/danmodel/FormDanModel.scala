@@ -8,23 +8,48 @@
  */
 package net.katsstuff.danmakucore.danmodel
 
-import net.katsstuff.danmakucore.client.helper.RenderHelper
+import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.impl.form.FormGeneric
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.entity.RenderManager
+import net.minecraft.client.resources.{IResourceManager, IResourceManagerReloadListener}
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-private[danmakucore] class FormDanModel(name: String, model: DanModel) extends FormGeneric(name) {
-  @SideOnly(Side.CLIENT)
-  override protected def createRenderer: IRenderForm =
-    (danmaku: DanmakuState, _: Double, _: Double, _: Double, orientation: Quat, _: Float, _: RenderManager) => {
-      val tes = Tessellator.getInstance
-      val vb  = tes.getBuffer
+private[danmakucore] class FormDanModel(name: String, resource: ResourceLocation)
+    extends FormGeneric(name) {
 
-      RenderHelper.transformDanmaku(danmaku.shot, orientation)
-      model.render(vb, tes, danmaku.shot.getColor)
+  @SideOnly(Side.CLIENT)
+  override protected def createRenderer: IRenderForm = {
+    new IRenderForm with IResourceManagerReloadListener {
+      private var danModel: DanModel = _
+
+      DanCoreRenderHelper.registerResourceReloadListener(this)
+
+      override def renderLegacy(
+          danmaku: DanmakuState,
+          x: Double,
+          y: Double,
+          z: Double,
+          orientation: Quat,
+          partialTicks: Float,
+          manager: RenderManager
+      ): Unit = {
+        if (danModel != null) {
+          val tes = Tessellator.getInstance
+          val vb  = tes.getBuffer
+
+          DanCoreRenderHelper.transformDanmaku(danmaku.shot, orientation)
+          danModel.render(vb, tes, danmaku.shot.getColor)
+        }
+      }
+
+      override def onResourceManagerReload(resourceManager: IResourceManager): Unit = {
+        danModel = DanModelReader.readModel(resource).map(_._2).toOption.orNull
+      }
     }
+  }
 }

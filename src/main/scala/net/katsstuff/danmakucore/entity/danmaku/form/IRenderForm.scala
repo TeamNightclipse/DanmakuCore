@@ -21,11 +21,11 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 trait IRenderForm {
 
   /**
-    * Do your rendering like normal in here. Note that the texture is already applied, lighting is
-    * disabled, and the entity is translated to it's position. You do not need to call glPushMatrix
-    * or glPopMatrix.
+    * Do your rendering like normal in here. Note that the texture is already
+    * applied, lighting is disabled, and the entity is translated to it's
+    * position. You do not need to call glPushMatrix or glPopMatrix.
     */
-  def renderForm(
+  def renderLegacy(
       danmaku: DanmakuState,
       x: Double,
       y: Double,
@@ -34,4 +34,17 @@ trait IRenderForm {
       partialTicks: Float,
       manager: RenderManager
   ): Unit
+
+  /**
+    * Do more fancy and performant rendering using shaders and other good stuff.
+    */
+  def renderShaders(
+      danmaku: DanmakuState,
+      x: Double,
+      y: Double,
+      z: Double,
+      orientation: Quat,
+      partialTicks: Float,
+      manager: RenderManager
+  ): Unit = renderLegacy(danmaku, x, y, z, orientation, partialTicks, manager)
 }

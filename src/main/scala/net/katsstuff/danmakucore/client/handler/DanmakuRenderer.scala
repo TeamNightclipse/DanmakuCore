@@ -30,6 +30,7 @@ class DanmakuRenderer(handler: DanmakuHandler) {
 
   final private val invalidForms = new mutable.HashSet[Form]
   private val mc                 = Minecraft.getMinecraft
+  private val useShaders         = OpenGlHelper.shadersSupported
 
   @SideOnly(Side.CLIENT)
   @SubscribeEvent
@@ -74,7 +75,6 @@ class DanmakuRenderer(handler: DanmakuHandler) {
     //We don't want to render expired danmaku
     if (danmaku.ticksExisted <= shot.end) {
       GL11.glPushMatrix()
-      renderManager.renderEngine.bindTexture(DanmakuCore.resource("textures/white.png"))
       renderManager.renderEngine.bindTexture(shot.form.getTexture(danmaku))
       GL11.glTranslated(x, y + shot.sizeY / 2, z)
       GlStateManager.disableLighting()
@@ -82,7 +82,12 @@ class DanmakuRenderer(handler: DanmakuHandler) {
       val form       = shot.form
       val renderForm = form.getRenderer(danmaku)
       if (renderForm != null) {
-        renderForm.renderForm(danmaku, x, y, z, orientation, partialTicks, renderManager)
+        if(useShaders) {
+          renderForm.renderShaders(danmaku, x, y, z, orientation, partialTicks, renderManager)
+        }
+        else {
+          renderForm.renderLegacy(danmaku, x, y, z, orientation, partialTicks, renderManager)
+        }
       } else if (!invalidForms.contains(form)) {
         LogHelper.error("Invalid renderer for " + I18n.format(form.unlocalizedName))
         invalidForms.add(form)

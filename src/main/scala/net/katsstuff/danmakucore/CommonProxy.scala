@@ -56,7 +56,7 @@ object CommonProxy {
   @SubscribeEvent
   def registerForms(event: RegistryEvent.Register[Form]): Unit = {
     def noteForm(name: String, sound: SoundEvent, location: String) =
-      new FormNote(name, sound, DanModelReader.readModel(DanmakuCore.resource(location)).get._2)
+      new FormNote(name, sound, DanmakuCore.resource(location))
 
     event.getRegistry
       .registerAll(
@@ -73,7 +73,7 @@ object CommonProxy {
         new FormControl,
         new FormFire,
         new FormLaser,
-        DanModelReader.createForm(new ResourceLocation(LibMod.Id, "models/form/heart"), LibFormName.HEART).get,
+        DanModelReader.createForm(new ResourceLocation(LibMod.Id, "models/form/heart"), LibFormName.HEART),
         noteForm(LibFormName.NOTE1, SoundEvents.BLOCK_NOTE_HARP, "models/form/note1")
       )
   }
@@ -229,7 +229,7 @@ class CommonProxy {
 
   private[danmakucore] def bakeDanmakuVariant(variant: DanmakuVariant): Unit = {}
 
-  private[danmakucore] def bakeDanmakuForm(form: Form): Unit = {}
+  private[danmakucore] def initForm(form: Form): Unit = {}
 
   private[danmakucore] def bakeSpellcard(`type`: Spellcard): Unit = {}
 

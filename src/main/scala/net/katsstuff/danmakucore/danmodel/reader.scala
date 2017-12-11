@@ -8,55 +8,67 @@
  */
 package net.katsstuff.danmakucore.danmodel
 
-import java.io.{DataInput, DataInputStream, IOException}
+import java.io.{DataInput, DataInputStream, IOException, InputStream}
 import java.nio.ByteBuffer
 
 import scala.annotation.tailrec
 import scala.util.Try
 
-import net.katsstuff.danmakucore.DanmakuCore
+import org.apache.commons.io.IOUtils
+
 import net.katsstuff.danmakucore.entity.danmaku.form.Form
 import net.katsstuff.danmakucore.helper.LogHelper
+import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 case class DanModelDescription(name: String, description: String, author: String)
 case class DanModelReadException(message: String) extends IOException(message)
 object DanModelReader {
 
-  def createForm(resource: ResourceLocation, name: String): Try[Form] =
-    readModel(resource).map { case (_, model) => new FormDanModel(name, model) }
+  def createForm(resource: ResourceLocation, name: String): Form = {
+    new FormDanModel(name, resource)
+  }
 
-  def readModel(resource: ResourceLocation): Try[(DanModelDescription, DanModel)] = Try {
-    val rawIs = DanmakuCore.getClass.getResourceAsStream(
-      s"/assets/${resource.getResourceDomain}/${resource.getResourcePath}.danmodel"
-    )
-    if (rawIs == null) throw new IllegalArgumentException("No model at that location")
-    val is: DataInput = new DataInputStream(rawIs)
+  @SideOnly(Side.CLIENT)
+  def readModel(resource: ResourceLocation): Try[(DanModelDescription, DanModel)] = {
+    var rawIs: InputStream = null
 
-    val danModel = readString(is)
-    if (danModel != "DanmakuCore DanModel") throw DanModelReadException("Not a DanModel file")
-    val version = is.readShort()
-    if (version != 1) throw DanModelReadException(s"Unknown version $version")
+    val res = Try {
+      rawIs = Minecraft.getMinecraft.getResourceManager.getResource(resource).getInputStream
 
-    val name        = readString(is)
-    val description = readString(is)
-    val author      = readString(is)
+      if (rawIs == null) throw new IllegalArgumentException("No model at that location")
+      val is: DataInput = new DataInputStream(rawIs)
 
-    val modelDescription = DanModelDescription(name, description, author)
+      val danModel = readString(is)
+      if (danModel != "DanmakuCore DanModel") throw DanModelReadException("Not a DanModel file")
+      val version = is.readShort()
+      if (version != 1) throw DanModelReadException(s"Unknown version $version")
 
-    val pieces   = is.readInt()
-    val danAlpha = is.readFloat()
+      val name        = readString(is)
+      val description = readString(is)
+      val author      = readString(is)
 
-    val modelLength = is.readInt()
-    val data        = new Array[Byte](modelLength)
-    is.readFully(data)
+      val modelDescription = DanModelDescription(name, description, author)
 
-    LogHelper.trace(s"Verifying danmodel $name found at $resource")
-    verifyData(data, pieces)
+      val pieces   = is.readInt()
+      val danAlpha = is.readFloat()
 
-    val model = new DanModel(data, pieces, danAlpha)
+      val modelLength = is.readInt()
+      val data        = new Array[Byte](modelLength)
+      is.readFully(data)
 
-    (modelDescription, model)
+      LogHelper.trace(s"Verifying danmodel $name found at $resource")
+      verifyData(data, pieces)
+
+      val model = new DanModel(data, pieces, danAlpha)
+
+      (modelDescription, model)
+    }
+
+    if(rawIs != null) IOUtils.closeQuietly(rawIs)
+
+    res
   }
 
   private def readString(is: DataInput): String = {

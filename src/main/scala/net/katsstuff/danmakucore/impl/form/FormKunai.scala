@@ -11,7 +11,7 @@ package net.katsstuff.danmakucore.impl.form
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.client.helper.RenderHelper
+import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
@@ -31,7 +31,7 @@ private[danmakucore] class FormKunai extends FormGeneric(LibFormName.KUNAI) {
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm() {
     @SideOnly(Side.CLIENT)
-    override def renderForm(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
+    override def renderLegacy(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
       val tes      = Tessellator.getInstance
       val bb       = tes.getBuffer
       val color    = danmaku.shot.color
@@ -49,7 +49,7 @@ private[danmakucore] class FormKunai extends FormGeneric(LibFormName.KUNAI) {
       val width    = 1.0D
       val length   = 2.0D
 
-      RenderHelper.transformDanmaku(danmaku.shot, orientation)
+      DanCoreRenderHelper.transformDanmaku(danmaku.shot, orientation)
 
       GlStateManager.disableCull()
       bb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)

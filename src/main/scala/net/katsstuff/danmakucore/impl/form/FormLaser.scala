@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.impl.form
 
 import org.lwjgl.opengl.GL11
 
-import net.katsstuff.danmakucore.client.helper.RenderHelper
+import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate, DanmakuUpdateSignal}
 import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
@@ -28,7 +28,7 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm() {
     @SideOnly(Side.CLIENT)
-    override def renderForm(
+    override def renderLegacy(
         danmaku: DanmakuState,
         x: Double,
         y: Double,
@@ -40,7 +40,7 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
       val shot  = danmaku.shot
       val color = shot.color
 
-      RenderHelper.transformDanmaku(shot, orientation)
+      DanCoreRenderHelper.transformDanmaku(shot, orientation)
 
       if (shot.delay > 0) {
         val scale = 0.025F * Math.min(shot.delay, 20)
@@ -69,12 +69,12 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
     private def createCylinder(color: Int, alpha: Float): Unit = {
       GL11.glPushMatrix()
       GL11.glTranslatef(0F, 0F, -0.5F)
-      RenderHelper.drawDisk(color, alpha)
+      DanCoreRenderHelper.drawDisk(color, alpha)
       GL11.glTranslatef(0F, 0F, 0.5F)
-      RenderHelper.drawCylinder(color, alpha)
+      DanCoreRenderHelper.drawCylinder(color, alpha)
       GL11.glTranslatef(0F, 0F, 0.5F)
       GL11.glRotatef(180, 0F, 1F, 0F)
-      RenderHelper.drawDisk(color, alpha)
+      DanCoreRenderHelper.drawDisk(color, alpha)
       GL11.glPopMatrix()
     }
   }
@@ -94,6 +94,6 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
         })
     }
 
-    Some(DanmakuUpdate.none(danmaku))
+    super.onTick(danmaku)
   }
 }

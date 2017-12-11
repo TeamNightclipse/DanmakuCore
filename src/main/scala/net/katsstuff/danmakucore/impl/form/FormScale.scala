@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.impl.form
 
 import org.lwjgl.opengl.GL11
 
-import net.katsstuff.danmakucore.client.helper.RenderHelper
+import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
@@ -25,23 +25,27 @@ private[danmakucore] class FormScale extends FormGeneric(LibFormName.SCALE) {
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm() {
     @SideOnly(Side.CLIENT)
-    override def renderForm(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
+    override def renderLegacy(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
       val color = danmaku.shot.color
+      val r = (color >> 16 & 255) / 255F
+      val g = (color >> 8 & 255) / 255F
+      val b = (color & 255) / 255F
 
       val length = 2F
       val alpha  = 0.35F
 
-      RenderHelper.transformDanmaku(danmaku.shot, orientation)
+      DanCoreRenderHelper.transformDanmaku(danmaku.shot, orientation)
 
       GL11.glScalef(0.5F, 0.5F, length * 0.4F)
-      RenderHelper.drawSphere(0xFFFFFF, 1F)
+      DanCoreRenderHelper.drawSphere(0xFFFFFF, 1F)
 
       GL11.glTranslatef(0F, 0F, -0.7F)
       GL11.glScalef(2F * 1.2F, 2F * 1.2F, length * 1.2F)
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE)
 
-      RenderHelper.drawDropOffSphere(1F, 8, 8, 0.06F, color, alpha)
+      GlStateManager.color(r, g, b, 1F)
+      DanCoreRenderHelper.drawDropOffSphere(1F, 8, 8, 0.06F, color, alpha)
 
       GlStateManager.disableBlend()
     }

@@ -9,77 +9,85 @@
 package net.katsstuff.danmakucore.client.helper
 
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL11.{GL_QUAD_STRIP, GL_TRIANGLE_FAN}
 import org.lwjgl.util.glu.{Cylinder, Disk, GLU, Sphere}
 
 import net.katsstuff.danmakucore.data.{Quat, ShotData}
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.client.renderer.{GlStateManager, Tessellator}
+import net.minecraft.client.renderer.{GLAllocation, GlStateManager, OpenGlHelper, Tessellator}
+import net.minecraft.client.resources.{IResourceManagerReloadListener, SimpleReloadableResourceManager}
 import net.minecraft.util.math.MathHelper
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @SideOnly(Side.CLIENT)
-object RenderHelper {
+object DanCoreRenderHelper {
 
   private var sphereId   = 0
   private var cylinderId = 0
   private var coneId     = 0
   private var diskId     = 0
+  private val useVBO     = OpenGlHelper.useVbo()
 
   def bakeModels(): Unit = {
+    val tes = Tessellator.getInstance()
+    val vb  = tes.getBuffer
+
     val sphere = new Sphere
     sphere.setDrawStyle(GLU.GLU_FILL)
     sphere.setNormals(GLU.GLU_FLAT)
-
-    sphereId = GL11.glGenLists(1)
-    GL11.glNewList(sphereId, GL11.GL_COMPILE)
-
-    sphere.draw(1F, 8, 16)
-
-    GL11.glEndList()
 
     val cylinder = new Cylinder
     cylinder.setDrawStyle(GLU.GLU_FILL)
     cylinder.setNormals(GLU.GLU_FLAT)
 
-    cylinderId = GL11.glGenLists(1)
-    GL11.glNewList(cylinderId, GL11.GL_COMPILE)
-
-    GL11.glTranslatef(0F, 0F, -0.5F)
-    cylinder.draw(1F, 1F, 1F, 8, 1)
-    GL11.glTranslatef(0F, 0F, 0.5F)
-
-    GL11.glEndList()
-
     val cone = new Cylinder
     cone.setDrawStyle(GLU.GLU_FILL)
     cone.setNormals(GLU.GLU_FLAT)
 
-    coneId = GL11.glGenLists(1)
-    GL11.glNewList(coneId, GL11.GL_COMPILE)
-
-    GL11.glTranslatef(0F, 0F, -0.5F)
-    cone.draw(1F, 0F, 1F, 8, 1)
-    GL11.glTranslatef(0F, 0F, 0.5F)
-
-    GL11.glEndList()
-
-    diskId = GL11.glGenLists(1)
-    GL11.glNewList(diskId, GL11.GL_COMPILE)
-
     val disk = new Disk
     disk.setDrawStyle(GLU.GLU_FILL)
     disk.setNormals(GLU.GLU_FLAT)
-    disk.draw(1F, 0F, 8, 1)
 
-    GL11.glEndList()
+    if (false) {} else {
+      sphereId = GLAllocation.generateDisplayLists(1)
+      GlStateManager.glNewList(sphereId, GL11.GL_COMPILE)
+
+      sphere.draw(1F, 8, 16)
+
+      GlStateManager.glEndList()
+
+      cylinderId = GLAllocation.generateDisplayLists(1)
+      GlStateManager.glNewList(cylinderId, GL11.GL_COMPILE)
+
+      GlStateManager.translate(0F, 0F, -0.5F)
+      cylinder.draw(1F, 1F, 1F, 8, 1)
+      GlStateManager.translate(0F, 0F, 0.5F)
+
+      GlStateManager.glEndList()
+
+      coneId = GLAllocation.generateDisplayLists(1)
+      GlStateManager.glNewList(coneId, GL11.GL_COMPILE)
+
+      GlStateManager.translate(0F, 0F, -0.5F)
+      cone.draw(1F, 0F, 1F, 8, 1)
+      GlStateManager.translate(0F, 0F, 0.5F)
+
+      GlStateManager.glEndList()
+
+      diskId = GLAllocation.generateDisplayLists(1)
+      GlStateManager.glNewList(diskId, GL11.GL_COMPILE)
+
+      disk.draw(1F, 0F, 8, 1)
+
+      GlStateManager.glEndList()
+    }
   }
   private def drawObj(color: Int, alpha: Float, callListId: Int): Unit = {
-    val r = (color >> 16 & 255) / 255.0F
-    val g = (color >> 8 & 255) / 255.0F
-    val b = (color & 255) / 255.0F
+    val r = (color >> 16 & 255) / 255F
+    val g = (color >> 8 & 255) / 255F
+    val b = (color & 255) / 255F
     GlStateManager.color(r, g, b, alpha)
-    GL11.glCallList(callListId)
+    GlStateManager.callList(callListId)
   }
 
   def drawSphere(color: Int, alpha: Float): Unit = drawObj(color, alpha, sphereId)
@@ -92,28 +100,30 @@ object RenderHelper {
 
   def transformDanmaku(shot: ShotData, orientation: Quat): Unit = {
     GlStateManager.rotate(orientation.toQuaternion)
-    GL11.glScalef(shot.getSizeX, shot.getSizeY, shot.getSizeZ)
+    GlStateManager.scale(shot.getSizeX, shot.getSizeY, shot.getSizeZ)
   }
 
   //Adapted from Glu Sphere
   def drawDropOffSphere(radius: Float, slices: Int, stacks: Int, dropOffRate: Float, color: Int, alpha: Float): Unit = {
-    val r   = (color >> 16 & 255) / 255.0F
-    val g   = (color >> 8 & 255) / 255.0F
-    val b   = (color & 255) / 255.0F
+    val r = (color >> 16 & 255) / 255F
+    val g = (color >> 8 & 255) / 255F
+    val b = (color & 255) / 255F
+
     val tes = Tessellator.getInstance
     val bb  = tes.getBuffer
 
     val drho   = (Math.PI / stacks).toFloat
-    val dtheta = (2.0f * Math.PI / slices).toFloat
+    val dtheta = (2F * Math.PI / slices).toFloat
 
     GlStateManager.disableCull()
     GlStateManager.depthMask(false)
 
-    bb.begin(GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR)
+    bb.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR)
     bb.pos(0F, 0F, radius).color(r, g, b, alpha).endVertex()
-    for(j <- 0 to slices) {
-      val theta = if (j == slices) 0.0f
-      else j * dtheta
+    for (j <- 0 to slices) {
+      val theta =
+        if (j == slices) 0.0f
+        else j * dtheta
       val x = -MathHelper.sin(theta) * MathHelper.sin(drho)
       val y = MathHelper.cos(theta) * MathHelper.sin(drho)
       val z = MathHelper.cos(drho)
@@ -124,15 +134,15 @@ object RenderHelper {
     val imin = 1
     val imax = stacks - 1
 
-    for(i <- imin until imax) {
+    for (i <- imin until imax) {
       val newAlpha = Math.max(alpha - i * dropOffRate, 0F)
-      val rho = i * drho
-      bb.begin(GL_QUAD_STRIP, DefaultVertexFormats.POSITION_COLOR)
-      for(j <- 0 to slices) {
+      val rho      = i * drho
+      bb.begin(GL11.GL_QUAD_STRIP, DefaultVertexFormats.POSITION_COLOR)
+      for (j <- 0 to slices) {
         val theta = if (j == slices) 0.0f else j * dtheta
-        var x = -MathHelper.sin(theta) * MathHelper.sin(rho)
-        var y = MathHelper.cos(theta) * MathHelper.sin(rho)
-        var z = MathHelper.cos(rho)
+        var x     = -MathHelper.sin(theta) * MathHelper.sin(rho)
+        var y     = MathHelper.cos(theta) * MathHelper.sin(rho)
+        var z     = MathHelper.cos(rho)
         bb.pos(x * radius, y * radius, z * radius).color(r, g, b, newAlpha).endVertex()
         x = -MathHelper.sin(theta) * MathHelper.sin(rho + drho)
         y = MathHelper.cos(theta) * MathHelper.sin(rho + drho)
@@ -144,5 +154,12 @@ object RenderHelper {
 
     GlStateManager.enableCull()
     GlStateManager.depthMask(true)
+  }
+
+  def registerResourceReloadListener(listener: IResourceManagerReloadListener): Unit = {
+    Minecraft.getMinecraft.getResourceManager match {
+      case resourceManager: SimpleReloadableResourceManager => resourceManager.registerReloadListener(listener)
+      case _                                                => listener.onResourceManagerReload(Minecraft.getMinecraft.getResourceManager)
+    }
   }
 }

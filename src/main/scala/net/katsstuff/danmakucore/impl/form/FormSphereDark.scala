@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.impl.form
 
 import org.lwjgl.opengl.GL11
 
-import net.katsstuff.danmakucore.client.helper.RenderHelper
+import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
@@ -25,21 +25,21 @@ private[danmakucore] class FormSphereDark extends FormGeneric(LibFormName.SPHERE
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm() {
     @SideOnly(Side.CLIENT)
-    override def renderForm(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
+    override def renderLegacy(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
       val color = danmaku.shot.color
       val alpha = 0.3F
 
-      RenderHelper.transformDanmaku(danmaku.shot, orientation)
+      DanCoreRenderHelper.transformDanmaku(danmaku.shot, orientation)
 
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
       GlStateManager.depthMask(false)
       GlStateManager.scale(1.2F, 1.2F, 1.2F)
-      RenderHelper.drawSphere(color, alpha)
+      DanCoreRenderHelper.drawSphere(color, alpha)
       GlStateManager.depthMask(true)
       GlStateManager.disableBlend()
       GlStateManager.scale(0.8F, 0.8F, 0.8F)
-      RenderHelper.drawSphere(0x000000, 1F)
+      DanCoreRenderHelper.drawSphere(0x000000, 1F)
     }
   }
 }

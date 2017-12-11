@@ -19,11 +19,10 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 private[danmakucore] abstract class AbstractFormCrystal(name: String) extends FormGeneric(name) {
 
-  //noinspection ConvertExpressionToSAM
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm() {
     @SideOnly(Side.CLIENT)
-    override def renderForm(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
+    override def renderLegacy(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
       val shotData = danmaku.shot
       val sizeX    = shotData.sizeX
       val sizeY    = shotData.sizeY

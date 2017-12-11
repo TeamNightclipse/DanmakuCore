@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.impl.form
 
 import org.lwjgl.opengl.GL11
 
-import net.katsstuff.danmakucore.client.helper.RenderHelper
+import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
@@ -36,14 +36,14 @@ private[danmakucore] class FormStar extends FormGeneric(LibFormName.STAR) {
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm() {
     @SideOnly(Side.CLIENT)
-    override def renderForm(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
+    override def renderLegacy(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
       val tes   = Tessellator.getInstance
       val buf   = tes.getBuffer
       val color = danmaku.shot.color
 
       GlStateManager.rotate((danmaku.ticksExisted + partialTicks) * 5F, 1F, 1F, 1F)
 
-      RenderHelper.transformDanmaku(danmaku.shot, orientation)
+      DanCoreRenderHelper.transformDanmaku(danmaku.shot, orientation)
 
       var red   = 1F
       var green = 1F

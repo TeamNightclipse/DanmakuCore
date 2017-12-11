@@ -12,7 +12,7 @@ import scala.reflect.ClassTag
 
 import net.katsstuff.danmakucore.CommonProxy
 import net.katsstuff.danmakucore.client.handler.{BossBarHandler, DanmakuRenderer, HUDHandler, SpellcardHandler}
-import net.katsstuff.danmakucore.client.helper.RenderHelper
+import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.client.particle.{GlowTexture, IGlowParticle, ParticleRenderer, ParticleUtil}
 import net.katsstuff.danmakucore.client.render.{RenderDanmaku, RenderFallingData, RenderSpellcard}
 import net.katsstuff.danmakucore.danmaku.{ClientDanmakuHandler, DanmakuChanges, DanmakuState}
@@ -102,8 +102,10 @@ class ClientProxy extends CommonProxy {
   override private[danmakucore] def bakeDanmakuVariant(variant: DanmakuVariant): Unit =
     ModelBakery.registerItemVariants(LibItems.DANMAKU, variant.itemModel)
 
-  override private[danmakucore] def bakeDanmakuForm(form: Form): Unit =
+  override private[danmakucore] def initForm(form: Form): Unit = {
     ModelBakery.registerItemVariants(LibItems.DANMAKU, form.itemModel)
+    form.initClient()
+  }
 
   override private[danmakucore] def bakeSpellcard(spellcard: Spellcard): Unit =
     ModelBakery.registerItemVariants(LibItems.SPELLCARD, spellcard.itemModel)
@@ -129,7 +131,7 @@ class ClientProxy extends CommonProxy {
   }
 
   override private[danmakucore] def bakeRenderModels(): Unit =
-    RenderHelper.bakeModels()
+    DanCoreRenderHelper.bakeModels()
 
   override private[danmakucore] def registerItemColors(): Unit = {
     val itemColors = Minecraft.getMinecraft.getItemColors

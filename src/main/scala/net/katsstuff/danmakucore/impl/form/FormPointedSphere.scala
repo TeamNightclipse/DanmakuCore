@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.impl.form
 
 import org.lwjgl.opengl.GL11
 
-import net.katsstuff.danmakucore.client.helper.RenderHelper
+import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
@@ -29,7 +29,7 @@ private[danmakucore] class FormPointedSphere extends FormGeneric(LibFormName.SPH
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm() {
     @SideOnly(Side.CLIENT)
-    override def renderForm(
+    override def renderLegacy(
         danmaku: DanmakuState,
         x: Double,
         y: Double,
@@ -47,7 +47,7 @@ private[danmakucore] class FormPointedSphere extends FormGeneric(LibFormName.SPH
       val centerZ1 = sizeZ * 1.2F / 2.0F
       val centerZ2 = sizeZ / 2.0F
 
-      RenderHelper.transformDanmaku(shot, orientation)
+      DanCoreRenderHelper.transformDanmaku(shot, orientation)
 
       GL11.glTranslatef(0, 0, (-sizeZ / 6) * 4)
 
