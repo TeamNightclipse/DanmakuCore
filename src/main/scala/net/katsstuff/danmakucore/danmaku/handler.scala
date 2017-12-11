@@ -59,15 +59,15 @@ trait DanmakuHandler {
 
   def profiler: Profiler
 
-  protected var isReady:              Boolean                          = false
-  protected var danmaku:                        Map[Int, DanmakuState]           = HashMap.empty[Int, DanmakuState]
+  protected var danmaku:              Map[Int, DanmakuState]           = HashMap.empty[Int, DanmakuState]
   protected var newDanmaku:           ArrayBuffer[DanmakuState]        = ArrayBuffer.empty[DanmakuState]
   protected var danmakuChanges:       ArrayBuffer[DanmakuChanges]      = ArrayBuffer.empty[DanmakuChanges]
   protected var forcedDanmakuUpdates: ArrayBuffer[(Int, DanmakuState)] = ArrayBuffer.empty[(Int, DanmakuState)]
   protected val chunkMap:             mutable.LongMap[DanmakuChunk]    = mutable.LongMap.empty[DanmakuChunk]
   protected var isChunkMapPolpulated: Boolean                          = false
+  var working:                        ParMap[Int, DanmakuUpdate]       = _
 
-  var working: ParMap[Int, DanmakuUpdate] = _
+  protected def isReady: Boolean = working != null
 
   protected def updateStates(
       tempMap: mutable.Map[Int, DanmakuState],
@@ -115,7 +115,6 @@ trait DanmakuHandler {
     danmakuChanges.clear()
     newDanmaku.clear()
     forcedDanmakuUpdates.clear()
-    isReady = true
     profiler.endSection()
   }
 

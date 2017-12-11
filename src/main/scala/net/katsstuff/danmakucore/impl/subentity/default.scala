@@ -25,14 +25,11 @@ class SubEntityDefault extends SubEntityBase {
         if (shot.end == 1) {
           None
         } else {
-          val (newMotion, newOrientation) = danmaku.resetMotion
-
           //Think we can get away with not sending an update here
           Some(
             DanmakuUpdate.none(
               danmaku.copy(
-                entity = danmaku.entity
-                  .copy(motion = newMotion, orientation = newOrientation, prevOrientation = danmaku.orientation),
+                entity = danmaku.entity.copy(motion = danmaku.resetMotion),
                 extra = danmaku.extra.copy(shot = shot.copy(delay = delay - 1))
               )
             )

@@ -92,6 +92,7 @@ case class DanmakuState(entity: DanmakuEntityData, extra: ExtraDanmakuData, trac
   def prevOrientation:     Quat                     = entity.prevOrientation
   def motion:              Vector3                  = entity.motion
   def direction:           Vector3                  = entity.direction
+  def rawBoundingBoxes:    Seq[OrientedBoundingBox] = entity.rawBoundingBoxes
   def boundingBoxes:       Seq[OrientedBoundingBox] = entity.boundingBoxes
   def rawEncompassingAABB: AxisAlignedBB            = entity.rawEncompassingAABB
   def encompassingAABB:    AxisAlignedBB            = entity.encompassingAABB
@@ -137,12 +138,7 @@ case class DanmakuState(entity: DanmakuEntityData, extra: ExtraDanmakuData, trac
   def setSpeed(speed: Double): Vector3 = direction * speed
   def addSpeed(speed: Double): Vector3 = motion + direction * speed
 
-  def resetMotion: (Vector3, Quat) = {
-    (
-      setSpeed(movement.getSpeedOriginal),
-      Quat.fromEuler(direction.yaw.toFloat, direction.pitch.toFloat, orientation.roll.toFloat)
-    )
-  }
+  def resetMotion: Vector3 = setSpeed(movement.speedOriginal)
 
   private[danmakucore] def updatePlayerList(players: Seq[EntityPlayerMP]): TrackerData = {
     var tracking                     = this.tracking
@@ -219,6 +215,8 @@ case class DanmakuState(entity: DanmakuEntityData, extra: ExtraDanmakuData, trac
 
   private def isPlayerWatchingThisChunk(playerMP: EntityPlayerMP) =
     playerMP.getServerWorld.getPlayerChunkMap.isPlayerWatchingChunk(playerMP, chunkPosX, chunkPosZ)
+
+  def isShotEndTime: Boolean = shot.end == ticksExisted
 }
 object DanmakuState {
   private var id: Int = 0
@@ -275,7 +273,6 @@ object DanmakuState {
     override def readBytes(buf: ByteBuf): DanmakuState = {
       import MessageConverter.Ops
 
-      println(s"Remaining ${buf.readableBytes()}")
       val entityData = DanmakuEntityData(
         id = buf.read[Int],
         world = Option(DimensionManager.getWorld(buf.read[Int])).getOrElse(DanmakuCore.proxy.defaultWorld),
@@ -359,7 +356,7 @@ object DanmakuState {
 
   def createRawEncompassingBB(boxes: Seq[OrientedBoundingBox]): AxisAlignedBB = {
     boxes.foldLeft(new AxisAlignedBB(0D, 0D, 0D, 0D, 0D, 0D)) { (aabb, obb) =>
-      val withoutPos = if(obb.pos == Vector3.Zero) obb.aabb else obb.aabb.offset(-obb.pos.x, -obb.pos.y, -obb.pos.z)
+      val withoutPos = if (obb.pos == Vector3.Zero) obb.aabb else obb.aabb.offset(-obb.pos.x, -obb.pos.y, -obb.pos.z)
 
       val min = withoutPos.minX.min(withoutPos.minY).min(withoutPos.minZ)
       val max = withoutPos.maxX.max(withoutPos.maxY).max(withoutPos.maxZ)

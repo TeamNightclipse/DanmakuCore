@@ -76,13 +76,14 @@ object ItemDanmaku {
       }
       if (canRun) {
 
-        DanmakuTemplate.builder
+        val template = DanmakuTemplate.builder
           .setUser(user)
           .setShot(shot)
           .setMovementData(shotSpeed, gravity)
           .setPos(pos)
           .setDirection(direction)
-        danmakuPattern.makeDanmaku(DanmakuTemplate.builder.build, amount, shotSpeed, alternateMode, offset)
+          .build
+        danmakuPattern.makeDanmaku(template, amount, shotSpeed, alternateMode, offset)
         true
       } else false
     } else {
@@ -262,7 +263,7 @@ class ItemDanmaku extends ItemBase(LibItemName.DANMAKU) {
     s"${getUnlocalizedName()}.${ItemDanmaku.getController(stack).unlocalizedName}"
 
   override def onItemRightClick(world: World, player: EntityPlayer, hand: EnumHand): ActionResult[ItemStack] = {
-    val stack = player.getHeldItem(hand)
+    val stack   = player.getHeldItem(hand)
     var success = false
 
     val shot = ShotData.fromNBTItemStack(stack)
