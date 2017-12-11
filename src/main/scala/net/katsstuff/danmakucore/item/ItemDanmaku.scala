@@ -78,6 +78,7 @@ object ItemDanmaku {
 
         val template = DanmakuTemplate.builder
           .setUser(user)
+          .setWorld(world)
           .setShot(shot)
           .setMovementData(shotSpeed, gravity)
           .setPos(pos)
@@ -87,7 +88,7 @@ object ItemDanmaku {
         true
       } else false
     } else {
-      getVariant(stack).create(user, alternateMode, pos, direction, hand).exists { template =>
+      getVariant(stack).create(world, user, alternateMode, pos, direction, hand).exists { template =>
         val newTemplate = template.toBuilder.setShot(shot).setMovementData(shotSpeed, gravity).build
         danmakuPattern.makeDanmaku(newTemplate, amount, shotSpeed, alternateMode, offset)
         true
@@ -175,10 +176,9 @@ object ItemDanmaku {
       danmaku.pos = danmaku.pos.offset(danmaku.direction, offset)
       val res = for (i <- 1 to amount) yield {
         danmaku.setMovementData(shotSpeed / amount * i)
-        val entity = danmaku.build.asEntity
-        DanmakuCore.proxy.spawnDanmaku(entity)
-        entity
+        danmaku.build.asEntity
       }
+      DanmakuCore.proxy.spawnDanmaku(res)
       res.toSet
     }
   }

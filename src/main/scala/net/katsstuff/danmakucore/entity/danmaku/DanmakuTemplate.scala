@@ -58,9 +58,10 @@ object DanmakuTemplate {
       if (orientation == null) {
         if (user != null) orientation = Quat.orientationOf(user)
         else if (source != null) orientation = Quat.orientationOf(source)
+        else if(direction != null) orientation = Quat.fromEuler(direction.yaw.toFloat, direction.pitch.toFloat, 0F)
         else
           throw new IllegalArgumentException(
-            "could not find a orientation for builder, and neither source or user is set"
+            "could not find a orientation for builder, and neither source, user or direction is set"
           )
       }
 

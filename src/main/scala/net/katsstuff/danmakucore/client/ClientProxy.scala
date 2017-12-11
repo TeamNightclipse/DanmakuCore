@@ -41,7 +41,6 @@ import net.minecraftforge.common.util.Constants
 import net.minecraftforge.fml.client.registry.{IRenderFactory, RenderingRegistry}
 import net.minecraftforge.fml.common.event.{FMLServerStartingEvent, FMLServerStoppedEvent}
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.{PlayerLoggedInEvent, PlayerLoggedOutEvent}
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.{ClientConnectedToServerEvent, ClientDisconnectionFromServerEvent}
 
 object ClientProxy {
@@ -185,6 +184,8 @@ class ClientProxy extends CommonProxy {
   override private[danmakucore] def updateDanmakuClient(changes: DanmakuChanges): Unit =
     clientDanmakuHandler.updateDanmaku(changes)
 
-  override private[danmakucore] def spawnDanmakuClient(state: DanmakuState): Unit =
-    clientDanmakuHandler.spawnDanmaku(state.copy(entity = state.entity.copy(world = Minecraft.getMinecraft.world)))
+  override private[danmakucore] def spawnDanmakuClient(states: Seq[DanmakuState]): Unit = {
+    val clientWorld = Minecraft.getMinecraft.world
+    clientDanmakuHandler.spawnDanmaku(states.map(state => state.copy(entity = state.entity.copy(world = clientWorld))))
+  }
 }

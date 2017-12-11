@@ -307,12 +307,12 @@ class CommonProxy {
 
   def addParticle[T <: IGlowParticle](particle: T): Unit = {}
 
-  def updateDanmaku(changes: DanmakuChanges):                             Unit = serverDanmakuHandler.updateDanmaku(changes)
-  def spawnDanmaku(state: DanmakuState):                                  Unit = serverDanmakuHandler.spawnDanmaku(state)
+  def updateDanmaku(changes: DanmakuChanges):  Unit = serverDanmakuHandler.updateDanmaku(changes)
+  def spawnDanmaku(states: Seq[DanmakuState]): Unit = serverDanmakuHandler.spawnDanmaku(states)
 
   private[danmakucore] def forceUpdateDanmakuClient(state: DanmakuState): Unit = ()
   private[danmakucore] def updateDanmakuClient(changes: DanmakuChanges):  Unit = ()
-  private[danmakucore] def spawnDanmakuClient(state: DanmakuState):       Unit = ()
+  private[danmakucore] def spawnDanmakuClient(states: Seq[DanmakuState]): Unit = ()
 
   def collectDanmakuInAABB[A](aabb: AxisAlignedBB)(f: PartialFunction[DanmakuState, A]): immutable.IndexedSeq[A] =
     serverDanmakuHandler.collectDanmakuInAABB(aabb)(f)

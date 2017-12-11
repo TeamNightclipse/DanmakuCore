@@ -8,7 +8,6 @@
  */
 package net.katsstuff.danmakucore.impl.shape
 
-import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.{Quat, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
@@ -38,7 +37,6 @@ class ShapeRing(template: DanmakuTemplate, amount: Int, radius: Float, baseAngle
         builder.orientation = rotate
         rotateAngle += stepSize
         val spawned = builder.build.asEntity
-        DanmakuCore.proxy.spawnDanmaku(spawned)
         spawned
       }
 

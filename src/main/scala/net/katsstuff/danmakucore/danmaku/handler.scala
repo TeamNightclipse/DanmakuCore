@@ -108,9 +108,9 @@ trait DanmakuHandler {
 
     profiler.endStartSection("startUpdates")
 
-    working = danmaku.par.flatMap(t => t._2.update.map(t => (t.state.id, t))) ++ newDanmaku.par.flatMap(
-      _.update.map(t => (t.state.id, t))
-    )
+    working = danmaku.par.flatMap(t => t._2.update.map(t => (t.state.id, t))) ++ newDanmaku.par.flatMap { state =>
+      state.update.map(t => (t.state.id, t))
+    }
 
     danmakuChanges.clear()
     newDanmaku.clear()
@@ -146,7 +146,7 @@ trait DanmakuHandler {
     }
   }
 
-  def spawnDanmaku(state: DanmakuState): Unit = newDanmaku += state
+  def spawnDanmaku(states: Seq[DanmakuState]): Unit = newDanmaku ++= states
 
   def addDanmakuChange(changes: DanmakuChanges): Unit = danmakuChanges += changes
 
@@ -184,13 +184,9 @@ class ServerDanmakuHandler extends DanmakuHandler {
   val profiler: Profiler = FMLCommonHandler.instance().getMinecraftServerInstance.profiler
   private val removedPlayers = mutable.ArrayBuffer.empty[EntityPlayerMP]
 
-  override protected def processSignalsAndForcedDanmaku(
-      stateToSignals: ArrayBuffer[(DanmakuState, Seq[DanmakuUpdateSignal])]
-  ): Unit = {
-    val newDanmakuMap     = mutable.Map.empty[EntityPlayerMP, mutable.Buffer[DanmakuState]]
-    val danmakuChangesMap = mutable.Map.empty[EntityPlayerMP, mutable.Buffer[DanmakuChanges]]
-
-    newDanmaku.transform { danmaku =>
+  override def spawnDanmaku(states: Seq[DanmakuState]): Unit = {
+    val newDanmakuMap = mutable.Map.empty[EntityPlayerMP, mutable.Buffer[DanmakuState]]
+    val newStates = states.map { danmaku =>
       val newTracking = danmaku.updatePlayerEntities(danmaku.world.playerEntities.asScala.collect {
         case playerMP: EntityPlayerMP => playerMP
       })
@@ -202,16 +198,28 @@ class ServerDanmakuHandler extends DanmakuHandler {
       danmaku.copy(tracking = newTracking)
     }
 
+    DanCorePacketHandler.sendToAll(DanmakuCreatePacket(newStates))
+
+    /*
+    newDanmakuMap.foreach {
+      case (player, playerStates) =>
+        DanCorePacketHandler.sendTo(DanmakuCreatePacket(playerStates), player)
+    }
+    */
+
+    super.spawnDanmaku(newStates)
+  }
+
+  override protected def processSignalsAndForcedDanmaku(
+      stateToSignals: ArrayBuffer[(DanmakuState, Seq[DanmakuUpdateSignal])]
+  ): Unit = {
+    val danmakuChangesMap = mutable.Map.empty[EntityPlayerMP, mutable.Buffer[DanmakuChanges]]
+
     stateToSignals.foreach {
       case (state, signals) =>
         state.tracking.trackingPlayers.foreach { player =>
           danmakuChangesMap.getOrElseUpdate(player, mutable.Buffer.empty) += DanmakuChanges(state.id, signals)
         }
-    }
-
-    newDanmakuMap.foreach {
-      case (player, states) =>
-        DanCorePacketHandler.sendTo(DanmakuCreatePacket(states), player)
     }
 
     danmakuChangesMap.foreach {
@@ -246,6 +254,7 @@ class ServerDanmakuHandler extends DanmakuHandler {
       removedPlayers.clear()
 
       start()
+      println(s"Current danmaku: ${danmaku.size}")
     } else if (event.phase == Phase.END) {
       stop()
     }

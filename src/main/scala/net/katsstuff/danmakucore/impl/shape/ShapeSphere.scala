@@ -14,15 +14,15 @@ import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
 
 class ShapeSphere(danmaku: DanmakuTemplate, rings: Int, bands: Int, baseAngle: Float, distance: Double) extends Shape {
-  private val usedBans = bands / 2
+  private val usedBands = bands / 2
 
   override def draw(pos: Vector3, orientation: Quat, tick: Int): ShapeResult = {
     if (!danmaku.world.isRemote) {
       val rotatedForward = orientation.multiply(Quat.fromAxisAngle(Vector3.Forward, 90))
-      val increment      = 180F / usedBans
+      val increment      = 180F / usedBands
       val shape          = new ShapeCircle(danmaku, rings, baseAngle, distance)
 
-      val res = for (i <- 0 until usedBans) yield {
+      val res = for (i <- 0 until usedBands) yield {
         val rotate = Quat.fromAxisAngle(Vector3.Up, increment * i)
         shape.draw(pos, rotate.multiply(rotatedForward), tick).spawnedDanmaku
       }

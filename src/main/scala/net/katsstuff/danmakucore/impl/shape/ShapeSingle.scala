@@ -8,7 +8,6 @@
  */
 package net.katsstuff.danmakucore.impl.shape
 
-import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.{Quat, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
@@ -18,7 +17,6 @@ class ShapeSingle(danmaku: DanmakuTemplate) extends Shape {
   override def draw(pos: Vector3, orientation: Quat, tick: Int): ShapeResult =
     if (!danmaku.world.isRemote) {
       val created = danmaku.asEntity
-      DanmakuCore.proxy.spawnDanmaku(created)
       ShapeResult.done(Set(created))
     } else ShapeResult.done(Set.empty[DanmakuState])
 }

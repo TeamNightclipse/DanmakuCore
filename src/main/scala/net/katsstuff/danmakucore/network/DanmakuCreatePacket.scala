@@ -28,6 +28,5 @@ object DanmakuCreatePacket {
     }
 }
 case class DanmakuCreateRunnable(states: Seq[DanmakuState]) extends Runnable {
-  override def run(): Unit =
-    states.foreach(DanmakuCore.proxy.spawnDanmakuClient)
+  override def run(): Unit = DanmakuCore.proxy.spawnDanmakuClient(states)
 }

@@ -10,6 +10,7 @@ package net.katsstuff.danmakucore.scalastuff
 
 import scala.collection.JavaConverters._
 
+import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
 import net.katsstuff.danmakucore.impl.shape.{ShapeCircle, ShapeRandomRing, ShapeRing, ShapeSphere, ShapeWide}
@@ -61,7 +62,10 @@ object DanmakuCreationHelper {
   ): Set[DanmakuState] =
     drawSingle(danmaku, new ShapeSphere(danmaku, rings, bands, baseAngle, distance))
 
-  private def drawSingle(danmaku: DanmakuTemplate, shape: Shape): Set[DanmakuState] =
-    shape.draw(danmaku.pos, danmaku.orientation, 0).getSpawnedDanmaku.asScala.toSet
+  private def drawSingle(danmaku: DanmakuTemplate, shape: Shape): Set[DanmakuState] = {
+    val res = shape.draw(danmaku.pos, danmaku.orientation, 0).spawnedDanmaku
+    DanmakuCore.proxy.spawnDanmaku(res.toSeq)
+    res
+  }
 
 }

@@ -8,12 +8,10 @@
  */
 package net.katsstuff.danmakucore.impl.shape
 
-import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.{Quat, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
-import net.minecraft.util.math.MathHelper
 
 class ShapeWide(template: DanmakuTemplate, amount: Int, wideAngle: Float, baseAngle: Float, distance: Double)
     extends Shape {
@@ -32,9 +30,7 @@ class ShapeWide(template: DanmakuTemplate, amount: Int, wideAngle: Float, baseAn
         builder.orientation = rotate
         rotateAngle += stepSize
 
-        val spawned = builder.build.asEntity
-        DanmakuCore.proxy.spawnDanmaku(spawned)
-        spawned
+        builder.build.asEntity
       }
 
       ShapeResult.done(res.toSet)

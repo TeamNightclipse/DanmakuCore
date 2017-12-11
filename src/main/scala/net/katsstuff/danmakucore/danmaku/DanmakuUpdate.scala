@@ -15,9 +15,13 @@ object DanmakuUpdate {
   def multiple(state: DanmakuState, updates: DanmakuUpdateSignal*): DanmakuUpdate = DanmakuUpdate(state, updates, Nil)
 
   def andThen(option: Option[DanmakuUpdate])(f: DanmakuState => Option[DanmakuUpdate]): Option[DanmakuUpdate] =
-    option.flatMap(
-      update => f(update.state).map(newUpdate => newUpdate.copy(signals = update.signals ++ newUpdate.signals))
-    )
+    option.flatMap {
+      case DanmakuUpdate(state, signals, callbacks) =>
+        f(state).map(
+          newUpdate =>
+            newUpdate.copy(signals = signals ++ newUpdate.signals, callbacks = callbacks ++ newUpdate.callbacks)
+        )
+    }
 }
 case class DanmakuUpdate(state: DanmakuState, signals: Seq[DanmakuUpdateSignal], callbacks: Seq[() => Unit]) {
 

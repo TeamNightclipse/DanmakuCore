@@ -9,13 +9,15 @@
 package net.katsstuff.danmakucore.impl.spellcard
 
 import net.katsstuff.danmakucore.DanmakuCore
+import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
 import net.katsstuff.danmakucore.entity.living.TouhouCharacter
 import net.katsstuff.danmakucore.entity.spellcard.{EntitySpellcard, Spellcard, SpellcardEntity}
+import net.katsstuff.danmakucore.impl.shape.ShapeWide
 import net.katsstuff.danmakucore.lib.data.LibShotData
 import net.katsstuff.danmakucore.lib.{LibColor, LibSounds, LibSpellcardName}
-import net.katsstuff.danmakucore.scalastuff.{DanmakuCreationHelper, DanmakuHelper}
+import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
 import net.minecraft.entity.EntityLivingBase
 
 private[danmakucore] class SpellcardDelusionEnlightenment
@@ -37,21 +39,21 @@ private[spellcard] class SpellcardEntityDelusionEnlightenment(
   override def onSpellcardUpdate(): Unit = if (!world.isRemote) {
     val danmakuLevelMultiplier = danmakuLevel.getMultiplier
 
-    if(time == 1) {
+    if (time == 1) {
       DanmakuHelper.playSoundAt(world, posUser, LibSounds.ENEMY_POWER, 0.2F, 1F)
     }
 
-    if(time > 40) {
-      for (_ <- 0 until danmakuLevelMultiplier * 2) {
+    if (time > 40) {
+      val toSpawnGround = for (_ <- 0 until danmakuLevelMultiplier * 2) yield {
         spawnGroundDanmaku()
       }
 
       val time40 = time % 40
-      if(time40 == 10) {
+      if (time40 == 10) {
         DanmakuHelper.playSoundAt(world, posUser, LibSounds.SHOT1, 0.2F, 1F)
       }
 
-      if (time40 < 10) {
+      val toSpawnTime40Warmup = if (time40 < 10) {
         val place = Math.max(0, 10 - time40)
         val danmaku = DanmakuTemplate.builder
           .setUser(user)
@@ -60,11 +62,14 @@ private[spellcard] class SpellcardEntityDelusionEnlightenment(
           .setShot(LibShotData.SHOT_MEDIUM.setColor(LibColor.COLOR_SATURATED_RED).setDelay(place))
           .build
 
-        DanmakuCreationHelper.createWideShot(danmaku, danmakuLevelMultiplier * 2, 120F, 180F, 1.25D)
-      }
+        new ShapeWide(danmaku, danmakuLevelMultiplier * 2, 120F, 180F, 1.25D)
+          .draw(danmaku.pos, danmaku.orientation, 0)
+          .spawnedDanmaku
+          .toSeq
+      } else Seq.empty[DanmakuState]
 
-      if (time40 == 1) {
-        for (i <- 1 to 10) {
+      val toSpawnTime40 = if (time40 == 1) {
+        val res = for (i <- 1 to 10) yield {
           val danmaku = DanmakuTemplate.builder
             .setUser(user)
             .setSource(card)
@@ -72,13 +77,20 @@ private[spellcard] class SpellcardEntityDelusionEnlightenment(
             .setShot(LibShotData.SHOT_MEDIUM.setColor(LibColor.COLOR_SATURATED_RED))
             .build
 
-          DanmakuCreationHelper.createWideShot(danmaku, danmakuLevelMultiplier, 30F, 0F, 0.5D)
+          new ShapeWide(danmaku, danmakuLevelMultiplier, 30F, 0F, 0.5D)
+            .draw(danmaku.pos, danmaku.orientation, 0)
+            .spawnedDanmaku
+            .toSeq
         }
-      }
+
+        res.flatten
+      } else Seq.empty[DanmakuState]
+
+      DanmakuCore.proxy.spawnDanmaku(toSpawnGround ++ toSpawnTime40Warmup ++ toSpawnTime40)
     }
   }
 
-  private def spawnGroundDanmaku(): Unit = {
+  private def spawnGroundDanmaku(): DanmakuState = {
     val direction = Vector3.getVecWithoutY(Vector3.randomVector)
 
     val posSource = posUser.offset(direction, rng.nextDouble * 24)
@@ -89,7 +101,7 @@ private[spellcard] class SpellcardEntityDelusionEnlightenment(
     val spawnPos = if (ray != null) new Vector3(ray.hitVec) else posReach //Can I multiply the vectors here?
     DanmakuHelper.playSoundAt(world, spawnPos, LibSounds.SHOT1, 0.2F, 1F)
 
-    val danmaku = DanmakuTemplate.builder
+    DanmakuTemplate.builder
       .setUser(user)
       .setSource(card)
       .setDirection(Vector3.Up)
@@ -98,7 +110,5 @@ private[spellcard] class SpellcardEntityDelusionEnlightenment(
       .setShot(LibShotData.SHOT_RICE.setColor(LibColor.COLOR_SATURATED_BLUE))
       .build
       .asEntity
-
-    DanmakuCore.proxy.spawnDanmaku(danmaku)
   }
 }

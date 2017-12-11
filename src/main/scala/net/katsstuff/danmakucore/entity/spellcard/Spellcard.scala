@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.block.model.{ModelResourceLocation => MRL}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{EntityLiving, EntityLivingBase}
 import net.minecraft.util.{EnumHand, ResourceLocation}
+import net.minecraft.world.World
 
 abstract class Spellcard extends RegistryValueItemCreatable[Spellcard, EntitySpellcard] {
 
@@ -59,13 +60,7 @@ abstract class Spellcard extends RegistryValueItemCreatable[Spellcard, EntitySpe
   def create(player: EntityPlayer, firstAttack: Boolean): Option[EntitySpellcard] =
     TouhouHelper.declareSpellcardPlayer(player, this, firstAttack)
 
-  override def create(
-      optUser: Option[EntityLivingBase],
-      alternateMode: Boolean,
-      pos: Vector3,
-      direction: Vector3,
-      hand: Option[EnumHand]
-  ): Option[EntitySpellcard] = {
+  override def create(world: World, optUser: Option[EntityLivingBase], alternateMode: Boolean, pos: Vector3, direction: Vector3, hand: Option[EnumHand]): Option[EntitySpellcard] = {
     optUser.flatMap { user =>
       user match {
         case entityPlayer: EntityPlayer => TouhouHelper.declareSpellcardPlayer(entityPlayer, this, firstAttack = true)
