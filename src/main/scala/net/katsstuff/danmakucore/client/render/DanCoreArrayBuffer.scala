@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.{GlStateManager, OpenGlHelper}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @SideOnly(Side.CLIENT)
-class ArrayBuffer(count: Int, target: Int, usage: Int) {
+class DanCoreArrayBuffer(count: Int, target: Int, usage: Int) {
   private val id      = OpenGlHelper.glGenBuffers()
   private var deleted = false
 
@@ -53,7 +53,7 @@ class ArrayBuffer(count: Int, target: Int, usage: Int) {
     GL11.glDrawElements(mode, count, tpe, offset)
   }
 
-  def deleteGlBuffers(): Unit = {
+  def delete(): Unit = {
     if (!deleted) {
       OpenGlHelper.glDeleteBuffers(id)
       deleted = true

@@ -249,15 +249,15 @@ abstract sealed class AbstractQuat {
   @SideOnly(Side.CLIENT)
   def toMatrix4f: Matrix4f = {
     val mat = new Matrix4f()
-    val f =  (x * x).toFloat
-    val f1 = (x * y).toFloat
-    val f2 = (x * z).toFloat
-    val f3 = (x * w).toFloat
-    val f4 = (y * y).toFloat
-    val f5 = (y * z).toFloat
-    val f6 = (y * w).toFloat
-    val f7 = (z * z).toFloat
-    val f8 = (z * w).toFloat
+    val f   = (x * x).toFloat
+    val f1  = (x * y).toFloat
+    val f2  = (x * z).toFloat
+    val f3  = (x * w).toFloat
+    val f4  = (y * y).toFloat
+    val f5  = (y * z).toFloat
+    val f6  = (y * w).toFloat
+    val f7  = (z * z).toFloat
+    val f8  = (z * w).toFloat
     mat.m00 = 1.0F - 2.0F * (f4 + f7)
     mat.m01 = 2.0F * (f1 + f8)
     mat.m02 = 2.0F * (f2 - f6)
@@ -452,8 +452,13 @@ object Quat {
   def fromEuler(yaw: Float, pitch: Float, roll: Float): Quat = {
     val clampedPitch = if (pitch > 90F || pitch < -90F) Math.IEEEremainder(pitch, 180F) else pitch
     val clampedYaw   = if (yaw > 180F || yaw < -180F) Math.IEEEremainder(yaw, 360F) else yaw
+    val clampedRoll  = if (roll > 180F || roll < -180F) Math.IEEEremainder(roll, 360F) else roll
 
-    fromEulerRad(Math.toRadians(clampedYaw).toFloat, Math.toRadians(clampedPitch).toFloat, Math.toRadians(roll).toFloat)
+    fromEulerRad(
+      Math.toRadians(clampedYaw).toFloat,
+      Math.toRadians(clampedPitch).toFloat,
+      Math.toRadians(clampedRoll).toFloat
+    )
   }
 
   def fromEulerRad(yaw: Float, pitch: Float, roll: Float): Quat = {

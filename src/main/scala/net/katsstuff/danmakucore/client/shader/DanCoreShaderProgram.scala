@@ -8,19 +8,18 @@
  */
 package net.katsstuff.danmakucore.client.shader
 
-import net.katsstuff.danmakucore.helper.LogHelper
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.util.ResourceLocation
 
-case class DanCoreProgram(vertexId: Int, fragmentId: Int, programId: Int, uniforms: Map[String, DanCoreUniform]) {
+case class DanCoreShaderProgram(shaders: Seq[DanCoreShader], programId: Int, uniforms: Map[String, DanCoreUniform]) {
 
   def delete(): Unit = {
-    OpenGlHelper.glDeleteShader(vertexId)
-    OpenGlHelper.glDeleteShader(fragmentId)
+    shaders.foreach(_.delete())
     OpenGlHelper.glDeleteProgram(programId)
   }
 
-  def begin(): Unit = OpenGlHelper.glUseProgram(programId)
+  def begin(): Unit =
+    OpenGlHelper.glUseProgram(programId)
 
   def getUniform(name: String): Option[DanCoreUniform] = uniforms.get(name)
 
@@ -28,29 +27,22 @@ case class DanCoreProgram(vertexId: Int, fragmentId: Int, programId: Int, unifor
 
   def end(): Unit = OpenGlHelper.glUseProgram(0)
 }
-object DanCoreProgram {
+object DanCoreShaderProgram {
 
-  val MissingShader = DanCoreProgram(0, 0, 0, Map.empty)
+  val MissingShaderProgram = DanCoreShaderProgram(Nil, 0, Map.empty)
 
-  def create(
-      vertexId: Int,
-      vertexShaderLocation: ResourceLocation,
-      fragmentId: Int,
-      fragmentShaderLocation: ResourceLocation,
-      uniforms: Seq[UniformBase]
-  ): DanCoreProgram = {
+  def create(shaders: Map[ResourceLocation, DanCoreShader], uniforms: Seq[UniformBase]): DanCoreShaderProgram = {
     val programId = OpenGlHelper.glCreateProgram()
 
-    OpenGlHelper.glAttachShader(programId, vertexId)
-    OpenGlHelper.glAttachShader(programId, fragmentId)
+    shaders.values.foreach { shader =>
+      OpenGlHelper.glAttachShader(programId, shader.id)
+    }
     OpenGlHelper.glLinkProgram(programId)
     val errorId = OpenGlHelper.glGetProgrami(programId, OpenGlHelper.GL_LINK_STATUS)
 
     if (errorId == 0) {
-      LogHelper.warn(
-        s"Error encountered when linking program containing VS $vertexShaderLocation and FS $fragmentShaderLocation. Log output:"
-      )
-      LogHelper.warn(OpenGlHelper.glGetProgramInfoLog(programId, 32768))
+      throw new ShaderException(s"""|Error encountered when linking program containing shaders: $shaders. Log output:
+            |${OpenGlHelper.glGetProgramInfoLog(programId, 32768)}""".stripMargin)
     }
 
     val uniformMap = uniforms.map {
@@ -59,7 +51,7 @@ object DanCoreProgram {
         name -> DanCoreUniform.create(location, tpe, count)
     }.toMap
 
-    DanCoreProgram(vertexId, fragmentId, programId, uniformMap)
+    DanCoreShaderProgram(shaders.values.toSeq, programId, uniformMap)
   }
 
 }

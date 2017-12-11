@@ -36,8 +36,9 @@ private[danmakucore] class FormScale extends FormGeneric(LibFormName.SCALE) {
 
       DanCoreRenderHelper.transformDanmaku(danmaku.shot, orientation)
 
+      val dist = x * x + y * y + z * z
       GL11.glScalef(0.5F, 0.5F, length * 0.4F)
-      DanCoreRenderHelper.drawSphere(0xFFFFFF, 1F)
+      DanCoreRenderHelper.drawSphere(0xFFFFFF, 1F, dist)
 
       GL11.glTranslatef(0F, 0F, -0.7F)
       GL11.glScalef(2F * 1.2F, 2F * 1.2F, length * 1.2F)
@@ -45,7 +46,7 @@ private[danmakucore] class FormScale extends FormGeneric(LibFormName.SCALE) {
       GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE)
 
       GlStateManager.color(r, g, b, 1F)
-      DanCoreRenderHelper.drawDropOffSphere(1F, 8, 8, 0.06F, color, alpha)
+      DanCoreRenderHelper.renderDropOffSphere(1F, 8, 8, 0.06F, color, alpha)
 
       GlStateManager.disableBlend()
     }

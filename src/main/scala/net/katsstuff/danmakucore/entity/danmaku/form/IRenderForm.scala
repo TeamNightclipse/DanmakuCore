@@ -8,10 +8,13 @@
  */
 package net.katsstuff.danmakucore.entity.danmaku.form
 
+import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
+import net.katsstuff.danmakucore.client.shader.DanCoreShaderProgram
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import net.minecraft.util.ResourceLocation
 
 /**
   * A interface used to render danmaku forms.
@@ -45,6 +48,12 @@ trait IRenderForm {
       z: Double,
       orientation: Quat,
       partialTicks: Float,
-      manager: RenderManager
+      manager: RenderManager,
+      shaderProgram: DanCoreShaderProgram
   ): Unit = renderLegacy(danmaku, x, y, z, orientation, partialTicks, manager)
+
+  /**
+    * The shader to use for renderShaders. The danmaku renderer will handle beginning and ending the shader program.
+    */
+  def shader: ResourceLocation = DanCoreRenderHelper.danmakuShaderLoc
 }

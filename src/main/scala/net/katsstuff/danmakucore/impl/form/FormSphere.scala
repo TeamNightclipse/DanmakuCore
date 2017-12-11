@@ -10,9 +10,8 @@ package net.katsstuff.danmakucore.impl.form
 
 import org.lwjgl.opengl.GL11
 
-import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
-import net.katsstuff.danmakucore.client.shader.{ShaderManager, UniformBase, UniformType}
+import net.katsstuff.danmakucore.client.shader.DanCoreShaderProgram
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
@@ -26,16 +25,6 @@ private[danmakucore] class FormSphere(name: String = LibFormName.DEFAULT) extend
 
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm {
-
-    private val shaderLoc = DanmakuCore.resource("shaders/danmaku")
-    ShaderManager
-      .initShader(
-        shaderLoc,
-        Seq(
-          UniformBase("realColor", UniformType.Vec3, 3),
-          UniformBase("overwriteColor", UniformType.Vec3, 3)
-        )
-      )
 
     @SideOnly(Side.CLIENT)
     override def renderLegacy(
@@ -53,13 +42,14 @@ private[danmakucore] class FormSphere(name: String = LibFormName.DEFAULT) extend
 
       DanCoreRenderHelper.transformDanmaku(shot, orientation)
 
-      DanCoreRenderHelper.drawSphere(0xFFFFFF, 1F)
+      val dist = x * x + y * y + z * z
+      DanCoreRenderHelper.drawSphere(0xFFFFFF, 1F, dist)
 
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
       GlStateManager.depthMask(false)
       GlStateManager.scale(1.2F, 1.2F, 1.2F)
-      DanCoreRenderHelper.drawSphere(color, alpha)
+      DanCoreRenderHelper.drawSphere(color, alpha, dist)
       GlStateManager.depthMask(true)
       GlStateManager.disableBlend()
     }
@@ -71,45 +61,26 @@ private[danmakucore] class FormSphere(name: String = LibFormName.DEFAULT) extend
         z: Double,
         orientation: Quat,
         partialTicks: Float,
-        manager: RenderManager
+        manager: RenderManager,
+        shaderProgram: DanCoreShaderProgram
     ): Unit = {
-      ShaderManager.getShader(shaderLoc).foreach { shader =>
-        val shot = danmaku.shot
-        val color          = shot.color
-        val overwriteColor = 0xFF0000
-        val alpha          = 0.3F
-        val r              = (color >> 16 & 255) / 255F
-        val g              = (color >> 8 & 255) / 255F
-        val b              = (color & 255) / 255F
+      val shot  = danmaku.shot
+      val color = shot.color
+      val alpha = 0.3F
+      val dist  = x * x + y * y + z * z
 
-        val or = (overwriteColor >> 16 & 255) / 255F
-        val og = (overwriteColor >> 8 & 255) / 255F
-        val ob = (overwriteColor & 255) / 255F
+      DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, color)
+      DanCoreRenderHelper.transformDanmaku(shot, orientation)
 
-        shader.begin()
-        shader.getUniform("realColor").foreach { uniform =>
-          uniform.set(r, g, b)
-          uniform.upload()
-        }
-        shader.getUniform("overwriteColor").foreach { uniform =>
-          uniform.set(or, og, ob)
-          uniform.upload()
-        }
+      DanCoreRenderHelper.drawSphere(0xFFFFFF, 1F, dist)
 
-        DanCoreRenderHelper.transformDanmaku(shot, orientation)
-
-        DanCoreRenderHelper.drawSphere(0xFFFFFF, 1F)
-
-        GlStateManager.enableBlend()
-        GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
-        GlStateManager.depthMask(false)
-        GlStateManager.scale(1.2F, 1.2F, 1.2F)
-        DanCoreRenderHelper.drawSphere(overwriteColor, alpha)
-        GlStateManager.depthMask(true)
-        GlStateManager.disableBlend()
-
-        shader.end()
-      }
+      GlStateManager.enableBlend()
+      GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
+      GlStateManager.depthMask(false)
+      GlStateManager.scale(1.2F, 1.2F, 1.2F)
+      DanCoreRenderHelper.drawSphere(DanCoreRenderHelper.OverwriteColor, alpha, dist)
+      GlStateManager.depthMask(true)
+      GlStateManager.disableBlend()
     }
   }
 }

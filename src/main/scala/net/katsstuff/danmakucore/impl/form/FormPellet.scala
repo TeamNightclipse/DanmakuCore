@@ -39,12 +39,13 @@ private[danmakucore] class FormPellet extends FormGeneric(LibFormName.PELLET) {
 
       DanCoreRenderHelper.transformDanmaku(danmaku.shot, orientation)
 
-      DanCoreRenderHelper.drawSphere(Color.getHSBColor(hsb(0), hsb(1), hsb(2)).getRGB, 1F)
+      val dist = x * x + y * y + z * z
+      DanCoreRenderHelper.drawSphere(Color.getHSBColor(hsb(0), hsb(1), hsb(2)).getRGB, 1F, dist)
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
       GlStateManager.depthMask(false)
       GlStateManager.scale(1.075F, 1.075F, 1.075F)
-      DanCoreRenderHelper.drawSphere(color, alpha)
+      DanCoreRenderHelper.drawSphere(color, alpha, dist)
       GlStateManager.depthMask(true)
       GlStateManager.disableBlend()
     }

@@ -20,16 +20,16 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 private[danmakucore] class FormCrystal1 extends AbstractFormCrystal(LibFormName.CRYSTAL1) {
 
   @SideOnly(Side.CLIENT)
-  override protected def createCrystal(color: Int, alpha: Float): Unit = {
+  override protected def createCrystal(color: Int, alpha: Float, dist: Double): Unit = {
     GL11.glPushMatrix()
 
     GL11.glTranslatef(0F, 0F, 1F)
-    DanCoreRenderHelper.drawCone(color, alpha)
+    DanCoreRenderHelper.drawCone(color, alpha, dist)
     GL11.glTranslatef(0F, 0F, -1F)
-    DanCoreRenderHelper.drawCylinder(color, alpha)
+    DanCoreRenderHelper.drawCylinder(color, alpha, dist)
     GL11.glRotatef(180, 0F, 1F, 0F)
     GL11.glTranslatef(0F, 0F, 1F)
-    DanCoreRenderHelper.drawCone(color, alpha)
+    DanCoreRenderHelper.drawCone(color, alpha, dist)
 
     GL11.glPopMatrix()
   }

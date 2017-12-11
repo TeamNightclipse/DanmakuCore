@@ -26,16 +26,17 @@ case class DanModelDescription(name: String, description: String, author: String
 case class DanModelReadException(message: String) extends IOException(message)
 object DanModelReader {
 
-  def createForm(resource: ResourceLocation, name: String): Form = {
+  def createForm(resource: ResourceLocation, name: String): Form =
     new FormDanModel(name, resource)
-  }
 
   @SideOnly(Side.CLIENT)
   def readModel(resource: ResourceLocation): Try[(DanModelDescription, DanModel)] = {
     var rawIs: InputStream = null
 
     val res = Try {
-      rawIs = Minecraft.getMinecraft.getResourceManager.getResource(resource).getInputStream
+      rawIs = Minecraft.getMinecraft.getResourceManager
+        .getResource(new ResourceLocation(resource + ".danmodel"))
+        .getInputStream
 
       if (rawIs == null) throw new IllegalArgumentException("No model at that location")
       val is: DataInput = new DataInputStream(rawIs)
@@ -66,7 +67,7 @@ object DanModelReader {
       (modelDescription, model)
     }
 
-    if(rawIs != null) IOUtils.closeQuietly(rawIs)
+    if (rawIs != null) IOUtils.closeQuietly(rawIs)
 
     res
   }

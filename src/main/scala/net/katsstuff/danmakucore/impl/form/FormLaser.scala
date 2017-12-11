@@ -11,7 +11,7 @@ package net.katsstuff.danmakucore.impl.form
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
-import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate, DanmakuUpdateSignal}
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.lib.{LibFormName, LibSounds}
@@ -42,6 +42,7 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
 
       DanCoreRenderHelper.transformDanmaku(shot, orientation)
 
+      val dist = x * x + y * y + z * z
       if (shot.delay > 0) {
         val scale = 0.025F * Math.min(shot.delay, 20)
 
@@ -49,32 +50,32 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
         GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
         GlStateManager.depthMask(false)
         GlStateManager.scale(scale, scale, 1F)
-        createCylinder(color, 0.6F)
+        createCylinder(color, 0.6F, dist)
         GlStateManager.depthMask(true)
         GlStateManager.disableBlend()
       } else {
-        createCylinder(0xFFFFFF, 1F)
+        createCylinder(0xFFFFFF, 1F, dist)
 
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
         GlStateManager.depthMask(false)
         GlStateManager.scale(1.2F, 1.2F, 1.2F)
-        createCylinder(color, 0.3F)
+        createCylinder(color, 0.3F, dist)
         GlStateManager.depthMask(true)
         GlStateManager.disableBlend()
       }
     }
 
     @SideOnly(Side.CLIENT)
-    private def createCylinder(color: Int, alpha: Float): Unit = {
+    private def createCylinder(color: Int, alpha: Float, dist: Double): Unit = {
       GL11.glPushMatrix()
       GL11.glTranslatef(0F, 0F, -0.5F)
-      DanCoreRenderHelper.drawDisk(color, alpha)
+      DanCoreRenderHelper.drawDisk(color, alpha, dist)
       GL11.glTranslatef(0F, 0F, 0.5F)
-      DanCoreRenderHelper.drawCylinder(color, alpha)
+      DanCoreRenderHelper.drawCylinder(color, alpha, dist)
       GL11.glTranslatef(0F, 0F, 0.5F)
       GL11.glRotatef(180, 0F, 1F, 0F)
-      DanCoreRenderHelper.drawDisk(color, alpha)
+      DanCoreRenderHelper.drawDisk(color, alpha, dist)
       GL11.glPopMatrix()
     }
   }

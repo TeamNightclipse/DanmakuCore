@@ -16,7 +16,13 @@ import org.lwjgl.util.vector.Matrix4f
 import net.minecraft.client.renderer.OpenGlHelper
 
 //Copied from ShaderUniform
-case class DanCoreUniform(location: Int, tpe: UniformType, bufferSize: Int, intBuffer: IntBuffer, floatBuffer: FloatBuffer) {
+case class DanCoreUniform(
+    location: Int,
+    tpe: UniformType,
+    bufferSize: Int,
+    intBuffer: IntBuffer,
+    floatBuffer: FloatBuffer
+) {
   var dirty = false
 
   def set(f: Float): Unit = {
@@ -163,24 +169,25 @@ case class DanCoreUniform(location: Int, tpe: UniformType, bufferSize: Int, intB
 }
 object DanCoreUniform {
 
-  def create(location: Int, tpe: UniformType, bufferSize: Int): DanCoreUniform =
-    if (tpe.floatBuffer) DanCoreUniform(location, tpe, bufferSize, null, BufferUtils.createFloatBuffer(bufferSize))
-    else DanCoreUniform(location, tpe, bufferSize, BufferUtils.createIntBuffer(bufferSize), null)
+  def create(location: Int, tpe: UniformType, count: Int): DanCoreUniform =
+    if (tpe.floatBuffer)
+      DanCoreUniform(location, tpe, count, null, BufferUtils.createFloatBuffer(count * tpe.bufferSize))
+    else DanCoreUniform(location, tpe, count, BufferUtils.createIntBuffer(count * tpe.bufferSize), null)
 }
 
-sealed abstract class UniformType(val floatBuffer: Boolean)
+sealed abstract class UniformType(val floatBuffer: Boolean, val bufferSize: Int)
 object UniformType {
-  case object Int   extends UniformType(false)
-  case object IVec2 extends UniformType(false)
-  case object IVec3 extends UniformType(false)
-  case object IVec4 extends UniformType(false)
-  case object Float extends UniformType(true)
-  case object Vec2  extends UniformType(true)
-  case object Vec3  extends UniformType(true)
-  case object Vec4  extends UniformType(true)
-  case object Mat2  extends UniformType(true)
-  case object Mat3  extends UniformType(true)
-  case object Mat4  extends UniformType(true)
+  case object Int   extends UniformType(false, 1)
+  case object IVec2 extends UniformType(false, 2)
+  case object IVec3 extends UniformType(false, 3)
+  case object IVec4 extends UniformType(false, 4)
+  case object Float extends UniformType(true, 1)
+  case object Vec2  extends UniformType(true, 2)
+  case object Vec3  extends UniformType(true, 3)
+  case object Vec4  extends UniformType(true, 4)
+  case object Mat2  extends UniformType(true, 4)
+  case object Mat3  extends UniformType(true, 9)
+  case object Mat4  extends UniformType(true, 16)
 }
 
-case class UniformBase(name: String, tpe: UniformType, bufferSize: Int)
+case class UniformBase(name: String, tpe: UniformType, count: Int)

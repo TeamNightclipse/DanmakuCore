@@ -12,7 +12,7 @@ import scala.collection.mutable
 
 import org.lwjgl.opengl.GL11
 
-import net.katsstuff.danmakucore.DanmakuCore
+import net.katsstuff.danmakucore.client.shader.{DanCoreShaderProgram, ShaderManager}
 import net.katsstuff.danmakucore.danmaku.{DanmakuHandler, DanmakuState}
 import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.Form
@@ -21,7 +21,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.{GlStateManager, OpenGlHelper, RenderGlobal}
 import net.minecraft.client.resources.I18n
-import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.client.event.{RenderGameOverlayEvent, RenderWorldLastEvent}
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -34,8 +34,17 @@ class DanmakuRenderer(handler: DanmakuHandler) {
 
   @SideOnly(Side.CLIENT)
   @SubscribeEvent
+  def onDebugInfo(event: RenderGameOverlayEvent.Text): Unit = {
+    if(mc.gameSettings.showDebugInfo) {
+      event.getLeft.add(s"Danmaku count: ${handler.allDanmaku.size}")
+    }
+  }
+
+  @SideOnly(Side.CLIENT)
+  @SubscribeEvent
   def onRenderAfterWorld(event: RenderWorldLastEvent): Unit = {
     GlStateManager.pushMatrix()
+    GlStateManager.disableLighting() //Lighting is disabled for rendering danmaku we disable it here instead
     val partialTicks  = event.getPartialTicks
     val renderManager = mc.getRenderManager
 
@@ -44,21 +53,61 @@ class DanmakuRenderer(handler: DanmakuHandler) {
     val renderPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks
     val renderPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks
 
-    handler.allDanmaku.foreach { danmaku =>
-      val x           = danmaku.prevPos.x + (danmaku.pos.x - danmaku.prevPos.x) * partialTicks
-      val y           = danmaku.prevPos.y + (danmaku.pos.y - danmaku.prevPos.y) * partialTicks
-      val z           = danmaku.prevPos.z + (danmaku.pos.z - danmaku.prevPos.z) * partialTicks
-      val orientation = danmaku.prevOrientation.slerp(danmaku.orientation, partialTicks)
-      val i           = danmaku.renderBrightness
+    if (useShaders) {
+      val danmakuByShader = handler.allDanmaku
+        .groupBy(s => s.shot.form.getRenderer(s).shader)
+        .flatMap {
+          case (rl, danmaku) =>
+            ShaderManager.getShaderProgram(rl).map(_ -> danmaku)
+        }
 
-      val j = i % 65536
-      val k = i / 65536
-      OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j, k)
-      GlStateManager.color(1F, 1F, 1F, 1F)
-      renderDanmaku(danmaku, x - renderPosX, y - renderPosY, z - renderPosZ, orientation, partialTicks, renderManager)
+      danmakuByShader.foreach {
+        case (shader, allDanmaku) =>
+          shader.begin()
+          allDanmaku.foreach { danmaku =>
+            preRenderDanmaku(danmaku, partialTicks, renderPosX, renderPosY, renderPosZ, renderManager, Some(shader))
+          }
+          shader.end()
+      }
+    } else {
+      handler.allDanmaku.foreach { danmaku =>
+        preRenderDanmaku(danmaku, partialTicks, renderPosX, renderPosY, renderPosZ, renderManager, None)
+      }
     }
 
+    GlStateManager.enableLighting()
     GlStateManager.popMatrix()
+  }
+
+  def preRenderDanmaku(
+      danmaku: DanmakuState,
+      partialTicks: Float,
+      renderPosX: Double,
+      renderPosY: Double,
+      renderPosZ: Double,
+      renderManager: RenderManager,
+      shader: Option[DanCoreShaderProgram]
+  ): Unit = {
+    val x           = danmaku.prevPos.x + (danmaku.pos.x - danmaku.prevPos.x) * partialTicks
+    val y           = danmaku.prevPos.y + (danmaku.pos.y - danmaku.prevPos.y) * partialTicks
+    val z           = danmaku.prevPos.z + (danmaku.pos.z - danmaku.prevPos.z) * partialTicks
+    val orientation = danmaku.prevOrientation.slerp(danmaku.orientation, partialTicks)
+    val i           = danmaku.renderBrightness
+
+    val j = i % 65536
+    val k = i / 65536
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j, k)
+    GlStateManager.color(1F, 1F, 1F, 1F)
+    renderDanmaku(
+      danmaku,
+      x - renderPosX,
+      y - renderPosY,
+      z - renderPosZ,
+      orientation,
+      partialTicks,
+      renderManager,
+      shader
+    )
   }
 
   def renderDanmaku(
@@ -68,7 +117,8 @@ class DanmakuRenderer(handler: DanmakuHandler) {
       z: Double,
       orientation: Quat,
       partialTicks: Float,
-      renderManager: RenderManager
+      renderManager: RenderManager,
+      optShader: Option[DanCoreShaderProgram]
   ): Unit = {
     val shot = danmaku.shot
 
@@ -77,23 +127,20 @@ class DanmakuRenderer(handler: DanmakuHandler) {
       GL11.glPushMatrix()
       renderManager.renderEngine.bindTexture(shot.form.getTexture(danmaku))
       GL11.glTranslated(x, y + shot.sizeY / 2, z)
-      GlStateManager.disableLighting()
 
       val form       = shot.form
       val renderForm = form.getRenderer(danmaku)
       if (renderForm != null) {
-        if(useShaders) {
-          renderForm.renderShaders(danmaku, x, y, z, orientation, partialTicks, renderManager)
-        }
-        else {
-          renderForm.renderLegacy(danmaku, x, y, z, orientation, partialTicks, renderManager)
+        optShader match {
+          case Some(shader) =>
+            renderForm.renderShaders(danmaku, x, y, z, orientation, partialTicks, renderManager, shader)
+          case None => renderForm.renderLegacy(danmaku, x, y, z, orientation, partialTicks, renderManager)
         }
       } else if (!invalidForms.contains(form)) {
         LogHelper.error("Invalid renderer for " + I18n.format(form.unlocalizedName))
         invalidForms.add(form)
       }
 
-      GlStateManager.enableLighting()
       GL11.glPopMatrix()
 
       //From RenderManager renderDebugBoundingBox

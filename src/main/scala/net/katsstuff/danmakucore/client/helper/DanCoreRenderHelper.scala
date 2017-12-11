@@ -11,22 +11,42 @@ package net.katsstuff.danmakucore.client.helper
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.{Cylinder, Disk, GLU, Sphere}
 
+import net.katsstuff.danmakucore.DanmakuCore
+import net.katsstuff.danmakucore.client.shader.{DanCoreShaderProgram, ShaderManager, ShaderType, UniformBase, UniformType}
 import net.katsstuff.danmakucore.data.{Quat, ShotData}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{GLAllocation, GlStateManager, OpenGlHelper, Tessellator}
 import net.minecraft.client.resources.{IResourceManagerReloadListener, SimpleReloadableResourceManager}
+import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.MathHelper
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
+//Many render methods adopted from GLU classes
 @SideOnly(Side.CLIENT)
 object DanCoreRenderHelper {
 
-  private var sphereId   = 0
-  private var cylinderId = 0
-  private var coneId     = 0
-  private var diskId     = 0
-  private val useVBO     = OpenGlHelper.useVbo()
+  val OverwriteColor = 0xFF0000
+  private val ocr    = (OverwriteColor >> 16 & 255) / 255F
+  private val ocg    = (OverwriteColor >> 8 & 255) / 255F
+  private val ocb    = (OverwriteColor & 255) / 255F
+
+  val danmakuShaderLoc: ResourceLocation = DanmakuCore.resource("shaders/danmaku")
+
+  private var sphereHighId   = 0
+  private var sphereMidId    = 0
+  private var sphereLowId    = 0
+  private var cylinderHighId = 0
+  private var cylinderMidId  = 0
+  private var cylinderLowId  = 0
+  private var coneHighId     = 0
+  private var coneMidId      = 0
+  private var coneLowId      = 0
+  private var diskHighId     = 0
+  private var diskMidId      = 0
+  private var diskLowId      = 0
+
+  private val useVBO = OpenGlHelper.useVbo()
 
   def bakeModels(): Unit = {
     val tes = Tessellator.getInstance()
@@ -48,63 +68,111 @@ object DanCoreRenderHelper {
     disk.setDrawStyle(GLU.GLU_FILL)
     disk.setNormals(GLU.GLU_FLAT)
 
-    if (false) {} else {
-      sphereId = GLAllocation.generateDisplayLists(1)
-      GlStateManager.glNewList(sphereId, GL11.GL_COMPILE)
+    sphereHighId = createList(sphere.draw(1F, 8, 16))
+    sphereMidId = createList(sphere.draw(1F, 4, 8))
+    sphereLowId = createList(sphere.draw(1F, 2, 8))
 
-      sphere.draw(1F, 8, 16)
-
-      GlStateManager.glEndList()
-
-      cylinderId = GLAllocation.generateDisplayLists(1)
-      GlStateManager.glNewList(cylinderId, GL11.GL_COMPILE)
-
+    cylinderHighId = createList {
       GlStateManager.translate(0F, 0F, -0.5F)
       cylinder.draw(1F, 1F, 1F, 8, 1)
       GlStateManager.translate(0F, 0F, 0.5F)
+    }
+    cylinderMidId = createList {
+      GlStateManager.translate(0F, 0F, -0.5F)
+      cylinder.draw(1F, 1F, 1F, 4, 1)
+      GlStateManager.translate(0F, 0F, 0.5F)
+    }
+    cylinderLowId = createList {
+      GlStateManager.translate(0F, 0F, -0.5F)
+      cylinder.draw(1F, 1F, 1F, 3, 1)
+      GlStateManager.translate(0F, 0F, 0.5F)
+    }
 
-      GlStateManager.glEndList()
-
-      coneId = GLAllocation.generateDisplayLists(1)
-      GlStateManager.glNewList(coneId, GL11.GL_COMPILE)
-
+    coneHighId = createList {
       GlStateManager.translate(0F, 0F, -0.5F)
       cone.draw(1F, 0F, 1F, 8, 1)
       GlStateManager.translate(0F, 0F, 0.5F)
+    }
+    coneMidId = createList {
+      GlStateManager.translate(0F, 0F, -0.5F)
+      cone.draw(1F, 0F, 1F, 8, 1)
+      GlStateManager.translate(0F, 0F, 0.5F)
+    }
+    coneLowId = createList {
+      GlStateManager.translate(0F, 0F, -0.5F)
+      cone.draw(1F, 0F, 1F, 8, 1)
+      GlStateManager.translate(0F, 0F, 0.5F)
+    }
 
-      GlStateManager.glEndList()
+    diskHighId = createList(disk.draw(1F, 0F, 8, 1))
+    diskMidId = createList(disk.draw(1F, 0F, 4, 1))
+    diskLowId = createList(disk.draw(1F, 0F, 3, 1))
 
-      diskId = GLAllocation.generateDisplayLists(1)
-      GlStateManager.glNewList(diskId, GL11.GL_COMPILE)
+    if (OpenGlHelper.shadersSupported) {
+      val shader = ShaderManager
+        .initShader(
+          danmakuShaderLoc,
+          Seq(ShaderType.Vertex),
+          Seq(UniformBase("realColor", UniformType.Vec3, 1), UniformBase("overwriteColor", UniformType.Vec3, 1))
+        )
 
-      disk.draw(1F, 0F, 8, 1)
-
-      GlStateManager.glEndList()
+      shader.begin()
+      shader.getUniform("overwriteColor").foreach { uniform =>
+        uniform.set(ocr, ocg, ocb)
+        uniform.upload()
+      }
+      shader.end()
     }
   }
-  private def drawObj(color: Int, alpha: Float, callListId: Int): Unit = {
+
+  def createList(create: => Unit): Int = {
+    val res = GLAllocation.generateDisplayLists(1)
+    GlStateManager.glNewList(res, GL11.GL_COMPILE)
+
+    create
+
+    GlStateManager.glEndList()
+    res
+  }
+
+  private def drawObj(color: Int, alpha: Float, dist: Double, highId: Int, midId: Int, lowId: Int): Unit = {
     val r = (color >> 16 & 255) / 255F
     val g = (color >> 8 & 255) / 255F
     val b = (color & 255) / 255F
     GlStateManager.color(r, g, b, alpha)
-    GlStateManager.callList(callListId)
+
+    val id =
+      if (dist < 16 * 16) highId
+      else if (dist < 64 * 64) midId
+      else lowId
+    GlStateManager.callList(id)
   }
 
-  def drawSphere(color: Int, alpha: Float): Unit = drawObj(color, alpha, sphereId)
+  def drawSphere(color: Int, alpha: Float, dist: Double): Unit =
+    drawObj(color, alpha, dist, sphereHighId, sphereMidId, sphereLowId)
 
-  def drawCylinder(color: Int, alpha: Float): Unit = drawObj(color, alpha, cylinderId)
+  def drawCylinder(color: Int, alpha: Float, dist: Double): Unit =
+    drawObj(color, alpha, dist, cylinderHighId, cylinderMidId, cylinderLowId)
 
-  def drawCone(color: Int, alpha: Float): Unit = drawObj(color, alpha, coneId)
+  def drawCone(color: Int, alpha: Float, dist: Double): Unit =
+    drawObj(color, alpha, dist, coneHighId, coneMidId, coneLowId)
 
-  def drawDisk(color: Int, alpha: Float): Unit = drawObj(color, alpha, diskId)
+  def drawDisk(color: Int, alpha: Float, dist: Double): Unit =
+    drawObj(color, alpha, dist, diskHighId, diskMidId, diskLowId)
 
   def transformDanmaku(shot: ShotData, orientation: Quat): Unit = {
     GlStateManager.rotate(orientation.toQuaternion)
     GlStateManager.scale(shot.getSizeX, shot.getSizeY, shot.getSizeZ)
   }
 
-  //Adapted from Glu Sphere
-  def drawDropOffSphere(radius: Float, slices: Int, stacks: Int, dropOffRate: Float, color: Int, alpha: Float): Unit = {
+  def renderDropOffSphere(
+      radius: Float,
+      slices: Int,
+      stacks: Int,
+      dropOffRate: Float,
+      color: Int,
+      alpha: Float
+  ): Unit = {
     val r = (color >> 16 & 255) / 255F
     val g = (color >> 8 & 255) / 255F
     val b = (color & 255) / 255F
@@ -160,6 +228,19 @@ object DanCoreRenderHelper {
     Minecraft.getMinecraft.getResourceManager match {
       case resourceManager: SimpleReloadableResourceManager => resourceManager.registerReloadListener(listener)
       case _                                                => listener.onResourceManagerReload(Minecraft.getMinecraft.getResourceManager)
+    }
+  }
+
+  def danmakuShaderProgram: Option[DanCoreShaderProgram] = ShaderManager.getShaderProgram(danmakuShaderLoc)
+
+  def updateDanmakuShaderAttributes(shaderProgram: DanCoreShaderProgram, color: Int): Unit = {
+    val r = (color >> 16 & 255) / 255F
+    val g = (color >> 8 & 255) / 255F
+    val b = (color & 255) / 255F
+
+    shaderProgram.getUniform("realColor").foreach { uniform =>
+      uniform.set(r, g, b)
+      uniform.upload()
     }
   }
 }

@@ -21,7 +21,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 //Mix of WorldVertexBufferUploader and ForgeHooksClient
 @SideOnly(Side.CLIENT)
-class VBOModel(format: VertexFormat, arrayBuffer: ArrayBuffer, vertexCount: Int, mode: Int) {
+case class VBOModel(format: VertexFormat, arrayBuffer: DanCoreArrayBuffer, vertexCount: Int, mode: Int) {
 
   def draw(): Unit = {
     if (vertexCount > 0) {
@@ -33,6 +33,7 @@ class VBOModel(format: VertexFormat, arrayBuffer: ArrayBuffer, vertexCount: Int,
       }
 
       arrayBuffer.drawArrays(mode)
+      arrayBuffer.unbindBuffer()
 
       for (i <- elements.indices) {
         postDraw(elements(i).getUsage, format, i)
@@ -40,7 +41,7 @@ class VBOModel(format: VertexFormat, arrayBuffer: ArrayBuffer, vertexCount: Int,
     }
   }
 
-  def preDraw(usage: VertexFormatElement.EnumUsage, format: VertexFormat, element: Int, stride: Int): Unit = {
+  private def preDraw(usage: VertexFormatElement.EnumUsage, format: VertexFormat, element: Int, stride: Int): Unit = {
     val attr   = format.getElement(element)
     val count  = attr.getElementCount
     val tpe    = attr.getType.getGlConstant
@@ -69,7 +70,7 @@ class VBOModel(format: VertexFormat, arrayBuffer: ArrayBuffer, vertexCount: Int,
     }
   }
 
-  def postDraw(usage: VertexFormatElement.EnumUsage, format: VertexFormat, element: Int): Unit = {
+  private def postDraw(usage: VertexFormatElement.EnumUsage, format: VertexFormat, element: Int): Unit = {
     val attr = format.getElement(element)
     usage match {
       case POSITION =>

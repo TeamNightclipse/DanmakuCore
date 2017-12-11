@@ -11,15 +11,21 @@ package net.katsstuff.danmakucore.danmodel
 import java.nio.ByteBuffer
 
 import scala.annotation.tailrec
+import scala.collection.mutable.ArrayBuffer
 
 import org.lwjgl.opengl.GL11
 
+import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
+import net.katsstuff.danmakucore.client.render.{DanCoreArrayBuffer, VBOModel}
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.client.renderer.{BufferBuilder, GlStateManager, Tessellator}
+import net.minecraft.client.renderer.{BufferBuilder, GlStateManager, OpenGlHelper, Tessellator}
 
 class DanModel(private[this] val data: Array[Byte], private[this] val pieces: Int, private[this] val danAlpha: Float) {
 
-  def render(vb: BufferBuilder, tes: Tessellator, danmakuColor: Int): Unit = {
+  private val models = ArrayBuffer.empty[VBOModel]
+  private var generatingVBO = false
+
+  def render(bb: BufferBuilder, danmakuColor: Int): Unit = {
     val buf = ByteBuffer.wrap(data)
 
     val danRed   = (danmakuColor >> 16 & 255) / 255F
@@ -52,7 +58,7 @@ class DanModel(private[this] val data: Array[Byte], private[this] val pieces: In
             val ny = buf.getFloat()
             val nz = buf.getFloat()
 
-            vb.pos(x, y, z)
+            bb.pos(x, y, z)
               .tex(u, v)
               .color(r, g, b, a)
               .normal(nx, ny, nz)
@@ -67,11 +73,11 @@ class DanModel(private[this] val data: Array[Byte], private[this] val pieces: In
           GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
           GlStateManager.depthMask(false)
         }
-        vb.begin(glMode, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL)
+        bb.begin(glMode, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL)
 
         renderVertex(0)
 
-        tes.draw()
+        drawBuffer(bb)
 
         if (useDanColor) {
           GlStateManager.depthMask(true)
@@ -83,5 +89,38 @@ class DanModel(private[this] val data: Array[Byte], private[this] val pieces: In
     }
 
     renderPiece(0)
+  }
+
+  def drawBuffer(bb: BufferBuilder): Unit = {
+    if(generatingVBO) {
+      bb.finishDrawing()
+      val format = bb.getVertexFormat
+      val data = bb.getByteBuffer
+      val count = data.limit / format.getSize
+      val buffer = new DanCoreArrayBuffer(count, OpenGlHelper.GL_ARRAY_BUFFER, OpenGlHelper.GL_STATIC_DRAW)
+      buffer.bufferData(data)
+      val vboModel = VBOModel(format, buffer, bb.getVertexCount, bb.getDrawMode)
+      bb.reset()
+      models += vboModel
+    }
+    else {
+      Tessellator.getInstance().draw()
+    }
+  }
+
+  def generateVBOs(): Unit = {
+    deleteVBOs()
+    generatingVBO = true
+    render(Tessellator.getInstance().getBuffer, DanCoreRenderHelper.OverwriteColor)
+    generatingVBO = false
+  }
+
+  def drawVBOs(): Unit = {
+    models.foreach(_.draw())
+  }
+
+  def deleteVBOs(): Unit = {
+    models.foreach(_.arrayBuffer.delete())
+    models.clear()
   }
 }

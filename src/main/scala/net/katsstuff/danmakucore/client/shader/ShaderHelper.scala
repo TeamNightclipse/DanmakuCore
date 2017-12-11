@@ -32,27 +32,4 @@ object ShaderHelper {
     val mc = Minecraft.getMinecraft
     Try(new ShaderGroup(mc.renderEngine, mc.getResourceManager, mc.getFramebuffer, resource))
   }
-
-  def compileShader(resourceLocation: ResourceLocation, resourceManager: IResourceManager, tpe: Int): Int = {
-    var resource: IResource = null
-    try {
-      resource = resourceManager.getResource(resourceLocation)
-      val bytes      = IOUtils.toByteArray(new BufferedInputStream(resource.getInputStream))
-      println(new String(bytes))
-      val buffer = BufferUtils.createByteBuffer(bytes.length)
-      buffer.put(bytes)
-      buffer.position(0)
-      val shaderId = OpenGlHelper.glCreateShader(tpe)
-      OpenGlHelper.glShaderSource(shaderId, buffer)
-      OpenGlHelper.glCompileShader(shaderId)
-
-      if (OpenGlHelper.glGetShaderi(shaderId, OpenGlHelper.GL_COMPILE_STATUS) == 0) {
-        val s = StringUtils.trim(OpenGlHelper.glGetShaderInfoLog(shaderId, 32768))
-        throw new IllegalStateException(s"Couldn't compile $resourceLocation\nError: $s")
-      }
-      shaderId
-    } finally {
-      IOUtils.closeQuietly(resource)
-    }
-  }
 }

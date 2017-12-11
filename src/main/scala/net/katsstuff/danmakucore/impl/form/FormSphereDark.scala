@@ -28,6 +28,7 @@ private[danmakucore] class FormSphereDark extends FormGeneric(LibFormName.SPHERE
     override def renderLegacy(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
       val color = danmaku.shot.color
       val alpha = 0.3F
+      val dist = x * x + y * y + z * z
 
       DanCoreRenderHelper.transformDanmaku(danmaku.shot, orientation)
 
@@ -35,11 +36,11 @@ private[danmakucore] class FormSphereDark extends FormGeneric(LibFormName.SPHERE
       GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
       GlStateManager.depthMask(false)
       GlStateManager.scale(1.2F, 1.2F, 1.2F)
-      DanCoreRenderHelper.drawSphere(color, alpha)
+      DanCoreRenderHelper.drawSphere(color, alpha, dist)
       GlStateManager.depthMask(true)
       GlStateManager.disableBlend()
       GlStateManager.scale(0.8F, 0.8F, 0.8F)
-      DanCoreRenderHelper.drawSphere(0x000000, 1F)
+      DanCoreRenderHelper.drawSphere(0x000000, 1F, dist)
     }
   }
 }

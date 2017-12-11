@@ -254,7 +254,6 @@ class ServerDanmakuHandler extends DanmakuHandler {
       removedPlayers.clear()
 
       start()
-      println(s"Current danmaku: ${danmaku.size}")
     } else if (event.phase == Phase.END) {
       stop()
     }

@@ -85,17 +85,21 @@ class ClientProxy extends CommonProxy {
     unregisterDanmaku()
 
   private def registerDanmaku(): Unit = {
-    clientDanmakuHandler = new ClientDanmakuHandler
-    danmakuRenderer = new DanmakuRenderer(clientDanmakuHandler)
-    MinecraftForge.EVENT_BUS.register(clientDanmakuHandler)
-    MinecraftForge.EVENT_BUS.register(danmakuRenderer)
+    if(clientDanmakuHandler == null) {
+      clientDanmakuHandler = new ClientDanmakuHandler
+      danmakuRenderer = new DanmakuRenderer(clientDanmakuHandler)
+      MinecraftForge.EVENT_BUS.register(clientDanmakuHandler)
+      MinecraftForge.EVENT_BUS.register(danmakuRenderer)
+    }
   }
 
   private def unregisterDanmaku(): Unit = {
-    MinecraftForge.EVENT_BUS.unregister(clientDanmakuHandler)
-    MinecraftForge.EVENT_BUS.unregister(danmakuRenderer)
-    clientDanmakuHandler = null
-    danmakuRenderer = null
+    if(clientDanmakuHandler != null) {
+      MinecraftForge.EVENT_BUS.unregister(clientDanmakuHandler)
+      MinecraftForge.EVENT_BUS.unregister(danmakuRenderer)
+      clientDanmakuHandler = null
+      danmakuRenderer = null
+    }
   }
 
   override private[danmakucore] def bakeDanmakuVariant(variant: DanmakuVariant): Unit =

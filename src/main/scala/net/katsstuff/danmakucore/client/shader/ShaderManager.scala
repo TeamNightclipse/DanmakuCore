@@ -16,7 +16,6 @@ import scala.util.control.NonFatal
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.resources.{IResourceManager, IResourceManagerReloadListener}
 import net.minecraft.crash.CrashReport
 import net.minecraft.util.{ReportedException, ResourceLocation}
@@ -25,54 +24,77 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @SideOnly(Side.CLIENT)
 class ShaderManager(resourceManager: IResourceManager) extends IResourceManagerReloadListener {
-  val shaderObjects         = mutable.Map.empty[ResourceLocation, DanCoreProgram]
-  val resourceLocationEmpty = new ResourceLocation("")
+  val shaderPrograms = mutable.Map.empty[ResourceLocation, DanCoreShaderProgram]
+  val shaderObjects  = mutable.Map.empty[ResourceLocation, DanCoreShader]
   DanCoreRenderHelper.registerResourceReloadListener(this)
 
-  def createShader(location: ResourceLocation, attributes: Seq[UniformBase]): DanCoreProgram = {
+  def getShader(location: ResourceLocation, shaderType: ShaderType): DanCoreShader =
+    shaderObjects.getOrElseUpdate(location, DanCoreShader.compileShader(location, shaderType, resourceManager))
+
+  def createShaderProgram(
+      location: ResourceLocation,
+      shaderTypes: Seq[ShaderType],
+      uniforms: Seq[UniformBase]
+  ): DanCoreShaderProgram = {
     try {
-      val vertexLocation = new ResourceLocation(s"$location.vsh")
-      val vertexId       = ShaderHelper.compileShader(vertexLocation, resourceManager, OpenGlHelper.GL_VERTEX_SHADER)
+      val shaders = shaderTypes.map {
+        case tpe @ ShaderType(_, extension) =>
+          val shaderLocation = new ResourceLocation(s"$location.$extension")
+          val shader         = getShader(shaderLocation, tpe)
+          shaderLocation -> shader
+      }.toMap
 
-      val fragmentLocation = new ResourceLocation(s"$location.fsh")
-      val fragmentId       = ShaderHelper.compileShader(fragmentLocation, resourceManager, OpenGlHelper.GL_FRAGMENT_SHADER)
-
-      DanCoreProgram.create(vertexId, vertexLocation, fragmentId, fragmentLocation, attributes)
+      DanCoreShaderProgram.create(shaders, uniforms)
     } catch {
       case e: IOException =>
-        if (location != resourceLocationEmpty) LogHelper.warn(s"Failed to load texture: $location", e)
-        DanCoreProgram.MissingShader
+        LogHelper.warn(s"Failed to load shader: $location", e)
+        DanCoreShaderProgram.MissingShaderProgram
+      case e: ShaderException =>
+        LogHelper.warn(s"Failed to create shader: $location", e)
+        DanCoreShaderProgram.MissingShaderProgram
       case NonFatal(throwable) =>
-        val crashreport         = CrashReport.makeCrashReport(throwable, "Registering texture")
-        val crashreportcategory = crashreport.makeCategory("Resource location being registered")
-        crashreportcategory.addCrashSection("Resource location", location)
-        throw new ReportedException(crashreport)
+        val crashReport         = CrashReport.makeCrashReport(throwable, "Registering texture")
+        val crashReportCategory = crashReport.makeCategory("Resource location being registered")
+        crashReportCategory.addCrashSection("Resource location", location)
+        throw new ReportedException(crashReport)
     }
   }
 
-  def initShader(shaderLocation: ResourceLocation, attributes: Seq[UniformBase]): DanCoreProgram =
-    shaderObjects.getOrElseUpdate(shaderLocation, createShader(shaderLocation, attributes))
+  def initShader(
+      shaderLocation: ResourceLocation,
+      shaderTypes: Seq[ShaderType],
+      uniforms: Seq[UniformBase]
+  ): DanCoreShaderProgram =
+    shaderPrograms.getOrElseUpdate(shaderLocation, createShaderProgram(shaderLocation, shaderTypes, uniforms))
 
-  def getShader(shaderLocation: ResourceLocation): Option[DanCoreProgram] = shaderObjects.get(shaderLocation)
-
-  def deleteShader(shaderLocation: ResourceLocation): Unit =
-    shaderObjects.remove(shaderLocation).foreach { shader =>
-      shader.delete()
-    }
+  def getShaderProgram(shaderLocation: ResourceLocation): Option[DanCoreShaderProgram] =
+    shaderPrograms.get(shaderLocation)
 
   override def onResourceManagerReload(resourceManager: IResourceManager): Unit = {
-    val bar = ProgressManager.push("Reloading Shader Manager", shaderObjects.size, true)
+    val reloadBar = ProgressManager.push("Reloading Shader Manager", 0)
 
-    val res = for ((resource, shader) <- shaderObjects) yield {
-      bar.step(resource.toString)
+    val shaderBar = ProgressManager.push("Reloading shaders", shaderObjects.size)
+    val newShaders = for ((resource, shader) <- shaderObjects) yield {
+      shaderBar.step(resource.toString)
       shader.delete()
-      resource -> createShader(resource, shader.uniforms.map {
+      resource -> getShader(resource, shader.shaderType)
+    }
+
+    shaderObjects.clear()
+    shaderObjects ++= newShaders
+    ProgressManager.pop(shaderBar)
+
+    val programBar = ProgressManager.push("Reloading shader programs", shaderPrograms.size)
+    val res = for ((resource, program) <- shaderPrograms) yield {
+      programBar.step(resource.toString)
+      program.delete()
+      resource -> createShaderProgram(resource, program.shaders.map(_.shaderType), program.uniforms.map {
         case (name, DanCoreUniform(_, tpe, count, _, _)) => UniformBase(name, tpe, count)
       }.toSeq)
     }
 
-    shaderObjects ++= res
-    ProgressManager.pop(bar)
+    shaderPrograms ++= res
+    ProgressManager.pop(reloadBar)
   }
 }
 
