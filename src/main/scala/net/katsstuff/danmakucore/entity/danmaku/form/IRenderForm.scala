@@ -50,10 +50,21 @@ trait IRenderForm {
       partialTicks: Float,
       manager: RenderManager,
       shaderProgram: DanCoreShaderProgram
-  ): Unit = renderLegacy(danmaku, x, y, z, orientation, partialTicks, manager)
+  ): Unit = {
+    DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, danmaku.shot.color)
+    renderLegacy(
+      danmaku.copy(extra = danmaku.extra.copy(shot = danmaku.shot.copy(color = DanCoreRenderHelper.OverwriteColor))),
+      x,
+      y,
+      z,
+      orientation,
+      partialTicks,
+      manager
+    )
+  }
 
   /**
     * The shader to use for renderShaders. The danmaku renderer will handle beginning and ending the shader program.
     */
-  def shader: ResourceLocation = DanCoreRenderHelper.danmakuShaderLoc
+  def shader(state: DanmakuState): ResourceLocation = DanCoreRenderHelper.baseDanmakuShaderLoc
 }

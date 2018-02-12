@@ -12,8 +12,15 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.{Cylinder, Disk, GLU, Sphere}
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.client.shader.{DanCoreShaderProgram, ShaderManager, ShaderType, UniformBase, UniformType}
+import net.katsstuff.danmakucore.client.shader.{
+  DanCoreShaderProgram,
+  ShaderManager,
+  ShaderType,
+  UniformBase,
+  UniformType
+}
 import net.katsstuff.danmakucore.data.{Quat, ShotData}
+import net.katsstuff.danmakucore.impl.form.FormSphere
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{GLAllocation, GlStateManager, OpenGlHelper, Tessellator}
@@ -31,7 +38,10 @@ object DanCoreRenderHelper {
   private val ocg    = (OverwriteColor >> 8 & 255) / 255F
   private val ocb    = (OverwriteColor & 255) / 255F
 
-  val danmakuShaderLoc: ResourceLocation = DanmakuCore.resource("shaders/danmaku")
+  val baseDanmakuShaderLoc:        ResourceLocation = DanmakuCore.resource("shaders/danmaku")
+  val fancyDanmakuShaderLoc:       ResourceLocation = DanmakuCore.resource("shaders/danmaku_fancy")
+  val fancyDarkDanmakuShaderLoc:   ResourceLocation = DanmakuCore.resource("shaders/danmaku_fancy_dark")
+  val fancyPelletDanmakuShaderLoc: ResourceLocation = DanmakuCore.resource("shaders/danmaku_fancy_pellet")
 
   private var sphereHighId   = 0
   private var sphereMidId    = 0
@@ -52,50 +62,51 @@ object DanCoreRenderHelper {
     val tes = Tessellator.getInstance()
     val vb  = tes.getBuffer
 
-    val sphere = new Sphere
-    sphere.setDrawStyle(GLU.GLU_FILL)
-    sphere.setNormals(GLU.GLU_FLAT)
-
+    val sphere   = new Sphere
     val cylinder = new Cylinder
-    cylinder.setDrawStyle(GLU.GLU_FILL)
-    cylinder.setNormals(GLU.GLU_FLAT)
+    val cone     = new Cylinder
+    val disk     = new Disk
 
-    val cone = new Cylinder
-    cone.setDrawStyle(GLU.GLU_FILL)
-    cone.setNormals(GLU.GLU_FLAT)
-
-    val disk = new Disk
-    disk.setDrawStyle(GLU.GLU_FILL)
-    disk.setNormals(GLU.GLU_FLAT)
-
-    sphereHighId = createList(sphere.draw(1F, 8, 16))
-    sphereMidId = createList(sphere.draw(1F, 4, 8))
-    sphereLowId = createList(sphere.draw(1F, 2, 8))
+    sphereHighId = createList {
+      GlStateManager.rotate(90F, 1F, 0F, 0F)
+      sphere.draw(1F, 32, 16)
+      GlStateManager.rotate(-90F, 1F, 0F, 0F)
+    }
+    sphereMidId = createList {
+      GlStateManager.rotate(90F, 1F, 0F, 0F)
+      sphere.draw(1F, 16, 8)
+      GlStateManager.rotate(-90F, 1F, 0F, 0F)
+    }
+    sphereLowId = createList {
+      GlStateManager.rotate(90F, 1F, 0F, 0F)
+      sphere.draw(1F, 8, 4)
+      GlStateManager.rotate(-90F, 1F, 0F, 0F)
+    }
 
     cylinderHighId = createList {
       GlStateManager.translate(0F, 0F, -0.5F)
-      cylinder.draw(1F, 1F, 1F, 8, 1)
+      cylinder.draw(1F, 1F, 1F, 32, 1)
       GlStateManager.translate(0F, 0F, 0.5F)
     }
     cylinderMidId = createList {
       GlStateManager.translate(0F, 0F, -0.5F)
-      cylinder.draw(1F, 1F, 1F, 4, 1)
+      cylinder.draw(1F, 1F, 1F, 16, 1)
       GlStateManager.translate(0F, 0F, 0.5F)
     }
     cylinderLowId = createList {
       GlStateManager.translate(0F, 0F, -0.5F)
-      cylinder.draw(1F, 1F, 1F, 3, 1)
+      cylinder.draw(1F, 1F, 1F, 8, 1)
       GlStateManager.translate(0F, 0F, 0.5F)
     }
 
     coneHighId = createList {
       GlStateManager.translate(0F, 0F, -0.5F)
-      cone.draw(1F, 0F, 1F, 8, 1)
+      cone.draw(1F, 0F, 1F, 32, 1)
       GlStateManager.translate(0F, 0F, 0.5F)
     }
     coneMidId = createList {
       GlStateManager.translate(0F, 0F, -0.5F)
-      cone.draw(1F, 0F, 1F, 8, 1)
+      cone.draw(1F, 0F, 1F, 16, 1)
       GlStateManager.translate(0F, 0F, 0.5F)
     }
     coneLowId = createList {
@@ -104,25 +115,32 @@ object DanCoreRenderHelper {
       GlStateManager.translate(0F, 0F, 0.5F)
     }
 
-    diskHighId = createList(disk.draw(1F, 0F, 8, 1))
-    diskMidId = createList(disk.draw(1F, 0F, 4, 1))
-    diskLowId = createList(disk.draw(1F, 0F, 3, 1))
+    diskHighId = createList(disk.draw(1F, 0F, 32, 1))
+    diskMidId = createList(disk.draw(1F, 0F, 16, 1))
+    diskLowId = createList(disk.draw(1F, 0F, 8, 1))
 
     if (OpenGlHelper.shadersSupported) {
-      val shader = ShaderManager
-        .initShader(
-          danmakuShaderLoc,
-          Seq(ShaderType.Vertex),
-          Seq(UniformBase("realColor", UniformType.Vec3, 1), UniformBase("overwriteColor", UniformType.Vec3, 1))
-        )
-
-      shader.begin()
-      shader.getUniform("overwriteColor").foreach { uniform =>
-        uniform.set(ocr, ocg, ocb)
-        uniform.upload()
-      }
-      shader.end()
+      initNormalDanmakuShader(baseDanmakuShaderLoc, Seq(ShaderType.Vertex))
+      initNormalDanmakuShader(fancyDanmakuShaderLoc, Seq(ShaderType.Vertex, ShaderType.Fragment))
+      initNormalDanmakuShader(fancyDarkDanmakuShaderLoc, Seq(ShaderType.Vertex, ShaderType.Fragment))
+      initNormalDanmakuShader(fancyPelletDanmakuShaderLoc, Seq(ShaderType.Vertex, ShaderType.Fragment))
     }
+  }
+
+  def initNormalDanmakuShader(shaderLoc: ResourceLocation, types: Seq[ShaderType]): Unit = {
+    ShaderManager.initShader(
+      shaderLoc,
+      types,
+      Seq(UniformBase("overwriteColor", UniformType.Vec3, 1), UniformBase("realColor", UniformType.Vec3, 1)),
+      shader => {
+        shader.begin()
+        shader.getUniform("overwriteColor").foreach { uniform =>
+          uniform.set(ocr, ocg, ocb)
+          uniform.upload()
+        }
+        shader.end()
+      }
+    )
   }
 
   def createList(create: => Unit): Int = {
@@ -142,8 +160,8 @@ object DanCoreRenderHelper {
     GlStateManager.color(r, g, b, alpha)
 
     val id =
-      if (dist < 16 * 16) highId
-      else if (dist < 64 * 64) midId
+      if (dist < 8 * 8) highId
+      else if (dist < 32 * 32) midId
       else lowId
     GlStateManager.callList(id)
   }
@@ -231,7 +249,7 @@ object DanCoreRenderHelper {
     }
   }
 
-  def danmakuShaderProgram: Option[DanCoreShaderProgram] = ShaderManager.getShaderProgram(danmakuShaderLoc)
+  def danmakuShaderProgram: Option[DanCoreShaderProgram] = ShaderManager.getShaderProgram(baseDanmakuShaderLoc)
 
   def updateDanmakuShaderAttributes(shaderProgram: DanCoreShaderProgram, color: Int): Unit = {
     val r = (color >> 16 & 255) / 255F

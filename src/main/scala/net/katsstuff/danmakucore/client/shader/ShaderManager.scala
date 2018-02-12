@@ -24,38 +24,62 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @SideOnly(Side.CLIENT)
 class ShaderManager(resourceManager: IResourceManager) extends IResourceManagerReloadListener {
-  val shaderPrograms = mutable.Map.empty[ResourceLocation, DanCoreShaderProgram]
-  val shaderObjects  = mutable.Map.empty[ResourceLocation, DanCoreShader]
+  private val shaderPrograms = mutable.Map.empty[ResourceLocation, DanCoreShaderProgram]
+  private val shaderProgramsInits = {
+    type ShaderInit = DanCoreShaderProgram => Unit
+    new mutable.HashMap[ResourceLocation, mutable.Set[ShaderInit]] with mutable.MultiMap[ResourceLocation, ShaderInit]
+  }
+  private val shaderObjects = mutable.Map.empty[ResourceLocation, DanCoreShader]
   DanCoreRenderHelper.registerResourceReloadListener(this)
 
   def getShader(location: ResourceLocation, shaderType: ShaderType): DanCoreShader =
-    shaderObjects.getOrElseUpdate(location, DanCoreShader.compileShader(location, shaderType, resourceManager))
+    shaderObjects.getOrElseUpdate(location, compileShader(location, shaderType))
+
+  def compileShader(location: ResourceLocation, shaderType: ShaderType): DanCoreShader = {
+    try {
+      DanCoreShader.compileShader(location, shaderType, resourceManager)
+    } catch {
+      case e: IOException =>
+        LogHelper.warn(s"Failed to load shader: $location", e)
+        DanCoreShader.missingShader(shaderType)
+      case e: ShaderException =>
+        LogHelper.warn(s"Failed to compile shader: $location", e)
+        DanCoreShader.missingShader(shaderType)
+    }
+  }
 
   def createShaderProgram(
       location: ResourceLocation,
       shaderTypes: Seq[ShaderType],
-      uniforms: Seq[UniformBase]
+      uniforms: Seq[UniformBase],
+      strictUniforms: Boolean = false
   ): DanCoreShaderProgram = {
-    try {
-      val shaders = shaderTypes.map {
-        case tpe @ ShaderType(_, extension) =>
-          val shaderLocation = new ResourceLocation(s"$location.$extension")
-          val shader         = getShader(shaderLocation, tpe)
-          shaderLocation -> shader
-      }.toMap
+    val shaders = shaderTypes.map(_ -> location).toMap
+    createShaderProgram(shaders, uniforms, strictUniforms)
+  }
 
-      DanCoreShaderProgram.create(shaders, uniforms)
+  def createShaderProgram(
+      shaders: Map[ShaderType, ResourceLocation],
+      uniforms: Seq[UniformBase],
+      strictUniforms: Boolean
+  ): DanCoreShaderProgram = {
+    val newShaders = shaders.map {
+      case (tpe, location) =>
+        val shaderLocation = new ResourceLocation(s"$location.${tpe.extension}")
+        val shader         = getShader(shaderLocation, tpe)
+        shaderLocation -> shader
+    }
+
+    try {
+      DanCoreShaderProgram.create(newShaders, uniforms, strictUniforms)
     } catch {
-      case e: IOException =>
-        LogHelper.warn(s"Failed to load shader: $location", e)
-        DanCoreShaderProgram.MissingShaderProgram
       case e: ShaderException =>
-        LogHelper.warn(s"Failed to create shader: $location", e)
-        DanCoreShaderProgram.MissingShaderProgram
+        LogHelper.warn(s"Failed to create shader: $shaders", e)
+        DanCoreShaderProgram.missingShaderProgram(newShaders.values.toSeq, uniforms)
       case NonFatal(throwable) =>
-        val crashReport         = CrashReport.makeCrashReport(throwable, "Registering texture")
-        val crashReportCategory = crashReport.makeCategory("Resource location being registered")
-        crashReportCategory.addCrashSection("Resource location", location)
+        val crashReport         = CrashReport.makeCrashReport(throwable, "Registering shaders")
+        val crashReportCategory = crashReport.makeCategory("Resource locations being registered")
+        crashReportCategory.addCrashSection("Resource locations", shaders.values)
         throw new ReportedException(crashReport)
     }
   }
@@ -63,9 +87,13 @@ class ShaderManager(resourceManager: IResourceManager) extends IResourceManagerR
   def initShader(
       shaderLocation: ResourceLocation,
       shaderTypes: Seq[ShaderType],
-      uniforms: Seq[UniformBase]
-  ): DanCoreShaderProgram =
-    shaderPrograms.getOrElseUpdate(shaderLocation, createShaderProgram(shaderLocation, shaderTypes, uniforms))
+      uniforms: Seq[UniformBase],
+      init: DanCoreShaderProgram => Unit
+  ): Unit = {
+    shaderProgramsInits.addBinding(shaderLocation, init)
+    val shader = shaderPrograms.getOrElseUpdate(shaderLocation, createShaderProgram(shaderLocation, shaderTypes, uniforms))
+    init(shader)
+  }
 
   def getShaderProgram(shaderLocation: ResourceLocation): Option[DanCoreShaderProgram] =
     shaderPrograms.get(shaderLocation)
@@ -77,7 +105,7 @@ class ShaderManager(resourceManager: IResourceManager) extends IResourceManagerR
     val newShaders = for ((resource, shader) <- shaderObjects) yield {
       shaderBar.step(resource.toString)
       shader.delete()
-      resource -> getShader(resource, shader.shaderType)
+      resource -> compileShader(resource, shader.shaderType)
     }
 
     shaderObjects.clear()
@@ -88,9 +116,12 @@ class ShaderManager(resourceManager: IResourceManager) extends IResourceManagerR
     val res = for ((resource, program) <- shaderPrograms) yield {
       programBar.step(resource.toString)
       program.delete()
-      resource -> createShaderProgram(resource, program.shaders.map(_.shaderType), program.uniforms.map {
-        case (name, DanCoreUniform(_, tpe, count, _, _)) => UniformBase(name, tpe, count)
+      val newProgram = createShaderProgram(resource, program.shaders.map(_.shaderType), program.uniformMap.map {
+        case (name, uniform) => UniformBase(name, uniform.tpe, uniform.count)
       }.toSeq)
+      shaderProgramsInits.get(resource).foreach(_.foreach(init => init(newProgram)))
+
+      resource -> newProgram
     }
 
     shaderPrograms ++= res

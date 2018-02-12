@@ -55,7 +55,7 @@ class DanmakuRenderer(handler: DanmakuHandler) {
 
     if (useShaders) {
       val danmakuByShader = handler.allDanmaku
-        .groupBy(s => s.shot.form.getRenderer(s).shader)
+        .groupBy(s => s.shot.form.getRenderer(s).shader(s))
         .flatMap {
           case (rl, danmaku) =>
             ShaderManager.getShaderProgram(rl).map(_ -> danmaku)

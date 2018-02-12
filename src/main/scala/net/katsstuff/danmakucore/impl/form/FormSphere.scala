@@ -18,10 +18,12 @@ import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.lib.LibFormName
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 //Name parameter for adding special effects to sphere
 private[danmakucore] class FormSphere(name: String = LibFormName.DEFAULT) extends FormGeneric(name) {
+
 
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm {
@@ -66,21 +68,17 @@ private[danmakucore] class FormSphere(name: String = LibFormName.DEFAULT) extend
     ): Unit = {
       val shot  = danmaku.shot
       val color = shot.color
-      val alpha = 0.3F
       val dist  = x * x + y * y + z * z
 
       DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, color)
       DanCoreRenderHelper.transformDanmaku(shot, orientation)
 
-      DanCoreRenderHelper.drawSphere(0xFFFFFF, 1F, dist)
-
       GlStateManager.enableBlend()
-      GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
-      GlStateManager.depthMask(false)
-      GlStateManager.scale(1.2F, 1.2F, 1.2F)
-      DanCoreRenderHelper.drawSphere(DanCoreRenderHelper.OverwriteColor, alpha, dist)
-      GlStateManager.depthMask(true)
+      GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+      DanCoreRenderHelper.drawSphere(DanCoreRenderHelper.OverwriteColor, 1F, dist)
       GlStateManager.disableBlend()
     }
+
+    override def shader(state: DanmakuState): ResourceLocation = DanCoreRenderHelper.fancyDanmakuShaderLoc
   }
 }

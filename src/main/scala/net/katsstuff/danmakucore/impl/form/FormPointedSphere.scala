@@ -64,6 +64,7 @@ private[danmakucore] class FormPointedSphere extends FormGeneric(LibFormName.SPH
       GlStateManager.disableBlend()
     }
 
+    //We need normals for this if we want to use a fancy shader
     @SideOnly(Side.CLIENT)
     private def createPointedSphere(
         tes: Tessellator,
