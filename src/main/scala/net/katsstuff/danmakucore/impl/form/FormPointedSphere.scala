@@ -10,9 +10,9 @@ package net.katsstuff.danmakucore.impl.form
 
 import org.lwjgl.opengl.GL11
 
-import net.katsstuff.danmakucore.client.helper.RenderHelper
-import net.katsstuff.danmakucore.data.{ShotData, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
+import net.katsstuff.danmakucore.danmaku.DanmakuState
+import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.lib.{LibFormName, LibSounds}
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
@@ -29,25 +29,25 @@ private[danmakucore] class FormPointedSphere extends FormGeneric(LibFormName.SPH
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm() {
     @SideOnly(Side.CLIENT)
-    override def renderForm(
-        danmaku: EntityDanmaku,
+    override def renderLegacy(
+        danmaku: DanmakuState,
         x: Double,
         y: Double,
         z: Double,
-        entityYaw: Float,
+        orientation: Quat,
         partialTicks: Float,
-        rendermanager: RenderManager
+        manager: RenderManager
     ): Unit = {
       val tes   = Tessellator.getInstance
       val bb    = tes.getBuffer
-      val shot  = danmaku.shotData
-      val color = shot.getColor
-      val sizeZ = shot.getSizeZ
+      val shot  = danmaku.shot
+      val color = shot.color
+      val sizeZ = shot.sizeZ
 
       val centerZ1 = sizeZ * 1.2F / 2.0F
       val centerZ2 = sizeZ / 2.0F
 
-      RenderHelper.transformEntity(danmaku)
+      DanCoreRenderHelper.transformDanmaku(shot, orientation)
 
       GL11.glTranslatef(0, 0, (-sizeZ / 6) * 4)
 
@@ -64,6 +64,7 @@ private[danmakucore] class FormPointedSphere extends FormGeneric(LibFormName.SPH
       GlStateManager.disableBlend()
     }
 
+    //We need normals for this if we want to use a fancy shader
     @SideOnly(Side.CLIENT)
     private def createPointedSphere(
         tes: Tessellator,
@@ -137,11 +138,9 @@ private[danmakucore] class FormPointedSphere extends FormGeneric(LibFormName.SPH
     }
   }
 
-  override def playShotSound(user: EntityLivingBase, shot: ShotData): Unit = {
+  override def playShotSound(user: EntityLivingBase, shot: ShotData): Unit =
     user.playSound(LibSounds.LASER2, 0.1F, 1F)
-  }
 
-  override def playShotSound(world: World, pos: Vector3, shot: ShotData): Unit = {
+  override def playShotSound(world: World, pos: Vector3, shot: ShotData): Unit =
     DanmakuHelper.playSoundAt(world, pos, LibSounds.LASER2, 0.1F, 1F)
-  }
 }

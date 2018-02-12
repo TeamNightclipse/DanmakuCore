@@ -15,6 +15,7 @@ import net.katsstuff.danmakucore.registry.RegistryValueItemCreatable
 import net.minecraft.client.renderer.block.model.{ModelResourceLocation => MRL}
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.{EnumHand, ResourceLocation}
+import net.minecraft.world.World
 
 /**
   * A [[DanmakuVariant]] can be thought of as a named [[ShotData]]
@@ -36,14 +37,8 @@ abstract class DanmakuVariant extends RegistryValueItemCreatable[DanmakuVariant,
   def getMovementData: MovementData
   def getRotationData: RotationData
 
-  override def create(
-      user: Option[EntityLivingBase],
-      alternateMode: Boolean,
-      pos: Vector3,
-      direction: Vector3,
-      hand: Option[EnumHand]
-  ): Option[DanmakuTemplate] =
-    Some(DanmakuTemplate.builder.setVariant(this).setUser(user).setDirection(direction).setPos(pos).build)
+  override def create(world: World, user: Option[EntityLivingBase], alternateMode: Boolean, pos: Vector3, direction: Vector3, hand: Option[EnumHand]): Option[DanmakuTemplate] =
+    Some(DanmakuTemplate.builder.setVariant(this).setUser(user).setWorld(world).setDirection(direction).setPos(pos).build)
 
   override def unlocalizedName: String = "danmakuvariant." + modId + "." + name
   override def itemModel:       MRL    = new MRL(new ResourceLocation(modId, "danmaku/variant/" + name), "inventory")

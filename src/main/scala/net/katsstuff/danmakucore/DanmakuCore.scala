@@ -88,6 +88,13 @@ object DanmakuCore {
     proxy.registerItemColors()
 
   @Mod.EventHandler
-  def serverLoad(event: FMLServerStartingEvent): Unit =
+  def serverStarting(event: FMLServerStartingEvent): Unit = {
+    proxy.serverStarting(event)
     event.registerServerCommand(new DanmakuCoreCmd)
+  }
+
+  @Mod.EventHandler
+  def serverStopped(event: FMLServerStoppedEvent): Unit = {
+    proxy.serverStopped(event)
+  }
 }

@@ -13,7 +13,7 @@ import java.util
 import scala.collection.JavaConverters._
 import scala.concurrent.{Future, Promise}
 
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.danmaku.DanmakuState
 
 /**
   * The result of a shape drawing for a single tick.
@@ -27,14 +27,14 @@ object ShapeResult {
     *
     * @param spawnedDanmaku The danmaku the shape spawned for this tick.
     */
-  def done(spawnedDanmaku: util.Set[EntityDanmaku]) = new ShapeResult(true, spawnedDanmaku.asScala.toSet)
+  def done(spawnedDanmaku: util.Set[DanmakuState]) = new ShapeResult(true, spawnedDanmaku.asScala.toSet)
 
   /**
     * Creates a result signifying that the shape is done.
     *
     * @param spawnedDanmaku The danmaku the shape spawned for this tick.
     */
-  def done(spawnedDanmaku: Set[EntityDanmaku]) = new ShapeResult(true, spawnedDanmaku)
+  def done(spawnedDanmaku: Set[DanmakuState]) = new ShapeResult(true, spawnedDanmaku)
 
   /**
     * JAVA-API
@@ -43,21 +43,21 @@ object ShapeResult {
     *
     * @param spawnedDanmaku The danmaku the shape spawned for this tick.
     */
-  def notDone(spawnedDanmaku: util.Set[EntityDanmaku]) = new ShapeResult(false, spawnedDanmaku.asScala.toSet)
+  def notDone(spawnedDanmaku: util.Set[DanmakuState]) = new ShapeResult(false, spawnedDanmaku.asScala.toSet)
 
   /**
     * Creates a result signifying that the shape is not done.
     *
     * @param spawnedDanmaku The danmaku the shape spawned for this tick.
     */
-  def notDone(spawnedDanmaku: Set[EntityDanmaku]) = new ShapeResult(false, spawnedDanmaku)
+  def notDone(spawnedDanmaku: Set[DanmakuState]) = new ShapeResult(false, spawnedDanmaku)
 
   /**
     * Creates a result of s drawn shape. If possible, prefer one of the other static methods.
     */
-  def of(done: Boolean, drawn: util.Set[EntityDanmaku]) = new ShapeResult(done, drawn.asScala.toSet)
+  def of(done: Boolean, drawn: util.Set[DanmakuState]) = new ShapeResult(done, drawn.asScala.toSet)
 }
-case class ShapeResult(isDone: Boolean, spawnedDanmaku: Set[EntityDanmaku]) {
+case class ShapeResult(isDone: Boolean, spawnedDanmaku: Set[DanmakuState]) {
 
   private[danmakucore] val promise: Option[Promise[ShapeResult]] = if(!isDone) Some(Promise[ShapeResult]) else None
   val next: Option[Future[ShapeResult]] = promise.map(_.future)
@@ -65,5 +65,5 @@ case class ShapeResult(isDone: Boolean, spawnedDanmaku: Set[EntityDanmaku]) {
   /**
     * The danmaku the shape spawned for this tick.
     */
-  def getSpawnedDanmaku: util.Set[EntityDanmaku] = spawnedDanmaku.asJava
+  def getSpawnedDanmaku: util.Set[DanmakuState] = spawnedDanmaku.asJava
 }

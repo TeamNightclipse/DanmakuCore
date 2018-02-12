@@ -8,14 +8,14 @@
  */
 package net.katsstuff.danmakucore.impl.form
 
-import net.katsstuff.danmakucore.danmodel.{DanModel, FormDanModel}
+import net.katsstuff.danmakucore.danmodel.FormDanModel
 import net.katsstuff.danmakucore.data.{ShotData, Vector3}
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
 import net.minecraft.entity.EntityLivingBase
-import net.minecraft.util.SoundEvent
+import net.minecraft.util.{ResourceLocation, SoundEvent}
 import net.minecraft.world.World
 
-class FormNote(name: String, sound: SoundEvent, model: DanModel) extends FormDanModel(name, model) {
+class FormNote(name: String, sound: SoundEvent, resource: ResourceLocation) extends FormDanModel(name, resource) {
 
   override def playShotSound(user: EntityLivingBase, shotData: ShotData): Unit = {
     user.playSound(sound, shotData.damage / 3, 0.5F + (user.ticksExisted % 60) / 40F)

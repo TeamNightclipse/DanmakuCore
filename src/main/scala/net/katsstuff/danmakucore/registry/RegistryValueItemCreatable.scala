@@ -14,6 +14,7 @@ import net.katsstuff.danmakucore.data.Vector3
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.EnumHand
+import net.minecraft.world.World
 import net.minecraftforge.registries.IForgeRegistryEntry
 
 /**
@@ -28,6 +29,7 @@ abstract class RegistryValueItemCreatable[A <: IForgeRegistryEntry[A], Obj <: An
     * @return Some if the object can be created, None otherwise.
     */
   def create(
+      world: World,
       user: Option[EntityLivingBase],
       alternateMode: Boolean,
       pos: Vector3,
@@ -36,7 +38,14 @@ abstract class RegistryValueItemCreatable[A <: IForgeRegistryEntry[A], Obj <: An
   ): Option[Obj]
 
   override def canRightClick(player: EntityPlayer, hand: EnumHand): Boolean =
-    create(Some(player), alternateMode = false, new Vector3(player), new Vector3(player.getLookVec), Some(hand)).isDefined
+    create(
+      player.world,
+      Some(player),
+      alternateMode = false,
+      new Vector3(player),
+      new Vector3(player.getLookVec),
+      Some(hand)
+    ).isDefined
 
   /**
     * Creates an instance of this object.
@@ -45,10 +54,11 @@ abstract class RegistryValueItemCreatable[A <: IForgeRegistryEntry[A], Obj <: An
     */
   @Nullable
   def create(
+      world: World,
       @Nullable user: EntityLivingBase,
       alternateMode: Boolean,
       pos: Vector3,
       direction: Vector3,
       @Nullable hand: EnumHand
-  ): Obj = create(Option(user), alternateMode, pos, direction, Option(hand)).getOrElse(null.asInstanceOf[Obj])
+  ): Obj = create(world, Option(user), alternateMode, pos, direction, Option(hand)).getOrElse(null.asInstanceOf[Obj])
 }

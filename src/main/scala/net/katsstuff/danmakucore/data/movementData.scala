@@ -15,22 +15,22 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.common.util.Constants
 
 /**
-	* Defines how a [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]] will move.
+	* Defines how a [[net.katsstuff.danmakucore.handler.DanmakuState]] will move.
 	*/
 abstract sealed class AbstractMovementData {
 
   /**
-		* The speed that the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]] starts with.
+		* The speed that the [[net.katsstuff.danmakucore.handler.DanmakuState]] starts with.
 		*/
   def speedOriginal: Double
 
   /**
-		* The lower limit of the speed of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]].
+		* The lower limit of the speed of the [[net.katsstuff.danmakucore.handler.DanmakuState]].
 		*/
   def lowerSpeedLimit: Double
 
   /**
-		* The upper limit of the speed of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]].
+		* The upper limit of the speed of the [[net.katsstuff.danmakucore.handler.DanmakuState]].
 		*/
   def upperSpeedLimit: Double
 

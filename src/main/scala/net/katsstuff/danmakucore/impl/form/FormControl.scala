@@ -8,8 +8,8 @@
  */
 package net.katsstuff.danmakucore.impl.form
 
-import net.katsstuff.danmakucore.data.ShotData
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.danmaku.DanmakuState
+import net.katsstuff.danmakucore.data.{Quat, ShotData}
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.lib.LibFormName
 import net.minecraft.client.renderer.entity.RenderManager
@@ -19,7 +19,7 @@ private[danmakucore] class FormControl extends FormGeneric(LibFormName.CONTROL) 
 
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm =
-    (_: EntityDanmaku, _: Double, _: Double, _: Double, _: Float, _: Float, _: RenderManager) => {} //NO-OP
+    (_: DanmakuState, _: Double, _: Double, _: Double, _: Quat, _: Float, _: RenderManager) => () //NO-OP
 
   override def onShotDataChange(oldShot: ShotData, newShot: ShotData): ShotData =
     newShot.setSize(oldShot.sizeX, oldShot.sizeY, oldShot.sizeZ)

@@ -8,14 +8,14 @@
  */
 package net.katsstuff.danmakucore.impl.shape
 
+import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.{Quat, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
 
 class ShapeDelay(shape: Shape, delay: Int) extends Shape {
   override def draw(pos: Vector3, orientation: Quat, tick: Int): ShapeResult =
     if (tick >= delay) shape.draw(pos, orientation, tick - delay)
-    else ShapeResult.notDone(Set.empty[EntityDanmaku])
+    else ShapeResult.notDone(Set.empty[DanmakuState])
 
   override def doEffects(
       pos: Vector3,

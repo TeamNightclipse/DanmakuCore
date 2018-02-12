@@ -36,7 +36,7 @@ object DanModelFromObj {
             .groupBy(_.getName)
             .map {
               case (name, innerMaterials) =>
-                if (innerMaterials.size > 1) error("The specified model has materials with duplicate names")
+                if (innerMaterials.lengthCompare(1) > 0) error("The specified model has materials with duplicate names")
                 name -> innerMaterials.head
             }
 
@@ -115,7 +115,7 @@ object DanModelFromObj {
     val bytes          = new ByteArrayOutputStream()
     val us             = new DataOutputStream(bytes)
     val faceReferences = mesh.getFaces.asScala.map(_.getReferences.asScala)
-    if (!faceReferences.forall(_.size == faceReferences.head.size))
+    if (!faceReferences.forall(_.lengthCompare(faceReferences.head.size) == 0))
       error("Found model with varying amount of vertices for faces. Stick to one amount")
 
     val maxSides = faceReferences.head.size

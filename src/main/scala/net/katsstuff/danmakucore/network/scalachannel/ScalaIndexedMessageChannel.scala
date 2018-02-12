@@ -39,15 +39,25 @@ class ScalaIndexedMessageChannel extends ChannelDuplexHandler {
   private val encoder = new MessageToMessageEncoder[AnyRef]() {
     override def acceptOutboundMessage(msg: AnyRef): Boolean = classToDiscriminator.contains(msg.getClass)
     override def encode(ctx: ChannelHandlerContext, msg: AnyRef, out: util.List[AnyRef]): Unit = {
-      val buf           = new PacketBuffer(Unpooled.buffer)
-      val discriminator = classToDiscriminator(msg.getClass)
-      buf.writeByte(discriminator)
-      discriminatorToConverter(discriminator).asInstanceOf[MessageConverter[Any]].writeBytes(msg, buf)
-      val proxy = new FMLProxyPacket(buf, ctx.channel.attr(NetworkRegistry.FML_CHANNEL).get)
-      val ref   = ctx.attr(ScalaIndexedMessageChannel.InboundPacketTracker).get.get
-      val old   = if (ref == null) null else ref.get
-      if (old != null) proxy.setDispatcher(old.getDispatcher)
-      out.add(proxy)
+      val buf = new PacketBuffer(Unpooled.buffer)
+
+
+      val packetData = for {
+        discriminator <- classToDiscriminator.get(msg.getClass)
+        converter     <- discriminatorToConverter.get(discriminator)
+      } yield (discriminator, converter)
+
+      packetData match {
+        case Some((discriminator, converter)) =>
+          buf.writeByte(discriminator)
+          converter.asInstanceOf[MessageConverter[Any]].writeBytes(msg, buf)
+          val proxy = new FMLProxyPacket(buf, ctx.channel.attr(NetworkRegistry.FML_CHANNEL).get)
+          val ref   = ctx.attr(ScalaIndexedMessageChannel.InboundPacketTracker).get.get
+          val old   = if (ref == null) null else ref.get
+          if (old != null) proxy.setDispatcher(old.getDispatcher)
+          out.add(proxy)
+        case None => throw new IllegalStateException(s"No discriminator or converter found for $msg")
+      }
     }
   }
 
@@ -72,7 +82,9 @@ class ScalaIndexedMessageChannel extends ChannelDuplexHandler {
           val newMsg = converter.readBytes(payload.slice())
           out.add(newMsg.asInstanceOf[AnyRef])
         case None =>
-          LogHelper.error(s"Undefined message for discriminator $discriminator in channel ${fmlProxyPacket.channel}")
+          throw new IllegalStateException(
+            s"Undefined message for discriminator $discriminator in channel ${fmlProxyPacket.channel}"
+          )
       }
     }
   }

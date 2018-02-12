@@ -9,8 +9,8 @@
 package net.katsstuff.danmakucore.entity.danmaku.form
 
 import net.katsstuff.danmakucore.DanmakuCore
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity
 import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.registry.RegistryValueWithItemModel
@@ -23,7 +23,7 @@ import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 /**
-  * Something that dictates the appearance and the logic that comes from that of a [[EntityDanmaku]].
+  * Something that dictates the appearance and the logic that comes from that of a [[DanmakuState]].
   *
   * Please note that even though both this and [[SubEntity]] have callbacks
   * for tick and changes, the callbacks here should only be used if the logic is
@@ -34,19 +34,24 @@ abstract class Form extends RegistryValueWithItemModel[Form] {
   def this(name: String) {
     this()
     setRegistryName(name)
-    DanmakuCore.proxy.bakeDanmakuForm(this)
+    DanmakuCore.proxy.initForm(this)
   }
 
   /**
-    * @return The ResourceLocation assigned to this registration.
+    * Performs some initialization logic when the game starts on the client.
     */
-  def getTexture(danmaku: EntityDanmaku): ResourceLocation
+  def initClient(): Unit = ()
 
   /**
-    * @return The IRenderForm assigned to this registration.
+    * The ResourceLocation assigned to this registration.
+    */
+  def getTexture(danmaku: DanmakuState): ResourceLocation
+
+  /**
+    * The IRenderForm assigned to this registration.
     */
   @SideOnly(Side.CLIENT)
-  def getRenderer(danmaku: EntityDanmaku): IRenderForm
+  def getRenderer(danmaku: DanmakuState): IRenderForm
 
   override def canRightClick(player: EntityPlayer, hand: EnumHand) = true
 
@@ -65,7 +70,7 @@ abstract class Form extends RegistryValueWithItemModel[Form] {
     * danmaku would probably always be dragged down a slight bit by gravity, even if it doesn't have normal
     * gravity.
     */
-  def onTick(danmaku: EntityDanmaku): Unit = {}
+  def onTick(danmaku: DanmakuState): Option[DanmakuUpdate] = Some(DanmakuUpdate.none(danmaku))
 
   /**
     * Callback that is executed whenever [[ShotData]] is set on the underlying entity

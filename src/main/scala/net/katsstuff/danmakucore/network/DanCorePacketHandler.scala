@@ -20,6 +20,9 @@ object DanCorePacketHandler extends ScalaNetworkWrapper(LibMod.Id) {
         _ <- registerMessage[ParticlePacket]
         _ <- registerMessage[PhaseDataPacket]
         _ <- registerMessage[SpellcardInfoPacket]
+        _ <- registerMessage[DanmakuCreatePacket]
+        _ <- registerMessage[DanmakuForceUpdatePacket]
+        _ <- registerMessage[DanmakuUpdatePacket]
       } yield ()
     }
   }

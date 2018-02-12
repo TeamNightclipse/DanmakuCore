@@ -10,41 +10,94 @@ package net.katsstuff.danmakucore.danmodel
 
 import org.lwjgl.opengl.GL11
 
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
+import net.katsstuff.danmakucore.client.shader.DanCoreShaderProgram
+import net.katsstuff.danmakucore.danmaku.DanmakuState
+import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.impl.form.FormGeneric
-import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.entity.RenderManager
+import net.minecraft.client.renderer.{GLAllocation, GlStateManager, OpenGlHelper, Tessellator}
+import net.minecraft.client.resources.{IResourceManager, IResourceManagerReloadListener}
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-private[danmakucore] class FormDanModel(name: String, model: DanModel) extends FormGeneric(name) {
+private[danmakucore] class FormDanModel(name: String, resource: ResourceLocation) extends FormGeneric(name) {
+
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = {
-    (
-        danmaku: EntityDanmaku,
-        x: Double,
-        y: Double,
-        z: Double,
-        entityYaw: Float,
-        partialTicks: Float,
-        man: RenderManager
-    ) =>
-      val tes      = Tessellator.getInstance
-      val vb       = tes.getBuffer
-      val pitch    = danmaku.rotationPitch
-      val yaw      = danmaku.rotationYaw
-      val roll     = danmaku.roll
-      val shotData = danmaku.getShotData
-      val sizeX    = shotData.getSizeX
-      val sizeY    = shotData.getSizeY
-      val sizeZ    = shotData.getSizeZ
-      val color    = shotData.getColor
+    new IRenderForm with IResourceManagerReloadListener {
+      private var danModel: DanModel = _
+      private var modelList = -1
 
-      GL11.glRotatef(-yaw, 0F, 1F, 0F)
-      GL11.glRotatef(pitch, 1F, 0F, 0F)
-      GL11.glRotatef(roll, 0F, 0F, 1F)
-      GL11.glScalef(sizeX, sizeY, sizeZ)
+      DanCoreRenderHelper.registerResourceReloadListener(this)
 
-      model.render(vb, tes, color)
+      override def renderLegacy(
+          danmaku: DanmakuState,
+          x: Double,
+          y: Double,
+          z: Double,
+          orientation: Quat,
+          partialTicks: Float,
+          manager: RenderManager
+      ): Unit = {
+        if (danModel != null) {
+          val tes = Tessellator.getInstance
+          val vb  = tes.getBuffer
+
+          DanCoreRenderHelper.transformDanmaku(danmaku.shot, orientation)
+          danModel.render(vb, danmaku.shot.getColor)
+        }
+      }
+
+      override def renderShaders(
+          danmaku: DanmakuState,
+          x: Double,
+          y: Double,
+          z: Double,
+          orientation: Quat,
+          partialTicks: Float,
+          manager: RenderManager,
+          shaderProgram: DanCoreShaderProgram
+      ): Unit = {
+        if (danModel != null) {
+          DanCoreRenderHelper.transformDanmaku(danmaku.shot, orientation)
+          DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, danmaku.shot.color)
+
+          //Using VBOs here break for some models
+          /*if (OpenGlHelper.useVbo()) {
+            danModel.drawVBOs()
+          } else*/ if (modelList != -1) {
+            GlStateManager.callList(modelList)
+          } else {
+            val tes = Tessellator.getInstance
+            val vb  = tes.getBuffer
+
+            modelList = GLAllocation.generateDisplayLists(1)
+
+            GlStateManager.glNewList(modelList, GL11.GL_COMPILE_AND_EXECUTE)
+            danModel.render(vb, DanCoreRenderHelper.OverwriteColor)
+            GlStateManager.glEndList()
+          }
+        }
+      }
+
+      override def onResourceManagerReload(resourceManager: IResourceManager): Unit = {
+        if (danModel != null) {
+          danModel.deleteVBOs()
+        }
+
+        if (modelList != -1) {
+          GlStateManager.glDeleteLists(modelList, 1)
+          modelList = -1
+        }
+
+        danModel = DanModelReader.readModel(resource).map(_._2).toOption.orNull
+
+        if (OpenGlHelper.vboSupported && danModel != null) {
+          danModel.generateVBOs()
+        }
+      }
+    }
   }
 }

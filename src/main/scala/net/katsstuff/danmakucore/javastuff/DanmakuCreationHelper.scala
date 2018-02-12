@@ -10,8 +10,9 @@ package net.katsstuff.danmakucore.javastuff
 
 import java.util
 
+import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
-import net.katsstuff.danmakucore.entity.danmaku.{DanmakuTemplate, EntityDanmaku}
+import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
 import net.katsstuff.danmakucore.impl.shape.{ShapeCircle, ShapeRandomRing, ShapeRing, ShapeSphere, ShapeWide}
 import net.katsstuff.danmakucore.shape.Shape
 
@@ -26,7 +27,7 @@ object DanmakuCreationHelper {
       wideAngle: Float,
       baseAngle: Float,
       distance: Double
-  ): util.Set[EntityDanmaku] =
+  ): util.Set[DanmakuState] =
     drawSingle(danmaku, orientation, new ShapeWide(danmaku, amount, wideAngle, baseAngle, distance))
 
   def createCircleShot(
@@ -35,7 +36,7 @@ object DanmakuCreationHelper {
       amount: Int,
       baseAngle: Float,
       distance: Double
-  ): util.Set[EntityDanmaku] = drawSingle(danmaku, orientation, new ShapeCircle(danmaku, amount, baseAngle, distance))
+  ): util.Set[DanmakuState] = drawSingle(danmaku, orientation, new ShapeCircle(danmaku, amount, baseAngle, distance))
 
   def createRingShot(
       orientation: Quat,
@@ -44,7 +45,7 @@ object DanmakuCreationHelper {
       size: Float,
       baseAngle: Float,
       distance: Double
-  ): util.Set[EntityDanmaku] =
+  ): util.Set[DanmakuState] =
     drawSingle(danmaku, orientation, new ShapeRing(danmaku, amount, size, baseAngle, distance))
 
   def createRandomRingShot(
@@ -53,7 +54,7 @@ object DanmakuCreationHelper {
       amount: Int,
       size: Float,
       distance: Double
-  ): util.Set[EntityDanmaku] = drawSingle(danmaku, orientation, new ShapeRandomRing(danmaku, amount, size, distance))
+  ): util.Set[DanmakuState] = drawSingle(danmaku, orientation, new ShapeRandomRing(danmaku, amount, size, distance))
 
   def createSphereShot(
       orientation: Quat,
@@ -62,7 +63,7 @@ object DanmakuCreationHelper {
       bands: Int,
       baseAngle: Float,
       distance: Double
-  ): util.Set[EntityDanmaku] =
+  ): util.Set[DanmakuState] =
     drawSingle(danmaku, orientation, new ShapeSphere(danmaku, rings, bands, baseAngle, distance))
 
   private def drawSingle(danmaku: DanmakuTemplate, orientation: Quat, shape: Shape) =

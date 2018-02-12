@@ -8,23 +8,21 @@
  */
 package net.katsstuff.danmakucore.entity.danmaku.subentity
 
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData}
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
-import net.katsstuff.danmakucore.entity.spellcard.Spellcard
 import net.katsstuff.danmakucore.misc.Translatable
 import net.katsstuff.danmakucore.registry.RegistryValue
-import net.minecraft.world.World
 
 /**
   * Where you define special behavior for danmaku. The most used methods ones are provided already,
   * but it's entirely possible to create new ones, and then call those methods from elsewhere.
   */
-abstract class SubEntity(val world: World, val danmaku: EntityDanmaku) {
+abstract class SubEntity {
 
   /**
     * Called each tick as long as the danmaku is alive, and it's delay is 0.
     */
-  def subEntityTick(): Unit
+  def subEntityTick(danmaku: DanmakuState): Option[DanmakuUpdate]
 
   /**
     * Callback that is executed whenever [[ShotData]] is set on the underlying entity
@@ -72,7 +70,7 @@ abstract class SubEntityType extends RegistryValue[SubEntityType] with Translata
     setRegistryName(name)
   }
 
-  def instantiate(world: World, entityDanmaku: EntityDanmaku): SubEntity
+  def instantiate: SubEntity
 
   override def unlocalizedName: String = "subentity." + modId + "." + name
 }

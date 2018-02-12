@@ -9,7 +9,7 @@
 package net.katsstuff.danmakucore.impl.form
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.entity.danmaku.form.{Form, IRenderForm}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -24,16 +24,16 @@ abstract class FormGeneric extends Form {
   def this(name: String) {
     this()
     setRegistryName(name)
-    DanmakuCore.proxy.bakeDanmakuForm(this)
+    DanmakuCore.proxy.initForm(this)
   }
 
-  override def getTexture(danmaku: EntityDanmaku): ResourceLocation = texture
+  override def getTexture(danmaku: DanmakuState): ResourceLocation = texture
 
   @SideOnly(Side.CLIENT)
-  override def getRenderer(danmaku: EntityDanmaku): IRenderForm = {
-    if (renderer == null) renderer = createRenderer
-    renderer
-  }
+  override def initClient(): Unit = renderer = createRenderer
+
+  @SideOnly(Side.CLIENT)
+  override def getRenderer(danmaku: DanmakuState): IRenderForm = renderer
 
   @SideOnly(Side.CLIENT)
   protected def createRenderer: IRenderForm

@@ -61,8 +61,8 @@ object MessageConverter {
   def createExtra[A](from: PacketBuffer => A)(to: (PacketBuffer, A) => Unit): MessageConverter[A] =
     create(buf => from(new PacketBuffer(buf)))((buf, a) => to(new PacketBuffer(buf), a))
 
-  def writeBytes[A](a: A, buf: ByteBuf)(implicit converter: MessageConverter[A]): Unit = converter.writeBytes(a, buf)
-  def readBytes[A](buf: ByteBuf)(implicit converter: MessageConverter[A]):        A    = converter.readBytes(buf)
+  def write[A](a: A, buf: ByteBuf)(implicit converter: MessageConverter[A]): Unit = converter.writeBytes(a, buf)
+  def read[A](buf: ByteBuf)(implicit converter: MessageConverter[A]):        A    = converter.readBytes(buf)
 
   implicit val boolConverter:   MessageConverter[Boolean] = create(_.readBoolean())(_.writeBoolean(_))
   implicit val byteConverter:   MessageConverter[Byte]    = create(_.readByte())(_.writeByte(_))
@@ -86,8 +86,35 @@ object MessageConverter {
   implicit def enumConverter[A <: Enum[A]](implicit classTag: ClassTag[A]): MessageConverter[A] =
     createExtra(_.readEnumValue(classTag.runtimeClass.asInstanceOf[Class[A]]))(_.writeEnumValue(_))
 
+  implicit def seqConverter[A: MessageConverter]: MessageConverter[Seq[A]] = new MessageConverter[Seq[A]] {
+
+    override def writeBytes(a: Seq[A], buf: ByteBuf): Unit = {
+      buf.write(a.size)
+      for (obj <- a) {
+        buf.write(obj)
+      }
+    }
+
+    override def readBytes(buf: ByteBuf): Seq[A] = Seq.fill(buf.read[Int])(buf.read[A])
+  }
+
+  implicit def optionConverter[A: MessageConverter]: MessageConverter[Option[A]] = new MessageConverter[Option[A]] {
+
+    override def writeBytes(a: Option[A], buf: ByteBuf): Unit = {
+      buf.write(a.isDefined)
+      a.foreach(buf.write[A])
+    }
+
+    override def readBytes(buf: ByteBuf): Option[A] =
+      if (buf.read[Boolean]) Some(buf.read[A])
+      else None
+  }
+
   class Deriver[A] {
-    def apply[Repr](implicit generic: Generic.Aux[A, Repr], converter: Lazy[MessageConverter[Repr]]): MessageConverter[A] = caseConverter[A, generic.Repr]
+    def apply[Repr](
+        implicit generic: Generic.Aux[A, Repr],
+        converter: Lazy[MessageConverter[Repr]]
+    ): MessageConverter[A] = caseConverter[A, generic.Repr]
   }
   def mkDeriver[A]: Deriver[A] = new Deriver[A]
 
@@ -149,5 +176,10 @@ object MessageConverter {
   ): MessageConverter[A] = new MessageConverter[A] {
     override def writeBytes(a: A, buf: ByteBuf): Unit = converter.value.writeBytes(gen.to(a), buf)
     override def readBytes(buf: ByteBuf):        A    = gen.from(converter.value.readBytes(buf))
+  }
+
+  implicit class Ops(val buffer: ByteBuf) extends AnyVal {
+    def write[A: MessageConverter](obj: A): Unit = MessageConverter.write[A](obj, buffer)
+    def read[A: MessageConverter]:          A    = MessageConverter.read[A](buffer)
   }
 }

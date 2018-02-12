@@ -8,16 +8,16 @@
  */
 package net.katsstuff.danmakucore.impl.form
 
-import org.lwjgl.opengl.GL11
-
-import net.katsstuff.danmakucore.client.helper.RenderHelper
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
+import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
+import net.katsstuff.danmakucore.danmaku.DanmakuState
+import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.lib.LibFormName
-import net.minecraft.client.renderer.{BufferBuilder, GlStateManager, Tessellator}
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.renderer.{BufferBuilder, GlStateManager, Tessellator}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import org.lwjgl.opengl.GL11
 
 private[danmakucore] class FormStar extends FormGeneric(LibFormName.STAR) {
 
@@ -35,46 +35,28 @@ private[danmakucore] class FormStar extends FormGeneric(LibFormName.STAR) {
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm() {
     @SideOnly(Side.CLIENT)
-    override def renderForm(
-        danmaku: EntityDanmaku,
-        x: Double,
-        y: Double,
-        z: Double,
-        entityYaw: Float,
-        partialTicks: Float,
-        rendermanager: RenderManager
-    ): Unit = {
+    override def renderLegacy(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
       val tes   = Tessellator.getInstance
       val buf   = tes.getBuffer
-      val color = danmaku.shotData.getColor
+      val color = danmaku.shot.color
 
       GlStateManager.rotate((danmaku.ticksExisted + partialTicks) * 5F, 1F, 1F, 1F)
 
-      RenderHelper.transformEntity(danmaku)
+      DanCoreRenderHelper.transformDanmaku(danmaku.shot, orientation)
 
-      var red   = 1F
-      var green = 1F
-      var blue  = 1F
-      var alpha = 1F
-
-      renderTetrahedron(tes, buf, red, green, blue, alpha)
+      renderTetrahedron(tes, buf, 0xFFFFFF, 1F)
       GlStateManager.rotate(90F, 1F, 0F, 0F)
-      renderTetrahedron(tes, buf, red, green, blue, alpha)
+      renderTetrahedron(tes, buf, 0xFFFFFF, 1F)
       GlStateManager.rotate(-90F, 1F, 0F, 0F)
-
-      red = (color >> 16 & 255) / 255.0F
-      green = (color >> 8 & 255) / 255.0F
-      blue = (color & 255) / 255.0F
-      alpha = 0.3F
 
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
       GlStateManager.depthMask(false)
       GlStateManager.scale(1.2F, 1.2F, 1.2F)
 
-      renderTetrahedron(tes, buf, red, green, blue, alpha)
+      renderTetrahedron(tes, buf, color, 0.3F)
       GlStateManager.rotate(90F, 1F, 0F, 0F)
-      renderTetrahedron(tes, buf, red, green, blue, alpha)
+      renderTetrahedron(tes, buf, color, 0.3F)
 
       GlStateManager.depthMask(true)
       GlStateManager.disableBlend()
@@ -84,11 +66,13 @@ private[danmakucore] class FormStar extends FormGeneric(LibFormName.STAR) {
     private def renderTetrahedron(
         tes: Tessellator,
         buf: BufferBuilder,
-        r: Float,
-        g: Float,
-        b: Float,
+        color: Int,
         a: Float
     ): Unit = {
+      val r = (color >> 16 & 255) / 255.0F
+      val g = (color >> 8 & 255) / 255.0F
+      val b = (color & 255) / 255.0F
+
       buf.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_COLOR)
       for (i <- 0 until 6) {
         buf

@@ -9,14 +9,16 @@
 package net.katsstuff.danmakucore
 
 import scala.collection.JavaConverters._
+import scala.collection.immutable
 import scala.reflect.ClassTag
 
 import net.katsstuff.danmakucore.client.particle.{GlowTexture, IGlowParticle}
+import net.katsstuff.danmakucore.danmaku.{DanmakuChanges, DanmakuState, ServerDanmakuHandler}
 import net.katsstuff.danmakucore.danmodel.DanModelReader
 import net.katsstuff.danmakucore.data.Vector3
+import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant
 import net.katsstuff.danmakucore.entity.danmaku.form.Form
 import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType
-import net.katsstuff.danmakucore.entity.danmaku.{DanmakuVariant, EntityDanmaku}
 import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType
 import net.katsstuff.danmakucore.entity.spellcard.{EntitySpellcard, Spellcard}
@@ -34,9 +36,13 @@ import net.katsstuff.danmakucore.network.SpellcardInfoPacket
 import net.minecraft.entity.Entity
 import net.minecraft.init.SoundEvents
 import net.minecraft.item.Item
-import net.minecraft.util.{ResourceLocation, SoundEvent}
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.{IThreadListener, ResourceLocation, SoundEvent}
 import net.minecraft.world.World
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.RegistryEvent
+import net.minecraftforge.fml.common.FMLCommonHandler
+import net.minecraftforge.fml.common.event.{FMLServerStartingEvent, FMLServerStoppedEvent}
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.registry.{EntityEntry, EntityEntryBuilder}
 import net.minecraftforge.registries.{IForgeRegistryEntry, RegistryBuilder}
@@ -50,7 +56,7 @@ object CommonProxy {
   @SubscribeEvent
   def registerForms(event: RegistryEvent.Register[Form]): Unit = {
     def noteForm(name: String, sound: SoundEvent, location: String) =
-      new FormNote(name, sound, DanModelReader.readModel(DanmakuCore.resource(location)).get._2)
+      new FormNote(name, sound, DanmakuCore.resource(location))
 
     event.getRegistry
       .registerAll(
@@ -67,8 +73,9 @@ object CommonProxy {
         new FormControl,
         new FormFire,
         new FormLaser,
-        DanModelReader.createForm(new ResourceLocation(LibMod.Id, "models/form/heart"), LibFormName.HEART).get,
-        noteForm(LibFormName.NOTE1, SoundEvents.BLOCK_NOTE_HARP, "models/form/note1")
+        DanModelReader.createForm(new ResourceLocation(LibMod.Id, "models/form/heart"), LibFormName.HEART),
+        noteForm(LibFormName.NOTE1, SoundEvents.BLOCK_NOTE_HARP, "models/form/note1"),
+        new FormBubble
       )
   }
 
@@ -79,16 +86,14 @@ object CommonProxy {
         new SubEntityTypeDefault(LibSubEntityName.DEFAULT),
         new SubEntityTypeFire(LibSubEntityName.FIRE, 2F),
         new SubEntityTypeExplosion(LibSubEntityName.EXPLODE, 3F),
-        new SubEntityTypeTeleport(LibSubEntityName.TELEPORT)
+        new SubEntityTypeTeleport(LibSubEntityName.TELEPORT),
+        new SubEntityTypeDanmakuExplosion(LibSubEntityName.DANMAKU_EXPLODE)
       )
   }
 
   @SubscribeEvent
-  def registerSpellcards(event: RegistryEvent.Register[Spellcard]): Unit = {
-    val toRegister = Seq(new SpellcardDelusionEnlightenment)
-    event.getRegistry.registerAll(toRegister: _*)
-    toRegister.foreach(_.bakeModel())
-  }
+  def registerSpellcards(event: RegistryEvent.Register[Spellcard]): Unit =
+    event.getRegistry.registerAll(new SpellcardDelusionEnlightenment)
 
   @SubscribeEvent
   def registerPhases(event: RegistryEvent.Register[PhaseType]): Unit = {
@@ -127,7 +132,8 @@ object CommonProxy {
         DanmakuVariantGeneric.withSpeed(FIRE, () => LibShotData.SHOT_FIRE, 0.4D),
         DanmakuVariantGeneric.withSpeed(LASER, () => LibShotData.SHOT_LASER, 0D),
         DanmakuVariantGeneric.withSpeed(HEART, () => LibShotData.SHOT_HEART, 0.4D),
-        DanmakuVariantGeneric.withSpeed(NOTE1, () => LibShotData.SHOT_NOTE1, 0.4D)
+        DanmakuVariantGeneric.withSpeed(NOTE1, () => LibShotData.SHOT_NOTE1, 0.4D),
+        DanmakuVariantGeneric.withSpeed(BUBBLE, () => LibShotData.SHOT_BUBBLE, 0.4D)
       )
   }
 
@@ -155,10 +161,9 @@ object CommonProxy {
 
     event.getRegistry.registerAll(IdState.run0 {
       for {
-        danmaku   <- registerEntity[EntityDanmaku]
         spellcard <- registerEntity[EntitySpellcard]
         falling   <- registerEntity[EntityFallingData]
-      } yield Seq(danmaku, spellcard, falling)
+      } yield Seq(spellcard, falling)
     }: _*)
 
   }
@@ -206,9 +211,25 @@ object CommonProxy {
 }
 class CommonProxy {
 
+  def defaultWorld: World = FMLCommonHandler.instance().getMinecraftServerInstance.getEntityWorld
+
+  def scheduler: IThreadListener = FMLCommonHandler.instance().getMinecraftServerInstance
+
+  protected var serverDanmakuHandler: ServerDanmakuHandler = _
+
+  def serverStarting(event: FMLServerStartingEvent): Unit = {
+    serverDanmakuHandler = new ServerDanmakuHandler
+    MinecraftForge.EVENT_BUS.register(serverDanmakuHandler)
+  }
+
+  def serverStopped(event: FMLServerStoppedEvent): Unit = {
+    MinecraftForge.EVENT_BUS.unregister(serverDanmakuHandler)
+    serverDanmakuHandler = null
+  }
+
   private[danmakucore] def bakeDanmakuVariant(variant: DanmakuVariant): Unit = {}
 
-  private[danmakucore] def bakeDanmakuForm(form: Form): Unit = {}
+  private[danmakucore] def initForm(form: Form): Unit = {}
 
   private[danmakucore] def bakeSpellcard(`type`: Spellcard): Unit = {}
 
@@ -285,4 +306,14 @@ class CommonProxy {
   ): Unit = {}
 
   def addParticle[T <: IGlowParticle](particle: T): Unit = {}
+
+  def updateDanmaku(changes: DanmakuChanges):  Unit = serverDanmakuHandler.updateDanmaku(changes)
+  def spawnDanmaku(states: Seq[DanmakuState]): Unit = serverDanmakuHandler.spawnDanmaku(states)
+
+  private[danmakucore] def forceUpdateDanmakuClient(state: DanmakuState): Unit = ()
+  private[danmakucore] def updateDanmakuClient(changes: DanmakuChanges):  Unit = ()
+  private[danmakucore] def spawnDanmakuClient(states: Seq[DanmakuState]): Unit = ()
+
+  def collectDanmakuInAABB[A](aabb: AxisAlignedBB)(f: PartialFunction[DanmakuState, A]): immutable.IndexedSeq[A] =
+    serverDanmakuHandler.collectDanmakuInAABB(aabb)(f)
 }

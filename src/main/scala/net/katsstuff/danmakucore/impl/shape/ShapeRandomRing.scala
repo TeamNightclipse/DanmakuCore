@@ -8,8 +8,9 @@
  */
 package net.katsstuff.danmakucore.impl.shape
 
+import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.{Quat, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.{DanmakuTemplate, EntityDanmaku}
+import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
 
 class ShapeRandomRing(template: DanmakuTemplate, amount: Int, radius: Float, distance: Double) extends Shape {
@@ -27,12 +28,10 @@ class ShapeRandomRing(template: DanmakuTemplate, amount: Int, radius: Float, dis
       val res = for (_ <- 0 until amount) yield {
         builder.direction = Vector3.Forward.rotate(rotate)
         builder.pos = pos.offset(builder.direction, distance)
-        val spawned = builder.build.asEntity
-        template.world.spawnEntity(spawned)
-        spawned
+        builder.build.asEntity
       }
 
       ShapeResult.done(res.toSet)
-    } else ShapeResult.done(Set.empty[EntityDanmaku])
+    } else ShapeResult.done(Set.empty[DanmakuState])
   }
 }

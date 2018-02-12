@@ -11,10 +11,11 @@ package net.katsstuff.danmakucore.client
 import scala.reflect.ClassTag
 
 import net.katsstuff.danmakucore.CommonProxy
-import net.katsstuff.danmakucore.client.handler.{BossBarHandler, HUDHandler, SpellcardHandler}
-import net.katsstuff.danmakucore.client.helper.RenderHelper
+import net.katsstuff.danmakucore.client.handler.{BossBarHandler, DanmakuRenderer, HUDHandler, SpellcardHandler}
+import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.client.particle.{GlowTexture, IGlowParticle, ParticleRenderer, ParticleUtil}
 import net.katsstuff.danmakucore.client.render.{RenderDanmaku, RenderFallingData, RenderSpellcard}
+import net.katsstuff.danmakucore.danmaku.{ClientDanmakuHandler, DanmakuChanges, DanmakuState}
 import net.katsstuff.danmakucore.data.{ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant
 import net.katsstuff.danmakucore.entity.danmaku.form.Form
@@ -31,13 +32,16 @@ import net.minecraft.client.renderer.color.IItemColor
 import net.minecraft.client.renderer.entity.{Render, RenderManager}
 import net.minecraft.entity.Entity
 import net.minecraft.item.ItemStack
+import net.minecraft.util.IThreadListener
 import net.minecraft.world.World
 import net.minecraftforge.client.event.ModelRegistryEvent
 import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.util.Constants
 import net.minecraftforge.fml.client.registry.{IRenderFactory, RenderingRegistry}
+import net.minecraftforge.fml.common.event.{FMLServerStartingEvent, FMLServerStoppedEvent}
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.{ClientConnectedToServerEvent, ClientDisconnectionFromServerEvent}
 
 object ClientProxy {
 
@@ -50,16 +54,61 @@ object ClientProxy {
   }
 }
 class ClientProxy extends CommonProxy {
+  MinecraftForge.EVENT_BUS.register(this)
 
   private val bossBarHandler   = new BossBarHandler
   private val spellcardHandler = new SpellcardHandler
-  val particleRenderer         = new ParticleRenderer
+  private val particleRenderer = new ParticleRenderer
+  private var clientDanmakuHandler: ClientDanmakuHandler = _
+  private var danmakuRenderer:      DanmakuRenderer      = _
+
+  override def defaultWorld: World = Minecraft.getMinecraft.world
+
+  override def scheduler: IThreadListener = Minecraft.getMinecraft
+
+  override def serverStarting(event: FMLServerStartingEvent): Unit = {
+    super.serverStarting(event)
+    registerDanmaku()
+  }
+
+  override def serverStopped(event: FMLServerStoppedEvent): Unit = {
+    super.serverStopped(event)
+    unregisterDanmaku()
+  }
+
+  @SubscribeEvent
+  def onJoined(event: ClientConnectedToServerEvent): Unit =
+    registerDanmaku()
+
+  @SubscribeEvent
+  def onQuit(event: ClientDisconnectionFromServerEvent): Unit =
+    unregisterDanmaku()
+
+  private def registerDanmaku(): Unit = {
+    if(clientDanmakuHandler == null) {
+      clientDanmakuHandler = new ClientDanmakuHandler
+      danmakuRenderer = new DanmakuRenderer(clientDanmakuHandler)
+      MinecraftForge.EVENT_BUS.register(clientDanmakuHandler)
+      MinecraftForge.EVENT_BUS.register(danmakuRenderer)
+    }
+  }
+
+  private def unregisterDanmaku(): Unit = {
+    if(clientDanmakuHandler != null) {
+      MinecraftForge.EVENT_BUS.unregister(clientDanmakuHandler)
+      MinecraftForge.EVENT_BUS.unregister(danmakuRenderer)
+      clientDanmakuHandler = null
+      danmakuRenderer = null
+    }
+  }
 
   override private[danmakucore] def bakeDanmakuVariant(variant: DanmakuVariant): Unit =
     ModelBakery.registerItemVariants(LibItems.DANMAKU, variant.itemModel)
 
-  override private[danmakucore] def bakeDanmakuForm(form: Form): Unit =
+  override private[danmakucore] def initForm(form: Form): Unit = {
     ModelBakery.registerItemVariants(LibItems.DANMAKU, form.itemModel)
+    form.initClient()
+  }
 
   override private[danmakucore] def bakeSpellcard(spellcard: Spellcard): Unit =
     ModelBakery.registerItemVariants(LibItems.SPELLCARD, spellcard.itemModel)
@@ -80,12 +129,10 @@ class ClientProxy extends CommonProxy {
       implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]],
       factory
     )
-
-    MinecraftForge.EVENT_BUS.register(particleRenderer)
   }
 
   override private[danmakucore] def bakeRenderModels(): Unit =
-    RenderHelper.bakeModels()
+    DanCoreRenderHelper.bakeModels()
 
   override private[danmakucore] def registerItemColors(): Unit = {
     val itemColors = Minecraft.getMinecraft.getItemColors
@@ -131,4 +178,16 @@ class ClientProxy extends CommonProxy {
       lifetime: Int
   ): Unit = TouhouHelper.createChargeSphere(entity, amount, offset, divSpeed, r, g, b, lifetime)
 
+  override def forceUpdateDanmakuClient(state: DanmakuState): Unit =
+    clientDanmakuHandler.forceUpdateDanmaku(
+      state.copy(entity = state.entity.copy(world = Minecraft.getMinecraft.world))
+    )
+
+  override private[danmakucore] def updateDanmakuClient(changes: DanmakuChanges): Unit =
+    clientDanmakuHandler.updateDanmaku(changes)
+
+  override private[danmakucore] def spawnDanmakuClient(states: Seq[DanmakuState]): Unit = {
+    val clientWorld = Minecraft.getMinecraft.world
+    clientDanmakuHandler.spawnDanmaku(states.map(state => state.copy(entity = state.entity.copy(world = clientWorld))))
+  }
 }

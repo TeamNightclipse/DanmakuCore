@@ -16,6 +16,7 @@ import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.katsstuff.danmakucore.lib.LibColor
 import net.katsstuff.danmakucore.lib.data.{LibForms, LibSubEntities}
+import net.katsstuff.danmakucore.network.scalachannel.MessageConverter
 import net.katsstuff.danmakucore.registry.DanmakuRegistry
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
@@ -24,55 +25,55 @@ import net.minecraftforge.common.util.INBTSerializable
 
 /**
 	* Holds general information about the effect
-	* and behavior of a [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+	* and behavior of a [[net.katsstuff.danmakucore.danmaku.DanmakuState]]
 	*/
 abstract sealed class AbstractShotData {
 
   /**
-		* The physical appearance of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* The physical appearance of the [[net.katsstuff.danmakucore.danmaku.DanmakuState]]
 		*/
   def form: Form
 
   /**
-		* The color of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* The color of the [[net.katsstuff.danmakucore.danmaku.DanmakuState]]
 		*/
   def color: Int
 
   /**
-		* The damage the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* The damage the [[net.katsstuff.danmakucore.danmaku.DanmakuState]]
 		* will cause on hit.
 		*/
   def damage: Float
 
   /**
-		* The size on the x axis of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* The size on the x axis of the [[net.katsstuff.danmakucore.danmaku.DanmakuState]]
 		*/
   def sizeX: Float
 
   /**
-		* The size on the y axis of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* The size on the y axis of the [[net.katsstuff.danmakucore.danmaku.DanmakuState]]
 		*/
   def sizeY: Float
 
   /**
-		* The size on the z axis of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* The size on the z axis of the [[net.katsstuff.danmakucore.danmaku.DanmakuState]]
 		*/
   def sizeZ: Float
 
   /**
-		* How long the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* How long the [[net.katsstuff.danmakucore.danmaku.DanmakuState]]
 		* will stand still before activating.
 		*/
   def delay: Int
 
   /**
-		* How long the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]]
+		* How long the [[net.katsstuff.danmakucore.danmaku.DanmakuState]]
 		* will last before it's killed.
 		*/
   def end: Int
 
   /**
-		* The [[SubEntityType]] of the [[net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku]].
+		* The [[SubEntityType]] of the [[net.katsstuff.danmakucore.danmaku.DanmakuState]].
 		* This is kind of like the AI of the entity, and where all the hard work happens.
 		*/
   def subEntity: SubEntityType
@@ -245,12 +246,11 @@ final case class ShotData(
       sizeZ = tag.getFloat(ShotData.NbtSizeZ),
       delay = tag.getInteger(ShotData.NbtDelay),
       end = tag.getInteger(ShotData.NbtEnd),
-      subEntity = Option(
-        DanmakuRegistry.SubEntity.getValue(new ResourceLocation(tag.getString(ShotData.NbtSubEntity)))
-      ).getOrElse {
-        LogHelper.warn("Found null subEntity type. Setting to default")
-        LibSubEntities.DEFAULT_TYPE
-      }
+      subEntity = Option(DanmakuRegistry.SubEntity.getValue(new ResourceLocation(tag.getString(ShotData.NbtSubEntity))))
+        .getOrElse {
+          LogHelper.warn("Found null subEntity type. Setting to default")
+          LibSubEntities.DEFAULT_TYPE
+        }
     )
   }
 
@@ -327,4 +327,7 @@ object ShotData {
     stack.setTagCompound(rootTag)
     stack
   }
+
+  implicit val converter: MessageConverter[ShotData] =
+    MessageConverter[NBTTagCompound].modify(new ShotData(_))(_.serializeNBT)
 }

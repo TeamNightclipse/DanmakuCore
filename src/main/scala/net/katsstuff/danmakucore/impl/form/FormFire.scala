@@ -8,33 +8,39 @@
  */
 package net.katsstuff.danmakucore.impl.form
 
+import scala.util.Random
+
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.client.particle.GlowTexture
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate, DanmakuUpdateSignal}
 import net.katsstuff.danmakucore.data.Vector3
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
 import net.katsstuff.danmakucore.lib.LibFormName
 
 private[danmakucore] class FormFire extends FormSphere(LibFormName.FIRE) {
 
-  override def onTick(danmaku: EntityDanmaku): Unit = {
-    if (danmaku.world.isRemote) {
-      val shot = danmaku.shotData
+  override def onTick(danmaku: DanmakuState): Option[DanmakuUpdate] = {
+    val res = DanmakuUpdate.none(danmaku).addCallback { () =>
+      val shot  = danmaku.shot
       val color = shot.color
-      val r = Math.max(0.05F, (color >> 16 & 255) / 255.0F)
-      val g = Math.max(0.05F, (color >> 8 & 255) / 255.0F)
-      val b = Math.max(0.05F, (color & 255) / 255.0F)
-      val size = (shot.sizeX + shot.sizeY + shot.sizeZ) / 3
+      val r     = Math.max(0.05F, (color >> 16 & 255) / 255.0F)
+      val g     = Math.max(0.05F, (color >> 8 & 255) / 255.0F)
+      val b     = Math.max(0.05F, (color & 255) / 255.0F)
+      val size  = (shot.sizeX + shot.sizeY + shot.sizeZ) / 3
 
-      for(i <- 0 until 15) {
+      val extraY = +shot.sizeY / 2
+      val diff   = danmaku.pos.add(0D, extraY, 0D) - danmaku.prevPos.add(0D, extraY, 0D)
+      for (i <- 0 until 15) {
         val coeff = i / 15D
-        val pos = new Vector3(danmaku.prevPosX + (danmaku.posX - danmaku.prevPosX) * coeff,
-          danmaku.prevPosY + shot.sizeY / 2 + (danmaku.posY - danmaku.prevPosY) * coeff,
-          danmaku.prevPosZ + (danmaku.posZ - danmaku.prevPosZ) * coeff)
-        val motion = new Vector3(0.0125f * (danmaku.getRNG.nextFloat - 0.5f), 0.0125f * (danmaku.getRNG.nextFloat - 0.5f),
-          0.0125f * (danmaku.getRNG.nextFloat - 0.5f))
+        val pos   = danmaku.prevPos.add(0D, extraY, 0D) + diff * coeff
+        val motion = new Vector3(
+          0.0125f * (Random.nextFloat - 0.5f),
+          0.0125f * (Random.nextFloat - 0.5f),
+          0.0125f * (Random.nextFloat - 0.5f)
+        )
 
         DanmakuCore.proxy.createParticleGlow(danmaku.world, pos, motion, r, g, b, size * 15F, 10, GlowTexture.MOTE)
       }
     }
+    Some(res)
   }
 }

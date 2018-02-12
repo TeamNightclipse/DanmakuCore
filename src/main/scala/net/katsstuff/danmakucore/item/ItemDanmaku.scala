@@ -14,10 +14,10 @@ import javax.annotation.Nullable
 
 import scala.collection.JavaConverters._
 
-import net.katsstuff.danmakucore.DanmakuCreativeTab
+import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
 import net.katsstuff.danmakucore.entity.danmaku.form.Form
-import net.katsstuff.danmakucore.entity.danmaku.{DanmakuTemplate, DanmakuVariant, EntityDanmaku}
+import net.katsstuff.danmakucore.entity.danmaku.{DanmakuTemplate, DanmakuVariant}
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.katsstuff.danmakucore.helper.MathUtil._
 import net.katsstuff.danmakucore.lib.data.{LibDanmakuVariants, LibItems, LibSubEntities}
@@ -25,6 +25,7 @@ import net.katsstuff.danmakucore.lib.{LibColor, LibItemName}
 import net.katsstuff.danmakucore.misc._
 import net.katsstuff.danmakucore.registry.{DanmakuRegistry, RegistryValueWithItemModel}
 import net.katsstuff.danmakucore.scalastuff.DanmakuCreationHelper
+import net.katsstuff.danmakucore.{DanmakuCore, DanmakuCreativeTab}
 import net.minecraft.client.resources.I18n
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs
@@ -75,19 +76,21 @@ object ItemDanmaku {
       }
       if (canRun) {
 
-        DanmakuTemplate.builder
+        val template = DanmakuTemplate.builder
           .setUser(user)
+          .setWorld(world)
           .setShot(shot)
           .setMovementData(shotSpeed, gravity)
           .setPos(pos)
           .setDirection(direction)
-        danmakuPattern.makeDanmaku(DanmakuTemplate.builder.build, amount, shotSpeed, alternateMode, orientation, offset)
+          .build
+        danmakuPattern.makeDanmaku(template, amount, shotSpeed, alternateMode, offset)
         true
       } else false
     } else {
-      getVariant(stack).create(user, alternateMode, pos, direction, hand).exists { template =>
+      getVariant(stack).create(world, user, alternateMode, pos, direction, hand).exists { template =>
         val newTemplate = template.toBuilder.setShot(shot).setMovementData(shotSpeed, gravity).build
-        danmakuPattern.makeDanmaku(newTemplate, amount, shotSpeed, alternateMode, orientation, offset)
+        danmakuPattern.makeDanmaku(newTemplate, amount, shotSpeed, alternateMode, offset)
         true
       }
     }
@@ -139,9 +142,8 @@ object ItemDanmaku {
         amount: Int,
         shotSpeed: Double,
         alternateMode: Boolean,
-        orientation: Quat,
         offset: Double
-    ): Set[EntityDanmaku]
+    ): Set[DanmakuState]
   }
   object Pattern {
     def idOf(pattern: Pattern): Byte = pattern match {
@@ -168,17 +170,15 @@ object ItemDanmaku {
         amount: Int,
         shotSpeed: Double,
         alternateMode: Boolean,
-        orientation: Quat,
         offset: Double
-    ): Set[EntityDanmaku] = {
+    ): Set[DanmakuState] = {
       val danmaku = template.toBuilder
       danmaku.pos = danmaku.pos.offset(danmaku.direction, offset)
       val res = for (i <- 1 to amount) yield {
         danmaku.setMovementData(shotSpeed / amount * i)
-        val entity = danmaku.build.asEntity
-        danmaku.world.spawnEntity(entity)
-        entity
+        danmaku.build.asEntity
       }
+      DanmakuCore.proxy.spawnDanmaku(res)
       res.toSet
     }
   }
@@ -190,11 +190,10 @@ object ItemDanmaku {
         amount: Int,
         shotSpeed: Double,
         alternateMode: Boolean,
-        orientation: Quat,
         offset: Double
-    ): Set[EntityDanmaku] = {
+    ): Set[DanmakuState] = {
       val wide = if (alternateMode) 60F else 120F
-      DanmakuCreationHelper.createRandomRingShot(orientation, template, amount, wide, offset)
+      DanmakuCreationHelper.createRandomRingShot(template, amount, wide, offset)
     }
   }
   def randomRing: Pattern = RandomRing
@@ -205,11 +204,10 @@ object ItemDanmaku {
         amount: Int,
         shotSpeed: Double,
         alternateMode: Boolean,
-        orientation: Quat,
         offset: Double
-    ): Set[EntityDanmaku] = {
+    ): Set[DanmakuState] = {
       val wide = if (alternateMode) amount * 4F else amount * 8F
-      DanmakuCreationHelper.createWideShot(orientation, template, amount, wide, 0F, offset)
+      DanmakuCreationHelper.createWideShot(template, amount, wide, 0F, offset)
     }
   }
   def wide: Pattern = Wide
@@ -220,9 +218,8 @@ object ItemDanmaku {
         amount: Int,
         shotSpeed: Double,
         alternateMode: Boolean,
-        orientation: Quat,
         offset: Double
-    ): Set[EntityDanmaku] = DanmakuCreationHelper.createCircleShot(orientation, template, amount, 0F, offset)
+    ): Set[DanmakuState] = DanmakuCreationHelper.createCircleShot(template, amount, 0F, offset)
   }
   def circle: Pattern = Circle
 
@@ -232,18 +229,10 @@ object ItemDanmaku {
         amount: Int,
         shotSpeed: Double,
         alternateMode: Boolean,
-        orientation: Quat,
         offset: Double
-    ): Set[EntityDanmaku] = {
+    ): Set[DanmakuState] = {
       val wide = if (alternateMode) 7.5F else 15F
-      DanmakuCreationHelper.createRingShot(
-        orientation,
-        template,
-        amount,
-        wide,
-        template.world.rand.nextFloat * 360,
-        offset
-      )
+      DanmakuCreationHelper.createRingShot(template, amount, wide, template.world.rand.nextFloat * 360, offset)
     }
   }
   def ring: Pattern = Ring
@@ -254,10 +243,9 @@ object ItemDanmaku {
         amount: Int,
         shotSpeed: Double,
         alternateMode: Boolean,
-        orientation: Quat,
         offset: Double
-    ): Set[EntityDanmaku] =
-      DanmakuCreationHelper.createSphereShot(orientation, template, amount, amount / 2, 0F, offset)
+    ): Set[DanmakuState] =
+      DanmakuCreationHelper.createSphereShot(template, amount, amount / 2, 0F, offset)
   }
   def sphere: Pattern = Sphere
 }
@@ -265,11 +253,10 @@ class ItemDanmaku extends ItemBase(LibItemName.DANMAKU) {
   setMaxDamage(0)
   setCreativeTab(DanmakuCreativeTab)
 
-  override def getSubItems(tab: CreativeTabs, subItems: NonNullList[ItemStack]): Unit = {
-    if(isInCreativeTab(tab)) {
+  override def getSubItems(tab: CreativeTabs, subItems: NonNullList[ItemStack]): Unit =
+    if (isInCreativeTab(tab)) {
       subItems.addAll(DanmakuRegistry.DanmakuVariant.getValues.asScala.sorted.map(ItemDanmaku.createStack).asJava)
     }
-  }
 
   @SideOnly(Side.CLIENT) override def hasEffect(stack: ItemStack): Boolean = ItemDanmaku.Infinity.get(stack)
   override def getUnlocalizedName(stack: ItemStack): String =

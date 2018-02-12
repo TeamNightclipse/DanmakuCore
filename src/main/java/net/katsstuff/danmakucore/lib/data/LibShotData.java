@@ -35,4 +35,5 @@ public class LibShotData {
 	public static final ShotData SHOT_LASER = new ShotData(LibForms.LASER, COLOR_VANILLA_RED, 1.5F, 0.5F, 0.5F, 15F, 30, 60, LibSubEntities.DEFAULT_TYPE);
 	public static final ShotData SHOT_HEART = new ShotData(LibForms.HEART, COLOR_VANILLA_RED, 1.5F, 0.4F);
 	public static final ShotData SHOT_NOTE1 = new ShotData(LibForms.NOTE1, COLOR_VANILLA_RED, 1.3F, 0.4F);
+	public static final ShotData SHOT_BUBBLE = new ShotData(LibForms.BUBBLE, COLOR_VANILLA_RED, 1.3F, 1F);
 }

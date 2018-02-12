@@ -31,4 +31,5 @@ public class LibDanmakuVariantName {
 	public static final String LASER = "laser";
 	public static final String HEART = "heart";
 	public static final String NOTE1 = "note1";
+	public static final String BUBBLE = "bubble";
 }
