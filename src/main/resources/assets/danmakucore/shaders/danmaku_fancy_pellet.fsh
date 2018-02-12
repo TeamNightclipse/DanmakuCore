@@ -12,7 +12,7 @@ varying vec3 normal;
 vec4 coreGlow() {
 	//We try to get rid of the ugly edge
 	float facing = facing_ratio(view, normal, 0.01);
-	return mix(gl_Color, vec4(0.0), facing);
+	return mix(brightContrast(gl_Color, 0.85, 0.0), vec4(0.0), facing);
 }
 
 float edgeDefine(float edgeFacing) {
