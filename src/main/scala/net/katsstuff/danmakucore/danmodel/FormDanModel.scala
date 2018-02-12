@@ -64,9 +64,10 @@ private[danmakucore] class FormDanModel(name: String, resource: ResourceLocation
           DanCoreRenderHelper.transformDanmaku(danmaku.shot, orientation)
           DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, danmaku.shot.color)
 
-          if (OpenGlHelper.useVbo()) {
+          //Using VBOs here break for some models
+          /*if (OpenGlHelper.useVbo()) {
             danModel.drawVBOs()
-          } else if (modelList != -1) {
+          } else*/ if (modelList != -1) {
             GlStateManager.callList(modelList)
           } else {
             val tes = Tessellator.getInstance

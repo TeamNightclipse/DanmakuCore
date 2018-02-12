@@ -92,11 +92,8 @@ object CommonProxy {
   }
 
   @SubscribeEvent
-  def registerSpellcards(event: RegistryEvent.Register[Spellcard]): Unit = {
-    val toRegister = Seq(new SpellcardDelusionEnlightenment)
-    event.getRegistry.registerAll(toRegister: _*)
-    toRegister.foreach(_.bakeModel())
-  }
+  def registerSpellcards(event: RegistryEvent.Register[Spellcard]): Unit =
+    event.getRegistry.registerAll(new SpellcardDelusionEnlightenment)
 
   @SubscribeEvent
   def registerPhases(event: RegistryEvent.Register[PhaseType]): Unit = {

@@ -26,9 +26,8 @@ abstract class Spellcard extends RegistryValueItemCreatable[Spellcard, EntitySpe
   def this(name: String) {
     this()
     setRegistryName(name)
+    DanmakuCore.proxy.bakeSpellcard(this)
   }
-
-  final def bakeModel(): Unit = DanmakuCore.proxy.bakeSpellcard(this)
 
   def instantiate(card: EntitySpellcard, @Nullable target: EntityLivingBase): SpellcardEntity =
     instantiate(card, Option(target))

@@ -129,8 +129,6 @@ class ClientProxy extends CommonProxy {
       implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]],
       factory
     )
-
-    MinecraftForge.EVENT_BUS.register(particleRenderer)
   }
 
   override private[danmakucore] def bakeRenderModels(): Unit =
