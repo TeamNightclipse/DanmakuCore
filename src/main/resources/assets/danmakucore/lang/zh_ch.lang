@@ -144,12 +144,11 @@ item.danmaku.color.10040115=红色
 item.danmaku.color.1644825=黑色
 
 #Shot Patterns
-item.danmaku.pattern.LINE=单发射击
-item.danmaku.pattern.RANDOM_RING=随机环形射击
-item.danmaku.pattern.WIDE=范围射击
-item.danmaku.pattern.CIRCLE=圆形射击
-item.danmaku.pattern.STAR=球形射击
-item.danmaku.pattern.RING=环形射击
+item.danmaku.pattern.Line=单发射击
+item.danmaku.pattern.RandomRing=随机环形射击
+item.danmaku.pattern.Wide=范围射击
+item.danmaku.pattern.Circle=圆形射击
+item.danmaku.pattern.Ring=环形射击
 
 #Shot subentity
 subentity.danmakucore.default=无
@@ -158,7 +157,7 @@ subentity.danmakucore.explosion=爆炸
 subentity.danmakucore.teleport=传送
 
 #Defaults
-item.danmaku.color.16777215=白色
+item.danmaku.color.16383998=白色
 item.danmaku.color.custom=自定义颜色
 
 #Commands
