@@ -82,7 +82,7 @@ val reobf: NamedDomainObjectContainer<IReobfuscator> by extensions
 
 reobf {
     "jar" {
-        extraLines.add("PK: shapeless net/katsstuff/spookyharvestmoon/shade/shapeless")
+        extraLines.add("PK: shapeless net/katsstuff/danmakucore/shade/shapeless")
     }
 }
 
