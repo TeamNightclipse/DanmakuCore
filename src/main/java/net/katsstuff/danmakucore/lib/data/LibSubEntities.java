@@ -25,4 +25,6 @@ public final class LibSubEntities {
 	public static final SubEntityType EXPLOSION = SubEntityTypeDummy.instance();
 	@ObjectHolder(LibSubEntityName.TELEPORT)
 	public static final SubEntityType TELEPORT = SubEntityTypeDummy.instance();
+	@ObjectHolder(LibSubEntityName.DANMAKU_EXPLODE)
+	public static final SubEntityType DANMAKU_EXPLODE = SubEntityTypeDummy.instance();
 }
