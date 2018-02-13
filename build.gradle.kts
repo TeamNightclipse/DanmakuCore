@@ -8,13 +8,6 @@ import org.gradle.jvm.tasks.Jar
 import java.util.Properties
 
 buildscript {
-    repositories {
-        jcenter()
-        maven {
-            name = "forge"
-            setUrl("http://files.minecraftforge.net/maven")
-        }
-    }
     dependencies {
         classpath("net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT")
     }
@@ -29,7 +22,6 @@ plugins {
     //We apply these to get pretty build script
     java
     idea
-    id("org.sonarqube").version("2.6")
 }
 
 val configFile = file("build.properties")
