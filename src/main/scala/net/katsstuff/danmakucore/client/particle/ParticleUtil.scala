@@ -36,7 +36,7 @@ object ParticleUtil {
   ): Unit = {
     counter += random.nextInt(3)
     val particleSetting = Minecraft.getMinecraft.gameSettings.particleSetting
-    val particleComp = if (particleSetting == 0) 1 else 2 * particleSetting
+    val particleComp    = if (particleSetting == 0) 1 else 2 * particleSetting
     if (counter % particleComp == 0) {
       DanmakuCore.proxy.addParticle(new ParticleGlow(world, pos, motion, r, g, b, scale, lifetime, texture))
     }

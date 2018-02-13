@@ -16,6 +16,7 @@ import net.katsstuff.danmakucore.client.shader.{DanCoreShaderProgram, ShaderMana
 import net.katsstuff.danmakucore.danmaku.{DanmakuHandler, DanmakuState}
 import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.entity.danmaku.form.Form
+import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.entity.RenderManager
@@ -30,15 +31,14 @@ class DanmakuRenderer(handler: DanmakuHandler) {
 
   final private val invalidForms = new mutable.HashSet[Form]
   private val mc                 = Minecraft.getMinecraft
-  private val useShaders         = OpenGlHelper.shadersSupported
+  private def useShaders         = OpenGlHelper.shadersSupported && ConfigHandler.client.useShaders
 
   @SideOnly(Side.CLIENT)
   @SubscribeEvent
-  def onDebugInfo(event: RenderGameOverlayEvent.Text): Unit = {
-    if(mc.gameSettings.showDebugInfo) {
+  def onDebugInfo(event: RenderGameOverlayEvent.Text): Unit =
+    if (mc.gameSettings.showDebugInfo) {
       event.getLeft.add(s"Danmaku count: ${handler.allDanmaku.size}")
     }
-  }
 
   @SideOnly(Side.CLIENT)
   @SubscribeEvent

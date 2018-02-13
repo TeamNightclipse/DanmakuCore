@@ -50,21 +50,21 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
   private def drawPower(res: ScaledResolution, mc: Minecraft, power: Float, score: Int) = {
     val filled     = if (power > 4F) 1F else power / 4F
-    val widthEnd   = ConfigHandler.hud.power.widthEnd
-    val widthStart = ConfigHandler.hud.power.widthStart
+    val widthEnd   = ConfigHandler.client.hud.power.widthEnd
+    val widthStart = ConfigHandler.client.hud.power.widthStart
 
     val height = 10
 
     val widthUsed   = widthEnd - widthStart
     val widthFilled = (widthUsed * filled).toInt
 
-    val powerPosX = res.getScaledWidth + ConfigHandler.hud.power.posX
-    val powerPosY = res.getScaledHeight - ConfigHandler.hud.power.posY
+    val powerPosX = res.getScaledWidth + ConfigHandler.client.hud.power.posX
+    val powerPosY = res.getScaledHeight - ConfigHandler.client.hud.power.posY
 
     val powerStartPosX  = powerPosX - widthEnd
     val powerFilledPosX = powerPosX - widthFilled - widthStart
 
-    powerBarVisible = fade(ConfigHandler.hud.power.hideIfFull, filled ==~ 1F, powerBarVisible)
+    powerBarVisible = fade(ConfigHandler.client.hud.power.hideIfFull, filled ==~ 1F, powerBarVisible)
 
     mc.getTextureManager.bindTexture(PowerBackground)
     Gui.drawModalRectWithCustomSizedTexture(
@@ -92,7 +92,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
     var textColor = 0xFFFFFFFF
     var drawText  = true
-    if (ConfigHandler.hud.power.hideIfFull) {
+    if (ConfigHandler.client.hud.power.hideIfFull) {
       val alpha = (powerBarVisible * 255).toInt
       if (alpha < 4) drawText = false
       textColor = alpha << 24 | 0xFFFFFF
@@ -109,8 +109,8 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
     val bombs = data.getBombs
 
     starsVisible = fade(
-      ConfigHandler.hud.stars.hideIfAboveHigh,
-      lives > ConfigHandler.hud.stars.livesHigh && bombs > ConfigHandler.hud.stars.bombsHigh,
+      ConfigHandler.client.hud.stars.hideIfAboveHigh,
+      lives > ConfigHandler.client.hud.stars.livesHigh && bombs > ConfigHandler.client.hud.stars.bombsHigh,
       starsVisible
     )
     renderStars(mc, LifeFull, LifeEmpty, lives, 13, res)
@@ -136,8 +136,8 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
       yOffset: Int,
       res: ScaledResolution
   ) = {
-    val starX = ConfigHandler.hud.stars.posX
-    val starY = res.getScaledHeight - ConfigHandler.hud.stars.posY
+    val starX = ConfigHandler.client.hud.stars.posX
+    val starY = res.getScaledHeight - ConfigHandler.client.hud.stars.posY
     mc.getTextureManager.bindTexture(fullTexture)
     if (amount > 9) {
       Gui.drawModalRectWithCustomSizedTexture(starX, starY - yOffset, 0F, 0F, 8, 8, 8, 8)

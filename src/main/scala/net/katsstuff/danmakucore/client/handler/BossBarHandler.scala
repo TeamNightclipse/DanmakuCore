@@ -51,7 +51,7 @@ class BossBarHandler {
           }
         }
 
-        if (ConfigHandler.entities.circleBossBar) {
+        if (ConfigHandler.client.entities.circleBossBar) {
           event.setCanceled(true)
           //TODO
         }
