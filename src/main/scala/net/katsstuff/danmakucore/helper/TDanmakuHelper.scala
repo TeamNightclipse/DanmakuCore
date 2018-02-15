@@ -68,9 +68,10 @@ trait TDanmakuHelper {
     * @return The amount of danmaku removed
     */
   def removeDanmaku(centerEntity: Entity, range: Double, mode: RemoveMode, dropBonus: Boolean): Int = {
-    val present = DanmakuCore.proxy.collectDanmakuInAABB(centerEntity.getEntityBoundingBox.grow(range)) {
-      case danmaku if mode.shouldRemove(danmaku, centerEntity) => danmaku
-    }
+    val present = DanmakuCore.proxy.danmakuHandler
+      .collectDanmakuInAABB(centerEntity.world, centerEntity.getEntityBoundingBox.grow(range)) {
+        case danmaku if mode.shouldRemove(danmaku, centerEntity) => danmaku
+      }
 
     present.foreach(danmaku => DanmakuCore.proxy.updateDanmaku(finishOrKillDanmaku(danmaku, dropBonus)))
 

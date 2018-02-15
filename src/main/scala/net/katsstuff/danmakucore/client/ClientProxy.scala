@@ -15,7 +15,7 @@ import net.katsstuff.danmakucore.client.handler.{BossBarHandler, DanmakuRenderer
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.client.particle.{GlowTexture, IGlowParticle, ParticleRenderer, ParticleUtil}
 import net.katsstuff.danmakucore.client.render.{RenderFallingData, RenderSpellcard}
-import net.katsstuff.danmakucore.danmaku.{ClientDanmakuHandler, DanmakuChanges, DanmakuState, DanmakuVariant}
+import net.katsstuff.danmakucore.danmaku.{ClientDanmakuHandler, DanmakuChanges, DanmakuHandler, DanmakuState, DanmakuVariant}
 import net.katsstuff.danmakucore.data.{ShotData, Vector3}
 import net.katsstuff.danmakucore.danmaku.form.Form
 import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss
@@ -192,4 +192,6 @@ class ClientProxy extends CommonProxy {
     val clientWorld = Minecraft.getMinecraft.world
     clientDanmakuHandler.spawnDanmaku(states.map(state => state.copy(entity = state.entity.copy(world = clientWorld))))
   }
+
+  override def danmakuHandler: DanmakuHandler = clientDanmakuHandler
 }

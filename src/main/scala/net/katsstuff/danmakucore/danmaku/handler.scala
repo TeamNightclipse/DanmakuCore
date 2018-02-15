@@ -19,6 +19,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.profiler.Profiler
 import net.minecraft.util.math.{AxisAlignedBB, ChunkPos, MathHelper}
+import net.minecraft.world.World
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -63,9 +64,10 @@ trait DanmakuHandler {
   protected var newDanmaku:           ArrayBuffer[DanmakuState]        = ArrayBuffer.empty[DanmakuState]
   protected var danmakuChanges:       ArrayBuffer[DanmakuChanges]      = ArrayBuffer.empty[DanmakuChanges]
   protected var forcedDanmakuUpdates: ArrayBuffer[(Int, DanmakuState)] = ArrayBuffer.empty[(Int, DanmakuState)]
-  protected val chunkMap:             mutable.LongMap[DanmakuChunk]    = mutable.LongMap.empty[DanmakuChunk]
-  protected var isChunkMapPolpulated: Boolean                          = false
-  var working:                        ParMap[Int, DanmakuUpdate]       = _
+  protected val chunkMap: mutable.WeakHashMap[World, mutable.LongMap[DanmakuChunk]] =
+    mutable.WeakHashMap.empty[World, mutable.LongMap[DanmakuChunk]]
+  protected var isChunkMapPolpulated: Boolean                    = false
+  var working:                        ParMap[Int, DanmakuUpdate] = _
 
   protected def isReady: Boolean = working != null
 
@@ -141,7 +143,9 @@ trait DanmakuHandler {
 
   protected def populateChunkMap(): Unit = {
     danmaku.values.foreach { danmaku =>
-      val chunk = chunkMap.getOrElseUpdate(ChunkPos.asLong(danmaku.chunkPosX, danmaku.chunkPosZ), new DanmakuChunk)
+      val chunk = chunkMap
+        .getOrElseUpdate(danmaku.world, mutable.LongMap.empty)
+        .getOrElseUpdate(ChunkPos.asLong(danmaku.chunkPosX, danmaku.chunkPosZ), new DanmakuChunk)
       chunk.addDanmaku(danmaku)
     }
   }
@@ -152,7 +156,7 @@ trait DanmakuHandler {
 
   def allDanmaku: Iterable[DanmakuState] = danmaku.values
 
-  def collectDanmakuInAABB[A](aabb: AxisAlignedBB)(f: PartialFunction[DanmakuState, A]): immutable.IndexedSeq[A] = {
+  def collectDanmakuInAABB[A](world: World, aabb: AxisAlignedBB)(f: PartialFunction[DanmakuState, A]): immutable.IndexedSeq[A] = {
     if (!isChunkMapPolpulated) {
       populateChunkMap()
     }
@@ -167,12 +171,13 @@ trait DanmakuHandler {
     for {
       x        <- minX until maxX
       z        <- minZ until maxZ
-      chunkMap <- danmakuChunkAt(x, z).toSeq
+      chunkMap <- danmakuChunkAt(world, x, z).toSeq
       danmaku  <- chunkMap.collectDanmakuInAABB(aabb)(f)
     } yield danmaku
   }
 
-  protected def danmakuChunkAt(x: Int, z: Int): Option[DanmakuChunk] = chunkMap.get(ChunkPos.asLong(x, z))
+  protected def danmakuChunkAt(world: World, x: Int, z: Int): Option[DanmakuChunk] =
+    chunkMap.get(world).flatMap(_.get(ChunkPos.asLong(x, z)))
 
   def forceUpdateDanmaku(state: DanmakuState): Unit = forcedDanmakuUpdates += ((state.id, state))
 
@@ -205,7 +210,7 @@ class ServerDanmakuHandler extends DanmakuHandler {
       case (player, playerStates) =>
         DanCorePacketHandler.sendTo(DanmakuCreatePacket(playerStates), player)
     }
-    */
+     */
 
     super.spawnDanmaku(newStates)
   }

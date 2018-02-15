@@ -13,7 +13,7 @@ import scala.collection.immutable
 import scala.reflect.ClassTag
 
 import net.katsstuff.danmakucore.client.particle.{GlowTexture, IGlowParticle}
-import net.katsstuff.danmakucore.danmaku.{DanmakuChanges, DanmakuState, DanmakuVariant, ServerDanmakuHandler}
+import net.katsstuff.danmakucore.danmaku.{DanmakuChanges, DanmakuHandler, DanmakuState, DanmakuVariant, ServerDanmakuHandler}
 import net.katsstuff.danmakucore.danmodel.DanModelReader
 import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.danmaku.form.Form
@@ -314,6 +314,5 @@ class CommonProxy {
   private[danmakucore] def updateDanmakuClient(changes: DanmakuChanges):  Unit = ()
   private[danmakucore] def spawnDanmakuClient(states: Seq[DanmakuState]): Unit = ()
 
-  def collectDanmakuInAABB[A](aabb: AxisAlignedBB)(f: PartialFunction[DanmakuState, A]): immutable.IndexedSeq[A] =
-    serverDanmakuHandler.collectDanmakuInAABB(aabb)(f)
+  def danmakuHandler: DanmakuHandler = serverDanmakuHandler
 }
