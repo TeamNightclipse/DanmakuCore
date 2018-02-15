@@ -38,7 +38,8 @@ item.danmaku.form=Shape
 item.danmaku.pattern=Pattern
 item.danmaku.speed=Speed
 item.danmaku.gravity=Gravity
-item.danmaku.color=Color
+item.danmaku.edgeColor=Edge Color
+item.danmaku.coreColor=Core Color
 item.danmaku.delay=Delay
 item.danmaku.end=End
 item.danmaku.subentity=Special
@@ -173,6 +174,8 @@ subentity.danmakucore.teleport=Teleport
 
 #Defaults
 item.danmaku.color.16383998=White
+item.danmaku.color.16777215=White
+item.danmaku.color.0=Black
 item.danmaku.color.custom=Custom color
 
 #Commands

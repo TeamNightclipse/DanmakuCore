@@ -18,7 +18,7 @@ import net.minecraft.world.World
 class FormNote(name: String, sound: SoundEvent, resource: ResourceLocation) extends FormDanModel(name, resource) {
 
   override def playShotSound(user: EntityLivingBase, shotData: ShotData): Unit = {
-    user.playSound(sound, shotData.damage / 3, 0.5F + (user.ticksExisted % 60) / 40F)
+    user.playSound(sound, shotData.damage / 3, 0.5F + (user.ticksExisted % 60) / 60F)
   }
 
   override def playShotSound(world: World, pos: Vector3, shotData: ShotData): Unit = {

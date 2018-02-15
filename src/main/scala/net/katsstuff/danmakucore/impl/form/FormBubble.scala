@@ -15,7 +15,7 @@ import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.client.shader._
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
-import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
+import net.katsstuff.danmakucore.danmaku.form.{IRenderForm, RenderingProperty}
 import net.katsstuff.danmakucore.lib.LibFormName
 import net.minecraft.client.renderer.{GlStateManager, OpenGlHelper}
 import net.minecraft.client.renderer.entity.RenderManager
@@ -34,15 +34,20 @@ private[danmakucore] class FormBubble extends FormGeneric(LibFormName.BUBBLE) {
       ShaderManager.initShader(
         FormBubble.shaderLoc,
         Seq(ShaderType.Vertex, ShaderType.Fragment),
-        Seq(UniformBase("overwriteColor", UniformType.Vec3, 1), UniformBase("realColor", UniformType.Vec3, 1)),
+        Seq(
+          UniformBase("coreColor", UniformType.Vec3, 1),
+          UniformBase("edgeColor", UniformType.Vec3, 1),
+          UniformBase("coreContrast", UniformType.UnFloat, 1),
+          UniformBase("edgeSize", UniformType.UnFloat, 1)
+        ),
         shader => {
           shader.begin()
-          val ocr = (DanCoreRenderHelper.OverwriteColor >> 16 & 255) / 255F
-          val ocg = (DanCoreRenderHelper.OverwriteColor >> 8 & 255) / 255F
-          val ocb = (DanCoreRenderHelper.OverwriteColor & 255) / 255F
-
-          shader.getUniform("overwriteColor").foreach { uniform =>
-            uniform.set(ocr, ocg, ocb)
+          shader.getUniform("coreColor").foreach { uniform =>
+            uniform.set(1F, 0F, 0F)
+            uniform.upload()
+          }
+          shader.getUniform("edgeColor").foreach { uniform =>
+            uniform.set(1F, 1F, 1F)
             uniform.upload()
           }
           shader.end()
@@ -66,7 +71,6 @@ private[danmakucore] class FormBubble extends FormGeneric(LibFormName.BUBBLE) {
         manager: RenderManager
     ): Unit = {
       val shot  = danmaku.shot
-      val color = shot.color
       val alpha = 0.3F
 
       DanCoreRenderHelper.transformDanmaku(shot, orientation)
@@ -76,7 +80,7 @@ private[danmakucore] class FormBubble extends FormGeneric(LibFormName.BUBBLE) {
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
       GlStateManager.depthMask(false)
-      DanCoreRenderHelper.drawSphere(color, alpha, dist)
+      DanCoreRenderHelper.drawSphere(shot.edgeColor, alpha, dist)
       GlStateManager.depthMask(true)
       GlStateManager.disableBlend()
     }
@@ -91,19 +95,21 @@ private[danmakucore] class FormBubble extends FormGeneric(LibFormName.BUBBLE) {
         manager: RenderManager,
         shaderProgram: DanCoreShaderProgram
     ): Unit = {
-      val shot  = danmaku.shot
-      val color = shot.color
-      val dist  = x * x + y * y + z * z
+      val shot = danmaku.shot
+      val dist = x * x + y * y + z * z
 
-      DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, color)
+      DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, this, shot)
       DanCoreRenderHelper.transformDanmaku(shot, orientation)
 
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-      DanCoreRenderHelper.drawSphere(DanCoreRenderHelper.OverwriteColor, 1F, dist)
+      DanCoreRenderHelper.drawSphere(DanCoreRenderHelper.OverwriteColorEdge, 1F, dist)
       GlStateManager.disableBlend()
     }
 
     override def shader(state: DanmakuState): ResourceLocation = FormBubble.shaderLoc
+
+    override val defaultAttributeValues: Map[String, RenderingProperty] =
+      Map("coreContrast" -> RenderingProperty(1F, 0.5F, 10F), "edgeSize" -> RenderingProperty(6F, 0.5F, 10F))
   }
 }

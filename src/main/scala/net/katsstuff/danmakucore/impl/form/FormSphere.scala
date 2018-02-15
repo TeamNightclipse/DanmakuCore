@@ -14,7 +14,7 @@ import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.client.shader.DanCoreShaderProgram
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
-import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
+import net.katsstuff.danmakucore.danmaku.form.{IRenderForm, RenderingProperty}
 import net.katsstuff.danmakucore.lib.LibFormName
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
@@ -39,19 +39,18 @@ private[danmakucore] class FormSphere(name: String = LibFormName.DEFAULT) extend
         manager: RenderManager
     ): Unit = {
       val shot  = danmaku.shot
-      val color = shot.color
       val alpha = 0.3F
 
       DanCoreRenderHelper.transformDanmaku(shot, orientation)
 
       val dist = x * x + y * y + z * z
-      DanCoreRenderHelper.drawSphere(0xFFFFFF, 1F, dist)
+      DanCoreRenderHelper.drawSphere(shot.coreColor, 1F, dist)
 
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
       GlStateManager.depthMask(false)
       GlStateManager.scale(1.2F, 1.2F, 1.2F)
-      DanCoreRenderHelper.drawSphere(color, alpha, dist)
+      DanCoreRenderHelper.drawSphere(shot.edgeColor, alpha, dist)
       GlStateManager.depthMask(true)
       GlStateManager.disableBlend()
     }
@@ -67,18 +66,23 @@ private[danmakucore] class FormSphere(name: String = LibFormName.DEFAULT) extend
         shaderProgram: DanCoreShaderProgram
     ): Unit = {
       val shot  = danmaku.shot
-      val color = shot.color
       val dist  = x * x + y * y + z * z
 
-      DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, color)
+      DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, this, shot)
       DanCoreRenderHelper.transformDanmaku(shot, orientation)
 
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-      DanCoreRenderHelper.drawSphere(DanCoreRenderHelper.OverwriteColor, 1F, dist)
+      DanCoreRenderHelper.drawSphere(DanCoreRenderHelper.OverwriteColorEdge, 1F, dist)
       GlStateManager.disableBlend()
     }
 
     override def shader(state: DanmakuState): ResourceLocation = DanCoreRenderHelper.fancyDanmakuShaderLoc
+    override val defaultAttributeValues: Map[String, RenderingProperty] = Map(
+      "coreSize"     -> RenderingProperty(1.1F, 0.5F, 10F),
+      "coreHardness" -> RenderingProperty(2.5F, 0.5F, 10F),
+      "edgeHardness" -> RenderingProperty(3F, 0.5F, 10F),
+      "edgeGlow"     -> RenderingProperty(3F, 0.5F, 10F)
+    )
   }
 }

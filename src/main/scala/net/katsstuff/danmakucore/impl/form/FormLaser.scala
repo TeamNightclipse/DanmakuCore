@@ -9,11 +9,12 @@
 package net.katsstuff.danmakucore.impl.form
 
 import org.lwjgl.opengl.GL11
+
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.client.shader.DanCoreShaderProgram
 import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
+import net.katsstuff.danmakucore.danmaku.form.{IRenderForm, RenderingProperty}
 import net.katsstuff.danmakucore.lib.{LibFormName, LibSounds}
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
 import net.minecraft.client.renderer.GlStateManager
@@ -41,8 +42,6 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
         manager: RenderManager
     ): Unit = {
       val shot  = danmaku.shot
-      val color = shot.color
-
       DanCoreRenderHelper.transformDanmaku(shot, orientation)
 
       val dist = x * x + y * y + z * z
@@ -53,17 +52,17 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
         GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
         GlStateManager.depthMask(false)
         GlStateManager.scale(scale, scale, 1F)
-        createCylinder(color, 0.6F, dist)
+        createCylinder(shot.edgeColor, 0.6F, dist)
         GlStateManager.depthMask(true)
         GlStateManager.disableBlend()
       } else {
-        createCylinder(0xFFFFFF, 1F, dist)
+        createCylinder(shot.coreColor, 1F, dist)
 
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
         GlStateManager.depthMask(false)
         GlStateManager.scale(1.2F, 1.2F, 1.2F)
-        createCylinder(color, 0.3F, dist)
+        createCylinder(shot.edgeColor, 0.3F, dist)
         GlStateManager.depthMask(true)
         GlStateManager.disableBlend()
       }
@@ -81,10 +80,8 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
     ): Unit = {
 
       val shot  = danmaku.shot
-      val color = shot.color
-
       DanCoreRenderHelper.transformDanmaku(shot, orientation)
-      DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, color)
+      DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, this, shot)
 
       val dist    = x * x + y * y + z * z
       if (shot.delay > 0) {
@@ -94,7 +91,7 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
         GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
 
         GlStateManager.scale(scale, scale, 1F)
-        createCylinder(color, 0.6F, dist)
+        createCylinder(shot.edgeColor, 0.6F, dist)
         GlStateManager.translate(0F, 2F, 0F)
 
         GlStateManager.disableBlend()
@@ -102,7 +99,7 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
-        createCylinder(color, 0.3F, dist)
+        createCylinder(shot.edgeColor, 0.3F, dist)
 
         GlStateManager.disableBlend()
       }
@@ -133,6 +130,13 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
 
     override def shader(state: DanmakuState): ResourceLocation =
       if (state.shot.delay > 0) DanCoreRenderHelper.baseDanmakuShaderLoc else DanCoreRenderHelper.fancyDanmakuShaderLoc
+
+    override val defaultAttributeValues: Map[String, RenderingProperty] = Map(
+      "coreSize"     -> RenderingProperty(1.1F, 0.5F, 10F),
+      "coreHardness" -> RenderingProperty(2.5F, 0.5F, 10F),
+      "edgeHardness" -> RenderingProperty(3F, 0.5F, 10F),
+      "edgeGlow"     -> RenderingProperty(3F, 0.5F, 10F)
+    )
   }
 
   override def playShotSound(user: EntityLivingBase, shotData: ShotData): Unit = ()

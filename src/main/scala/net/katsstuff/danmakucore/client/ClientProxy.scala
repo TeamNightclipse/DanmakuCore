@@ -135,8 +135,12 @@ class ClientProxy extends CommonProxy {
   override private[danmakucore] def registerItemColors(): Unit = {
     val itemColors = Minecraft.getMinecraft.getItemColors
     val f: IItemColor = { (stack: ItemStack, pass: Int) =>
-      if (!ItemNBTHelper.hasTag(stack, ShotData.NbtShotData, Constants.NBT.TAG_COMPOUND) || pass == 1) 0xFFFFFF
-      else ShotData.fromNBTItemStack(stack).color
+      if (!ItemNBTHelper.hasTag(stack, ShotData.NbtShotData, Constants.NBT.TAG_COMPOUND)) 0xFFFFFF
+      else {
+        val shot = ShotData.fromNBTItemStack(stack)
+        if(pass == 0) shot.edgeColor
+        else shot.coreColor
+      }
     }
     itemColors.registerItemColorHandler(f, LibItems.DANMAKU)
   }

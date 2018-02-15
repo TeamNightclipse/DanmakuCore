@@ -9,18 +9,12 @@
 package net.katsstuff.danmakucore.client.helper
 
 import org.lwjgl.opengl.GL11
-import org.lwjgl.util.glu.{Cylinder, Disk, GLU, Sphere}
+import org.lwjgl.util.glu.{Cylinder, Disk, Sphere}
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.client.shader.{
-  DanCoreShaderProgram,
-  ShaderManager,
-  ShaderType,
-  UniformBase,
-  UniformType
-}
+import net.katsstuff.danmakucore.client.shader.{DanCoreShaderProgram, DanCoreUniform, ShaderManager, ShaderType, UniformBase, UniformType}
+import net.katsstuff.danmakucore.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.data.{Quat, ShotData}
-import net.katsstuff.danmakucore.impl.form.FormSphere
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{GLAllocation, GlStateManager, OpenGlHelper, Tessellator}
@@ -33,15 +27,20 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 @SideOnly(Side.CLIENT)
 object DanCoreRenderHelper {
 
-  val OverwriteColor = 0xFF0000
-  private val ocr    = (OverwriteColor >> 16 & 255) / 255F
-  private val ocg    = (OverwriteColor >> 8 & 255) / 255F
-  private val ocb    = (OverwriteColor & 255) / 255F
+  val OverwriteColorEdge = 0xFF0000
+  private val ocer       = (OverwriteColorEdge >> 16 & 255) / 255F
+  private val oceg       = (OverwriteColorEdge >> 8 & 255) / 255F
+  private val oceb       = (OverwriteColorEdge & 255) / 255F
 
-  val baseDanmakuShaderLoc:        ResourceLocation = DanmakuCore.resource("shaders/danmaku")
-  val fancyDanmakuShaderLoc:       ResourceLocation = DanmakuCore.resource("shaders/danmaku_fancy")
-  val fancyDarkDanmakuShaderLoc:   ResourceLocation = DanmakuCore.resource("shaders/danmaku_fancy_dark")
-  val fancyPelletDanmakuShaderLoc: ResourceLocation = DanmakuCore.resource("shaders/danmaku_fancy_pellet")
+  val OverwriteColorCore = 0x00FF00
+  private val occr       = (OverwriteColorCore >> 16 & 255) / 255F
+  private val occg       = (OverwriteColorCore >> 8 & 255) / 255F
+  private val occb       = (OverwriteColorCore & 255) / 255F
+
+  private val swizzleRegex = """^.+\.[rgbaxyzwstpq]$"""
+
+  val baseDanmakuShaderLoc:  ResourceLocation = DanmakuCore.resource("shaders/danmaku")
+  val fancyDanmakuShaderLoc: ResourceLocation = DanmakuCore.resource("shaders/danmaku_fancy")
 
   private var sphereHighId   = 0
   private var sphereMidId    = 0
@@ -120,27 +119,55 @@ object DanCoreRenderHelper {
     diskLowId = createList(disk.draw(1F, 0F, 8, 1))
 
     if (OpenGlHelper.shadersSupported) {
-      initNormalDanmakuShader(baseDanmakuShaderLoc, Seq(ShaderType.Vertex))
-      initNormalDanmakuShader(fancyDanmakuShaderLoc, Seq(ShaderType.Vertex, ShaderType.Fragment))
-      initNormalDanmakuShader(fancyDarkDanmakuShaderLoc, Seq(ShaderType.Vertex, ShaderType.Fragment))
-      initNormalDanmakuShader(fancyPelletDanmakuShaderLoc, Seq(ShaderType.Vertex, ShaderType.Fragment))
-    }
-  }
+      ShaderManager.initShader(
+        baseDanmakuShaderLoc,
+        Seq(ShaderType.Vertex),
+        Seq(
+          UniformBase("overwriteColorEdge", UniformType.Vec3, 1),
+          UniformBase("overwriteColorCore", UniformType.Vec3, 1),
+          UniformBase("coreColor", UniformType.Vec3, 1),
+          UniformBase("edgeColor", UniformType.Vec3, 1)
+        ),
+        shader => {
+          shader.begin()
+          shader.getUniform("overwriteColorEdge").foreach { uniform =>
+            uniform.set(ocer, oceg, oceb)
+            uniform.upload()
+          }
 
-  def initNormalDanmakuShader(shaderLoc: ResourceLocation, types: Seq[ShaderType]): Unit = {
-    ShaderManager.initShader(
-      shaderLoc,
-      types,
-      Seq(UniformBase("overwriteColor", UniformType.Vec3, 1), UniformBase("realColor", UniformType.Vec3, 1)),
-      shader => {
-        shader.begin()
-        shader.getUniform("overwriteColor").foreach { uniform =>
-          uniform.set(ocr, ocg, ocb)
-          uniform.upload()
+          shader.getUniform("overwriteColorCore").foreach { uniform =>
+            uniform.set(occr, occg, occb)
+            uniform.upload()
+          }
+          shader.end()
         }
-        shader.end()
-      }
-    )
+      )
+
+      ShaderManager.initShader(
+        fancyDanmakuShaderLoc,
+        Seq(ShaderType.Vertex, ShaderType.Fragment),
+        Seq(
+          UniformBase("coreColor", UniformType.Vec3, 1),
+          UniformBase("edgeColor", UniformType.Vec3, 1),
+          UniformBase("coreSize", UniformType.UnFloat, 1),
+          UniformBase("coreHardness", UniformType.UnFloat, 1),
+          UniformBase("edgeHardness", UniformType.UnFloat, 1),
+          UniformBase("edgeGlow", UniformType.UnFloat, 1)
+        ),
+        shader => {
+          shader.begin()
+          shader.getUniform("coreColor").foreach { uniform =>
+            uniform.set(1F, 1F, 1F)
+            uniform.upload()
+          }
+          shader.getUniform("edgeColor").foreach { uniform =>
+            uniform.set(1F, 0F, 0F)
+            uniform.upload()
+          }
+          shader.end()
+        }
+      )
+    }
   }
 
   def createList(create: => Unit): Int = {
@@ -251,13 +278,47 @@ object DanCoreRenderHelper {
 
   def danmakuShaderProgram: Option[DanCoreShaderProgram] = ShaderManager.getShaderProgram(baseDanmakuShaderLoc)
 
-  def updateDanmakuShaderAttributes(shaderProgram: DanCoreShaderProgram, color: Int): Unit = {
-    val r = (color >> 16 & 255) / 255F
-    val g = (color >> 8 & 255) / 255F
-    val b = (color & 255) / 255F
+  def updateDanmakuShaderAttributes(shaderProgram: DanCoreShaderProgram, form: IRenderForm, shot: ShotData): Unit = {
+    val edgeColor = shot.edgeColor
+    val er     = (edgeColor >> 16 & 255) / 255F
+    val eg     = (edgeColor >> 8 & 255) / 255F
+    val eb     = (edgeColor & 255) / 255F
 
-    shaderProgram.getUniform("realColor").foreach { uniform =>
-      uniform.set(r, g, b)
+    val coreColor = shot.coreColor
+    val cr     = (coreColor >> 16 & 255) / 255F
+    val cg     = (coreColor >> 8 & 255) / 255F
+    val cb     = (coreColor & 255) / 255F
+
+    val attributeMap = form.defaultAttributeValues.keys.map { k =>
+        val isSwizzle   = k.matches(swizzleRegex)
+        val newKey      = if (isSwizzle) k.dropRight(2) else k
+        val swizzleChar = if (isSwizzle) Option(k.last) else None
+        newKey -> (swizzleChar, shot.renderProperties.getOrElse(k, form.defaultAttributeValues(k).default))
+      }.toMap
+
+    attributeMap.flatMap { t =>
+      val res: Option[((Option[Char], Float), DanCoreUniform)] = shaderProgram.getUniform(t._1).map(t._2 -> _)
+      res
+    }.foreach {
+      case ((swizzleChar, value), uniform) =>
+        swizzleChar match {
+          case Some('r' | 'x' | 's') => uniform.setIdx(value, 0)
+          case Some('g' | 'y' | 's') => uniform.setIdx(value, 1)
+          case Some('b' | 'z' | 'p') => uniform.setIdx(value, 2)
+          case Some('a' | 'w' | 'q') => uniform.setIdx(value, 3)
+          case _                     => uniform.set(value)
+        }
+
+        uniform.upload()
+    }
+
+    shaderProgram.getUniform("coreColor").foreach { uniform =>
+      uniform.set(cr, cg, cb)
+      uniform.upload()
+    }
+
+    shaderProgram.getUniform("edgeColor").foreach { uniform =>
+      uniform.set(er, eg, eb)
       uniform.upload()
     }
   }

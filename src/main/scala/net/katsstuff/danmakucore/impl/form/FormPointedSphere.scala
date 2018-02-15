@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL11
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
+import net.katsstuff.danmakucore.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.lib.{LibFormName, LibSounds}
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
 import net.minecraft.client.renderer.{BufferBuilder, GlStateManager, Tessellator}
@@ -41,7 +41,6 @@ private[danmakucore] class FormPointedSphere extends FormGeneric(LibFormName.SPH
       val tes   = Tessellator.getInstance
       val bb    = tes.getBuffer
       val shot  = danmaku.shot
-      val color = shot.color
       val sizeZ = shot.sizeZ
 
       val centerZ1 = sizeZ * 1.2F / 2.0F
@@ -51,17 +50,20 @@ private[danmakucore] class FormPointedSphere extends FormGeneric(LibFormName.SPH
 
       GL11.glTranslatef(0, 0, (-sizeZ / 6) * 4)
 
-      createPointedSphere(tes, bb, 0xFFFFFF, 1F, centerZ1 - centerZ2, sizeZ)
-
       GlStateManager.scale(1.2F, 1.2F, 1.2F)
       GlStateManager.depthMask(false)
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
 
-      createPointedSphere(tes, bb, color, 0.6F, 0.0F, sizeZ)
+      createPointedSphere(tes, bb, shot.edgeColor, 0.6F, 0.0F, sizeZ)
 
       GlStateManager.depthMask(true)
+      GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
       GlStateManager.disableBlend()
+
+      GlStateManager.scale(1F / 1.2F, 1F / 1.2F, 1F / 1.2F)
+
+      createPointedSphere(tes, bb, shot.coreColor, 1F, centerZ1 - centerZ2, sizeZ)
     }
 
     //We need normals for this if we want to use a fancy shader

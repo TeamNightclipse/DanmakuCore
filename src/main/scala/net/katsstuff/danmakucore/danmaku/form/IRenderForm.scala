@@ -6,7 +6,7 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danmakucore.entity.danmaku.form
+package net.katsstuff.danmakucore.danmaku.form
 
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.client.shader.DanCoreShaderProgram
@@ -51,9 +51,17 @@ trait IRenderForm {
       manager: RenderManager,
       shaderProgram: DanCoreShaderProgram
   ): Unit = {
-    DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, danmaku.shot.color)
+    val shot = danmaku.shot
+    DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, this, shot)
     renderLegacy(
-      danmaku.copy(extra = danmaku.extra.copy(shot = danmaku.shot.copy(color = DanCoreRenderHelper.OverwriteColor))),
+      danmaku.copy(
+        extra = danmaku.extra.copy(
+          shot = shot.copy(
+            edgeColor = DanCoreRenderHelper.OverwriteColorEdge,
+            coreColor = DanCoreRenderHelper.OverwriteColorCore
+          )
+        )
+      ),
       x,
       y,
       z,
@@ -67,4 +75,6 @@ trait IRenderForm {
     * The shader to use for renderShaders. The danmaku renderer will handle beginning and ending the shader program.
     */
   def shader(state: DanmakuState): ResourceLocation = DanCoreRenderHelper.baseDanmakuShaderLoc
+
+  def defaultAttributeValues: Map[String, RenderingProperty] = Map.empty
 }

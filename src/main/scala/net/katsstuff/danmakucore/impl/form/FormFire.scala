@@ -21,7 +21,7 @@ private[danmakucore] class FormFire extends FormSphere(LibFormName.FIRE) {
   override def onTick(danmaku: DanmakuState): Option[DanmakuUpdate] = {
     val res = DanmakuUpdate.none(danmaku).addCallback { () =>
       val shot  = danmaku.shot
-      val color = shot.color
+      val color = shot.edgeColor
       val r     = Math.max(0.05F, (color >> 16 & 255) / 255.0F)
       val g     = Math.max(0.05F, (color >> 8 & 255) / 255.0F)
       val b     = Math.max(0.05F, (color & 255) / 255.0F)

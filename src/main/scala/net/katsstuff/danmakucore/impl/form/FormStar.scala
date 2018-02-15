@@ -11,7 +11,7 @@ package net.katsstuff.danmakucore.impl.form
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
-import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
+import net.katsstuff.danmakucore.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.lib.LibFormName
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -38,28 +38,30 @@ private[danmakucore] class FormStar extends FormGeneric(LibFormName.STAR) {
     override def renderLegacy(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
       val tes   = Tessellator.getInstance
       val buf   = tes.getBuffer
-      val color = danmaku.shot.color
+      val shot = danmaku.shot
 
       GlStateManager.rotate((danmaku.ticksExisted + partialTicks) * 5F, 1F, 1F, 1F)
 
-      DanCoreRenderHelper.transformDanmaku(danmaku.shot, orientation)
-
-      renderTetrahedron(tes, buf, 0xFFFFFF, 1F)
-      GlStateManager.rotate(90F, 1F, 0F, 0F)
-      renderTetrahedron(tes, buf, 0xFFFFFF, 1F)
-      GlStateManager.rotate(-90F, 1F, 0F, 0F)
+      DanCoreRenderHelper.transformDanmaku(shot, orientation)
 
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
       GlStateManager.depthMask(false)
       GlStateManager.scale(1.2F, 1.2F, 1.2F)
 
-      renderTetrahedron(tes, buf, color, 0.3F)
+      renderTetrahedron(tes, buf, shot.edgeColor, 0.3F)
       GlStateManager.rotate(90F, 1F, 0F, 0F)
-      renderTetrahedron(tes, buf, color, 0.3F)
+      renderTetrahedron(tes, buf, shot.edgeColor, 0.3F)
 
       GlStateManager.depthMask(true)
+      GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
       GlStateManager.disableBlend()
+      GlStateManager.scale(1F / 1.2F, 1F / 1.2F, 1F / 1.2F)
+
+      renderTetrahedron(tes, buf, shot.coreColor, 1F)
+      GlStateManager.rotate(90F, 1F, 0F, 0F)
+      renderTetrahedron(tes, buf, shot.coreColor, 1F)
+      GlStateManager.rotate(-90F, 1F, 0F, 0F)
     }
 
     @SideOnly(Side.CLIENT)

@@ -111,7 +111,7 @@ class DanModel(private[this] val data: Array[Byte], private[this] val pieces: In
   def generateVBOs(): Unit = {
     deleteVBOs()
     generatingVBO = true
-    render(Tessellator.getInstance().getBuffer, DanCoreRenderHelper.OverwriteColor)
+    render(Tessellator.getInstance().getBuffer, DanCoreRenderHelper.OverwriteColorEdge)
     generatingVBO = false
   }
 

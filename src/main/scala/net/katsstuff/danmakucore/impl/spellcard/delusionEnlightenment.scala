@@ -58,7 +58,7 @@ private[spellcard] class SpellcardEntityDelusionEnlightenment(
           .setUser(user)
           .setSource(card)
           .setMovementData(1D / (place + 1))
-          .setShot(LibShotData.SHOT_MEDIUM.setColor(LibColor.COLOR_SATURATED_RED).setDelay(place))
+          .setShot(LibShotData.SHOT_MEDIUM.setEdgeColor(LibColor.COLOR_SATURATED_RED).setDelay(place))
           .build
 
         new ShapeWide(danmaku, danmakuLevelMultiplier * 2, 120F, 180F, 1.25D)
@@ -73,7 +73,7 @@ private[spellcard] class SpellcardEntityDelusionEnlightenment(
             .setUser(user)
             .setSource(card)
             .setMovementData(1D / i)
-            .setShot(LibShotData.SHOT_MEDIUM.setColor(LibColor.COLOR_SATURATED_RED))
+            .setShot(LibShotData.SHOT_MEDIUM.setEdgeColor(LibColor.COLOR_SATURATED_RED))
             .build
 
           new ShapeWide(danmaku, danmakuLevelMultiplier, 30F, 0F, 0.5D)
@@ -106,7 +106,7 @@ private[spellcard] class SpellcardEntityDelusionEnlightenment(
       .setDirection(Vector3.Up)
       .setMovementData(0.2D)
       .setPos(spawnPos + Vector3.Up)
-      .setShot(LibShotData.SHOT_RICE.setColor(LibColor.COLOR_SATURATED_BLUE))
+      .setShot(LibShotData.SHOT_RICE.setEdgeColor(LibColor.COLOR_SATURATED_BLUE))
       .build
       .asEntity
   }

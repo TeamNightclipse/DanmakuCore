@@ -14,7 +14,7 @@ import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
-import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
+import net.katsstuff.danmakucore.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.lib.LibFormName
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -34,7 +34,7 @@ private[danmakucore] class FormKunai extends FormGeneric(LibFormName.KUNAI) {
     override def renderLegacy(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
       val tes      = Tessellator.getInstance
       val bb       = tes.getBuffer
-      val color    = danmaku.shot.color
+      val color    = danmaku.shot.edgeColor
 
       val red      = (color >> 16 & 255) / 255.0F
       val green    = (color >> 8 & 255) / 255.0F

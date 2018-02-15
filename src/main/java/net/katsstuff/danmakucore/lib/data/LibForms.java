@@ -19,16 +19,12 @@ public final class LibForms {
 
 	@ObjectHolder(LibFormName.DEFAULT)
 	public static final Form SPHERE = FormDummy.instance(); //Default
-	@ObjectHolder(LibFormName.SPHERE_DARK)
-	public static final Form SPHERE_DARK = FormDummy.instance();
 	@ObjectHolder(LibFormName.CRYSTAL1)
 	public static final Form CRYSTAL_1 = FormDummy.instance();
 	@ObjectHolder(LibFormName.CRYSTAL2)
 	public static final Form CRYSTAL_2 = FormDummy.instance();
 	@ObjectHolder(LibFormName.CIRCLE)
 	public static final Form SPHERE_CIRCLE = FormDummy.instance();
-	@ObjectHolder(LibFormName.PELLET)
-	public static final Form PELLET = FormDummy.instance();
 	@ObjectHolder(LibFormName.SCALE)
 	public static final Form SCALE = FormDummy.instance();
 	@ObjectHolder(LibFormName.STAR)

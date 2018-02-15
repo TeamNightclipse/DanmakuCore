@@ -62,12 +62,10 @@ object CommonProxy {
         new FormCrystal1,
         new FormCrystal2,
         new FormKunai,
-        new FormPellet,
         new FormPointedSphere,
         new FormScale,
         new FormSphere,
         new FormSphereCircle,
-        new FormSphereDark,
         new FormStar,
         new FormControl,
         new FormFire,
@@ -117,7 +115,7 @@ object CommonProxy {
         DanmakuVariantGeneric.withSpeed(CRYSTAL2, () => LibShotData.SHOT_CRYSTAL2, 0.4D),
         DanmakuVariantGeneric.withSpeed(OVAL, () => LibShotData.SHOT_OVAL, 0.2D),
         DanmakuVariantGeneric.withSpeed(SPHERE_DARK, () => LibShotData.SHOT_SPHERE_DARK, 0.3D),
-        DanmakuVariantGeneric.withSpeed(PELLET, () => LibShotData.SHOT_PELLET, 0.4D),
+        DanmakuVariantGeneric.withSpeed(PELLET, () => LibShotData.pellet(LibColor.COLOR_VANILLA_RED), 0.4D),
         DanmakuVariantGeneric.withSpeed(STAR_SMALL, () => LibShotData.SHOT_SMALLSTAR, 0.3D),
         DanmakuVariantGeneric.withSpeed(STAR, () => LibShotData.SHOT_STAR, 0.2D),
         DanmakuVariantGeneric.withSpeed(TINY, () => LibShotData.SHOT_TINY, 0.4D),
@@ -262,6 +260,9 @@ class CommonProxy {
     LibColor.registerColor(LibColor.COLOR_SATURATED_CYAN)
     LibColor.registerColor(LibColor.COLOR_SATURATED_ORANGE)
     LibColor.registerColor(LibColor.COLOR_WHITE)
+
+    LibColor.registerColor(0xFFFFFF)
+    LibColor.registerColor(0x000000)
   }
 
   private[danmakucore] def registerItemColors(): Unit = {}

@@ -1,3 +1,7 @@
 {
-  "parent": "danmakucore:item/danmaku/form/pellet"
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "danmakucore:items/danmaku/pellet_shot",
+    "layer1": "danmakucore:items/danmaku/pellet_shot_2"
+  }
 }

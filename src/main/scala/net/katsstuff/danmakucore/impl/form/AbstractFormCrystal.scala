@@ -10,11 +10,13 @@ package net.katsstuff.danmakucore.impl.form
 
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
-import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
+import net.katsstuff.danmakucore.danmaku.form.IRenderForm
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
+
+import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 
 private[danmakucore] abstract class AbstractFormCrystal(name: String) extends FormGeneric(name) {
 
@@ -32,27 +34,29 @@ private[danmakucore] abstract class AbstractFormCrystal(name: String) extends Fo
         partialTicks: Float,
         manager: RenderManager
     ): Unit = {
-      val shotData = danmaku.shot
-      val sizeX    = shotData.sizeX
-      val sizeY    = shotData.sizeY
-      val sizeZ    = shotData.sizeZ
-      val color    = shotData.color
-      val dist     = x * x + y * y + z * z
+      val shot  = danmaku.shot
+      val sizeX = shot.sizeX
+      val sizeY = shot.sizeY
+      val sizeZ = shot.sizeZ
+      val dist  = x * x + y * y + z * z
 
       GlStateManager.rotate(orientation.toQuaternion)
       GL11.glScalef((sizeX / 3) * 2, (sizeY / 3) * 2, sizeZ)
-
-      createCrystal(0xFFFFFF, 1F, dist)
 
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
       GlStateManager.depthMask(false)
       GlStateManager.scale(1.2F, 1.2F, 1.2F)
 
-      createCrystal(color, 0.3F, dist)
+      createCrystal(shot.edgeColor, 0.3F, dist)
 
       GlStateManager.depthMask(true)
+      GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
       GlStateManager.disableBlend()
+
+      GlStateManager.scale(1 / 1.2F, 1 / 1.2F, 1 / 1.2F)
+
+      createCrystal(shot.coreColor, 1F, dist)
     }
   }
 

@@ -11,10 +11,9 @@ package net.katsstuff.danmakucore.danmodel
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
-import net.katsstuff.danmakucore.client.shader.DanCoreShaderProgram
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.Quat
-import net.katsstuff.danmakucore.entity.danmaku.form.IRenderForm
+import net.katsstuff.danmakucore.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.impl.form.FormGeneric
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.{GLAllocation, GlStateManager, OpenGlHelper, Tessellator}
@@ -42,27 +41,7 @@ private[danmakucore] class FormDanModel(name: String, resource: ResourceLocation
           manager: RenderManager
       ): Unit = {
         if (danModel != null) {
-          val tes = Tessellator.getInstance
-          val vb  = tes.getBuffer
-
           DanCoreRenderHelper.transformDanmaku(danmaku.shot, orientation)
-          danModel.render(vb, danmaku.shot.getColor)
-        }
-      }
-
-      override def renderShaders(
-          danmaku: DanmakuState,
-          x: Double,
-          y: Double,
-          z: Double,
-          orientation: Quat,
-          partialTicks: Float,
-          manager: RenderManager,
-          shaderProgram: DanCoreShaderProgram
-      ): Unit = {
-        if (danModel != null) {
-          DanCoreRenderHelper.transformDanmaku(danmaku.shot, orientation)
-          DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, danmaku.shot.color)
 
           //Using VBOs here break for some models
           /*if (OpenGlHelper.useVbo()) {
@@ -76,7 +55,8 @@ private[danmakucore] class FormDanModel(name: String, resource: ResourceLocation
             modelList = GLAllocation.generateDisplayLists(1)
 
             GlStateManager.glNewList(modelList, GL11.GL_COMPILE_AND_EXECUTE)
-            danModel.render(vb, DanCoreRenderHelper.OverwriteColor)
+            danModel.render(vb, DanCoreRenderHelper.OverwriteColorEdge)
+            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
             GlStateManager.glEndList()
           }
         }

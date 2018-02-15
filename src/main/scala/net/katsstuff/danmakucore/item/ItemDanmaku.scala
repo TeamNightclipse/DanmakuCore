@@ -8,6 +8,7 @@
  */
 package net.katsstuff.danmakucore.item
 
+import java.awt.Color
 import java.util
 
 import javax.annotation.Nullable
@@ -125,7 +126,12 @@ object ItemDanmaku {
     else getForm(stack)
 
   def createStack(variant: DanmakuVariant): ItemStack = {
-    val shot  = variant.getShotData.setColor(LibColor.randomSaturatedColor)
+    val baseShot = variant.getShotData
+    val shot =
+      if (baseShot.edgeColor == 0xFFFFFF || baseShot.edgeColor == 0x000000)
+        baseShot.setCoreColor(LibColor.randomSaturatedColor)
+      else baseShot.setEdgeColor(LibColor.randomSaturatedColor)
+
     val stack = new ItemStack(LibItems.DANMAKU, 1)
 
     setGravity(variant.getMovementData.gravity, stack)
@@ -312,18 +318,28 @@ class ItemDanmaku extends ItemBase(LibItemName.DANMAKU) {
     list.add(s"${I18n.format(s"$item.damage")} : ${shot.damage}") //TODO: Show power adjusted damage
     list.add(s"${I18n.format(s"$item.size")} : ${shot.sizeX}, ${shot.sizeY} ${shot.sizeZ}")
     list.add(s"${I18n.format(s"$item.amount")} : $amount")
+
     if (custom) list.add(s"${I18n.format(item + ".form")} : ${I18n.format(shot.form.unlocalizedName)}")
+
     list.add(s"${I18n.format(s"$item.pattern")} : ${I18n.format(s"$item.pattern.$danmakuPattern")}")
     list.add(s"${I18n.format(s"$item.speed")} : $shotSpeed")
+
     if (gravity.x !=~ 0D || gravity.y !=~ 0D || gravity.z !=~ 0D)
       list.add(s"${I18n.format(s"$item.gravity")} : ${gravity.x} ${gravity.y} ${gravity.z}")
     else
       list.add(s"${I18n.format(s"$item.gravity")} : ${I18n.format(s"$item.noGravity")}")
-    if (LibColor.isNormalColor(shot.color))
-      list.add(s"${I18n.format(s"$item.color")} : ${I18n.format(s"$item.color.${shot.color}")}")
+
+    if (LibColor.isNormalColor(shot.edgeColor))
+      list.add(s"${I18n.format(s"$item.edgeColor")} : ${I18n.format(s"$item.color.${shot.edgeColor}")}")
     else
-      list.add(s"${I18n.format(s"$item.color")} : ${I18n.format(s"$item.color.custom")}")
-    if (shot.subEntity ne LibSubEntities.DEFAULT_TYPE)
+      list.add(s"${I18n.format(s"$item.edgeColor")} : ${I18n.format(s"$item.color.custom")}")
+
+    if (LibColor.isNormalColor(shot.coreColor))
+      list.add(s"${I18n.format(s"$item.coreColor")} : ${I18n.format(s"$item.color.${shot.coreColor}")}")
+    else
+      list.add(s"${I18n.format(s"$item.coreColor")} : ${I18n.format(s"$item.color.custom")}")
+
+    if (shot.subEntity != LibSubEntities.DEFAULT_TYPE)
       list.add(s"${I18n.format(s"$item.subentity")} : ${I18n.format(shot.subEntity.unlocalizedName)}")
     if (isInfinity) list.add(I18n.format(s"$item.infinity"))
     if (custom) list.add(I18n.format(s"$item.custom"))
