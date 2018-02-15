@@ -8,8 +8,8 @@
  */
 package net.katsstuff.danmakucore.lib.data;
 
-import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType;
-import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityTypeDummy;
+import net.katsstuff.danmakucore.danmaku.subentity.SubEntityType;
+import net.katsstuff.danmakucore.danmaku.subentity.SubEntityTypeDummy;
 import net.katsstuff.danmakucore.lib.LibModJ;
 import net.katsstuff.danmakucore.lib.LibSubEntityName;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;

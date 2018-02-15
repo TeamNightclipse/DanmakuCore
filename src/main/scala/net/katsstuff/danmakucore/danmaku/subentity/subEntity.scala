@@ -6,7 +6,7 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danmakucore.entity.danmaku.subentity
+package net.katsstuff.danmakucore.danmaku.subentity
 
 import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData}
@@ -18,6 +18,13 @@ import net.katsstuff.danmakucore.registry.RegistryValue
   * but it's entirely possible to create new ones, and then call those methods from elsewhere.
   */
 abstract class SubEntity {
+
+  /**
+    * Always called right after [[SubEntityType.instantiate]]. Set up initial
+    * state here. Remember that this isn't only called at the start of a danmaku,
+    * but also when it's sent over the network in a force update.
+    */
+  def onInstantiate(danmaku: DanmakuState): DanmakuState = danmaku
 
   /**
     * Called each tick as long as the danmaku is alive, and it's delay is 0.

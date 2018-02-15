@@ -11,7 +11,7 @@ package net.katsstuff.danmakucore.danmaku
 import io.netty.buffer.ByteBuf
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.data.{MovementData, OrientedBoundingBox, Quat, RotationData, ShotData, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity
+import net.katsstuff.danmakucore.danmaku.subentity.SubEntity
 import net.katsstuff.danmakucore.helper.MathUtil._
 import net.katsstuff.danmakucore.network.{DanCorePacketHandler, DanmakuForceUpdatePacket}
 import net.katsstuff.danmakucore.network.scalachannel.MessageConverter
@@ -331,11 +331,12 @@ object DanmakuState {
         rotation = buf.read[RotationData]
       )
 
-      DanmakuState(
+      val first = DanmakuState(
         entityData,
         extraData,
         TrackerData(Set.empty, 0, 0, 0, 80, 0, 0, 0, Vector3.Zero, 0, updatedPlayerVisibility = false)
       )
+      extraData.subEntity.onInstantiate(first)
     }
   }
 

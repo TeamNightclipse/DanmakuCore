@@ -6,14 +6,13 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danmakucore.entity.danmaku
+package net.katsstuff.danmakucore.danmaku
 
-import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.item.ItemStack
-import net.minecraft.util.{DamageSource, EntityDamageSourceIndirect}
 import net.minecraft.util.text.translation.I18n
 import net.minecraft.util.text.{ITextComponent, TextComponentString, TextComponentTranslation}
+import net.minecraft.util.{DamageSource, EntityDamageSourceIndirect}
 
 object DamageSourceDanmaku {
   def create(danmaku: DanmakuState) = new DamageSourceDanmaku(danmaku)

@@ -6,11 +6,10 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danmakucore.entity.danmaku
+package net.katsstuff.danmakucore.danmaku
 
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType
 import net.katsstuff.danmakucore.registry.RegistryValueItemCreatable
 import net.minecraft.client.renderer.block.model.{ModelResourceLocation => MRL}
 import net.minecraft.entity.EntityLivingBase

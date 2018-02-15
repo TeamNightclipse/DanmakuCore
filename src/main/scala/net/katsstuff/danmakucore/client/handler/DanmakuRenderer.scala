@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL11
 import net.katsstuff.danmakucore.client.shader.{DanCoreShaderProgram, ShaderManager}
 import net.katsstuff.danmakucore.danmaku.{DanmakuHandler, DanmakuState}
 import net.katsstuff.danmakucore.data.Quat
-import net.katsstuff.danmakucore.entity.danmaku.form.Form
+import net.katsstuff.danmakucore.danmaku.form.Form
 import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.minecraft.client.Minecraft

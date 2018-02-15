@@ -11,9 +11,9 @@ package net.katsstuff.danmakucore.registry
 import java.util.Random
 
 import jline.internal.Nullable
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant
-import net.katsstuff.danmakucore.entity.danmaku.form.Form
-import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType
+import net.katsstuff.danmakucore.danmaku.DanmakuVariant
+import net.katsstuff.danmakucore.danmaku.form.Form
+import net.katsstuff.danmakucore.danmaku.subentity.SubEntityType
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard
 import net.minecraftforge.fml.common.registry.GameRegistry

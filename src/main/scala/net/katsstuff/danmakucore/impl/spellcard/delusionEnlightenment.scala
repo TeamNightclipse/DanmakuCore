@@ -9,9 +9,8 @@
 package net.katsstuff.danmakucore.impl.spellcard
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.danmaku.DanmakuState
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuTemplate}
 import net.katsstuff.danmakucore.data.Vector3
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
 import net.katsstuff.danmakucore.entity.living.TouhouCharacter
 import net.katsstuff.danmakucore.entity.spellcard.{EntitySpellcard, Spellcard, SpellcardEntity}
 import net.katsstuff.danmakucore.impl.shape.ShapeWide

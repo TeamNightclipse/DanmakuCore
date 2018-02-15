@@ -6,11 +6,10 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danmakucore.entity.danmaku
+package net.katsstuff.danmakucore.danmaku
 
 import javax.annotation.Nullable
 
-import net.katsstuff.danmakucore.danmaku.{DanmakuEntityData, DanmakuState, ExtraDanmakuData, TrackerData}
 import net.katsstuff.danmakucore.data.{MovementData, OrientedBoundingBox, Quat, RotationData, ShotData, Vector3}
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.world.World
@@ -247,7 +246,8 @@ final case class DanmakuTemplate(
       updateFrequency = 10
     )
 
-    DanmakuState(entityData, extraData, trackingData)
+    val first = DanmakuState(entityData, extraData, trackingData)
+    extraData.subEntity.onInstantiate(first)
   }
   def toBuilder =
     DanmakuTemplate.Builder(

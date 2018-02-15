@@ -8,8 +8,8 @@
  */
 package net.katsstuff.danmakucore.impl.phase
 
+import net.katsstuff.danmakucore.danmaku.DanmakuVariant
 import net.katsstuff.danmakucore.data.{Quat, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant
 import net.katsstuff.danmakucore.entity.living.phase.{Phase, PhaseManager, PhaseType}
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.katsstuff.danmakucore.registry.DanmakuRegistry

@@ -9,7 +9,6 @@
 package net.katsstuff.danmakucore.capability.danmakuhit
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.entity.danmaku.EntityDanmaku
 import net.minecraft.entity.{Entity, EntityAgeable, EntityLivingBase, MultiPartEntityPart}
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraftforge.common.capabilities.{Capability, ICapabilityProvider}

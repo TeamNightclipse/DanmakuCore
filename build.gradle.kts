@@ -56,7 +56,7 @@ val minecraft = the<ForgeExtension>()
 
 configure<ForgeExtension> {
     version = "${config["mc_version"]}-${config["forge_version"]}"
-    runDir = if (file("../run1.11").exists()) "../run1.11" else "run"
+    runDir = if (file("../run1.12").exists()) "../run1.12" else "run"
 
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
@@ -67,7 +67,7 @@ configure<ForgeExtension> {
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     replace("@VERSION@", project.version)
-    replaceIn("LibMod.Java")
+    replaceIn("LibMod.scala")
 }
 
 val reobf: NamedDomainObjectContainer<IReobfuscator> by extensions

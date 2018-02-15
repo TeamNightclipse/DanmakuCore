@@ -8,8 +8,8 @@
  */
 package net.katsstuff.danmakucore.lib.data;
 
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant;
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariantDummy;
+import net.katsstuff.danmakucore.danmaku.DanmakuVariant;
+import net.katsstuff.danmakucore.danmaku.DanmakuVariantDummy;
 import net.katsstuff.danmakucore.lib.LibDanmakuVariantName;
 import net.katsstuff.danmakucore.lib.LibModJ;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
@@ -57,4 +57,6 @@ public final class LibDanmakuVariants {
 	public static final DanmakuVariant HEART = DanmakuVariantDummy.instance();
 	@ObjectHolder(LibDanmakuVariantName.NOTE1)
 	public static final DanmakuVariant NOTE1 = DanmakuVariantDummy.instance();
+	@ObjectHolder(LibDanmakuVariantName.BUBBLE)
+	public static final DanmakuVariant BUBBLE = DanmakuVariantDummy.instance();
 }

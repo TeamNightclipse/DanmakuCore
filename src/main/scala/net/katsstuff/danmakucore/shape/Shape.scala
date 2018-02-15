@@ -28,7 +28,7 @@ trait Shape {
 
   /**
     * Executes some sort of effect on the danmaku spawned. This can be used
-    * as a cheaper [[net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity]].
+    * as a cheaper [[net.katsstuff.danmakucore.danmaku.subentity.SubEntity]].
     *
     * @param pos The position the shape was drawn at.
     * @param orientation The orientation that was registered for this shape.

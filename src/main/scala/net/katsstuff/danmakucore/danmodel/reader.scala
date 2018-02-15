@@ -16,7 +16,7 @@ import scala.util.Try
 
 import org.apache.commons.io.IOUtils
 
-import net.katsstuff.danmakucore.entity.danmaku.form.Form
+import net.katsstuff.danmakucore.danmaku.form.Form
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation

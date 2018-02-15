@@ -11,8 +11,8 @@ package net.katsstuff.danmakucore.data
 import scala.beans.BeanProperty
 
 import io.netty.buffer.ByteBuf
-import net.katsstuff.danmakucore.entity.danmaku.form.Form
-import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType
+import net.katsstuff.danmakucore.danmaku.form.Form
+import net.katsstuff.danmakucore.danmaku.subentity.SubEntityType
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.katsstuff.danmakucore.lib.LibColor
 import net.katsstuff.danmakucore.lib.data.{LibForms, LibSubEntities}

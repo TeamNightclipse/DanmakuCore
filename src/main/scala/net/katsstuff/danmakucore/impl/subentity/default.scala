@@ -9,7 +9,7 @@
 package net.katsstuff.danmakucore.impl.subentity
 
 import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
-import net.katsstuff.danmakucore.entity.danmaku.subentity.{SubEntity, SubEntityType}
+import net.katsstuff.danmakucore.danmaku.subentity.{SubEntity, SubEntityType}
 
 class SubEntityTypeDefault(name: String) extends SubEntityType(name) {
   override def instantiate: SubEntity = new SubEntityDefault

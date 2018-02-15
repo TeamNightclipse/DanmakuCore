@@ -12,7 +12,6 @@ import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.capability.danmakuhit.{AllyDanmakuHitBehavior, CapabilityDanmakuHitBehaviorJ}
 import net.katsstuff.danmakucore.danmaku._
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmakuChainDeath
 import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
 import net.minecraft.entity.player.EntityPlayer

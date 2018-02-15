@@ -10,8 +10,8 @@ package net.katsstuff.danmakucore.impl.danmakuvariant
 
 import java.util.function.Supplier
 
+import net.katsstuff.danmakucore.danmaku.DanmakuVariant
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData}
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
 
 class DanmakuVariantGeneric(

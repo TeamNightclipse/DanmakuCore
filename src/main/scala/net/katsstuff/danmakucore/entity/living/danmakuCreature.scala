@@ -9,8 +9,8 @@
 package net.katsstuff.danmakucore.entity.living
 
 import net.katsstuff.danmakucore.EnumDanmakuLevel
+import net.katsstuff.danmakucore.danmaku.DamageSourceDanmaku
 import net.katsstuff.danmakucore.data.Vector3
-import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmaku
 import net.katsstuff.danmakucore.entity.living.phase.PhaseManager
 import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.network.scalachannel.TargetPoint

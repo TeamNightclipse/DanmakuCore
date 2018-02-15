@@ -14,10 +14,9 @@ import java.util.function.Predicate
 import scala.annotation.tailrec
 
 import net.katsstuff.danmakucore.capability.danmakuhit.CapabilityDanmakuHitBehaviorJ
-import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
+import net.katsstuff.danmakucore.danmaku.{DamageSourceDanmaku, DanmakuState, DanmakuUpdate}
 import net.katsstuff.danmakucore.data.Vector3
-import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmaku
-import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity
+import net.katsstuff.danmakucore.danmaku.subentity.SubEntity
 import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._

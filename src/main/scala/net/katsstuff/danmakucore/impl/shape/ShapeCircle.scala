@@ -8,8 +8,8 @@
  */
 package net.katsstuff.danmakucore.impl.shape
 
+import net.katsstuff.danmakucore.danmaku.DanmakuTemplate
 import net.katsstuff.danmakucore.data.{Quat, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
 
 class ShapeCircle(danmaku: DanmakuTemplate, amount: Int, baseAngle: Float, distance: Double) extends Shape {

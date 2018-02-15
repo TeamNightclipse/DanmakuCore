@@ -13,12 +13,11 @@ import scala.collection.immutable
 import scala.reflect.ClassTag
 
 import net.katsstuff.danmakucore.client.particle.{GlowTexture, IGlowParticle}
-import net.katsstuff.danmakucore.danmaku.{DanmakuChanges, DanmakuState, ServerDanmakuHandler}
+import net.katsstuff.danmakucore.danmaku.{DanmakuChanges, DanmakuState, DanmakuVariant, ServerDanmakuHandler}
 import net.katsstuff.danmakucore.danmodel.DanModelReader
 import net.katsstuff.danmakucore.data.Vector3
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant
-import net.katsstuff.danmakucore.entity.danmaku.form.Form
-import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntityType
+import net.katsstuff.danmakucore.danmaku.form.Form
+import net.katsstuff.danmakucore.danmaku.subentity.SubEntityType
 import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss
 import net.katsstuff.danmakucore.entity.living.phase.PhaseType
 import net.katsstuff.danmakucore.entity.spellcard.{EntitySpellcard, Spellcard}

@@ -8,8 +8,8 @@
  */
 package net.katsstuff.danmakucore.lib.data;
 
-import net.katsstuff.danmakucore.entity.danmaku.form.Form;
-import net.katsstuff.danmakucore.entity.danmaku.form.FormDummy;
+import net.katsstuff.danmakucore.danmaku.form.Form;
+import net.katsstuff.danmakucore.danmaku.form.FormDummy;
 import net.katsstuff.danmakucore.lib.LibFormName;
 import net.katsstuff.danmakucore.lib.LibModJ;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;

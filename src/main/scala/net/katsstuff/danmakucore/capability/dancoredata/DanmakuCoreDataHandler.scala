@@ -11,7 +11,7 @@ package net.katsstuff.danmakucore.capability.dancoredata
 import javax.annotation.Nullable
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.entity.danmaku.DamageSourceDanmaku
+import net.katsstuff.danmakucore.danmaku.DamageSourceDanmaku
 import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper
 import net.minecraft.entity.Entity

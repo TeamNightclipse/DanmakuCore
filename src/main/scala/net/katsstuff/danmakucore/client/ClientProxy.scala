@@ -14,11 +14,10 @@ import net.katsstuff.danmakucore.CommonProxy
 import net.katsstuff.danmakucore.client.handler.{BossBarHandler, DanmakuRenderer, HUDHandler, SpellcardHandler}
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.client.particle.{GlowTexture, IGlowParticle, ParticleRenderer, ParticleUtil}
-import net.katsstuff.danmakucore.client.render.{RenderDanmaku, RenderFallingData, RenderSpellcard}
-import net.katsstuff.danmakucore.danmaku.{ClientDanmakuHandler, DanmakuChanges, DanmakuState}
+import net.katsstuff.danmakucore.client.render.{RenderFallingData, RenderSpellcard}
+import net.katsstuff.danmakucore.danmaku.{ClientDanmakuHandler, DanmakuChanges, DanmakuState, DanmakuVariant}
 import net.katsstuff.danmakucore.data.{ShotData, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuVariant
-import net.katsstuff.danmakucore.entity.danmaku.form.Form
+import net.katsstuff.danmakucore.danmaku.form.Form
 import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard
 import net.katsstuff.danmakucore.helper.ItemNBTHelper
@@ -114,7 +113,6 @@ class ClientProxy extends CommonProxy {
     ModelBakery.registerItemVariants(LibItems.SPELLCARD, spellcard.itemModel)
 
   override private[danmakucore] def registerRenderers(): Unit = {
-    registerEntityRenderer(new RenderDanmaku(_))
     registerEntityRenderer(new RenderSpellcard(_))
     registerEntityRenderer(new RenderFallingData(_))
     MinecraftForge.EVENT_BUS.register(new HUDHandler)

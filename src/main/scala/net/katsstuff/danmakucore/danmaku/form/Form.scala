@@ -6,12 +6,12 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danmakucore.entity.danmaku.form
+package net.katsstuff.danmakucore.danmaku.form
 
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.subentity.SubEntity
+import net.katsstuff.danmakucore.danmaku.subentity.SubEntity
 import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.registry.RegistryValueWithItemModel
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper

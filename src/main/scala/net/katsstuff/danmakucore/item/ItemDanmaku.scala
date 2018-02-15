@@ -14,10 +14,9 @@ import javax.annotation.Nullable
 
 import scala.collection.JavaConverters._
 
-import net.katsstuff.danmakucore.danmaku.DanmakuState
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuTemplate, DanmakuVariant}
 import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
-import net.katsstuff.danmakucore.entity.danmaku.form.Form
-import net.katsstuff.danmakucore.entity.danmaku.{DanmakuTemplate, DanmakuVariant}
+import net.katsstuff.danmakucore.danmaku.form.Form
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.katsstuff.danmakucore.helper.MathUtil._
 import net.katsstuff.danmakucore.lib.data.{LibDanmakuVariants, LibItems, LibSubEntities}

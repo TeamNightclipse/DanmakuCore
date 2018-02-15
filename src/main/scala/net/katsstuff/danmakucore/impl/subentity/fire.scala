@@ -9,7 +9,7 @@
 package net.katsstuff.danmakucore.impl.subentity
 
 import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate, DanmakuUpdateSignal}
-import net.katsstuff.danmakucore.entity.danmaku.subentity.{SubEntity, SubEntityType}
+import net.katsstuff.danmakucore.danmaku.subentity.{SubEntity, SubEntityType}
 import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.fml.common.FMLCommonHandler
 

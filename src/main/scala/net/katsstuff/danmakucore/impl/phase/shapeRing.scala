@@ -8,8 +8,8 @@
  */
 package net.katsstuff.danmakucore.impl.phase
 
+import net.katsstuff.danmakucore.danmaku.DanmakuTemplate
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData}
-import net.katsstuff.danmakucore.entity.danmaku.DanmakuTemplate
 import net.katsstuff.danmakucore.entity.living.phase.{PhaseManager, PhaseType}
 import net.katsstuff.danmakucore.impl.shape.ShapeRing
 import net.minecraft.nbt.NBTTagCompound
