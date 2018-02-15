@@ -64,7 +64,7 @@ object ItemDanmaku {
     val amount    = Amount.get(stack)
     val shotSpeed = Speed.get(stack)
     val gravity   = getGravity(stack)
-    val shot      = ShotData.fromNBTItemStack(stack)
+    val shot      = ShotData.fromNBTItemStack(stack).setSubEntity(LibSubEntities.SHIFTING_RAINBOW)
 
     val orientation    = user.fold(Quat.fromAxisAngle(direction, 0D))(Quat.orientationOf(_))
     val danmakuPattern = DanPattern.get(stack)
@@ -126,11 +126,7 @@ object ItemDanmaku {
     else getForm(stack)
 
   def createStack(variant: DanmakuVariant): ItemStack = {
-    val baseShot = variant.getShotData
-    val shot =
-      if (baseShot.edgeColor == 0xFFFFFF || baseShot.edgeColor == 0x000000)
-        baseShot.setCoreColor(LibColor.randomSaturatedColor)
-      else baseShot.setEdgeColor(LibColor.randomSaturatedColor)
+    val shot = variant.getShotData.setMainColor(LibColor.randomSaturatedColor)
 
     val stack = new ItemStack(LibItems.DANMAKU, 1)
 

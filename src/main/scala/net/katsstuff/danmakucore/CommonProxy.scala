@@ -84,7 +84,9 @@ object CommonProxy {
         new SubEntityTypeFire(LibSubEntityName.FIRE, 2F),
         new SubEntityTypeExplosion(LibSubEntityName.EXPLODE, 3F),
         new SubEntityTypeTeleport(LibSubEntityName.TELEPORT),
-        new SubEntityTypeDanmakuExplosion(LibSubEntityName.DANMAKU_EXPLODE)
+        new SubEntityTypeDanmakuExplosion(LibSubEntityName.DANMAKU_EXPLODE),
+        new SubEntityTypeRainbow(LibSubEntityName.RAINBOW),
+        new SubEntityTypeShiftingRainbow(LibSubEntityName.SHIFTING_RAINBOW)
       )
   }
 

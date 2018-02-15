@@ -171,6 +171,9 @@ subentity.danmakucore.default=No Special
 subentity.danmakucore.fire=Fire
 subentity.danmakucore.explosion=Explosion
 subentity.danmakucore.teleport=Teleport
+subentity.danmakucore.danmaku_explosion=Danmaku explosion
+subentity.danmakucore.rainbow=Rainbow
+subentity.danmakucore.shifting_rainbow=Shifting Rainbow
 
 #Defaults
 item.danmaku.color.16383998=White

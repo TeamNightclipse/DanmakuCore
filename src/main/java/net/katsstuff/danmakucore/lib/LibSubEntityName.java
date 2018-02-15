@@ -15,4 +15,6 @@ public class LibSubEntityName {
 	public static final String EXPLODE = "explosion";
 	public static final String TELEPORT = "teleport";
 	public static final String DANMAKU_EXPLODE = "danmaku_explosion";
+	public static final String RAINBOW = "rainbow";
+	public static final String SHIFTING_RAINBOW = "shifting_rainbow";
 }

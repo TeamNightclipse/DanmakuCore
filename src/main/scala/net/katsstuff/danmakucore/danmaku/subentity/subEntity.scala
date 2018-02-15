@@ -20,6 +20,12 @@ import net.katsstuff.danmakucore.registry.RegistryValue
 abstract class SubEntity {
 
   /**
+    * Called when the subentity is first created. This will not be called
+    * when serializing and deserializing. This will be called before [[onInstantiate]]
+    */
+  def onCreate(danmaku: DanmakuState): DanmakuState = danmaku
+
+  /**
     * Always called right after [[SubEntityType.instantiate]]. Set up initial
     * state here. Remember that this isn't only called at the start of a danmaku,
     * but also when it's sent over the network in a force update.

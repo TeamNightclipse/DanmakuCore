@@ -52,6 +52,11 @@ abstract sealed class AbstractShotData {
   def coreColor: Int
 
   /**
+    * Best guess at the main color that decides the colorful aspects.
+    */
+  def mainColor: Int = if (edgeColor == 0xFFFFFF || edgeColor == 0x000000) coreColor else edgeColor
+
+  /**
 		* The damage the [[net.katsstuff.danmakucore.danmaku.DanmakuState]]
 		* will cause on hit.
 		*/
@@ -165,6 +170,10 @@ final case class MutableShotData(
   def scaleSize(scale: Float): MutableShotData = scaleSize(scale, scale, scale)
   def scaleSize(scaleX: Float, scaleY: Float, scaleZ: Float): MutableShotData =
     copy(sizeX = sizeX * scaleX, sizeY = sizeY * scaleY, sizeZ = sizeZ * scaleZ)
+
+  def setMainColor(color: Int): Unit = {
+    if (edgeColor == 0xFFFFFF || edgeColor == 0x000000) setCoreColor(color) else setEdgeColor(color)
+  }
 
   def deserializeByteBuf(buf: ByteBuf) {
     form = Option(DanmakuRegistry.getObjById(classOf[Form], buf.readInt())).getOrElse {
@@ -313,6 +322,10 @@ final case class ShotData(
   def setDelay(delay: Int):                                ShotData = copy(delay = delay)
   def setEnd(end: Int):                                    ShotData = copy(end = end)
   def setSubEntity(subEntity: SubEntityType):              ShotData = copy(subEntity = subEntity)
+
+  def setMainColor(color: Int): ShotData = {
+    if (edgeColor == 0xFFFFFF || edgeColor == 0x000000) setCoreColor(color) else setEdgeColor(color)
+  }
 
   def scaleSize(scale: Float): ShotData = scaleSize(scale, scale, scale)
   def scaleSize(scaleX: Float, scaleY: Float, scaleZ: Float): ShotData =

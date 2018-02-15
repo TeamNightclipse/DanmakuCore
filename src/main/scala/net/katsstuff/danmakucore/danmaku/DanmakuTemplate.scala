@@ -247,7 +247,8 @@ final case class DanmakuTemplate(
     )
 
     val first = DanmakuState(entityData, extraData, trackingData)
-    extraData.subEntity.onInstantiate(first)
+    val created = extraData.subEntity.onCreate(first)
+    extraData.subEntity.onInstantiate(created)
   }
   def toBuilder =
     DanmakuTemplate.Builder(
