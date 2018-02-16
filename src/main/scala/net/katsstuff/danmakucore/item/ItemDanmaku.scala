@@ -8,7 +8,6 @@
  */
 package net.katsstuff.danmakucore.item
 
-import java.awt.Color
 import java.util
 
 import javax.annotation.Nullable

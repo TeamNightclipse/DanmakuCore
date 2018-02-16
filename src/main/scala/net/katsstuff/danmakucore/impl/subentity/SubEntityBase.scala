@@ -114,22 +114,24 @@ abstract class SubEntityBase extends SubEntity {
     var groundRay: RayTraceResult = null
     val afterEntityImpact =
       potentialHits.foldLeft[DanmakuUpdate](DanmakuUpdate.noUpdates(danmaku)) { (update, potentialHit) =>
-        if (update.nonEmpty) {
-          val entityAabb = potentialHit.getEntityBoundingBox
-          if (boundingBoxes.exists(_.intersects(entityAabb))) {
-            val rayTraceResult = entityAabb.calculateIntercept(start.toVec3d, end.toVec3d)
-            if (rayTraceResult != null) {
-              val rayToHit = danmaku.world.rayTraceBlocks(start.toVec3d, rayTraceResult.hitVec, false, true, false)
-              if (rayToHit != null && (rayToHit.typeOfHit == RayTraceResult.Type.BLOCK)) {
-                groundRay = rayToHit
-                update
-              } else {
-                val rayHit = new RayTraceResult(potentialHit)
-                update.andThen(impactEntity(_, rayHit)).andThen(impact(_, rayHit))
-              }
+        update.state match {
+          case Some(state) =>
+            val entityAabb = potentialHit.getEntityBoundingBox
+            if (boundingBoxes.exists(_.intersects(entityAabb))) {
+              val rayTraceResult = entityAabb.calculateIntercept(start.toVec3d, end.toVec3d)
+              if (rayTraceResult != null) {
+                val rayToHit = danmaku.world.rayTraceBlocks(start.toVec3d, rayTraceResult.hitVec, false, true, false)
+                if (rayToHit != null && (rayToHit.typeOfHit == RayTraceResult.Type.BLOCK)) {
+                  groundRay = rayToHit
+                  update
+                } else {
+                  val rayHit = new RayTraceResult(potentialHit)
+                  update.andThen(impactEntity(_, rayHit)).andThenWithCallbacks(state)(impact(_, rayHit))
+                }
+              } else update
             } else update
-          } else update
-        } else update
+          case None => update
+        }
       }
 
     if (groundRay == null) {
@@ -138,7 +140,9 @@ abstract class SubEntityBase extends SubEntity {
     }
 
     if (groundRay != null) {
-      afterEntityImpact.andThen(impactBlock(_, groundRay)).andThen(impactBlock(_, groundRay))
+      afterEntityImpact
+        .andThen(impactBlock(_, groundRay))
+        .andThenWithCallbacks(afterEntityImpact.state.getOrElse(danmaku))(impact(_, groundRay))
     } else afterEntityImpact
   }
 

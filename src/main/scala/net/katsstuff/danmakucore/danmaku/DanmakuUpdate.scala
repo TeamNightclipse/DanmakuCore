@@ -39,4 +39,13 @@ case class DanmakuUpdate(state: Option[DanmakuState], signals: Seq[DanmakuUpdate
       newUpdate.copy(signals = signals ++ newUpdate.signals, callbacks = callbacks ++ newUpdate.callbacks)
     case None => this
   }
+
+  def andThenWithCallbacks(defaultState: DanmakuState)(f: DanmakuState => DanmakuUpdate): DanmakuUpdate = state match {
+    case Some(danState) =>
+      val newUpdate = f(danState)
+      newUpdate.copy(signals = signals ++ newUpdate.signals, callbacks = callbacks ++ newUpdate.callbacks)
+    case None =>
+      val callbackUpdate = f(defaultState)
+      copy(callbacks = callbacks ++ callbackUpdate.callbacks)
+  }
 }
