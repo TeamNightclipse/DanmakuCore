@@ -141,6 +141,54 @@ case class DanmakuState(entity: DanmakuEntityData, extra: ExtraDanmakuData, trac
 
   def resetMotion: Vector3 = setSpeed(movement.speedOriginal)
 
+  def copy(
+      entity: DanmakuEntityData = entity,
+      extra: ExtraDanmakuData = extra,
+      tracking: TrackerData = tracking
+  ): DanmakuState = {
+    val oldShot     = this.extra.shot
+    val newShot     = extra.shot
+    val oldMovement = this.extra.movement
+    val newMovement = extra.movement
+    val oldRotation = this.extra.rotation
+    val newRotation = extra.rotation
+
+    val shotChanged     = newShot != oldShot
+    val movementChanged = newMovement != oldMovement
+    val rotationChanged = newRotation != oldRotation
+
+    val specialDataChanged = shotChanged || movementChanged || rotationChanged
+
+    val usedShot =
+      if (shotChanged)
+        extra.subEntity.onShotDataChange(oldShot, oldShot.form.onShotDataChange(oldShot, newShot), newShot)
+      else oldShot
+
+    val usedMovement =
+      if (movementChanged)
+        extra.subEntity.onMovementDataChange(
+          oldMovement,
+          usedShot.form.onMovementDataChange(oldMovement, newMovement),
+          newMovement
+        )
+      else oldMovement
+
+    val usedRotation =
+      if (rotationChanged)
+        extra.subEntity.onRotationDataChange(
+          oldRotation,
+          usedShot.form.onRotationDataChange(oldRotation, newRotation),
+          newRotation
+        )
+      else oldRotation
+
+    val usedExtra = if (specialDataChanged) {
+      extra.copy(shot = usedShot, movement = usedMovement, rotation = usedRotation)
+    } else extra
+
+    DanmakuState(entity, usedExtra, tracking)
+  }
+
   private[danmakucore] def updatePlayerList(players: Seq[EntityPlayerMP]): TrackerData = {
     val tracking                     = this.tracking
     var trackingPlayers              = tracking.trackingPlayers
@@ -219,8 +267,8 @@ case class DanmakuState(entity: DanmakuEntityData, extra: ExtraDanmakuData, trac
   }
 
   private def isVisibleTo(player: EntityPlayerMP): Boolean = {
-    val x = player.posX - tracking.encodedPosX / 4096.0D
-    val z = player.posZ - tracking.encodedPosZ / 4096.0D
+    val x     = player.posX - tracking.encodedPosX / 4096.0D
+    val z     = player.posZ - tracking.encodedPosZ / 4096.0D
     val range = Math.min(tracking.range, tracking.maxRange)
     x >= -range && x <= range && z >= -range && z <= range
   }

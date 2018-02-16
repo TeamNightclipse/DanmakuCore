@@ -73,7 +73,7 @@ abstract class Form extends RegistryValueWithItemModel[Form] {
   def onTick(danmaku: DanmakuState): DanmakuUpdate = DanmakuUpdate.noUpdates(danmaku)
 
   /**
-    * Callback that is executed whenever [[ShotData]] is set on the underlying entity
+    * Callback that is executed whenever [[ShotData]] is set on the [[DanmakuState]]
     *
     * @param oldShot The old shot
     * @param newShot The new shot
@@ -82,7 +82,7 @@ abstract class Form extends RegistryValueWithItemModel[Form] {
   def onShotDataChange(oldShot: ShotData, newShot: ShotData): ShotData = newShot
 
   /**
-    * Callback that is executed when [[MovementData]] is set on the underlying entity.
+    * Callback that is executed when [[MovementData]] is set on the [[DanmakuState]].
     *
     * @param oldMovement The old movement
     * @param newMovement the new movement
@@ -91,7 +91,7 @@ abstract class Form extends RegistryValueWithItemModel[Form] {
   def onMovementDataChange(oldMovement: MovementData, newMovement: MovementData): MovementData = newMovement
 
   /**
-    * Callback that is executed when [[RotationData]] is set on the underlying entity.
+    * Callback that is executed when [[RotationData]] is set on the [[DanmakuState]].
     *
     * @param oldRotation The old rotation
     * @param newRotation The new rotation
