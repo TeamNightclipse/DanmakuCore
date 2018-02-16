@@ -38,7 +38,7 @@ abstract class SubEntity {
   def subEntityTick(danmaku: DanmakuState): DanmakuUpdate
 
   /**
-    * Callback that is executed whenever [[ShotData]] is set on the underlying entity
+    * Callback that is executed whenever [[ShotData]] is set on the [[DanmakuState]]
     *
     * @param oldShot The old shot
     * @param formOpinion The shot that the form wants to use
@@ -48,7 +48,7 @@ abstract class SubEntity {
   def onShotDataChange(oldShot: ShotData, formOpinion: ShotData, newShot: ShotData): ShotData = formOpinion
 
   /**
-    * Callback that is executed when [[MovementData]] is set on the underlying entity.
+    * Callback that is executed when [[MovementData]] is set on the [[DanmakuState]].
     *
     * @param oldMovement The old movement
     * @param formOpinion The movement that the form wants to use
@@ -62,7 +62,7 @@ abstract class SubEntity {
   ): MovementData = formOpinion
 
   /**
-    * Callback that is executed when [[RotationData]] is set on the underlying entity.
+    * Callback that is executed when [[RotationData]] is set on the [[DanmakuState]].
     *
     * @param oldRotation The old rotation
     * @param formOpinion The rotation that the form wants to use
