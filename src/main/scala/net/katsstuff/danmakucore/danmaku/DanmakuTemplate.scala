@@ -67,9 +67,9 @@ object DanmakuTemplate {
       if (rawBoundingBoxes == null) {
         rawBoundingBoxes = Seq(
           OrientedBoundingBox(
-            DanmakuState.createRawBoundingBox(shot, rotate = false, orientation),
+            DanmakuState.createRawBoundingBox(shot, rotate = false, Quat.Identity),
             Vector3.Zero,
-            orientation
+            Quat.Identity
           )
         )
       }

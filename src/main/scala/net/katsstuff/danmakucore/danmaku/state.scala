@@ -38,7 +38,9 @@ case class DanmakuEntityData(
 ) {
 
   lazy val boundingBoxes: Seq[OrientedBoundingBox] =
-    rawBoundingBoxes.map(obb => obb.copy(aabb = obb.aabb.offset(pos.x, pos.y, pos.z), pos = pos))
+    rawBoundingBoxes.map(
+      obb => obb.copy(aabb = obb.aabb.offset(pos.x, pos.y, pos.z), orientation = obb.orientation * orientation, pos = pos)
+    )
   lazy val encompassingAABB: AxisAlignedBB = rawEncompassingAABB.offset(pos.x, pos.y, pos.z)
 }
 
