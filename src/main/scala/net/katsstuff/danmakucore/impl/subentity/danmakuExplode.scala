@@ -21,23 +21,13 @@ private[danmakucore] class SubEntityTypeDanmakuExplosion(name: String) extends S
 
 private[subentity] class SubEntityDanmakuExplosion extends SubEntityDefault {
 
-  override protected def impact(danmaku: DanmakuState, raytrace: RayTraceResult): Option[DanmakuUpdate] = {
-    if (!danmaku.world.isRemote) {
-      super.impact(danmaku, raytrace).map(_.addCallback(createSphere(danmaku)))
-    } else {
-      super.impact(danmaku, raytrace)
-    }
-  }
+  override protected def impact(danmaku: DanmakuState, raytrace: RayTraceResult): DanmakuUpdate =
+    super.impact(danmaku, raytrace).addCallbackIf(!danmaku.world.isRemote)(createSphere(danmaku))
 
-  override def subEntityTick(danmaku: DanmakuState): Option[DanmakuUpdate] = {
-    if (danmaku.isShotEndTime && !danmaku.world.isRemote) {
-      super.subEntityTick(danmaku).map(_.addCallback(createSphere(danmaku)))
-    } else {
-      super.subEntityTick(danmaku)
-    }
-  }
+  override def subEntityTick(danmaku: DanmakuState): DanmakuUpdate =
+    super.subEntityTick(danmaku).addCallbackIf(danmaku.isShotEndTime && !danmaku.world.isRemote)(createSphere(danmaku))
 
-  def createSphere(danmaku: DanmakuState): () => Unit = () => {
+  def createSphere(danmaku: DanmakuState): Unit = {
     val template = DanmakuTemplate(
       danmaku.world,
       danmaku.user,
@@ -51,6 +41,6 @@ private[subentity] class SubEntityDanmakuExplosion extends SubEntityDefault {
       danmaku.entity.rawBoundingBoxes
     )
 
-    //DanmakuCreationHelper.createSphereShot(template, 16, 16, 0F, 0D)
+    DanmakuCreationHelper.createSphereShot(template, 16, 16, 0F, 0D)
   }
 }

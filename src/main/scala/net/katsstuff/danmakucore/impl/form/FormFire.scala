@@ -18,8 +18,8 @@ import net.katsstuff.danmakucore.lib.LibFormName
 
 private[danmakucore] class FormFire extends FormSphere(LibFormName.FIRE) {
 
-  override def onTick(danmaku: DanmakuState): Option[DanmakuUpdate] = {
-    val res = DanmakuUpdate.none(danmaku).addCallback { () =>
+  override def onTick(danmaku: DanmakuState): DanmakuUpdate = {
+    DanmakuUpdate.noUpdates(danmaku).addCallbackIf(danmaku.world.isRemote) {
       val shot  = danmaku.shot
       val color = shot.edgeColor
       val r     = Math.max(0.05F, (color >> 16 & 255) / 255.0F)
@@ -41,6 +41,5 @@ private[danmakucore] class FormFire extends FormSphere(LibFormName.FIRE) {
         DanmakuCore.proxy.createParticleGlow(danmaku.world, pos, motion, r, g, b, size * 15F, 10, GlowTexture.MOTE)
       }
     }
-    Some(res)
   }
 }

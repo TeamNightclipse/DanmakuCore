@@ -17,6 +17,5 @@ object SubEntityTypeDummy extends SubEntityType {
 }
 
 private[subentity] class SubEntityDummy extends SubEntity {
-  override def subEntityTick(danmaku: DanmakuState): Option[DanmakuUpdate] =
-    Some(DanmakuUpdate.none(danmaku))
+  override def subEntityTick(danmaku: DanmakuState): DanmakuUpdate = DanmakuUpdate.noUpdates(danmaku)
 }

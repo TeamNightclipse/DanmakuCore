@@ -28,7 +28,7 @@ private[subentity] class SubEntityShiftingRainbow extends SubEntityDefault {
     danmaku
   }
 
-  override def subEntityTick(danmaku: DanmakuState): Option[DanmakuUpdate] = {
+  override def subEntityTick(danmaku: DanmakuState): DanmakuUpdate = {
     val hue        = originalHue + (danmaku.ticksExisted % 50) / 50F
     val color      = Color.HSBtoRGB(hue, 1F, 1F)
     val newDanmaku = danmaku.copy(extra = danmaku.extra.copy(shot = danmaku.shot.setMainColor(color)))

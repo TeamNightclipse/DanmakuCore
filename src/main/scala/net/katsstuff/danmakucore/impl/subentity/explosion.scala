@@ -20,18 +20,10 @@ private[danmakucore] class SubEntityTypeExplosion(name: String, strength: Float)
 
 private[subentity] class SubEntityExplosion(strength: Float) extends SubEntityDefault {
 
-  override protected def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): Option[DanmakuUpdate] = {
-    if (!danmaku.world.isRemote) {
+  override protected def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): DanmakuUpdate = {
+    super.impact(danmaku, rayTrace).addCallbackIf(!danmaku.world.isRemote) {
       val cause = danmaku.user.orElse(danmaku.source).orNull
-      FMLCommonHandler
-        .instance()
-        .getMinecraftServerInstance
-        .addScheduledTask(
-          () =>
-            danmaku.world
-              .createExplosion(cause, rayTrace.hitVec.x, rayTrace.hitVec.y, rayTrace.hitVec.z, strength, false)
-        )
+      danmaku.world.createExplosion(cause, rayTrace.hitVec.x, rayTrace.hitVec.y, rayTrace.hitVec.z, strength, false)
     }
-    super.impact(danmaku, rayTrace)
   }
 }

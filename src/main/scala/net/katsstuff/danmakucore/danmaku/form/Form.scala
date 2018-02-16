@@ -70,7 +70,7 @@ abstract class Form extends RegistryValueWithItemModel[Form] {
     * danmaku would probably always be dragged down a slight bit by gravity, even if it doesn't have normal
     * gravity.
     */
-  def onTick(danmaku: DanmakuState): Option[DanmakuUpdate] = Some(DanmakuUpdate.none(danmaku))
+  def onTick(danmaku: DanmakuState): DanmakuUpdate = DanmakuUpdate.noUpdates(danmaku)
 
   /**
     * Callback that is executed whenever [[ShotData]] is set on the underlying entity

@@ -64,7 +64,7 @@ object ItemDanmaku {
     val amount    = Amount.get(stack)
     val shotSpeed = Speed.get(stack)
     val gravity   = getGravity(stack)
-    val shot      = ShotData.fromNBTItemStack(stack).setSubEntity(LibSubEntities.SHIFTING_RAINBOW)
+    val shot      = ShotData.fromNBTItemStack(stack)
 
     val orientation    = user.fold(Quat.fromAxisAngle(direction, 0D))(Quat.orientationOf(_))
     val danmakuPattern = DanPattern.get(stack)

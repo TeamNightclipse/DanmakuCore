@@ -19,19 +19,12 @@ private[danmakucore] class SubEntityTypeTeleport(name: String) extends SubEntity
 }
 
 private[subentity] class SubEntityTeleport extends SubEntityDefault {
-  protected override def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): Option[DanmakuUpdate] = {
-    danmaku.user.foreach { usr =>
-      if(!danmaku.world.isRemote) {
-        FMLCommonHandler
-          .instance()
-          .getMinecraftServerInstance
-          .addScheduledTask(() => {
-            usr.rotationYaw = danmaku.orientation.yaw.toFloat
-            usr.rotationPitch = danmaku.orientation.pitch.toFloat
-            usr.setPositionAndUpdate(danmaku.pos.x, danmaku.pos.y, danmaku.pos.z)
-          })
-      }
+  protected override def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): DanmakuUpdate = {
+    super.impact(danmaku, rayTrace).addCallbackIf(danmaku.user.isDefined && !danmaku.world.isRemote) {
+      val usr = danmaku.user.get
+      usr.rotationYaw = danmaku.orientation.yaw.toFloat
+      usr.rotationPitch = danmaku.orientation.pitch.toFloat
+      usr.setPositionAndUpdate(danmaku.pos.x, danmaku.pos.y, danmaku.pos.z)
     }
-    super.impact(danmaku, rayTrace)
   }
 }

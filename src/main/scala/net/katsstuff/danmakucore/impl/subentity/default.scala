@@ -16,26 +16,24 @@ class SubEntityTypeDefault(name: String) extends SubEntityType(name) {
 }
 class SubEntityDefault extends SubEntityBase {
 
-  override def subEntityTick(danmaku: DanmakuState): Option[DanmakuUpdate] = {
+  override def subEntityTick(danmaku: DanmakuState): DanmakuUpdate = {
     val shot  = danmaku.shot
     val delay = shot.delay
 
     if (delay > 0) {
       if (delay - 1 == 0) {
         if (shot.end == 1) {
-          None
+          DanmakuUpdate.empty
         } else {
           //Think we can get away with not sending an update here
-          Some(
-            DanmakuUpdate.none(
-              danmaku.copy(
-                entity = danmaku.entity.copy(motion = danmaku.resetMotion),
-                extra = danmaku.extra.copy(shot = shot.copy(delay = delay - 1))
-              )
+          DanmakuUpdate.noUpdates(
+            danmaku.copy(
+              entity = danmaku.entity.copy(motion = danmaku.resetMotion),
+              extra = danmaku.extra.copy(shot = shot.copy(delay = delay - 1))
             )
           )
         }
-      } else Some(DanmakuUpdate.none(danmaku.copy(extra = danmaku.extra.copy(shot = shot.copy(delay = delay - 1)))))
+      } else DanmakuUpdate.noUpdates(danmaku.copy(extra = danmaku.extra.copy(shot = shot.copy(delay = delay - 1))))
     } else {
       val rotation = danmaku.rotation
       val newDirection =

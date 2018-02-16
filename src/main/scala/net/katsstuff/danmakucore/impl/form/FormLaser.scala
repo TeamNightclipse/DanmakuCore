@@ -41,7 +41,7 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
         partialTicks: Float,
         manager: RenderManager
     ): Unit = {
-      val shot  = danmaku.shot
+      val shot = danmaku.shot
       DanCoreRenderHelper.transformDanmaku(shot, orientation)
 
       val dist = x * x + y * y + z * z
@@ -79,11 +79,11 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
         shaderProgram: DanCoreShaderProgram
     ): Unit = {
 
-      val shot  = danmaku.shot
+      val shot = danmaku.shot
       DanCoreRenderHelper.transformDanmaku(shot, orientation)
       DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, this, shot)
 
-      val dist    = x * x + y * y + z * z
+      val dist = x * x + y * y + z * z
       if (shot.delay > 0) {
         val scale = 0.025F * Math.min(shot.delay, 20)
 
@@ -143,17 +143,10 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
 
   override def playShotSound(world: World, pos: Vector3, shotData: ShotData): Unit = ()
 
-  override def onTick(danmaku: DanmakuState): Option[DanmakuUpdate] = {
+  override def onTick(danmaku: DanmakuState): DanmakuUpdate = {
     //The danmaku exits delay here
-    if (!danmaku.world.isRemote && danmaku.ticksExisted == 2) {
-      FMLCommonHandler
-        .instance()
-        .getMinecraftServerInstance
-        .addScheduledTask(() => {
-          DanmakuHelper.playSoundAt(danmaku.world, danmaku.pos, LibSounds.LASER1, 0.1F, 1F)
-        })
+    super.onTick(danmaku).addCallbackIf(!danmaku.world.isRemote && danmaku.ticksExisted == 2) {
+      DanmakuHelper.playSoundAt(danmaku.world, danmaku.pos, LibSounds.LASER1, 0.1F, 1F)
     }
-
-    super.onTick(danmaku)
   }
 }

@@ -9,21 +9,34 @@
 package net.katsstuff.danmakucore.danmaku
 
 object DanmakuUpdate {
-  def none(state: DanmakuState): DanmakuUpdate = DanmakuUpdate(state, Nil, Nil)
+  def empty: DanmakuUpdate = DanmakuUpdate(None, Nil, Nil)
 
-  def one(state: DanmakuState, update: DanmakuUpdateSignal):        DanmakuUpdate = DanmakuUpdate(state, Seq(update), Nil)
-  def multiple(state: DanmakuState, updates: DanmakuUpdateSignal*): DanmakuUpdate = DanmakuUpdate(state, updates, Nil)
+  def noUpdates(state: DanmakuState): DanmakuUpdate = DanmakuUpdate(Some(state), Nil, Nil)
 
-  def andThen(option: Option[DanmakuUpdate])(f: DanmakuState => Option[DanmakuUpdate]): Option[DanmakuUpdate] =
-    option.flatMap {
-      case DanmakuUpdate(state, signals, callbacks) =>
-        f(state).map(
-          newUpdate =>
-            newUpdate.copy(signals = signals ++ newUpdate.signals, callbacks = callbacks ++ newUpdate.callbacks)
-        )
-    }
+  def oneUpdate(state: DanmakuState, update: DanmakuUpdateSignal): DanmakuUpdate =
+    DanmakuUpdate(Some(state), Seq(update), Nil)
+  def multipleUpdates(state: DanmakuState, updates: DanmakuUpdateSignal*): DanmakuUpdate =
+    DanmakuUpdate(Some(state), updates, Nil)
 }
-case class DanmakuUpdate(state: DanmakuState, signals: Seq[DanmakuUpdateSignal], callbacks: Seq[() => Unit]) {
+case class DanmakuUpdate(state: Option[DanmakuState], signals: Seq[DanmakuUpdateSignal], callbacks: Seq[() => Unit]) {
 
-  def addCallback(f: () => Unit): DanmakuUpdate = copy(callbacks = callbacks :+ f)
+  @inline def isEmpty:  Boolean = state.isEmpty
+  @inline def nonEmpty: Boolean = state.nonEmpty
+
+  def addCallbackFunc(f: () => Unit): DanmakuUpdate = copy(callbacks = callbacks :+ f)
+  def addCallback(f: => Unit):        DanmakuUpdate = addCallbackFunc(() => f)
+  def addCallback(f: Runnable):       DanmakuUpdate = addCallbackFunc(() => f.run())
+
+  def addCallbackIfFunc(cond: Boolean)(f: () => Unit): DanmakuUpdate =
+    if (cond) copy(callbacks = callbacks :+ f) else this
+
+  def addCallbackIf(cond: Boolean)(f: => Unit):  DanmakuUpdate = addCallbackIfFunc(cond)(() => f)
+  def addCallbackIf(cond: Boolean, f: Runnable): DanmakuUpdate = addCallbackIfFunc(cond)(() => f.run())
+
+  def andThen(f: DanmakuState => DanmakuUpdate): DanmakuUpdate = state match {
+    case Some(danState) =>
+      val newUpdate = f(danState)
+      newUpdate.copy(signals = signals ++ newUpdate.signals, callbacks = callbacks ++ newUpdate.callbacks)
+    case None => this
+  }
 }

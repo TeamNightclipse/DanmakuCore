@@ -35,7 +35,7 @@ abstract class SubEntity {
   /**
     * Called each tick as long as the danmaku is alive, and it's delay is 0.
     */
-  def subEntityTick(danmaku: DanmakuState): Option[DanmakuUpdate]
+  def subEntityTick(danmaku: DanmakuState): DanmakuUpdate
 
   /**
     * Callback that is executed whenever [[ShotData]] is set on the underlying entity

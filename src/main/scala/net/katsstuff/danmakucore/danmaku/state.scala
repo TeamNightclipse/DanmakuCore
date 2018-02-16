@@ -108,15 +108,15 @@ case class DanmakuState(entity: DanmakuEntityData, extra: ExtraDanmakuData, trac
   lazy val chunkPosZ: Int = MathHelper.floor(pos.z / 16D)
 
   //noinspection MutatorLikeMethodIsParameterless
-  def updateForm: Option[DanmakuUpdate] =
+  def updateForm: DanmakuUpdate =
     shot.form.onTick(this)
 
   //noinspection MutatorLikeMethodIsParameterless
-  def updateSubEntity: Option[DanmakuUpdate] = subEntity.subEntityTick(this)
+  def updateSubEntity: DanmakuUpdate = subEntity.subEntityTick(this)
 
-  def update: Option[DanmakuUpdate] =
-    if (ticksExisted > shot.end) None
-    else DanmakuUpdate.andThen(updateSubEntity)(_.updateForm)
+  def update: DanmakuUpdate =
+    if (ticksExisted > shot.end) DanmakuUpdate.empty
+    else updateSubEntity.andThen(_.updateForm)
 
   def currentSpeed: Double = motion.length
 

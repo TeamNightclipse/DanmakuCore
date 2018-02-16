@@ -110,9 +110,7 @@ trait DanmakuHandler {
 
     profiler.endStartSection("startUpdates")
 
-    working = danmaku.par.flatMap(t => t._2.update.map(t => (t.state.id, t))) ++ newDanmaku.par.flatMap { state =>
-      state.update.map(t => (t.state.id, t))
-    }
+    working = danmaku.par.mapValues(_.update).toMap ++ newDanmaku.par.map(state => state.id -> state.update).toMap
 
     danmakuChanges.clear()
     newDanmaku.clear()
@@ -127,12 +125,12 @@ trait DanmakuHandler {
 
     profiler.endStartSection("processCallbacks")
     danmakuChanges ++= updated.flatMap {
-      case (_, DanmakuUpdate(state, stateUpdates, callbacks)) =>
+      case (_, DanmakuUpdate(optState, stateUpdates, callbacks)) =>
         callbacks.foreach(_.apply())
-        if (stateUpdates.nonEmpty) Some(DanmakuChanges(state.id, stateUpdates)) else None
+        optState.map(state => DanmakuChanges(state.id, stateUpdates))
     }
 
-    danmaku = updated.map(t => t._1 -> t._2.state)
+    danmaku = updated.flatMap(t => t._2.state.map(state => t._1 -> state))
     working = null
     chunkMap.clear()
     isChunkMapPolpulated = false
