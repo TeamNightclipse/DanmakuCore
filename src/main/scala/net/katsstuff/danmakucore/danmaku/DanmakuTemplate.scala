@@ -241,9 +241,9 @@ final case class DanmakuTemplate(
 
     val trackingData = TrackerData(
       pos = pos,
-      range = 64,
-      maxRange = FMLCommonHandler.instance().getMinecraftServerInstance.getPlayerList.getViewDistance,
-      updateFrequency = 10
+      range = (movement.speedOriginal.max(movement.upperSpeedLimit) * shot.end * 1.5D).round.toInt,
+      maxRange = FMLCommonHandler.instance().getMinecraftServerInstance.getPlayerList.getEntityViewDistance,
+      updateFrequency = 5
     )
 
     val first = DanmakuState(entityData, extraData, trackingData)

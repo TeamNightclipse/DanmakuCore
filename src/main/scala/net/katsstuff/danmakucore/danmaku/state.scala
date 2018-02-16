@@ -10,6 +10,7 @@ package net.katsstuff.danmakucore.danmaku
 
 import io.netty.buffer.ByteBuf
 import net.katsstuff.danmakucore.DanmakuCore
+import net.katsstuff.danmakucore.danmaku.DanmakuState.{Add, NOOP, PlayerOperation, Remove}
 import net.katsstuff.danmakucore.data.{MovementData, OrientedBoundingBox, Quat, RotationData, ShotData, Vector3}
 import net.katsstuff.danmakucore.danmaku.subentity.SubEntity
 import net.katsstuff.danmakucore.helper.MathUtil._
@@ -141,7 +142,8 @@ case class DanmakuState(entity: DanmakuEntityData, extra: ExtraDanmakuData, trac
   def resetMotion: Vector3 = setSpeed(movement.speedOriginal)
 
   private[danmakucore] def updatePlayerList(players: Seq[EntityPlayerMP]): TrackerData = {
-    var tracking                     = this.tracking
+    val tracking                     = this.tracking
+    var trackingPlayers              = tracking.trackingPlayers
     var updatedPlayerVisibility      = tracking.updatedPlayerVisibility
     var lastTrackedPos               = tracking.lastTrackedPos
     var ticksSinceLastForcedTeleport = tracking.ticksSinceLastForcedTeleport
@@ -151,7 +153,7 @@ case class DanmakuState(entity: DanmakuEntityData, extra: ExtraDanmakuData, trac
 
     if (!updatedPlayerVisibility || pos.distanceSquared(lastTrackedPos) > 16D) {
       updatedPlayerVisibility = true
-      tracking = updatePlayerEntities(players)
+      trackingPlayers = newTrackingPlayers(players)
       lastTrackedPos = pos
     }
 
@@ -164,15 +166,16 @@ case class DanmakuState(entity: DanmakuEntityData, extra: ExtraDanmakuData, trac
       val diffY     = y - encodedPosY
       val diffZ     = z - encodedPosZ
       val changePos = diffX * diffX + diffY * diffY + diffZ * diffZ >= 128L || tracking.updateCounter % 60 == 0
-      if (tracking.updateCounter > 0)
-        if (x < -32768L || x >= 32768L || y < -32768L || y >= 32768L || z < -32768L || z >= 32768L ||
-            ticksSinceLastForcedTeleport > 400) {
+      if (tracking.updateCounter > 0) {
+        if (x < -32768L || x >= 32768L || y < -32768L || y >= 32768L || z < -32768L || z >= 32768L || ticksSinceLastForcedTeleport > 400) {
           updatedPlayerVisibility = false
           ticksSinceLastForcedTeleport = 0
           tracking.trackingPlayers.foreach { player =>
             DanCorePacketHandler.sendTo(DanmakuForceUpdatePacket(this), player)
           }
         }
+      }
+
       if (changePos) {
         encodedPosX = x
         encodedPosY = y
@@ -180,8 +183,9 @@ case class DanmakuState(entity: DanmakuEntityData, extra: ExtraDanmakuData, trac
       }
     }
 
-    tracking = tracking.copy(
+    tracking.copy(
       updatedPlayerVisibility = updatedPlayerVisibility,
+      trackingPlayers = trackingPlayers,
       lastTrackedPos = lastTrackedPos,
       ticksSinceLastForcedTeleport = ticksSinceLastForcedTeleport,
       encodedPosX = encodedPosX,
@@ -189,26 +193,34 @@ case class DanmakuState(entity: DanmakuEntityData, extra: ExtraDanmakuData, trac
       encodedPosZ = encodedPosZ,
       updateCounter = tracking.updateCounter + 1
     )
-
-    tracking
   }
 
-  private[danmakucore] def updatePlayerEntities(players: Seq[EntityPlayerMP]): TrackerData =
-    players.foldLeft(tracking)((tracking, player) => updatePlayerEntity(tracking, player))
+  private[danmakucore] def newTrackingPlayers(players: Seq[EntityPlayerMP]): Set[EntityPlayerMP] = {
+    val byOperation = players
+      .map { player =>
+        playerEntityChange(tracking, player) -> player
+      }
+      .groupBy(_._1)
+      .mapValues(_.map(_._2))
 
-  private[danmakucore] def updatePlayerEntity(tracking: TrackerData, playerMP: EntityPlayerMP): TrackerData = {
-    if (isVisibleTo(playerMP)) {
-      if (!tracking.trackingPlayers.contains(playerMP) && isPlayerWatchingThisChunk(playerMP)) {
-        tracking.copy(trackingPlayers = tracking.trackingPlayers + playerMP)
-      } else if (tracking.trackingPlayers.contains(playerMP)) {
-        tracking.copy(trackingPlayers = tracking.trackingPlayers - playerMP)
-      } else tracking
-    } else tracking
+    val added   = byOperation.get(Add).fold(tracking.trackingPlayers)(players => tracking.trackingPlayers ++ players)
+    val removed = byOperation.get(Remove).fold(added)(players => added ++ players)
+
+    removed
   }
 
-  private def isVisibleTo(playerMP: EntityPlayerMP): Boolean = {
-    val x     = playerMP.posX - tracking.encodedPosX / 4096D
-    val z     = playerMP.posZ - tracking.encodedPosZ / 4096D
+  private[danmakucore] def playerEntityChange(tracking: TrackerData, player: EntityPlayerMP): PlayerOperation = {
+    if (isVisibleTo(player)) {
+      val isTracked = tracking.trackingPlayers.contains(player)
+      if (!isTracked && isPlayerWatchingThisChunk(player)) Add
+      else if (isTracked) Remove
+      else NOOP
+    } else NOOP
+  }
+
+  private def isVisibleTo(player: EntityPlayerMP): Boolean = {
+    val x = player.posX - tracking.encodedPosX / 4096.0D
+    val z = player.posZ - tracking.encodedPosZ / 4096.0D
     val range = Math.min(tracking.range, tracking.maxRange)
     x >= -range && x <= range && z >= -range && z <= range
   }
@@ -219,6 +231,11 @@ case class DanmakuState(entity: DanmakuEntityData, extra: ExtraDanmakuData, trac
   def isShotEndTime: Boolean = shot.end == ticksExisted
 }
 object DanmakuState {
+  private[danmakucore] sealed trait PlayerOperation
+  private[danmakucore] case object Add    extends PlayerOperation
+  private[danmakucore] case object Remove extends PlayerOperation
+  private[danmakucore] case object NOOP   extends PlayerOperation
+
   private var id: Int = 0
 
   def nextId(): Int = {

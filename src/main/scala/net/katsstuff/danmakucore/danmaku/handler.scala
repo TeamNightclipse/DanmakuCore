@@ -190,25 +190,23 @@ class ServerDanmakuHandler extends DanmakuHandler {
   override def spawnDanmaku(states: Seq[DanmakuState]): Unit = {
     val newDanmakuMap = mutable.Map.empty[EntityPlayerMP, mutable.Buffer[DanmakuState]]
     val newStates = states.map { danmaku =>
-      val newTracking = danmaku.updatePlayerEntities(danmaku.world.playerEntities.asScala.collect {
+      val newTrackingPlayers = danmaku.newTrackingPlayers(danmaku.world.playerEntities.asScala.collect {
         case playerMP: EntityPlayerMP => playerMP
       })
 
-      newTracking.trackingPlayers.foreach { player =>
+      newTrackingPlayers.foreach { player =>
         newDanmakuMap.getOrElseUpdate(player, mutable.Buffer.empty) += danmaku
       }
 
-      danmaku.copy(tracking = newTracking)
+      danmaku.copy(tracking = danmaku.tracking.copy(trackingPlayers = newTrackingPlayers))
     }
 
-    DanCorePacketHandler.sendToAll(DanmakuCreatePacket(newStates))
+    //DanCorePacketHandler.sendToAll(DanmakuCreatePacket(newStates))
 
-    /*
     newDanmakuMap.foreach {
       case (player, playerStates) =>
         DanCorePacketHandler.sendTo(DanmakuCreatePacket(playerStates), player)
     }
-     */
 
     super.spawnDanmaku(newStates)
   }
