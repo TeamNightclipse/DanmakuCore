@@ -35,24 +35,24 @@ abstract class Spellcard extends RegistryValueItemCreatable[Spellcard, EntitySpe
   def instantiate(card: EntitySpellcard, target: Option[EntityLivingBase]): SpellcardEntity
 
   /**
-    * @return The needed bombs to execute the spellcard.
+    * The needed bombs to execute the spellcard.
     */
   def level: Int
 
   /**
-    * @return The remove time. How long the spellcard will remove danmaku for.
+    * The remove time. How long the spellcard will remove danmaku for.
     */
   //noinspection MutatorLikeMethodIsParameterless
   def removeTime: Int
 
   /**
-    * @return The end time. How long the spellcard will physically exist and do stuff. Can also be
+    * The end time. How long the spellcard will physically exist and do stuff. Can also be
     * though of as cooldown.
     */
   def endTime: Int
 
   /**
-    * @return The Touhou character that uses this spellcard in the games.
+    * The Touhou character that uses this spellcard in the games.
     */
   def touhouUser: TouhouCharacter
 

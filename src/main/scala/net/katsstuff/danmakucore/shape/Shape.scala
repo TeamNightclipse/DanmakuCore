@@ -22,7 +22,7 @@ trait Shape {
     * @param pos The position to draw the shape at.
     * @param orientation The orientation that was registered for this shape.
     * @param tick The tick.
-    * @return Tuple first, if this shape is done. Tuple second, the danmaku that was created by this shape.
+    * @return The result of drawing for this tick.
     */
   def draw(pos: Vector3, orientation: Quat, tick: Int): ShapeResult
 

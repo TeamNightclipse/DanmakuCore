@@ -8,6 +8,8 @@
  */
 package net.katsstuff.danmakucore.danmaku
 
+import java.util.concurrent.atomic.AtomicInteger
+
 import io.netty.buffer.ByteBuf
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.danmaku.DanmakuState.{Add, NOOP, PlayerOperation, Remove}
@@ -37,9 +39,24 @@ case class DanmakuEntityData(
     rawEncompassingAABB: AxisAlignedBB
 ) {
 
+  def setWorld(world: World):                       DanmakuEntityData = copy(world = world)
+  def setTicksExisted(ticksExisted: Int):           DanmakuEntityData = copy(ticksExisted = ticksExisted)
+  def setRenderBrightness(renderBrightness: Float): DanmakuEntityData = copy(renderBrightness = renderBrightness)
+  def setPos(pos: Vector3):                         DanmakuEntityData = copy(pos = pos)
+  def setPrevPos(prevPos: Vector3):                 DanmakuEntityData = copy(prevPos = prevPos)
+  def setOrientation(orientation: Quat):            DanmakuEntityData = copy(orientation = orientation)
+  def setPrevOrientation(prevOrientation: Quat):    DanmakuEntityData = copy(prevOrientation = prevOrientation)
+  def setMotion(motion: Vector3):                   DanmakuEntityData = copy(motion = motion)
+  def setDirection(direction: Vector3):             DanmakuEntityData = copy(direction = direction)
+  def setRawBoundingBoxes(rawBoundingBoxes: Seq[OrientedBoundingBox]): DanmakuEntityData =
+    copy(rawBoundingBoxes = rawBoundingBoxes)
+  def setRawEncompassingAABB(rawEncompassingAABB: AxisAlignedBB): DanmakuEntityData =
+    copy(rawEncompassingAABB = rawEncompassingAABB)
+
   lazy val boundingBoxes: Seq[OrientedBoundingBox] =
     rawBoundingBoxes.map(
-      obb => obb.copy(aabb = obb.aabb.offset(pos.x, pos.y, pos.z), orientation = obb.orientation * orientation, pos = pos)
+      obb =>
+        obb.copy(aabb = obb.aabb.offset(pos.x, pos.y, pos.z), orientation = obb.orientation * orientation, pos = pos)
     )
   lazy val encompassingAABB: AxisAlignedBB = rawEncompassingAABB.offset(pos.x, pos.y, pos.z)
 }
@@ -286,13 +303,9 @@ object DanmakuState {
   private[danmakucore] case object Remove extends PlayerOperation
   private[danmakucore] case object NOOP   extends PlayerOperation
 
-  private var id: Int = 0
+  private val id = new AtomicInteger
 
-  def nextId(): Int = {
-    val next = id
-    id += 1
-    next
-  }
+  def nextId(): Int = id.getAndIncrement()
 
   implicit val converter: MessageConverter[DanmakuState] = new MessageConverter[DanmakuState] {
 
