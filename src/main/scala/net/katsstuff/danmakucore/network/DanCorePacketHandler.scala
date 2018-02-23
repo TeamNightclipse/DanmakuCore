@@ -9,7 +9,7 @@
 package net.katsstuff.danmakucore.network
 
 import net.katsstuff.danmakucore.lib.LibMod
-import net.katsstuff.danmakucore.network.scalachannel.ScalaNetworkWrapper
+import net.katsstuff.mirror.network.scalachannel.ScalaNetworkWrapper
 
 object DanCorePacketHandler extends ScalaNetworkWrapper(LibMod.Id) {
   private[danmakucore] def load(): Unit = {
@@ -17,7 +17,6 @@ object DanCorePacketHandler extends ScalaNetworkWrapper(LibMod.Id) {
       for {
         _ <- registerMessage[ChargeSpherePacket]
         _ <- registerMessage[DanCoreDataPacket]
-        _ <- registerMessage[ParticlePacket]
         _ <- registerMessage[PhaseDataPacket]
         _ <- registerMessage[SpellcardInfoPacket]
         _ <- registerMessage[DanmakuCreatePacket]

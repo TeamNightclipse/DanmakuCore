@@ -1,5 +1,5 @@
 #version 120
-#pragma include "common_fragment.glsl"
+#pragma Mirror include "common_fragment.glsl"
 
 uniform vec3 coreColor;
 uniform vec3 edgeColor;

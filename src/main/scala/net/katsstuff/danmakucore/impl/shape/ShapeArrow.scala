@@ -9,8 +9,8 @@
 package net.katsstuff.danmakucore.impl.shape
 
 import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuTemplate}
-import net.katsstuff.danmakucore.data.{Quat, Vector3}
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
+import net.katsstuff.mirror.data.{Quat, Vector3}
 
 /**
   * An arrow shape.

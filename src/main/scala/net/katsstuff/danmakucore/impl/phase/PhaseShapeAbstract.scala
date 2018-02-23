@@ -8,9 +8,10 @@
  */
 package net.katsstuff.danmakucore.impl.phase
 
-import net.katsstuff.danmakucore.data.{MovementData, Quat, RotationData, ShotData, Vector3}
+import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData}
 import net.katsstuff.danmakucore.entity.living.phase.{Phase, PhaseManager}
 import net.katsstuff.danmakucore.shape.Shape
+import net.katsstuff.mirror.data.{Quat, Vector3}
 import net.minecraft.nbt.NBTTagCompound
 
 abstract class PhaseShapeAbstract(

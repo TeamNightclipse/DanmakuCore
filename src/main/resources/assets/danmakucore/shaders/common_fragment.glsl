@@ -1,4 +1,4 @@
-#pragma include "common.glsl"
+#pragma Mirror include "common.glsl"
 
 //https://github.com/dfelinto/blender/blob/master/intern/cycles/kernel/shaders/node_brightness.osl
 float brightContrast(float value, float brightness, float contrast) {

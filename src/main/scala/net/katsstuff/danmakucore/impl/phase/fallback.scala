@@ -9,11 +9,11 @@
 package net.katsstuff.danmakucore.impl.phase
 
 import net.katsstuff.danmakucore.danmaku.DanmakuVariant
-import net.katsstuff.danmakucore.data.{Quat, Vector3}
 import net.katsstuff.danmakucore.entity.living.phase.{Phase, PhaseManager, PhaseType}
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.katsstuff.danmakucore.registry.DanmakuRegistry
 import net.katsstuff.danmakucore.scalastuff.DanmakuCreationHelper
+import net.katsstuff.mirror.data.Vector3
 
 class PhaseTypeFallback extends PhaseType {
   override def instantiate(phaseManager: PhaseManager) = new PhaseFallback(phaseManager, this)

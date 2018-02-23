@@ -16,7 +16,6 @@ import scala.collection.JavaConverters._
 import com.google.common.base.Optional
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.entity.living.phase.Phase
 import net.katsstuff.danmakucore.entity.living.{EntityDanmakuMob, TouhouCharacter}
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper
@@ -25,6 +24,7 @@ import net.minecraft.network.datasync.{DataSerializers, EntityDataManager}
 import net.minecraft.util.DamageSource
 import net.minecraft.world.{BossInfo, BossInfoServer, World}
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
+import net.katsstuff.mirror.data.Vector3
 
 object EntityDanmakuBoss {
   private val BossInfoUUID = EntityDataManager.createKey(classOf[EntityDanmakuBoss], DataSerializers.OPTIONAL_UNIQUE_ID)

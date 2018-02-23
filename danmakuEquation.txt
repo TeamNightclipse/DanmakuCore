@@ -1,0 +1,116 @@
+originalSpeed: constant number
+lowerSpeedLimit: constant number, possibly originalSpeed
+upperSpeedLimit: constant number, possibly originalSpeed
+acceleration: constant number, possibly 0
+rotation: constant quaternion, probably identity
+rotationEnd: constant number, probably infinite
+gravity: constant vector, probably 0
+
+delay: number probably 0
+pos: vector
+orientation: quaternion
+direction: unit vector
+age: number
+
+valueAt(target: constant number) = {
+  motion := direction * originalSpeed
+  while(age < target) {
+    if(delay > 0) then {	
+	  delay := delay - 1
+	  
+	  if(delay = 0) then motion := direction * originalSpeed
+    }
+    else {
+	  if(age < rotationEnd) then {
+        direction := rotation * direction
+        orientation = orientation * rotation
+	  }
+      motion := accelerate(motion, direction) + gravity
+      pos := pos + motion
+      age := age + 1
+    }
+  }
+  
+  return what's of interest(pos, direction, motion, orientation)
+}
+
+accelerate(motion: vector, direction: unit vector) = {
+  len := ||motion||
+  if(len >= upperSpeedLimit && acceleration >= 0) then return direction * upperSpeedLimit
+  else if(len <= lowerSpeedLimit && acceleration <= 0) then return direction * lowerSpeedLimit
+  else {
+    newMotion := motion + direction * acceleration
+    newLen := ||newMotion||
+	if(newLen > upperSpeedLimit) then return direction * upperSpeedLimit
+	else if(newLen < lowerSpeedLimit) then return direction * lowerSpeedLimit
+	else return newMotion
+  }
+}
+
+recValueAt(delay: number probably 0, pos: vector, orientation: quaternion, direction: unit vector, age: number, 
+    motion: vector = direction * originalSpeed, target: constant number) = {
+  if(age < target) then {
+    if(delay > 0) then {	
+	  return recValueAt(
+	    delay - 1, 
+		pos, 
+		orientation, 
+		direction, 
+		age, 
+		if(delay = 0) then direction * originalSpeed else motion,
+		target
+      )
+    }
+    else {
+      newMotion := accelerate(motion, direction) + gravity
+	  return recValueAt(
+	    delay, 
+		pos + newMotion, 
+		if(age < rotationEnd) then orientation * rotation else orientation, 
+		if(age < rotationEnd) then direction * rotation else direction, 
+		age + 1, 
+		newMotion,
+		target
+	  )
+    }
+  }
+  else {
+    return what's of interest(pos, direction, motion, orientation)
+  }
+}
+
+valueAt2(target: constant number) = {
+  
+
+  recValueAt(delay: number probably 0, pos: vector, orientation: quaternion, direction: unit vector, age: number, 
+      motion: vector = direction * originalSpeed) = {
+    if(age < target) then {
+      if(delay > 0) then {
+  	    return recValueAt(
+  	      delay - 1, 
+  		  pos, 
+  		  orientation, 
+  		  direction, 
+  		  age, 
+  		  if(delay = 0) then direction * originalSpeed else motion
+          )
+      }
+      else {
+        newMotion := accelerate(motion, direction) + gravity
+  	    return recValueAt(
+  	      delay, 
+  		  pos + newMotion, 
+  		  if(age < rotationEnd) then orientation * rotation else orientation, 
+  		  if(age < rotationEnd) then direction * rotation else direction, 
+  		  age + 1, 
+  		  newMotion
+  	    )
+      }
+    }
+    else {
+      return what's of interest(pos, direction, motion, orientation)
+    }
+  }
+  
+  return recValueAt(delay, pos, orientation, direction, age)
+}

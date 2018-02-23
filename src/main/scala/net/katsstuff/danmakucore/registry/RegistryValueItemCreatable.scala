@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.registry
 
 import javax.annotation.Nullable
 
-import net.katsstuff.danmakucore.data.Vector3
+import net.katsstuff.mirror.data.Vector3
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.EnumHand

@@ -12,7 +12,7 @@ import java.util
 
 import scala.collection.JavaConverters._
 
-import net.katsstuff.danmakucore.data.{Quat, Vector3}
+import net.katsstuff.mirror.data.{Quat, Vector3}
 
 /**
   * JAVA-API

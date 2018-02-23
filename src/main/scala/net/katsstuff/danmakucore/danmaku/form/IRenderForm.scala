@@ -9,9 +9,9 @@
 package net.katsstuff.danmakucore.danmaku.form
 
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
-import net.katsstuff.danmakucore.client.shader.DanCoreShaderProgram
 import net.katsstuff.danmakucore.danmaku.DanmakuState
-import net.katsstuff.danmakucore.data.Quat
+import net.katsstuff.mirror.client.shaders.MirrorShaderProgram
+import net.katsstuff.mirror.data.Quat
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraft.util.ResourceLocation
@@ -49,7 +49,7 @@ trait IRenderForm {
       orientation: Quat,
       partialTicks: Float,
       manager: RenderManager,
-      shaderProgram: DanCoreShaderProgram
+      shaderProgram: MirrorShaderProgram
   ): Unit = {
     val shot = danmaku.shot
     DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, this, shot)

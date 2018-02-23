@@ -12,11 +12,12 @@ import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
-import net.katsstuff.danmakucore.client.shader._
+import net.katsstuff.mirror.client.shaders._
 import net.katsstuff.danmakucore.danmaku.DanmakuState
-import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.danmaku.form.{IRenderForm, RenderingProperty}
 import net.katsstuff.danmakucore.lib.LibFormName
+import net.katsstuff.mirror.client.helper.MirrorRenderHelper
+import net.katsstuff.mirror.data.Quat
 import net.minecraft.client.renderer.{GlStateManager, OpenGlHelper}
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.util.ResourceLocation
@@ -80,7 +81,7 @@ private[danmakucore] class FormBubble extends FormGeneric(LibFormName.BUBBLE) {
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_ONE, GL11.GL_ONE)
       GlStateManager.depthMask(false)
-      DanCoreRenderHelper.drawSphere(shot.edgeColor, alpha, dist)
+      MirrorRenderHelper.drawSphere(shot.edgeColor, alpha, dist)
       GlStateManager.depthMask(true)
       GlStateManager.disableBlend()
     }
@@ -93,7 +94,7 @@ private[danmakucore] class FormBubble extends FormGeneric(LibFormName.BUBBLE) {
         orientation: Quat,
         partialTicks: Float,
         manager: RenderManager,
-        shaderProgram: DanCoreShaderProgram
+        shaderProgram: MirrorShaderProgram
     ): Unit = {
       val shot = danmaku.shot
       val dist = x * x + y * y + z * z
@@ -103,7 +104,7 @@ private[danmakucore] class FormBubble extends FormGeneric(LibFormName.BUBBLE) {
 
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-      DanCoreRenderHelper.drawSphere(DanCoreRenderHelper.OverwriteColorEdge, 1F, dist)
+      MirrorRenderHelper.drawSphere(DanCoreRenderHelper.OverwriteColorEdge, 1F, dist)
       GlStateManager.disableBlend()
     }
 

@@ -9,9 +9,10 @@
 package net.katsstuff.danmakucore.impl.form
 
 import net.katsstuff.danmakucore.danmaku.DanmakuState
-import net.katsstuff.danmakucore.data.{Quat, ShotData}
+import net.katsstuff.danmakucore.data.ShotData
 import net.katsstuff.danmakucore.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.lib.LibFormName
+import net.katsstuff.mirror.data.Quat
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 

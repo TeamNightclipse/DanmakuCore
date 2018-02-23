@@ -1,4 +1,4 @@
-#pragma include "common.glsl"
+#pragma Mirror include "common.glsl"
 
 vec3 viewVec() {
 	vec3 normal = gl_Normal;

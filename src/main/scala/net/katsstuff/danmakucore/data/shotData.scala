@@ -17,8 +17,8 @@ import net.katsstuff.danmakucore.danmaku.subentity.SubEntityType
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.katsstuff.danmakucore.lib.LibColor
 import net.katsstuff.danmakucore.lib.data.{LibForms, LibSubEntities}
-import net.katsstuff.danmakucore.network.scalachannel.MessageConverter
 import net.katsstuff.danmakucore.registry.DanmakuRegistry
+import net.katsstuff.mirror.network.scalachannel.MessageConverter
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.network.PacketBuffer

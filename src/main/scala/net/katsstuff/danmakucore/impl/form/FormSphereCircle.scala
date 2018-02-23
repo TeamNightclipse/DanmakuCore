@@ -12,9 +12,10 @@ import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
-import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.lib.LibFormName
+import net.katsstuff.mirror.client.helper.MirrorRenderHelper
+import net.katsstuff.mirror.data.Quat
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -45,18 +46,18 @@ private[danmakucore] class FormSphereCircle extends FormGeneric(LibFormName.CIRC
       GlStateManager.depthMask(false)
       GlStateManager.scale(1.2F, 1.2F, 1.2F)
 
-      DanCoreRenderHelper.drawSphere(shot.edgeColor, alpha, dist)
+      MirrorRenderHelper.drawSphere(shot.edgeColor, alpha, dist)
 
       GlStateManager.scale(1.3F, 1.3F, 1.3F)
 
-      DanCoreRenderHelper.drawSphere(shot.edgeColor, alpha * 0.4F, dist)
+      MirrorRenderHelper.drawSphere(shot.edgeColor, alpha * 0.4F, dist)
 
       GlStateManager.depthMask(true)
       GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
       GlStateManager.disableBlend()
       GlStateManager.scale(1F / (1.2F * 1.3F), 1F / (1.2F * 1.3F), 1F / (1.2F * 1.3F))
 
-      DanCoreRenderHelper.drawSphere(shot.coreColor, 1F, dist)
+      MirrorRenderHelper.drawSphere(shot.coreColor, 1F, dist)
     }
   }
 }

@@ -13,11 +13,12 @@ import java.util.concurrent.atomic.AtomicInteger
 import io.netty.buffer.ByteBuf
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.danmaku.DanmakuState.{Add, NOOP, PlayerOperation, Remove}
-import net.katsstuff.danmakucore.data.{MovementData, OrientedBoundingBox, Quat, RotationData, ShotData, Vector3}
+import net.katsstuff.danmakucore.data.{MovementData, OrientedBoundingBox, RotationData, ShotData}
 import net.katsstuff.danmakucore.danmaku.subentity.SubEntity
 import net.katsstuff.danmakucore.helper.MathUtil._
 import net.katsstuff.danmakucore.network.{DanCorePacketHandler, DanmakuForceUpdatePacket}
-import net.katsstuff.danmakucore.network.scalachannel.MessageConverter
+import net.katsstuff.mirror.data.{Quat, Vector3}
+import net.katsstuff.mirror.network.scalachannel.MessageConverter
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.entity.{Entity, EntityLivingBase, EntityTracker}
 import net.minecraft.util.math.{AxisAlignedBB, MathHelper}

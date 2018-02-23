@@ -15,7 +15,7 @@ import scala.annotation.tailrec
 
 import net.katsstuff.danmakucore.capability.danmakuhit.CapabilityDanmakuHitBehaviorJ
 import net.katsstuff.danmakucore.danmaku.{DamageSourceDanmaku, DanmakuState, DanmakuUpdate}
-import net.katsstuff.danmakucore.data.Vector3
+import net.katsstuff.mirror.data.Vector3
 import net.katsstuff.danmakucore.danmaku.subentity.SubEntity
 import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.lib.LibSounds
@@ -92,7 +92,7 @@ abstract class SubEntityBase extends SubEntity {
     * Add the gravity to the motion.
     */
   protected def updateMotionWithGravity(danmaku: DanmakuState, motion: Vector3): Vector3 =
-    motion + danmaku.movement.getGravity
+    motion + danmaku.movement.gravity
 
   protected def hitCheck(danmaku: DanmakuState, exclude: Predicate[Entity]): DanmakuUpdate =
     hitCheck(danmaku, exclude.asScala)

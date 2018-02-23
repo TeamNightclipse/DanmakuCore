@@ -13,11 +13,10 @@ import scala.reflect.ClassTag
 import net.katsstuff.danmakucore.CommonProxy
 import net.katsstuff.danmakucore.client.handler.{BossBarHandler, DanmakuRenderer, HUDHandler, SpellcardHandler}
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
-import net.katsstuff.danmakucore.client.particle.{GlowTexture, IGlowParticle, ParticleRenderer, ParticleUtil}
 import net.katsstuff.danmakucore.client.render.{RenderFallingData, RenderSpellcard}
 import net.katsstuff.danmakucore.danmaku.{ClientDanmakuHandler, DanmakuChanges, DanmakuHandler, DanmakuState, DanmakuVariant}
-import net.katsstuff.danmakucore.data.{ShotData, Vector3}
 import net.katsstuff.danmakucore.danmaku.form.Form
+import net.katsstuff.danmakucore.data.ShotData
 import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard
 import net.katsstuff.danmakucore.helper.ItemNBTHelper
@@ -25,6 +24,8 @@ import net.katsstuff.danmakucore.item.{ItemDanmaku, ItemSpellcard}
 import net.katsstuff.danmakucore.lib.data.LibItems
 import net.katsstuff.danmakucore.network.SpellcardInfoPacket
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper
+import net.katsstuff.mirror.client.particles.{GlowTexture, ParticleUtil}
+import net.katsstuff.mirror.data.Vector3
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.ModelBakery
 import net.minecraft.client.renderer.color.IItemColor
@@ -57,7 +58,6 @@ class ClientProxy extends CommonProxy {
 
   private val bossBarHandler   = new BossBarHandler
   private val spellcardHandler = new SpellcardHandler
-  private val particleRenderer = new ParticleRenderer
   private var clientDanmakuHandler: ClientDanmakuHandler = _
   private var danmakuRenderer:      DanmakuRenderer      = _
 
@@ -118,7 +118,6 @@ class ClientProxy extends CommonProxy {
     MinecraftForge.EVENT_BUS.register(new HUDHandler)
     MinecraftForge.EVENT_BUS.register(bossBarHandler)
     MinecraftForge.EVENT_BUS.register(spellcardHandler)
-    MinecraftForge.EVENT_BUS.register(particleRenderer)
   }
 
   private def registerEntityRenderer[A <: Entity: ClassTag](f: RenderManager => Render[A]): Unit = {
@@ -153,9 +152,6 @@ class ClientProxy extends CommonProxy {
 
   override private[danmakucore] def handleSpellcardInfo(packet: SpellcardInfoPacket): Unit =
     spellcardHandler.handlePacket(packet)
-
-  override def addParticle[T <: IGlowParticle](particle: T): Unit =
-    particleRenderer.addParticle(particle)
 
   override def createParticleGlow(
       world: World,

@@ -1,5 +1,5 @@
 #version 120
-#pragma include "common_vertex.glsl"
+#pragma Mirror include "common_vertex.glsl"
 
 varying vec3 view;
 varying vec3 normal;

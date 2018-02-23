@@ -9,13 +9,10 @@
 package net.katsstuff.danmakucore
 
 import scala.collection.JavaConverters._
-import scala.collection.immutable
 import scala.reflect.ClassTag
 
-import net.katsstuff.danmakucore.client.particle.{GlowTexture, IGlowParticle}
 import net.katsstuff.danmakucore.danmaku.{DanmakuChanges, DanmakuHandler, DanmakuState, DanmakuVariant, ServerDanmakuHandler}
 import net.katsstuff.danmakucore.danmodel.DanModelReader
-import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.danmaku.form.Form
 import net.katsstuff.danmakucore.danmaku.subentity.SubEntityType
 import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss
@@ -30,12 +27,13 @@ import net.katsstuff.danmakucore.impl.subentity._
 import net.katsstuff.danmakucore.item.{ItemDanmaku, ItemSpellcard}
 import net.katsstuff.danmakucore.lib._
 import net.katsstuff.danmakucore.lib.data.LibShotData
-import net.katsstuff.danmakucore.misc.IdState
 import net.katsstuff.danmakucore.network.SpellcardInfoPacket
+import net.katsstuff.mirror.client.particles.GlowTexture
+import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.mirror.misc.IdState
 import net.minecraft.entity.Entity
 import net.minecraft.init.SoundEvents
 import net.minecraft.item.Item
-import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.{IThreadListener, ResourceLocation, SoundEvent}
 import net.minecraft.world.World
 import net.minecraftforge.common.MinecraftForge
@@ -306,8 +304,6 @@ class CommonProxy {
       b: Float,
       lifetime: Int
   ): Unit = {}
-
-  def addParticle[T <: IGlowParticle](particle: T): Unit = {}
 
   def updateDanmaku(changes: DanmakuChanges):  Unit = serverDanmakuHandler.updateDanmaku(changes)
   def spawnDanmaku(states: Seq[DanmakuState]): Unit = serverDanmakuHandler.spawnDanmaku(states)

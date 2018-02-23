@@ -70,34 +70,11 @@ configure<ForgeExtension> {
     replaceIn("LibMod.scala")
 }
 
-val reobf: NamedDomainObjectContainer<IReobfuscator> by extensions
-
-reobf {
-    "jar" {
-        extraLines.add("PK: shapeless net/katsstuff/danmakucore/shade/shapeless")
-    }
-}
-
-val shade by configurations.creating
-configurations.compile.extendsFrom(shade)
-
 dependencies {
-    shade("com.chuusai:shapeless_2.11:2.3.2") {
-        exclude(group = "org.scala-lang")
-    }
-
-    testCompile("junit:junit:4.12")
-    testCompile("org.scalatest:scalatest_2.11:3.0.1")
-    testCompile("org.scalacheck:scalacheck_2.11:1.13.4")
+    compile(project("Mirror"))
 }
 
 tasks.withType<Jar> {
-    shade.forEach { dep ->
-        from(project.zipTree(dep)) {
-            exclude("META_INF", "META_INF/**")
-        }
-    }
-
     exclude("**/*.psd")
 }
 

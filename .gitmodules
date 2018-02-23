@@ -1,0 +1,3 @@
+[submodule "Mirror"]
+	path = Mirror
+	url = https://github.com/TeamNightclipse/Mirror.git

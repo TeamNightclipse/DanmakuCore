@@ -13,9 +13,9 @@ import org.lwjgl.opengl.GL11
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
-import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.lib.LibFormName
+import net.katsstuff.mirror.data.Quat
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{GlStateManager, Tessellator}

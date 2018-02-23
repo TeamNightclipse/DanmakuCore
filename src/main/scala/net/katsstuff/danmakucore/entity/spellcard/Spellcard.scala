@@ -11,10 +11,10 @@ package net.katsstuff.danmakucore.entity.spellcard
 import javax.annotation.Nullable
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.entity.living.TouhouCharacter
 import net.katsstuff.danmakucore.registry.RegistryValueItemCreatable
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper
+import net.katsstuff.mirror.data.Vector3
 import net.minecraft.client.renderer.block.model.{ModelResourceLocation => MRL}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{EntityLiving, EntityLivingBase}
@@ -59,7 +59,14 @@ abstract class Spellcard extends RegistryValueItemCreatable[Spellcard, EntitySpe
   def create(player: EntityPlayer, firstAttack: Boolean): Option[EntitySpellcard] =
     TouhouHelper.declareSpellcardPlayer(player, this, firstAttack)
 
-  override def create(world: World, optUser: Option[EntityLivingBase], alternateMode: Boolean, pos: Vector3, direction: Vector3, hand: Option[EnumHand]): Option[EntitySpellcard] = {
+  override def create(
+      world: World,
+      optUser: Option[EntityLivingBase],
+      alternateMode: Boolean,
+      pos: Vector3,
+      direction: Vector3,
+      hand: Option[EnumHand]
+  ): Option[EntitySpellcard] = {
     optUser.flatMap { user =>
       user match {
         case entityPlayer: EntityPlayer => TouhouHelper.declareSpellcardPlayer(entityPlayer, this, firstAttack = true)

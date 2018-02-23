@@ -9,8 +9,9 @@
 package net.katsstuff.danmakucore.danmaku
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData, Vector3}
+import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData}
 import net.katsstuff.danmakucore.registry.RegistryValueItemCreatable
+import net.katsstuff.mirror.data.Vector3
 import net.minecraft.client.renderer.block.model.{ModelResourceLocation => MRL}
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.{EnumHand, ResourceLocation}
@@ -36,8 +37,17 @@ abstract class DanmakuVariant extends RegistryValueItemCreatable[DanmakuVariant,
   def getMovementData: MovementData
   def getRotationData: RotationData
 
-  override def create(world: World, user: Option[EntityLivingBase], alternateMode: Boolean, pos: Vector3, direction: Vector3, hand: Option[EnumHand]): Option[DanmakuTemplate] =
-    Some(DanmakuTemplate.builder.setVariant(this).setUser(user).setWorld(world).setDirection(direction).setPos(pos).build)
+  override def create(
+      world: World,
+      user: Option[EntityLivingBase],
+      alternateMode: Boolean,
+      pos: Vector3,
+      direction: Vector3,
+      hand: Option[EnumHand]
+  ): Option[DanmakuTemplate] =
+    Some(
+      DanmakuTemplate.builder.setVariant(this).setUser(user).setWorld(world).setDirection(direction).setPos(pos).build
+    )
 
   override def unlocalizedName: String = "danmakuvariant." + modId + "." + name
   override def itemModel:       MRL    = new MRL(new ResourceLocation(modId, "danmaku/variant/" + name), "inventory")

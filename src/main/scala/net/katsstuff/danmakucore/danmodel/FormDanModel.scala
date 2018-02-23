@@ -12,9 +12,10 @@ import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
-import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.impl.form.FormGeneric
+import net.katsstuff.mirror.client.helper.MirrorRenderHelper
+import net.katsstuff.mirror.data.Quat
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.{GLAllocation, GlStateManager, OpenGlHelper, Tessellator}
 import net.minecraft.client.resources.{IResourceManager, IResourceManagerReloadListener}
@@ -29,7 +30,7 @@ private[danmakucore] class FormDanModel(name: String, resource: ResourceLocation
       private var danModel: DanModel = _
       private var modelList = -1
 
-      DanCoreRenderHelper.registerResourceReloadListener(this)
+      MirrorRenderHelper.registerResourceReloadListener(this)
 
       override def renderLegacy(
           danmaku: DanmakuState,

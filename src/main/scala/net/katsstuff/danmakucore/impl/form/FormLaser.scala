@@ -11,9 +11,8 @@ package net.katsstuff.danmakucore.impl.form
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
-import net.katsstuff.danmakucore.client.shader.DanCoreShaderProgram
 import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
-import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
+import net.katsstuff.danmakucore.data.ShotData
 import net.katsstuff.danmakucore.danmaku.form.{IRenderForm, RenderingProperty}
 import net.katsstuff.danmakucore.lib.{LibFormName, LibSounds}
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
@@ -22,9 +21,11 @@ import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.ResourceLocation
 import net.minecraft.world.World
-import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import org.lwjgl.util.glu.{GLU, Sphere}
+
+import net.katsstuff.mirror.client.helper.MirrorRenderHelper
+import net.katsstuff.mirror.client.shaders.MirrorShaderProgram
+import net.katsstuff.mirror.data.{Quat, Vector3}
 
 private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
 
@@ -76,7 +77,7 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
         orientation: Quat,
         partialTicks: Float,
         manager: RenderManager,
-        shaderProgram: DanCoreShaderProgram
+        shaderProgram: MirrorShaderProgram
     ): Unit = {
 
       val shot = danmaku.shot
@@ -114,15 +115,15 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
 
       GL11.glTranslatef(0F, 0F, -cylinderLength)
       GlStateManager.scale(1F, 1F, sphereSquish)
-      DanCoreRenderHelper.drawSphere(color, alpha, dist)
+      MirrorRenderHelper.drawSphere(color, alpha, dist)
       GlStateManager.scale(1F, 1F, 1F / sphereSquish)
 
       GL11.glTranslatef(0F, 0F, cylinderLength)
-      DanCoreRenderHelper.drawCylinder(color, alpha, dist)
+      MirrorRenderHelper.drawCylinder(color, alpha, dist)
 
       GL11.glTranslatef(0F, 0F, cylinderLength)
       GlStateManager.scale(1F, 1F, sphereSquish)
-      DanCoreRenderHelper.drawSphere(color, alpha, dist)
+      MirrorRenderHelper.drawSphere(color, alpha, dist)
       GlStateManager.scale(1F, 1F, 1F / sphereSquish)
 
       GL11.glPopMatrix()

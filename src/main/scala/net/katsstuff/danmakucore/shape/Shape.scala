@@ -8,7 +8,7 @@
  */
 package net.katsstuff.danmakucore.shape
 
-import net.katsstuff.danmakucore.data.{Quat, Vector3}
+import net.katsstuff.mirror.data.{Quat, Vector3}
 
 /**
   * Something that can be drawn as danmaku over several ticks. Call [[ShapeHandler.createShape]] to create the shape.

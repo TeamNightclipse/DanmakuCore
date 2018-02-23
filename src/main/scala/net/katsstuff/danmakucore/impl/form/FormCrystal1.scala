@@ -10,8 +10,8 @@ package net.katsstuff.danmakucore.impl.form
 
 import org.lwjgl.opengl.GL11
 
-import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.lib.LibFormName
+import net.katsstuff.mirror.client.helper.MirrorRenderHelper
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 /**
@@ -24,12 +24,12 @@ private[danmakucore] class FormCrystal1 extends AbstractFormCrystal(LibFormName.
     GL11.glPushMatrix()
 
     GL11.glTranslatef(0F, 0F, 1F)
-    DanCoreRenderHelper.drawCone(color, alpha, dist)
+    MirrorRenderHelper.drawCone(color, alpha, dist)
     GL11.glTranslatef(0F, 0F, -1F)
-    DanCoreRenderHelper.drawCylinder(color, alpha, dist)
+    MirrorRenderHelper.drawCylinder(color, alpha, dist)
     GL11.glRotatef(180, 0F, 1F, 0F)
     GL11.glTranslatef(0F, 0F, 1F)
-    DanCoreRenderHelper.drawCone(color, alpha, dist)
+    MirrorRenderHelper.drawCone(color, alpha, dist)
 
     GL11.glPopMatrix()
   }

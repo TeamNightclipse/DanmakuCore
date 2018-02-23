@@ -9,7 +9,7 @@
 package net.katsstuff.danmakucore.impl.shape
 
 import net.katsstuff.danmakucore.danmaku.DanmakuState
-import net.katsstuff.danmakucore.data.{Quat, Vector3}
+import net.katsstuff.mirror.data.{Quat, Vector3}
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
 
 class ShapeEmpty extends Shape {

@@ -11,8 +11,8 @@ package net.katsstuff.danmakucore.entity.spellcard
 import java.util.{Optional, Random}
 
 import net.katsstuff.danmakucore.EnumDanmakuLevel
-import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
+import net.katsstuff.mirror.data.Vector3
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.text.TextComponentTranslation
 import net.minecraft.world.World

@@ -11,7 +11,7 @@ package net.katsstuff.danmakucore.javastuff
 import java.util
 
 import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuTemplate}
-import net.katsstuff.danmakucore.data.Quat
+import net.katsstuff.mirror.data.Quat
 import net.katsstuff.danmakucore.impl.shape.{ShapeCircle, ShapeRandomRing, ShapeRing, ShapeSphere, ShapeWide}
 import net.katsstuff.danmakucore.shape.Shape
 

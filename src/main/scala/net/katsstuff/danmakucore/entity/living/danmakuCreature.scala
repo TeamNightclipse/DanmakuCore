@@ -10,12 +10,12 @@ package net.katsstuff.danmakucore.entity.living
 
 import net.katsstuff.danmakucore.EnumDanmakuLevel
 import net.katsstuff.danmakucore.danmaku.DamageSourceDanmaku
-import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.entity.living.phase.PhaseManager
 import net.katsstuff.danmakucore.handler.ConfigHandler
-import net.katsstuff.danmakucore.network.scalachannel.TargetPoint
 import net.katsstuff.danmakucore.network.{DanCorePacketHandler, PhaseDataPacket}
 import net.katsstuff.danmakucore.scalastuff.{DanmakuHelper, TouhouHelper}
+import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.mirror.network.scalachannel.TargetPoint
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.passive.EntityFlying

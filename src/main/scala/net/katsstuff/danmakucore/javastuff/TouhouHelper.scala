@@ -14,7 +14,7 @@ import java.util.function.Consumer
 import javax.annotation.Nullable
 
 import net.katsstuff.danmakucore.capability.dancoredata.IDanmakuCoreData
-import net.katsstuff.danmakucore.data.Vector3
+import net.katsstuff.mirror.data.Vector3
 import net.katsstuff.danmakucore.entity.EntityFallingData
 import net.katsstuff.danmakucore.entity.spellcard.{EntitySpellcard, Spellcard}
 import net.katsstuff.danmakucore.helper.TTouhouHelper

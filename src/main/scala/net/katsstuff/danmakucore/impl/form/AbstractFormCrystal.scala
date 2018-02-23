@@ -9,14 +9,13 @@
 package net.katsstuff.danmakucore.impl.form
 
 import net.katsstuff.danmakucore.danmaku.DanmakuState
-import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.danmaku.form.IRenderForm
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
-import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
+import net.katsstuff.mirror.data.Quat
 
 private[danmakucore] abstract class AbstractFormCrystal(name: String) extends FormGeneric(name) {
 

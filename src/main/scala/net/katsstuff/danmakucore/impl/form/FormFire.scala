@@ -11,10 +11,10 @@ package net.katsstuff.danmakucore.impl.form
 import scala.util.Random
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.client.particle.GlowTexture
-import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate, DanmakuUpdateSignal}
-import net.katsstuff.danmakucore.data.Vector3
+import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.danmakucore.lib.LibFormName
+import net.katsstuff.mirror.client.particles.GlowTexture
+import net.katsstuff.mirror.data.Vector3
 
 private[danmakucore] class FormFire extends FormSphere(LibFormName.FIRE) {
 
@@ -27,12 +27,12 @@ private[danmakucore] class FormFire extends FormSphere(LibFormName.FIRE) {
       val b     = Math.max(0.05F, (color & 255) / 255.0F)
       val size  = (shot.sizeX + shot.sizeY + shot.sizeZ) / 3
 
-      val extraY = +shot.sizeY / 2
+      val extraY = shot.sizeY / 2
       val diff   = danmaku.pos.add(0D, extraY, 0D) - danmaku.prevPos.add(0D, extraY, 0D)
-      for (i <- 0 until 15) {
-        val coeff = i / 15D
+
+      for (coeff <- 0D to 1D by 1/15D) {
         val pos   = danmaku.prevPos.add(0D, extraY, 0D) + diff * coeff
-        val motion = new Vector3(
+        val motion = Vector3(
           0.0125f * (Random.nextFloat - 0.5f),
           0.0125f * (Random.nextFloat - 0.5f),
           0.0125f * (Random.nextFloat - 0.5f)

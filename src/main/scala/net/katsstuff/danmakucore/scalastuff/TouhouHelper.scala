@@ -9,13 +9,13 @@
 package net.katsstuff.danmakucore.scalastuff
 
 import net.katsstuff.danmakucore.capability.dancoredata.{CapabilityDanCoreDataJ, IDanmakuCoreData}
-import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.entity.spellcard.{EntitySpellcard, Spellcard}
 import net.katsstuff.danmakucore.entity.{EntityFallingData, FallingDataTypes}
 import net.katsstuff.danmakucore.helper.{RemoveMode, TTouhouHelper}
 import net.katsstuff.danmakucore.misc.LogicalSideOnly
-import net.katsstuff.danmakucore.network.scalachannel.TargetPoint
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
+import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.mirror.network.scalachannel.TargetPoint
 import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
 import net.minecraft.entity.{Entity, EntityAgeable, EntityLivingBase}
 import net.minecraft.world.World

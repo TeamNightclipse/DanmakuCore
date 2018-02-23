@@ -12,12 +12,12 @@ import scala.collection.mutable
 
 import org.lwjgl.opengl.GL11
 
-import net.katsstuff.danmakucore.client.shader.{DanCoreShaderProgram, ShaderManager}
 import net.katsstuff.danmakucore.danmaku.{DanmakuHandler, DanmakuState}
-import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.danmaku.form.Form
 import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.helper.LogHelper
+import net.katsstuff.mirror.client.shaders.{MirrorShaderProgram, ShaderManager}
+import net.katsstuff.mirror.data.Quat
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.{GlStateManager, OpenGlHelper, RenderGlobal}
@@ -86,7 +86,7 @@ class DanmakuRenderer(handler: DanmakuHandler) {
       renderPosY: Double,
       renderPosZ: Double,
       renderManager: RenderManager,
-      shader: Option[DanCoreShaderProgram]
+      shader: Option[MirrorShaderProgram]
   ): Unit = {
     val x           = danmaku.prevPos.x + (danmaku.pos.x - danmaku.prevPos.x) * partialTicks
     val y           = danmaku.prevPos.y + (danmaku.pos.y - danmaku.prevPos.y) * partialTicks
@@ -118,7 +118,7 @@ class DanmakuRenderer(handler: DanmakuHandler) {
       orientation: Quat,
       partialTicks: Float,
       renderManager: RenderManager,
-      optShader: Option[DanCoreShaderProgram]
+      optShader: Option[MirrorShaderProgram]
   ): Unit = {
     val shot = danmaku.shot
 

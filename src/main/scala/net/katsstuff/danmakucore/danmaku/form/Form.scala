@@ -10,11 +10,12 @@ package net.katsstuff.danmakucore.danmaku.form
 
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
-import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData, Vector3}
+import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData}
 import net.katsstuff.danmakucore.danmaku.subentity.SubEntity
 import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.registry.RegistryValueWithItemModel
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
+import net.katsstuff.mirror.data.Vector3
 import net.minecraft.client.renderer.block.model.{ModelResourceLocation => MRL}
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer

@@ -8,9 +8,9 @@
  */
 package net.katsstuff.danmakucore.impl.phase
 
-import net.katsstuff.danmakucore.data.{Quat, Vector3}
 import net.katsstuff.danmakucore.entity.living.phase.{Phase, PhaseManager, PhaseType}
 import net.katsstuff.danmakucore.shape.Shape
+import net.katsstuff.mirror.data.{Quat, Vector3}
 
 object PhaseTypeShape {
   //noinspection ConvertExpressionToSAM

@@ -15,8 +15,8 @@ import javax.annotation.Nullable
 import scala.collection.JavaConverters._
 
 import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuTemplate, DanmakuVariant}
-import net.katsstuff.danmakucore.data.{Quat, ShotData, Vector3}
 import net.katsstuff.danmakucore.danmaku.form.Form
+import net.katsstuff.danmakucore.data.ShotData
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.katsstuff.danmakucore.helper.MathUtil._
 import net.katsstuff.danmakucore.lib.data.{LibDanmakuVariants, LibItems, LibSubEntities}
@@ -25,6 +25,7 @@ import net.katsstuff.danmakucore.misc._
 import net.katsstuff.danmakucore.registry.{DanmakuRegistry, RegistryValueWithItemModel}
 import net.katsstuff.danmakucore.scalastuff.DanmakuCreationHelper
 import net.katsstuff.danmakucore.{DanmakuCore, DanmakuCreativeTab}
+import net.katsstuff.mirror.data.{Quat, Vector3}
 import net.minecraft.client.resources.I18n
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs

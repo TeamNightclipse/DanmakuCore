@@ -11,6 +11,7 @@ package net.katsstuff.danmakucore.data
 import scala.beans.BeanProperty
 
 import net.katsstuff.danmakucore.helper.NBTHelper
+import net.katsstuff.mirror.data.Vector3
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.common.util.Constants
 

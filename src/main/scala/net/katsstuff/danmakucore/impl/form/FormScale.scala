@@ -12,9 +12,10 @@ import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
-import net.katsstuff.danmakucore.data.Quat
 import net.katsstuff.danmakucore.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.lib.LibFormName
+import net.katsstuff.mirror.client.helper.MirrorRenderHelper
+import net.katsstuff.mirror.data.Quat
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -41,14 +42,14 @@ private[danmakucore] class FormScale extends FormGeneric(LibFormName.SCALE) {
 
       val dist = x * x + y * y + z * z
       GL11.glScalef(0.5F, 0.5F, length * 0.4F)
-      DanCoreRenderHelper.drawSphere(danmaku.shot.coreColor, 1F, dist)
+      MirrorRenderHelper.drawSphere(danmaku.shot.coreColor, 1F, dist)
 
       GL11.glTranslatef(0F, 0F, -0.7F)
       GL11.glScalef(2F * 1.2F, 2F * 1.2F, length * 1.2F)
       GlStateManager.enableBlend()
       GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE)
 
-      DanCoreRenderHelper.renderDropOffSphere(1F, 8, 8, 0.06F, danmaku.shot.edgeColor, alpha)
+      MirrorRenderHelper.renderDropOffSphere(1F, 8, 8, 0.06F, danmaku.shot.edgeColor, alpha)
 
       GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
       GlStateManager.disableBlend()

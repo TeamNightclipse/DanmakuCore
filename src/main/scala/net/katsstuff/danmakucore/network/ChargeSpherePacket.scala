@@ -8,7 +8,7 @@
  */
 package net.katsstuff.danmakucore.network
 
-import net.katsstuff.danmakucore.network.scalachannel.{ClientMessageHandler, MessageConverter}
+import net.katsstuff.mirror.network.scalachannel.{ClientMessageHandler, MessageConverter}
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.client.network.NetHandlerPlayClient

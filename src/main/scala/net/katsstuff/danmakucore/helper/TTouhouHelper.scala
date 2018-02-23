@@ -8,12 +8,12 @@
  */
 package net.katsstuff.danmakucore.helper
 
-import net.katsstuff.danmakucore.client.particle.{GlowTexture, ParticleUtil}
-import net.katsstuff.danmakucore.data.Vector3
 import net.katsstuff.danmakucore.entity.{EntityFallingData, FallingDataTypes}
 import net.katsstuff.danmakucore.lib.LibSounds
-import net.katsstuff.danmakucore.network.scalachannel.TargetPoint
 import net.katsstuff.danmakucore.network.{ChargeSpherePacket, DanCorePacketHandler}
+import net.katsstuff.mirror.client.particles.{GlowTexture, ParticleUtil}
+import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.mirror.network.scalachannel.TargetPoint
 import net.minecraft.entity.Entity
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}

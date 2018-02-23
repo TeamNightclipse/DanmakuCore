@@ -9,9 +9,8 @@
 package net.katsstuff.danmakucore.impl.shape
 
 import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuTemplate}
-import net.katsstuff.danmakucore.data.{Quat, Vector3}
+import net.katsstuff.mirror.data.{Quat, Vector3}
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
-import net.minecraft.util.math.MathHelper
 
 class ShapeRing(template: DanmakuTemplate, amount: Int, radius: Float, baseAngle: Float, distance: Double)
     extends Shape {

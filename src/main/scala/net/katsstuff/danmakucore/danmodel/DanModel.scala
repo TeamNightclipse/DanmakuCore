@@ -16,7 +16,7 @@ import scala.collection.mutable.ArrayBuffer
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
-import net.katsstuff.danmakucore.client.render.{DanCoreArrayBuffer, VBOModel}
+import net.katsstuff.mirror.client.render.{MirrorArrayBuffer, VBOModel}
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{BufferBuilder, GlStateManager, OpenGlHelper, Tessellator}
 
@@ -97,7 +97,7 @@ class DanModel(private[this] val data: Array[Byte], private[this] val pieces: In
       val format = bb.getVertexFormat
       val data = bb.getByteBuffer
       val count = data.limit / format.getSize
-      val buffer = new DanCoreArrayBuffer(count, OpenGlHelper.GL_ARRAY_BUFFER, OpenGlHelper.GL_STATIC_DRAW)
+      val buffer = new MirrorArrayBuffer(count, OpenGlHelper.GL_ARRAY_BUFFER, OpenGlHelper.GL_STATIC_DRAW)
       buffer.bufferData(data)
       val vboModel = VBOModel(format, buffer, bb.getVertexCount, bb.getDrawMode)
       bb.reset()

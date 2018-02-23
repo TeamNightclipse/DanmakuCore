@@ -11,9 +11,10 @@ package net.katsstuff.danmakucore.helper
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.capability.danmakuhit.{AllyDanmakuHitBehavior, CapabilityDanmakuHitBehaviorJ}
 import net.katsstuff.danmakucore.danmaku._
-import net.katsstuff.danmakucore.data.{MovementData, RotationData, Vector3}
+import net.katsstuff.danmakucore.data.{MovementData, RotationData}
 import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
+import net.katsstuff.mirror.data.Vector3
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.util.{EnumParticleTypes, SoundCategory, SoundEvent}

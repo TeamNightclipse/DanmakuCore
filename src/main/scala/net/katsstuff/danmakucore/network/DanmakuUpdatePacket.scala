@@ -9,8 +9,8 @@
 package net.katsstuff.danmakucore.network
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.danmaku.{DanmakuChanges, DanmakuUpdateSignal}
-import net.katsstuff.danmakucore.network.scalachannel.{ClientMessageHandler, MessageConverter}
+import net.katsstuff.danmakucore.danmaku.DanmakuChanges
+import net.katsstuff.mirror.network.scalachannel.{ClientMessageHandler, MessageConverter}
 import net.minecraft.client.network.NetHandlerPlayClient
 
 case class DanmakuUpdatePacket(changes: Seq[DanmakuChanges])
