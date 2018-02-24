@@ -57,6 +57,11 @@ abstract sealed class AbstractShotData {
   def mainColor: Int = if (edgeColor == 0xFFFFFF || edgeColor == 0x000000) coreColor else edgeColor
 
   /**
+    * Best guess at the secondary color that decides the not so colorful aspects.
+    */
+  def secondaryColor: Int = if (edgeColor == 0xFFFFFF || edgeColor == 0x000000) edgeColor else coreColor
+
+  /**
 		* The damage the [[net.katsstuff.danmakucore.danmaku.DanmakuState]]
 		* will cause on hit.
 		*/
@@ -173,6 +178,10 @@ final case class MutableShotData(
 
   def setMainColor(color: Int): Unit = {
     if (edgeColor == 0xFFFFFF || edgeColor == 0x000000) setCoreColor(color) else setEdgeColor(color)
+  }
+
+  def setSecondaryColor(color: Int): Unit = {
+    if (edgeColor == 0xFFFFFF || edgeColor == 0x000000) setEdgeColor(color) else setCoreColor(color)
   }
 
   def deserializeByteBuf(buf: ByteBuf) {
@@ -325,6 +334,10 @@ final case class ShotData(
 
   def setMainColor(color: Int): ShotData = {
     if (edgeColor == 0xFFFFFF || edgeColor == 0x000000) setCoreColor(color) else setEdgeColor(color)
+  }
+
+  def setSecondaryColor(color: Int): ShotData = {
+    if (edgeColor == 0xFFFFFF || edgeColor == 0x000000) setEdgeColor(color) else setCoreColor(color)
   }
 
   def scaleSize(scale: Float): ShotData = scaleSize(scale, scale, scale)
