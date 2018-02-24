@@ -16,14 +16,14 @@ object AllyDanmakuHitBehavior extends DanmakuHitBehavior {
   def instance: AllyDanmakuHitBehavior.type = this
 
   override def onHit(danmaku: DanmakuState, hitEntity: Entity, damage: Float, source: DamageSource): Unit = {
-    val cap =
-      danmaku.user.flatMap(user => Option(user.getCapability(CapabilityDanmakuHitBehaviorJ.HIT_BEHAVIOR, null))).collect {
-        case AllyDanmakuHitBehavior => ()
-      }
+    val isAlly =
+      danmaku.user
+        .orElse(danmaku.source)
+        .flatMap(user => Option(user.getCapability(CapabilityDanmakuHitBehaviorJ.HIT_BEHAVIOR, null)))
+        .contains(AllyDanmakuHitBehavior)
 
-    cap match {
-      case Some(_) => //NO-OP
-      case None    => hitEntity.attackEntityFrom(source, damage)
+    if(!isAlly) {
+      hitEntity.attackEntityFrom(source, damage)
     }
   }
 }
