@@ -8,10 +8,15 @@
  */
 package net.katsstuff.danmakucore
 
+import java.util
+
+import scala.collection.JavaConverters._
+
 import net.katsstuff.danmakucore.capability.callableentity.CapabilityCallableEntityS
 import net.katsstuff.danmakucore.capability.dancoredata.{CapabilityDanCoreDataS, DanmakuCoreDataHandler}
 import net.katsstuff.danmakucore.capability.danmakuhit.{CapabilityDanmakuHitBehaviorS, DanmakuHitBehaviorHandler}
 import net.katsstuff.danmakucore.client.ClientProxy
+import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.data.ShotData
 import net.katsstuff.danmakucore.entity.EntityFallingData
 import net.katsstuff.danmakucore.handler.PlayerChangeHandler
@@ -47,6 +52,10 @@ object DanmakuCore {
     * Construct a ResourceLocation with DanmakuCore as the mod.
     */
   def resource(path: String) = new ResourceLocation(LibMod.Id, path)
+
+  def spawnDanmaku(states: Seq[DanmakuState]): Unit = proxy.spawnDanmaku(states)
+
+  def spawnDanmaku(states: util.List[DanmakuState]): Unit = proxy.spawnDanmaku(states.asScala)
 
   @SidedProxy(clientSide = LibMod.ClientProxy, serverSide = LibMod.CommonProxy, modId = LibMod.Id)
   var proxy: CommonProxy = _
