@@ -10,6 +10,7 @@ package net.katsstuff.danmakucore.entity.living
 
 import net.katsstuff.danmakucore.EnumDanmakuLevel
 import net.katsstuff.danmakucore.danmaku.DamageSourceDanmaku
+import net.katsstuff.danmakucore.entity.living.ai.PathNavigateHover
 import net.katsstuff.danmakucore.entity.living.phase.PhaseManager
 import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.network.{DanCorePacketHandler, PhaseDataPacket}
@@ -17,13 +18,14 @@ import net.katsstuff.danmakucore.scalastuff.{DanmakuHelper, TouhouHelper}
 import net.katsstuff.mirror.data.Vector3
 import net.katsstuff.mirror.network.scalachannel.TargetPoint
 import net.minecraft.block.state.IBlockState
+import net.minecraft.entity.ai.EntityFlyHelper
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.passive.EntityFlying
 import net.minecraft.entity.player.EntityPlayerMP
-import net.minecraft.entity.{EntityCreature, SharedMonsterAttributes}
+import net.minecraft.entity.{EntityCreature, MoverType, SharedMonsterAttributes}
 import net.minecraft.init.SoundEvents
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.pathfinding.{PathNavigate, PathNavigateFlying}
+import net.minecraft.pathfinding.PathNavigate
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{DamageSource, SoundEvent}
 import net.minecraft.world.World
@@ -38,16 +40,33 @@ trait TEntityDanmakuCreature extends EntityCreature with EntityFlying {
   }
 
   override protected def createNavigator(worldIn: World): PathNavigate = {
-    val navigateFlying = new PathNavigateFlying(this, worldIn)
+    val navigateFlying = new PathNavigateHover(this, worldIn)
     navigateFlying.setCanOpenDoors(false)
     navigateFlying.setCanFloat(true)
     navigateFlying.setCanEnterDoors(true)
     navigateFlying
   }
 
-  override def fall(distance: Float, damageMultiplier: Float): Unit = {}
+  override def travel(strafe: Float, vertical: Float, forward: Float): Unit = {
+    if (isServerWorld && isFlying) {
+      moveRelative(strafe, vertical, forward, 0.1F)
+      move(MoverType.SELF, this.motionX, this.motionY, this.motionZ)
+      motionX *= 0.9D
+      motionY *= 0.9D
+      motionZ *= 0.9D
+    }
+    else super.travel(strafe, vertical, forward)
+  }
 
-  override protected def updateFallState(y: Double, onGroundIn: Boolean, state: IBlockState, pos: BlockPos): Unit = {}
+  override def isOnLadder: Boolean = !isFlying && super.isOnLadder
+
+  override def fall(distance: Float, damageMultiplier: Float): Unit =
+    if (!isFlying) super.fall(distance, damageMultiplier)
+
+  override protected def updateFallState(y: Double, onGroundIn: Boolean, state: IBlockState, pos: BlockPos): Unit =
+    if (!isFlying) super.updateFallState(y, onGroundIn, state, pos)
+
+  override def getMaxFallHeight: Int = if (isFlying) 16 else super.getMaxFallHeight
 
   def isFlying: Boolean = !onGround
 
@@ -83,8 +102,13 @@ trait TEntityDanmakuCreature extends EntityCreature with EntityFlying {
 
   override protected def getDeathSound: SoundEvent = SoundEvents.ENTITY_BAT_DEATH
 }
-class EntityDanmakuCreate(world: World) extends EntityCreature(world) with TEntityDanmakuCreature
+
+class EntityDanmakuCreature(world: World) extends EntityCreature(world) with TEntityDanmakuCreature {
+  moveHelper = new EntityFlyHelper(this)
+}
+
 class EntityDanmakuMob(world: World) extends EntityMob(world) with TEntityDanmakuCreature {
+  moveHelper = new EntityFlyHelper(this)
 
   private val NbtPhaseManager = "phaseManager"
 
@@ -153,7 +177,7 @@ class EntityDanmakuMob(world: World) extends EntityMob(world) with TEntityDanmak
       world.spawnEntity(TouhouHelper.createPower(world, pos, direction))
     }
     for (_ <- 0 until pointSpawns) {
-      world.spawnEntity(TouhouHelper.createScoreBlue(world, null, pos, direction))
+      world.spawnEntity(TouhouHelper.createScoreBlue(world, None, pos, direction))
     }
   }
 
