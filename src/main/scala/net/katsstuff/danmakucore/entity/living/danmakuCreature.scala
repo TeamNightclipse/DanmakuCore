@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.entity.living
 
 import net.katsstuff.danmakucore.EnumDanmakuLevel
 import net.katsstuff.danmakucore.danmaku.DamageSourceDanmaku
-import net.katsstuff.danmakucore.entity.living.ai.PathNavigateHover
+import net.katsstuff.danmakucore.entity.living.ai.{EntityHoverHelper, PathNavigateHover}
 import net.katsstuff.danmakucore.entity.living.phase.PhaseManager
 import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.network.{DanCorePacketHandler, PhaseDataPacket}
@@ -18,7 +18,6 @@ import net.katsstuff.danmakucore.scalastuff.{DanmakuHelper, TouhouHelper}
 import net.katsstuff.mirror.data.Vector3
 import net.katsstuff.mirror.network.scalachannel.TargetPoint
 import net.minecraft.block.state.IBlockState
-import net.minecraft.entity.ai.EntityFlyHelper
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.passive.EntityFlying
 import net.minecraft.entity.player.EntityPlayerMP
@@ -54,8 +53,14 @@ trait TEntityDanmakuCreature extends EntityCreature with EntityFlying {
       motionX *= 0.9D
       motionY *= 0.9D
       motionZ *= 0.9D
-    }
-    else super.travel(strafe, vertical, forward)
+    } else super.travel(strafe, vertical, forward)
+  }
+
+  override def getBlockPathWeight(pos: BlockPos): Float = {
+    if (this.world.isAirBlock(pos)) 5F + super.getBlockPathWeight(pos)
+    else super.getBlockPathWeight(pos)
+
+    //super.getBlockPathWeight(pos)
   }
 
   override def isOnLadder: Boolean = !isFlying && super.isOnLadder
@@ -104,11 +109,11 @@ trait TEntityDanmakuCreature extends EntityCreature with EntityFlying {
 }
 
 class EntityDanmakuCreature(world: World) extends EntityCreature(world) with TEntityDanmakuCreature {
-  moveHelper = new EntityFlyHelper(this)
+  moveHelper = new EntityHoverHelper(this)
 }
 
 class EntityDanmakuMob(world: World) extends EntityMob(world) with TEntityDanmakuCreature {
-  moveHelper = new EntityFlyHelper(this)
+  moveHelper = new EntityHoverHelper(this)
 
   private val NbtPhaseManager = "phaseManager"
 

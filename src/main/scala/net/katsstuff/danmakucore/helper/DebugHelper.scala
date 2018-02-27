@@ -43,9 +43,5 @@ object DebugHelper {
       true,
       "pathfindingEnabled"
     )
-    LogHelper.info(
-      ReflectionHelper
-        .getPrivateValue(classOf[DebugRenderer], Minecraft.getMinecraft.debugRenderer, "pathfindingEnabled")
-    )
   }
 }
