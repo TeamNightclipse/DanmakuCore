@@ -145,7 +145,7 @@ trait TTouhouHelper {
         r,
         g,
         b,
-        1F,
+        3F,
         lifetime,
         GlowTexture.MOTE
       )
