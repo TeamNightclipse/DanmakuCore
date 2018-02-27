@@ -225,7 +225,7 @@ final case class DanmakuTemplate(
       prevPos = pos,
       orientation = orientation,
       prevOrientation = orientation,
-      motion = Vector3.Zero,
+      motion = movement.speedOriginal * direction,
       direction = direction,
       rawBoundingBoxes = rawBoundingBoxes,
       rawEncompassingAABB = DanmakuState.createRawEncompassingBB(rawBoundingBoxes)
