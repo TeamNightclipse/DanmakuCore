@@ -85,7 +85,7 @@ abstract class SubEntityType extends RegistryValue[SubEntityType] with Translata
 
   def instantiate: SubEntity
 
-  override def unlocalizedName: String = "subentity." + modId + "." + name
+  override def unlocalizedName: String = s"subentity.$modId.$name"
 }
 object SubEntityType {
   implicit val ordering: Ordering[SubEntityType] = Ordering.by((subEntity: SubEntityType) => subEntity.fullNameString)

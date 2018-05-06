@@ -34,11 +34,9 @@ class SpellcardInfoClient(val message: AddSpellcardInfo) extends SpellcardInfo(m
   }
 
   def getRenderPosX(res: ScaledResolution, partialTicks: Float): Int =
-    ((_prevPosX + (_posX - _prevPosX) * partialTicks) *
-      res.getScaledWidth).toInt
+    ((_prevPosX + (_posX - _prevPosX) * partialTicks) * res.getScaledWidth).toInt
   def getRenderPosY(res: ScaledResolution, partialTicks: Float): Int =
-    ((_prevPosY + (_posY - _prevPosY) * partialTicks) *
-      res.getScaledHeight).toInt
+    ((_prevPosY + (_posY - _prevPosY) * partialTicks) * res.getScaledHeight).toInt
 
   private[danmakucore] def handlePacket(message: SpellcardInfoPacket): Unit = {
     message match {

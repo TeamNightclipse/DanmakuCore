@@ -43,10 +43,7 @@ object DanCoreRenderHelper {
   val baseDanmakuShaderLoc:  ResourceLocation = DanmakuCore.resource("shaders/danmaku")
   val fancyDanmakuShaderLoc: ResourceLocation = DanmakuCore.resource("shaders/danmaku_fancy")
 
-  def bakeModels(): Unit = {
-    val tes = Tessellator.getInstance()
-    val vb  = tes.getBuffer
-
+  def initialize(): Unit = {
     if (OpenGlHelper.shadersSupported) {
       ShaderManager.initProgram(
         baseDanmakuShaderLoc,

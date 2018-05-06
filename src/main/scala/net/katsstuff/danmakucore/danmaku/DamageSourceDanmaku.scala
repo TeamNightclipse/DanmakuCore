@@ -36,8 +36,8 @@ class DamageSourceDanmaku private (danmaku: DanmakuState) extends DamageSource("
       case base: EntityLivingBase => base.getHeldItemMainhand
       case _                      => ItemStack.EMPTY
     }
-    val s  = "death.attack." + damageType
-    val s1 = s + ".item"
+    val s  = s"death.attack.$damageType"
+    val s1 = s"$s.item"
     if (!stack.isEmpty && stack.hasDisplayName && I18n.canTranslate(s1))
       new TextComponentTranslation(s1, target.getDisplayName, iTextComponent, stack.getTextComponent)
     else new TextComponentTranslation(s, target.getDisplayName, iTextComponent)

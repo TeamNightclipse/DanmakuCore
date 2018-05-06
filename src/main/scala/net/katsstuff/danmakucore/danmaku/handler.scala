@@ -27,6 +27,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 object DanmakuHandler {
+
+  /**
+    * Specifies the maximum size of a danmaku when finding all danmaku in an area.
+    * Change this if it's less than your max danmaku size.
+    */
   var maxDanmakuRadius: Float = 3F
 }
 class DanmakuChunk {
@@ -115,6 +120,8 @@ trait DanmakuHandler {
     danmakuChanges.clear()
     newDanmaku.clear()
     forcedDanmakuUpdates.clear()
+
+    profiler.endSection()
     profiler.endSection()
   }
 
@@ -185,7 +192,6 @@ trait DanmakuHandler {
 class ServerDanmakuHandler extends DanmakuHandler {
 
   val profiler: Profiler = FMLCommonHandler.instance().getMinecraftServerInstance.profiler
-  private val removedPlayers = mutable.ArrayBuffer.empty[EntityPlayerMP]
 
   override def spawnDanmaku(states: Seq[DanmakuState]): Unit = {
     val newDanmakuMap = mutable.Map.empty[EntityPlayerMP, mutable.Buffer[DanmakuState]]
@@ -200,8 +206,6 @@ class ServerDanmakuHandler extends DanmakuHandler {
 
       danmaku.copy(tracking = danmaku.tracking.copy(trackingPlayers = newTrackingPlayers))
     }
-
-    //DanCorePacketHandler.sendToAll(DanmakuCreatePacket(newStates))
 
     newDanmakuMap.foreach {
       case (player, playerStates) =>
@@ -224,36 +228,15 @@ class ServerDanmakuHandler extends DanmakuHandler {
     }
 
     danmakuChangesMap.foreach {
-      case (player, changes) =>
-        DanCorePacketHandler.sendTo(DanmakuUpdatePacket(changes), player)
-
+      case (player, changes) => DanCorePacketHandler.sendTo(DanmakuUpdatePacket(changes), player)
     }
 
     super.processSignalsAndForcedDanmaku(stateToSignals)
   }
 
-  def removePlayer(playerMP: EntityPlayerMP): Unit = removedPlayers += playerMP
-
   @SubscribeEvent(priority = EventPriority.HIGHEST)
   def onTick(event: TickEvent.ServerTickEvent): Unit = {
     if (event.phase == Phase.START) {
-      danmaku = danmaku.transform {
-        case (_, state) =>
-          val newTracking = state.updatePlayerList(state.world.playerEntities.asScala.collect {
-            case playerMP: EntityPlayerMP => playerMP
-          })
-
-          removedPlayers.foreach { player =>
-            if (newTracking.trackingPlayers.contains(player)) {
-              danmakuChanges += DanmakuChanges(state.id, Seq(SetDeadDanmaku()))
-            }
-          }
-
-          state.copy(tracking = newTracking.copy(trackingPlayers = newTracking.trackingPlayers -- removedPlayers))
-      }
-
-      removedPlayers.clear()
-
       start()
     } else if (event.phase == Phase.END) {
       stop()

@@ -100,9 +100,9 @@ abstract class Form extends RegistryValueWithItemModel[Form] {
     */
   def onRotationDataChange(oldRotation: RotationData, newRotation: RotationData): RotationData = newRotation
 
-  override def unlocalizedName: String = "form." + modId + "." + name
+  override def unlocalizedName: String = s"form.$modId.$name"
 
-  override def itemModel: MRL = new MRL(new ResourceLocation(modId, "danmaku/form/" + name), "inventory")
+  override def itemModel: MRL = new MRL(new ResourceLocation(modId, s"danmaku/form/$name"), "inventory")
 }
 object Form {
   implicit val ordering: Ordering[Form] = Ordering.by((form: Form) => form.fullNameString)

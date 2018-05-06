@@ -44,6 +44,7 @@ class EntitySpellcard(
   private val NbtSpellcardData = "spellcardData"
   private val NbtUser          = "user"
 
+  @LogicalSideOnly(Side.SERVER)
   private var _spellcardEntity = if (spellcardTpe != null) {
     spellcardId = DanmakuRegistry.getId(classOf[Spellcard], spellcardTpe)
     spellcardTpe.instantiate(this, target)
@@ -57,6 +58,7 @@ class EntitySpellcard(
     setRotation(user.rotationYaw, user.rotationPitch)
   }
 
+  @LogicalSideOnly(Side.SERVER)
   private val spellcardInfo =
     if (sendNamePacket && _spellcardEntity != null) new SpellcardInfoServer(_spellcardEntity.name) else null
 
@@ -100,6 +102,7 @@ class EntitySpellcard(
 
   private def spellcardId: Int = dataManager.get(EntitySpellcard.SpellcardId)
 
+  @LogicalSideOnly(Side.SERVER)
   def updateName(): Unit = if (spellcardInfo != null) spellcardInfo.setName(_spellcardEntity.name)
 
   override protected def readEntityFromNBT(tag: NBTTagCompound): Unit = {
@@ -136,6 +139,7 @@ class EntitySpellcard(
 
   @LogicalSideOnly(Side.SERVER)
   def spellCardEntity: SpellcardEntity = _spellcardEntity
+
   @LogicalSideOnly(Side.SERVER)
   def getSpellCardEntity: SpellcardEntity = spellCardEntity
 

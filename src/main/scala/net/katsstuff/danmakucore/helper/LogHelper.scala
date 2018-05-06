@@ -18,7 +18,7 @@ object LogHelper {
 
   private var setLogger = false
 
-  def setLog(log: Logger): Unit = {
+  private[danmakucore] def setLog(log: Logger): Unit = {
     if (setLogger) throw new IllegalStateException("Log has already been set")
     setLogger = true
     this.log = log
@@ -28,13 +28,13 @@ object LogHelper {
 
   private def log(logLevel: Level, e: Throwable, obj: Any): Unit = log.log(logLevel, obj, e)
 
-  def debug(obj: Any): Unit = log(Level.DEBUG, obj)
-  def error(obj: Any): Unit = log(Level.ERROR, obj)
-  def fatal(obj: Any): Unit = log(Level.FATAL, obj)
-  def info(obj: Any):  Unit = log(Level.INFO, obj)
-  def trace(obj: Any): Unit = log(Level.TRACE, obj)
-  def warn(obj: Any):  Unit = log(Level.WARN, obj)
+  private[danmakucore] def debug(obj: Any): Unit = log(Level.DEBUG, obj)
+  private[danmakucore] def error(obj: Any): Unit = log(Level.ERROR, obj)
+  private[danmakucore] def fatal(obj: Any): Unit = log(Level.FATAL, obj)
+  private[danmakucore] def info(obj: Any):  Unit = log(Level.INFO, obj)
+  private[danmakucore] def trace(obj: Any): Unit = log(Level.TRACE, obj)
+  private[danmakucore] def warn(obj: Any):  Unit = log(Level.WARN, obj)
 
-  def error(obj: Any, e: Throwable): Unit = log(Level.ERROR, e, obj)
-  def warn(obj: Any, e: Throwable):  Unit = log(Level.WARN, e, obj)
+  private[danmakucore] def error(obj: Any, e: Throwable): Unit = log(Level.ERROR, e, obj)
+  private[danmakucore] def warn(obj: Any, e: Throwable):  Unit = log(Level.WARN, e, obj)
 }

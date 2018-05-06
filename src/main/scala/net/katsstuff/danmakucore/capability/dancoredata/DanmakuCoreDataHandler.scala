@@ -86,6 +86,7 @@ object DanmakuCoreDataHandler {
         player.isDead = false
         player.setHealth(player.getMaxHealth)
         player.hurtResistantTime = 50
+
         player.world.playSound(
           null,
           player.posX,

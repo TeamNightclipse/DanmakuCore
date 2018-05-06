@@ -265,9 +265,7 @@ case class DanmakuState(entity: DanmakuEntityData, extra: ExtraDanmakuData, trac
 
   private[danmakucore] def newTrackingPlayers(players: Seq[EntityPlayerMP]): Set[EntityPlayerMP] = {
     val byOperation = players
-      .map { player =>
-        playerEntityChange(tracking, player) -> player
-      }
+      .map(player => playerEntityChange(tracking, player) -> player)
       .groupBy(_._1)
       .mapValues(_.map(_._2))
 
@@ -391,15 +389,11 @@ object DanmakuState {
         )
       )
 
-      val user = buf.read[Option[Int]].flatMap { id =>
-        Option(entityData.world.getEntityByID(id)).collect {
-          case living: EntityLivingBase => living
-        }
+      val user = buf.read[Option[Int]].flatMap(id => Option(entityData.world.getEntityByID(id))).collect {
+        case living: EntityLivingBase => living
       }
 
-      val source = buf.read[Option[Int]].flatMap { id =>
-        Option(entityData.world.getEntityByID(id))
-      }
+      val source = buf.read[Option[Int]].flatMap(id => Option(entityData.world.getEntityByID(id)))
 
       val shot = buf.read[ShotData]
 

@@ -8,6 +8,13 @@
  */
 package net.katsstuff.danmakucore.misc
 
+/**
+  * Represents something which can be translated.
+  */
 trait Translatable {
+
+  /**
+    * The unlocalized name of this object.
+    */
   def unlocalizedName: String
 }

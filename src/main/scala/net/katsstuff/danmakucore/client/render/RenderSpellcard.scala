@@ -42,6 +42,7 @@ class RenderSpellcard(renderManager: RenderManager) extends Render[EntitySpellca
 
     GL11.glPopMatrix()
   }
+
   override protected def getEntityTexture(entity: EntitySpellcard): ResourceLocation =
     DanmakuCore.resource("textures/white.png")
 }

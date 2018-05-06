@@ -22,7 +22,7 @@ import net.katsstuff.danmakucore.lib.LibItemName
 import net.katsstuff.danmakucore.lib.data.{LibItems, LibSpellcards}
 import net.katsstuff.danmakucore.misc.StringNBTProperty
 import net.katsstuff.danmakucore.registry.DanmakuRegistry
-import net.minecraft.client.resources.I18n
+import net.katsstuff.mirror.client.helper.Tooltip
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
@@ -57,11 +57,10 @@ class ItemSpellcard extends ItemBase(LibItemName.SPELLCARD) {
   setMaxDamage(0)
   setCreativeTab(SpellcardsCreativeTab)
 
-  override def getSubItems(tab: CreativeTabs, subItems: NonNullList[ItemStack]): Unit = {
-    if(isInCreativeTab(tab)) {
+  override def getSubItems(tab: CreativeTabs, subItems: NonNullList[ItemStack]): Unit =
+    if (isInCreativeTab(tab)) {
       subItems.addAll(DanmakuRegistry.Spellcard.getValues.asScala.sorted.map(ItemSpellcard.createStack).asJava)
     }
-  }
 
   override def onItemRightClick(world: World, player: EntityPlayer, hand: EnumHand): ActionResult[ItemStack] = {
     val stack     = player.getHeldItem(hand)
@@ -86,13 +85,19 @@ class ItemSpellcard extends ItemBase(LibItemName.SPELLCARD) {
       flag: ITooltipFlag
   ): Unit = {
     super.addInformation(stack, world, list, flag)
+
     val spellcard = ItemSpellcard.getSpellcard(stack)
     val item      = "item.spellcard"
 
-    list.add(s"${I18n.format(s"$item.level")} ${spellcard.level} ${I18n.format(s"$item.spellcard")}")
-    list.add(s"${I18n.format(s"$item.user")} : ${I18n.format(spellcard.unlocalizedName)}")
-    list.add(s"${I18n.format(s"$item.removeTime")} : ${spellcard.removeTime}")
-    list.add(s"${I18n.format(s"$item.endTime")} : ${spellcard.endTime}")
+    // format: off
+
+    Tooltip
+      .addI18n(s"$item.level").space.addNum(spellcard.level).space.addI18n(s"$item.spellcard").newline
+      .addI18n(s"$item.user").add(" : ").addI18n(spellcard.unlocalizedName).newline
+      .addI18n(s"$item.removeTime").add(" : ").addNum(spellcard.removeTime).newline
+      .addI18n(s"$item.endTime").add(" : ").addNum(spellcard.endTime).newline.build(list)
+
+    // format: on
   }
 
   override def initCapabilities(stack: ItemStack, nbt: NBTTagCompound): ICapabilityProvider =

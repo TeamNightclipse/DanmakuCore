@@ -85,9 +85,11 @@ class EntityFallingData(
     @LogicalSideOnly(Side.SERVER) var target: Option[Entity],
     @LogicalSideOnly(Side.SERVER) var amount: Float
 ) extends Entity(_world) {
+
   if (pos != null && direction != null) {
     setPositionAndRotation(pos.x, pos.y, pos.z, direction.yaw.toFloat, direction.pitch.toFloat)
   }
+
   if (_dataType != null) {
     dataType = _dataType
   }
@@ -128,7 +130,9 @@ class EntityFallingData(
         //player.playSound(LibSounds.EXTEND, 1F, 1F) //TODO: Extend
       case DataType.Bomb =>
         TouhouHelper.changeAndSyncPlayerData(_.addBombs(amount.toInt), player)
+      //player.playSound(LibSounds.BOMB, 1F, 1F) //TODO: Bomb
     }
+
     setDead()
   }
 
@@ -138,10 +142,12 @@ class EntityFallingData(
 
   override protected def readEntityFromNBT(compound: NBTTagCompound): Unit = {
     val targetUuid = compound.getUniqueId("target")
+
     target = if (targetUuid != null) {
       val targetEntity = world.getPlayerEntityByUUID(targetUuid)
       if (targetEntity == null) NBTHelper.getEntityByUUID(targetUuid, world).toOption else Some(targetEntity)
     } else None
+
     direction = NBTHelper.getVector(compound, "direction")
     amount = compound.getFloat("amount")
     dataType =

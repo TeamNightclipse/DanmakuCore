@@ -129,7 +129,7 @@ class ClientProxy extends CommonProxy {
   }
 
   override private[danmakucore] def bakeRenderModels(): Unit =
-    DanCoreRenderHelper.bakeModels()
+    DanCoreRenderHelper.initialize()
 
   override private[danmakucore] def registerItemColors(): Unit = {
     val itemColors = Minecraft.getMinecraft.getItemColors

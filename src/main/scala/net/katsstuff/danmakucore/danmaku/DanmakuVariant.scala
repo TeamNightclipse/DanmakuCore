@@ -49,8 +49,8 @@ abstract class DanmakuVariant extends RegistryValueItemCreatable[DanmakuVariant,
       DanmakuTemplate.builder.setVariant(this).setUser(user).setWorld(world).setDirection(direction).setPos(pos).build
     )
 
-  override def unlocalizedName: String = "danmakuvariant." + modId + "." + name
-  override def itemModel:       MRL    = new MRL(new ResourceLocation(modId, "danmaku/variant/" + name), "inventory")
+  override def unlocalizedName: String = s"danmakuvariant.$modId.$name"
+  override def itemModel:       MRL    = new MRL(new ResourceLocation(modId, s"danmaku/variant/$name"), "inventory")
 }
 object DanmakuVariant {
   implicit val ordering: Ordering[DanmakuVariant] = Ordering.by((variant: DanmakuVariant) => variant.fullNameString)

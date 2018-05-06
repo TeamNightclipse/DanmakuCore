@@ -32,6 +32,9 @@ abstract class Spellcard extends RegistryValueItemCreatable[Spellcard, EntitySpe
   def instantiate(card: EntitySpellcard, @Nullable target: EntityLivingBase): SpellcardEntity =
     instantiate(card, Option(target))
 
+  /**
+    * Creates an instance of this spellcard type.
+    */
   def instantiate(card: EntitySpellcard, target: Option[EntityLivingBase]): SpellcardEntity
 
   /**
@@ -56,6 +59,9 @@ abstract class Spellcard extends RegistryValueItemCreatable[Spellcard, EntitySpe
     */
   def touhouUser: TouhouCharacter
 
+  /**
+    * Creates and spawns an entity when a player uses this spellcard.
+    */
   def create(player: EntityPlayer, firstAttack: Boolean): Option[EntitySpellcard] =
     TouhouHelper.declareSpellcardPlayer(player, this, firstAttack)
 
@@ -88,9 +94,9 @@ abstract class Spellcard extends RegistryValueItemCreatable[Spellcard, EntitySpe
     */
   def beforeDeclare(user: EntityLivingBase, @Nullable target: EntityLivingBase, firstAttack: Boolean) = true
 
-  override def unlocalizedName: String = "spellcard." + modId + "." + name
+  override def unlocalizedName: String = s"spellcard.$modId.$name"
 
-  override def itemModel: MRL = new MRL(new ResourceLocation(modId, "danmaku/spellcard/" + name), "inventory")
+  override def itemModel: MRL = new MRL(new ResourceLocation(modId, s"danmaku/spellcard/$name"), "inventory")
 }
 object Spellcard {
   implicit val ordering: Ordering[Spellcard] = Ordering.by((card: Spellcard) => card.fullNameString)

@@ -104,7 +104,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
     }
   }
 
-  private def drawLivesAndBombs(res: ScaledResolution, mc: Minecraft, data: IDanmakuCoreData) = {
+  private def drawLivesAndBombs(res: ScaledResolution, mc: Minecraft, data: IDanmakuCoreData): Unit = {
     val lives = data.getLives
     val bombs = data.getBombs
 
@@ -135,7 +135,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
       amount: Int,
       yOffset: Int,
       res: ScaledResolution
-  ) = {
+  ): Unit = {
     val starX = ConfigHandler.client.hud.stars.posX
     val starY = res.getScaledHeight - ConfigHandler.client.hud.stars.posY
     mc.getTextureManager.bindTexture(fullTexture)

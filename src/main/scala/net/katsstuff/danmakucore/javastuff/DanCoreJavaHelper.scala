@@ -20,7 +20,7 @@ object DanCoreJavaHelper {
   def some[A](obj: A):             Some[A]   = Some(obj)
   def none[A]:                     Option[A] = None
 
-  def optional[A](option: Option[A]): Optional[A] = option.fold[Optional[A]](Optional.empty())(Optional.of(_))
+  def optional[A](option: Option[A]): Optional[A] = option.fold[Optional[A]](Optional.empty())(Optional.of)
 
   def seq[A](list: util.List[A]): Seq[A] = list.asScala
 }

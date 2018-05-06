@@ -93,7 +93,7 @@ case class FinishDanmaku() extends DanmakuUpdateSignal {
       }
 
     val launchDirection = target.fold(Vector3.Down)(to => Vector3.directionToEntity(pos, to))
-    if(!world.isRemote) {
+    if (!world.isRemote) {
       FMLCommonHandler
         .instance()
         .getMinecraftServerInstance

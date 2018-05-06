@@ -25,6 +25,7 @@ import net.katsstuff.danmakucore.misc._
 import net.katsstuff.danmakucore.registry.{DanmakuRegistry, RegistryValueWithItemModel}
 import net.katsstuff.danmakucore.scalastuff.DanmakuCreationHelper
 import net.katsstuff.danmakucore.{DanmakuCore, DanmakuCreativeTab}
+import net.katsstuff.mirror.client.helper.Tooltip
 import net.katsstuff.mirror.data.{Quat, Vector3}
 import net.minecraft.client.resources.I18n
 import net.minecraft.client.util.ITooltipFlag
@@ -83,6 +84,7 @@ object ItemDanmaku {
           .setMovementData(shotSpeed, gravity)
           .setPos(pos)
           .setDirection(direction)
+          .setOrientation(orientation)
           .build
         danmakuPattern.makeDanmaku(template, amount, shotSpeed, alternateMode, offset)
         true
@@ -112,10 +114,10 @@ object ItemDanmaku {
   def getVariant(stack: ItemStack): DanmakuVariant = {
     val variant = DanmakuRegistry.DanmakuVariant.getValue(Variant.get(stack))
     if (variant == null) {
-      val defualt = LibDanmakuVariants.DEFAULT_TYPE
+      val default = LibDanmakuVariants.DEFAULT_TYPE
       LogHelper.warn("Found null variant. Changing to default")
-      Variant.set(defualt.fullName, stack)
-      defualt
+      Variant.set(default.fullName, stack)
+      default
     } else variant
   }
 
@@ -311,33 +313,35 @@ class ItemDanmaku extends ItemBase(LibItemName.DANMAKU) {
 
     val item = "item.danmaku"
 
-    list.add(s"${I18n.format(s"$item.damage")} : ${shot.damage}") //TODO: Show power adjusted damage
-    list.add(s"${I18n.format(s"$item.size")} : ${shot.sizeX}, ${shot.sizeY} ${shot.sizeZ}")
-    list.add(s"${I18n.format(s"$item.amount")} : $amount")
+    // format: off
 
-    if (custom) list.add(s"${I18n.format(item + ".form")} : ${I18n.format(shot.form.unlocalizedName)}")
-
-    list.add(s"${I18n.format(s"$item.pattern")} : ${I18n.format(s"$item.pattern.$danmakuPattern")}")
-    list.add(s"${I18n.format(s"$item.speed")} : $shotSpeed")
-
-    if (gravity.x !=~ 0D || gravity.y !=~ 0D || gravity.z !=~ 0D)
-      list.add(s"${I18n.format(s"$item.gravity")} : ${gravity.x} ${gravity.y} ${gravity.z}")
-    else
-      list.add(s"${I18n.format(s"$item.gravity")} : ${I18n.format(s"$item.noGravity")}")
-
-    if (LibColor.isNormalColor(shot.edgeColor))
-      list.add(s"${I18n.format(s"$item.edgeColor")} : ${I18n.format(s"$item.color.${shot.edgeColor}")}")
-    else
-      list.add(s"${I18n.format(s"$item.edgeColor")} : ${I18n.format(s"$item.color.custom")}")
-
-    if (LibColor.isNormalColor(shot.coreColor))
-      list.add(s"${I18n.format(s"$item.coreColor")} : ${I18n.format(s"$item.color.${shot.coreColor}")}")
-    else
-      list.add(s"${I18n.format(s"$item.coreColor")} : ${I18n.format(s"$item.color.custom")}")
-
-    if (shot.subEntity != LibSubEntities.DEFAULT_TYPE)
-      list.add(s"${I18n.format(s"$item.subentity")} : ${I18n.format(shot.subEntity.unlocalizedName)}")
-    if (isInfinity) list.add(I18n.format(s"$item.infinity"))
-    if (custom) list.add(I18n.format(s"$item.custom"))
+    Tooltip
+        .addI18n(s"$item.damage").add(" : ").addNum(shot.damage).newline //TODO: Show power adjusted damage
+        .addI18n(s"$item.size").add(" : ").addNum(shot.sizeX).space.addNum(shot.sizeY).space.addNum(shot.sizeZ).newline
+        .addI18n(s"$item.amount").add(" : ").addNum(amount).newline
+        .when(custom).ifTrue(_.addI18n(s"$item.form").add(" : ").addI18n(shot.form.unlocalizedName).newline)
+        .addI18n(s"$item.pattern").add(" : ").addI18n(s"$item.pattern.$danmakuPattern").newline
+        .addI18n(s"$item.speed").add(" : ").addNum(shotSpeed).newline
+        .addI18n(s"$item.gravity").add(" : ")
+          .when(gravity.x !=~ 0D || gravity.y !=~ 0D || gravity.z !=~ 0D)
+            .ifTrue(_.addNum(gravity.x).space.addNum(gravity.y).space.addNum(gravity.z))
+            .orElse(_.addI18n(s"$item.noGravity"))
+          .newline
+        .addI18n(s"$item.edgeColor").add(" : ")
+          .when(LibColor.isNormalColor(shot.edgeColor))
+            .ifTrue(_.addI18n(s"$item.color.${shot.edgeColor}"))
+            .orElse(_.addI18n(s"$item.color.custom"))
+          .newline
+        .addI18n(s"$item.coreColor").add(" : ")
+          .when(LibColor.isNormalColor(shot.coreColor))
+            .ifTrue(_.addI18n(s"$item.color.${shot.coreColor}"))
+            .orElse(_.addI18n(s"$item.color.custom"))
+          .newline
+        .when(shot.subEntity != LibSubEntities.DEFAULT_TYPE).ifTrue(_.addI18n(s"$item.subentity").add(" : ").addI18n(shot.subEntity.unlocalizedName).newline)
+        .when(isInfinity).ifTrue(_.addI18n(s"$item.infinity").newline)
+        .when(custom).ifTrue(_.addI18n(s"$item.custom").newline)
+        .build(list)
+    
+    // format: on
   }
 }
