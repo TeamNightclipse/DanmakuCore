@@ -46,22 +46,22 @@ object DanmakuTemplate {
         else throw new IllegalArgumentException("Could not find a pos for builder, and neither source or user is set")
       }
 
+      if (orientation == null) {
+        if (direction != null) orientation = Quat.fromEuler(direction.yaw.toFloat, direction.pitch.toFloat, 0F)
+        else if (user != null) orientation = Quat.orientationOf(user)
+        else if (source != null) orientation = Quat.orientationOf(source)
+        else
+          throw new IllegalArgumentException(
+            "could not find a orientation for builder, and neither source, user or direction is set"
+          )
+      }
+
       if (direction == null) {
         if (user != null) direction = Vector3.directionEntity(user)
         else if (source != null) direction = Vector3.directionEntity(source)
         else
           throw new IllegalArgumentException(
             "could not find a direction for builder, and neither source or user is set"
-          )
-      }
-
-      if (orientation == null) {
-        if (user != null) orientation = Quat.orientationOf(user)
-        else if (source != null) orientation = Quat.orientationOf(source)
-        else if (direction != null) orientation = Quat.fromEuler(direction.yaw.toFloat, direction.pitch.toFloat, 0F)
-        else
-          throw new IllegalArgumentException(
-            "could not find a orientation for builder, and neither source, user or direction is set"
           )
       }
 
