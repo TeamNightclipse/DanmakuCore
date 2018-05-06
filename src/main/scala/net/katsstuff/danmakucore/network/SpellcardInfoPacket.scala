@@ -20,27 +20,27 @@ sealed trait SpellcardInfoPacket {
 }
 case class AddSpellcardInfo(uuid: UUID, name: ITextComponent, mirror: Boolean, posX: Float, posY: Float) extends SpellcardInfoPacket
 object AddSpellcardInfo {
-  implicit val disc: Discriminator[AddSpellcardInfo] = Discriminator(0)
+  implicit val disc: Discriminator[AddSpellcardInfo] = Discriminator(0.toByte)
 }
 
 case class SetSpellcardInfoName(uuid: UUID, name: ITextComponent) extends SpellcardInfoPacket
 object SetSpellcardInfoName {
-  implicit val disc: Discriminator[SetSpellcardInfoName] = Discriminator(1)
+  implicit val disc: Discriminator[SetSpellcardInfoName] = Discriminator(1.toByte)
 }
 
 case class SetSpellcardInfoMirror(uuid: UUID, mirror: Boolean) extends SpellcardInfoPacket
 object SetSpellcardInfoMirror {
-  implicit val disc: Discriminator[SetSpellcardInfoMirror] = Discriminator(2)
+  implicit val disc: Discriminator[SetSpellcardInfoMirror] = Discriminator(2.toByte)
 }
 
 case class SetSpellcardInfoPos(uuid: UUID, posX: Float, posY: Float, absolute: Boolean) extends SpellcardInfoPacket
 object SetSpellcardInfoPos {
-  implicit val disc: Discriminator[SetSpellcardInfoPos] = Discriminator(3)
+  implicit val disc: Discriminator[SetSpellcardInfoPos] = Discriminator(3.toByte)
 }
 
 case class RemoveSpellcardInfo(uuid: UUID) extends SpellcardInfoPacket
 object RemoveSpellcardInfo {
-  implicit val disc: Discriminator[RemoveSpellcardInfo] = Discriminator(4)
+  implicit val disc: Discriminator[RemoveSpellcardInfo] = Discriminator(4.toByte)
 }
 object SpellcardInfoPacket {
 

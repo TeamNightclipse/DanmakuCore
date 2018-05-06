@@ -21,7 +21,7 @@ case class ChangedPosDanmaku(pos: Vector3) extends DanmakuUpdateSignal {
     Some(state.copy(entity = state.entity.copy(pos = pos, prevPos = state.entity.pos)))
 }
 object ChangedPosDanmaku {
-  implicit val discriminator: Discriminator[ChangedPosDanmaku] = Discriminator(0)
+  implicit val discriminator: Discriminator[ChangedPosDanmaku] = Discriminator(0.toByte)
 }
 
 case class ChangedMotionDanmaku(motion: Vector3) extends DanmakuUpdateSignal {
@@ -29,7 +29,7 @@ case class ChangedMotionDanmaku(motion: Vector3) extends DanmakuUpdateSignal {
     Some(state.copy(entity = state.entity.copy(motion = motion)))
 }
 object ChangedMotionDanmaku {
-  implicit val discriminator: Discriminator[ChangedMotionDanmaku] = Discriminator(1)
+  implicit val discriminator: Discriminator[ChangedMotionDanmaku] = Discriminator(1.toByte)
 }
 
 case class ChangedDirectionDanmaku(direction: Vector3) extends DanmakuUpdateSignal {
@@ -37,7 +37,7 @@ case class ChangedDirectionDanmaku(direction: Vector3) extends DanmakuUpdateSign
     Some(state.copy(entity = state.entity.copy(direction = direction)))
 }
 object ChangedDirectionDanmaku {
-  implicit val discriminator: Discriminator[ChangedDirectionDanmaku] = Discriminator(2)
+  implicit val discriminator: Discriminator[ChangedDirectionDanmaku] = Discriminator(2.toByte)
 }
 
 case class ChangedOrientationDanmaku(orientation: Quat) extends DanmakuUpdateSignal {
@@ -47,7 +47,7 @@ case class ChangedOrientationDanmaku(orientation: Quat) extends DanmakuUpdateSig
   )
 }
 object ChangedOrientationDanmaku {
-  implicit val discriminator: Discriminator[ChangedOrientationDanmaku] = Discriminator(3)
+  implicit val discriminator: Discriminator[ChangedOrientationDanmaku] = Discriminator(3.toByte)
 }
 
 case class ChangedShotDataDanmaku(shotData: ShotData) extends DanmakuUpdateSignal {
@@ -55,7 +55,7 @@ case class ChangedShotDataDanmaku(shotData: ShotData) extends DanmakuUpdateSigna
     Some(state.copy(extra = state.extra.copy(shot = shotData)))
 }
 object ChangedShotDataDanmaku {
-  implicit val discriminator: Discriminator[ChangedShotDataDanmaku] = Discriminator(4)
+  implicit val discriminator: Discriminator[ChangedShotDataDanmaku] = Discriminator(4.toByte)
 }
 
 case class ChangedMovementDataDanmaku(movementData: MovementData) extends DanmakuUpdateSignal {
@@ -63,7 +63,7 @@ case class ChangedMovementDataDanmaku(movementData: MovementData) extends Danmak
     Some(state.copy(extra = state.extra.copy(movement = movementData)))
 }
 object ChangedMovementDataDanmaku {
-  implicit val discriminator: Discriminator[ChangedMovementDataDanmaku] = Discriminator(5)
+  implicit val discriminator: Discriminator[ChangedMovementDataDanmaku] = Discriminator(5.toByte)
 }
 
 case class ChangedRotationDataDanmaku(rotationData: RotationData) extends DanmakuUpdateSignal {
@@ -71,14 +71,14 @@ case class ChangedRotationDataDanmaku(rotationData: RotationData) extends Danmak
     Some(state.copy(extra = state.extra.copy(rotation = rotationData)))
 }
 object ChangedRotationDataDanmaku {
-  implicit val discriminator: Discriminator[ChangedRotationDataDanmaku] = Discriminator(6)
+  implicit val discriminator: Discriminator[ChangedRotationDataDanmaku] = Discriminator(6.toByte)
 }
 
 case class SetDeadDanmaku() extends DanmakuUpdateSignal {
   override def process(state: DanmakuState): Option[DanmakuState] = None
 }
 object SetDeadDanmaku {
-  implicit val discriminator: Discriminator[SetDeadDanmaku] = Discriminator(7)
+  implicit val discriminator: Discriminator[SetDeadDanmaku] = Discriminator(7.toByte)
 }
 
 case class FinishDanmaku() extends DanmakuUpdateSignal {
@@ -113,7 +113,7 @@ case class FinishDanmaku() extends DanmakuUpdateSignal {
   }
 }
 object FinishDanmaku {
-  implicit val discriminator: Discriminator[FinishDanmaku] = Discriminator(8)
+  implicit val discriminator: Discriminator[FinishDanmaku] = Discriminator(8.toByte)
 }
 
 case class DanmakuChanges(id: Int, signals: Seq[DanmakuUpdateSignal])

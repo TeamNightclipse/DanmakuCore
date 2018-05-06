@@ -32,22 +32,22 @@ private[danmakucore] class FormBubble extends FormGeneric(LibFormName.BUBBLE) {
   @SideOnly(Side.CLIENT)
   override def initClient(): Unit = {
     if (OpenGlHelper.shadersSupported) {
-      ShaderManager.initShader(
+      ShaderManager.initProgram(
         FormBubble.shaderLoc,
         Seq(ShaderType.Vertex, ShaderType.Fragment),
-        Seq(
-          UniformBase("coreColor", UniformType.Vec3, 1),
-          UniformBase("edgeColor", UniformType.Vec3, 1),
-          UniformBase("coreContrast", UniformType.UnFloat, 1),
-          UniformBase("edgeSize", UniformType.UnFloat, 1)
+        Map(
+          "coreColor"    -> UniformBase(UniformType.Vec3, 1),
+          "edgeColor"    -> UniformBase(UniformType.Vec3, 1),
+          "coreContrast" -> UniformBase(UniformType.UnFloat, 1),
+          "edgeSize"     -> UniformBase(UniformType.UnFloat, 1)
         ),
         shader => {
           shader.begin()
-          shader.getUniform("coreColor").foreach { uniform =>
+          shader.getUniformS("coreColor").foreach { uniform =>
             uniform.set(1F, 0F, 0F)
             uniform.upload()
           }
-          shader.getUniform("edgeColor").foreach { uniform =>
+          shader.getUniformS("edgeColor").foreach { uniform =>
             uniform.set(1F, 1F, 1F)
             uniform.upload()
           }
