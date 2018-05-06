@@ -9,12 +9,19 @@
 package net.katsstuff.danmakucore.client.handler
 
 import net.katsstuff.danmakucore.entity.spellcard.spellcardbar.SpellcardInfo
-import net.katsstuff.danmakucore.network.{AddSpellcardInfo, SetSpellcardInfoMirror, SetSpellcardInfoName, SetSpellcardInfoPos, SpellcardInfoPacket}
+import net.katsstuff.danmakucore.network.{
+  AddSpellcardInfo,
+  SetSpellcardInfoMirror,
+  SetSpellcardInfoName,
+  SetSpellcardInfoPos,
+  SpellcardInfoPacket
+}
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @SideOnly(Side.CLIENT)
-class SpellcardInfoClient(val message: AddSpellcardInfo) extends SpellcardInfo(message.uuid, message.name, message.mirror) {
+class SpellcardInfoClient(val message: AddSpellcardInfo)
+    extends SpellcardInfo(message.uuid, message.name, message.mirror) {
   private var _posX: Float = message.posX
   private var _posY: Float = message.posY
 

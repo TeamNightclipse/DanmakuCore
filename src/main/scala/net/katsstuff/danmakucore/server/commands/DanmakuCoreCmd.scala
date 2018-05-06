@@ -19,7 +19,7 @@ private[danmakucore] class DanmakuCoreCmd extends CommandTreeBase {
   private def processer[T](f: (IDanmakuCoreData, T) => Unit): (EntityPlayer, T) => Unit =
     (p, i) => TouhouHelper.changeAndSyncPlayerData(d => f(d, i), p)
 
-  val parseInt:   String => Int   = (arg: String) => CommandBase.parseInt(arg, 0)
+  val parseInt: String => Int     = (arg: String) => CommandBase.parseInt(arg, 0)
   val parseFloat: String => Float = (arg: String) => CommandBase.parseDouble(arg, 0D, 4D).toFloat
 
   addSubcommand(SetDataCmd("lives", parseInt, processer[Int](_.setLives(_))))

@@ -18,7 +18,8 @@ import net.minecraft.util.text.ITextComponent
 sealed trait SpellcardInfoPacket {
   def uuid: UUID
 }
-case class AddSpellcardInfo(uuid: UUID, name: ITextComponent, mirror: Boolean, posX: Float, posY: Float) extends SpellcardInfoPacket
+case class AddSpellcardInfo(uuid: UUID, name: ITextComponent, mirror: Boolean, posX: Float, posY: Float)
+    extends SpellcardInfoPacket
 object AddSpellcardInfo {
   implicit val disc: Discriminator[AddSpellcardInfo] = Discriminator(0.toByte)
 }

@@ -144,10 +144,9 @@ private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
 
   override def playShotSound(world: World, pos: Vector3, shotData: ShotData): Unit = ()
 
-  override def onTick(danmaku: DanmakuState): DanmakuUpdate = {
+  override def onTick(danmaku: DanmakuState): DanmakuUpdate =
     //The danmaku exits delay here
     super.onTick(danmaku).addCallbackIf(!danmaku.world.isRemote && danmaku.ticksExisted == 2) {
       DanmakuHelper.playSoundAt(danmaku.world, danmaku.pos, LibSounds.LASER1, 0.1F, 1F)
     }
-  }
 }

@@ -20,8 +20,11 @@ import net.minecraft.world.World
 /**
   * Java API for [[SpellcardEntity]].
   */
-abstract class AbstractSpellcardEntity(spellcard: Spellcard, cardEntity: EntitySpellcard, target: Option[EntityLivingBase])
-    extends SpellcardEntity(spellcard, cardEntity, target) {
+abstract class AbstractSpellcardEntity(
+    spellcard: Spellcard,
+    cardEntity: EntitySpellcard,
+    target: Option[EntityLivingBase]
+) extends SpellcardEntity(spellcard, cardEntity, target) {
 
   def getCard: EntitySpellcard = cardEntity
 
@@ -39,9 +42,9 @@ abstract class AbstractSpellcardEntity(spellcard: Spellcard, cardEntity: EntityS
 
   def getWorld: World = world
 
-  def getDanmakuLevel:                                 EnumDanmakuLevel = danmakuLevel
-  def setDanmakuLevel(danmakuLevel: EnumDanmakuLevel): Unit             = this.danmakuLevel = danmakuLevel
+  def getDanmakuLevel: EnumDanmakuLevel                     = danmakuLevel
+  def setDanmakuLevel(danmakuLevel: EnumDanmakuLevel): Unit = this.danmakuLevel = danmakuLevel
 
-  def posTargetJ:             Optional[Vector3] = posTarget.toOptional
+  def posTargetJ: Optional[Vector3]             = posTarget.toOptional
   def directionUserToTargetJ: Optional[Vector3] = directionUserToTarget.toOptional
 }

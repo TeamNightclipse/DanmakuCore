@@ -19,11 +19,20 @@ object CapabilityHasOwnerS {
 
   def register(): Unit = {
     val factory: Callable[_ <: HasOwner] = () => HasOwner(TouhouCharacter.REIMU_HAKUREI)
-    CapabilityManager.INSTANCE.register(classOf[HasOwner], new Capability.IStorage[HasOwner] {
-      override def writeNBT(capability: Capability[HasOwner], instance: HasOwner, side: EnumFacing): NBTBase = null
-      override def readNBT(capability: Capability[HasOwner], instance: HasOwner, side: EnumFacing, nbt: NBTBase): Unit =
-        ()
-    }, factory)
+    CapabilityManager.INSTANCE.register(
+      classOf[HasOwner],
+      new Capability.IStorage[HasOwner] {
+        override def writeNBT(capability: Capability[HasOwner], instance: HasOwner, side: EnumFacing): NBTBase = null
+        override def readNBT(
+            capability: Capability[HasOwner],
+            instance: HasOwner,
+            side: EnumFacing,
+            nbt: NBTBase
+        ): Unit =
+          ()
+      },
+      factory
+    )
   }
 
 }

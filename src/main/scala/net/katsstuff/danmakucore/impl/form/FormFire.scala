@@ -30,8 +30,8 @@ private[danmakucore] class FormFire extends FormSphere(LibFormName.FIRE) {
       val extraY = shot.sizeY / 2
       val diff   = danmaku.pos.add(0D, extraY, 0D) - danmaku.prevPos.add(0D, extraY, 0D)
 
-      for (coeff <- 0D to 1D by 1/15D) {
-        val pos   = danmaku.prevPos.add(0D, extraY, 0D) + diff * coeff
+      for (coeff <- 0D to 1D by 1 / 15D) {
+        val pos = danmaku.prevPos.add(0D, extraY, 0D) + diff * coeff
         val motion = Vector3(
           0.0125f * (Random.nextFloat - 0.5f),
           0.0125f * (Random.nextFloat - 0.5f),

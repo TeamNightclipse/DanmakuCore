@@ -19,7 +19,7 @@ private[danmakucore] class SubEntityTypeRainbow(name: String) extends SubEntityT
 
 private[subentity] class SubEntityRainbow extends SubEntityDefault {
   override def onCreate(danmaku: DanmakuState): DanmakuState = {
-    val hue = (danmaku.world.getWorldTime % 50) / 50F
+    val hue   = (danmaku.world.getWorldTime % 50) / 50F
     val color = Color.getHSBColor(hue, 1F, 1F).getRGB
     danmaku.copy(extra = danmaku.extra.copy(shot = danmaku.shot.setMainColor(color)))
   }

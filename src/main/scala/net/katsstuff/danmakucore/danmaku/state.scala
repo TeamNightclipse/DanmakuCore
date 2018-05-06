@@ -40,15 +40,15 @@ case class DanmakuEntityData(
     rawEncompassingAABB: AxisAlignedBB
 ) {
 
-  def setWorld(world: World):                       DanmakuEntityData = copy(world = world)
-  def setTicksExisted(ticksExisted: Int):           DanmakuEntityData = copy(ticksExisted = ticksExisted)
+  def setWorld(world: World): DanmakuEntityData                       = copy(world = world)
+  def setTicksExisted(ticksExisted: Int): DanmakuEntityData           = copy(ticksExisted = ticksExisted)
   def setRenderBrightness(renderBrightness: Float): DanmakuEntityData = copy(renderBrightness = renderBrightness)
-  def setPos(pos: Vector3):                         DanmakuEntityData = copy(pos = pos)
-  def setPrevPos(prevPos: Vector3):                 DanmakuEntityData = copy(prevPos = prevPos)
-  def setOrientation(orientation: Quat):            DanmakuEntityData = copy(orientation = orientation)
-  def setPrevOrientation(prevOrientation: Quat):    DanmakuEntityData = copy(prevOrientation = prevOrientation)
-  def setMotion(motion: Vector3):                   DanmakuEntityData = copy(motion = motion)
-  def setDirection(direction: Vector3):             DanmakuEntityData = copy(direction = direction)
+  def setPos(pos: Vector3): DanmakuEntityData                         = copy(pos = pos)
+  def setPrevPos(prevPos: Vector3): DanmakuEntityData                 = copy(prevPos = prevPos)
+  def setOrientation(orientation: Quat): DanmakuEntityData            = copy(orientation = orientation)
+  def setPrevOrientation(prevOrientation: Quat): DanmakuEntityData    = copy(prevOrientation = prevOrientation)
+  def setMotion(motion: Vector3): DanmakuEntityData                   = copy(motion = motion)
+  def setDirection(direction: Vector3): DanmakuEntityData             = copy(direction = direction)
   def setRawBoundingBoxes(rawBoundingBoxes: Seq[OrientedBoundingBox]): DanmakuEntityData =
     copy(rawBoundingBoxes = rawBoundingBoxes)
   def setRawEncompassingAABB(rawEncompassingAABB: AxisAlignedBB): DanmakuEntityData =
@@ -103,27 +103,27 @@ object TrackerData {
 
 case class DanmakuState(entity: DanmakuEntityData, extra: ExtraDanmakuData, tracking: TrackerData) {
 
-  def id:                  Int                      = entity.id
-  def world:               World                    = entity.world
-  def ticksExisted:        Int                      = entity.ticksExisted
-  def renderBrightness:    Float                    = entity.renderBrightness
-  def pos:                 Vector3                  = entity.pos
-  def prevPos:             Vector3                  = entity.prevPos
-  def orientation:         Quat                     = entity.orientation
-  def prevOrientation:     Quat                     = entity.prevOrientation
-  def motion:              Vector3                  = entity.motion
-  def direction:           Vector3                  = entity.direction
-  def rawBoundingBoxes:    Seq[OrientedBoundingBox] = entity.rawBoundingBoxes
-  def boundingBoxes:       Seq[OrientedBoundingBox] = entity.boundingBoxes
-  def rawEncompassingAABB: AxisAlignedBB            = entity.rawEncompassingAABB
-  def encompassingAABB:    AxisAlignedBB            = entity.encompassingAABB
+  def id: Int                                    = entity.id
+  def world: World                               = entity.world
+  def ticksExisted: Int                          = entity.ticksExisted
+  def renderBrightness: Float                    = entity.renderBrightness
+  def pos: Vector3                               = entity.pos
+  def prevPos: Vector3                           = entity.prevPos
+  def orientation: Quat                          = entity.orientation
+  def prevOrientation: Quat                      = entity.prevOrientation
+  def motion: Vector3                            = entity.motion
+  def direction: Vector3                         = entity.direction
+  def rawBoundingBoxes: Seq[OrientedBoundingBox] = entity.rawBoundingBoxes
+  def boundingBoxes: Seq[OrientedBoundingBox]    = entity.boundingBoxes
+  def rawEncompassingAABB: AxisAlignedBB         = entity.rawEncompassingAABB
+  def encompassingAABB: AxisAlignedBB            = entity.encompassingAABB
 
-  def user:      Option[EntityLivingBase] = extra.user
-  def source:    Option[Entity]           = extra.source
-  def shot:      ShotData                 = extra.shot
-  def subEntity: SubEntity                = extra.subEntity
-  def movement:  MovementData             = extra.movement
-  def rotation:  RotationData             = extra.rotation
+  def user: Option[EntityLivingBase] = extra.user
+  def source: Option[Entity]         = extra.source
+  def shot: ShotData                 = extra.shot
+  def subEntity: SubEntity           = extra.subEntity
+  def movement: MovementData         = extra.movement
+  def rotation: RotationData         = extra.rotation
 
   lazy val chunkPosX: Int = MathHelper.floor(pos.x / 16D)
   lazy val chunkPosZ: Int = MathHelper.floor(pos.z / 16D)
@@ -297,7 +297,7 @@ case class DanmakuState(entity: DanmakuEntityData, extra: ExtraDanmakuData, trac
   def isShotEndTime: Boolean = shot.end == ticksExisted
 }
 object DanmakuState {
-  private[danmakucore] sealed trait PlayerOperation
+  sealed private[danmakucore] trait PlayerOperation
   private[danmakucore] case object Add    extends PlayerOperation
   private[danmakucore] case object Remove extends PlayerOperation
   private[danmakucore] case object NOOP   extends PlayerOperation

@@ -25,7 +25,7 @@ class DanmakuHitBehaviorProvider(val behavior: DanmakuHitBehavior) extends ICapa
 object DanmakuHitBehaviorHandler {
 
   val Behavior: Capability[DanmakuHitBehavior] = CapabilityDanmakuHitBehaviorJ.HIT_BEHAVIOR
-  val RL:       ResourceLocation               = DanmakuCore.resource("DanmakuHitBehavior")
+  val RL: ResourceLocation                     = DanmakuCore.resource("DanmakuHitBehavior")
 
   @SubscribeEvent
   def attachEntity(event: AttachCapabilitiesEvent[Entity]): Unit = {

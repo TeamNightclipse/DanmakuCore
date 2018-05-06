@@ -33,7 +33,7 @@ abstract class DanmakuVariant extends RegistryValueItemCreatable[DanmakuVariant,
     DanmakuCore.proxy.bakeDanmakuVariant(this)
   }
 
-  def getShotData:     ShotData
+  def getShotData: ShotData
   def getMovementData: MovementData
   def getRotationData: RotationData
 
@@ -50,7 +50,7 @@ abstract class DanmakuVariant extends RegistryValueItemCreatable[DanmakuVariant,
     )
 
   override def unlocalizedName: String = s"danmakuvariant.$modId.$name"
-  override def itemModel:       MRL    = new MRL(new ResourceLocation(modId, s"danmaku/variant/$name"), "inventory")
+  override def itemModel: MRL          = new MRL(new ResourceLocation(modId, s"danmaku/variant/$name"), "inventory")
 }
 object DanmakuVariant {
   implicit val ordering: Ordering[DanmakuVariant] = Ordering.by((variant: DanmakuVariant) => variant.fullNameString)

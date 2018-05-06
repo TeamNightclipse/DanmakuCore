@@ -33,7 +33,8 @@ object RemoveMode {
     * Removes all danmaku except that which is created by players.
     */
   object Enemy extends RemoveMode {
-    override def shouldRemove(state: DanmakuState, centerEntity: Entity): Boolean = !state.user.exists(_.isInstanceOf[EntityPlayer])
+    override def shouldRemove(state: DanmakuState, centerEntity: Entity): Boolean =
+      !state.user.exists(_.isInstanceOf[EntityPlayer])
   }
 
   /**
@@ -45,7 +46,8 @@ object RemoveMode {
     * Removes all danmaku created by players.
     */
   object Player extends RemoveMode {
-    override def shouldRemove(state: DanmakuState, centerEntity: Entity): Boolean = state.user.exists(_.isInstanceOf[EntityPlayer])
+    override def shouldRemove(state: DanmakuState, centerEntity: Entity): Boolean =
+      state.user.exists(_.isInstanceOf[EntityPlayer])
   }
 
   /**

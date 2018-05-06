@@ -36,9 +36,17 @@ private[danmakucore] class FormStar extends FormGeneric(LibFormName.STAR) {
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm() {
     @SideOnly(Side.CLIENT)
-    override def renderLegacy(danmaku: DanmakuState, x: Double, y: Double, z: Double, orientation: Quat, partialTicks: Float, manager: RenderManager): Unit = {
-      val tes   = Tessellator.getInstance
-      val buf   = tes.getBuffer
+    override def renderLegacy(
+        danmaku: DanmakuState,
+        x: Double,
+        y: Double,
+        z: Double,
+        orientation: Quat,
+        partialTicks: Float,
+        manager: RenderManager
+    ): Unit = {
+      val tes  = Tessellator.getInstance
+      val buf  = tes.getBuffer
       val shot = danmaku.shot
 
       GlStateManager.rotate((danmaku.ticksExisted + partialTicks) * 5F, 1F, 1F, 1F)

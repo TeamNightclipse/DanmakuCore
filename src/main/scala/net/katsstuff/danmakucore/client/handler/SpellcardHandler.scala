@@ -40,8 +40,8 @@ private[danmakucore] class SpellcardHandler {
     GlStateManager.pushMatrix()
 
     val seq = spellcards.values.toSeq
-    for(i <- seq.indices) {
-      val info = seq(i)
+    for (i <- seq.indices) {
+      val info    = seq(i)
       val renderX = info.getRenderPosX(res, partial)
       val renderY = info.getRenderPosY(res, partial) + i * 16
 

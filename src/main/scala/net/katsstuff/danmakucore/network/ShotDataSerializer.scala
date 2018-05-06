@@ -16,7 +16,7 @@ object ShotDataSerializer extends DataSerializer[ShotData]() {
   override def write(buf: PacketBuffer, shot: ShotData): Unit =
     shot
       .serializeByteBuf(buf)
-  override def read(buf: PacketBuffer) = new ShotData(buf)
-  override def createKey(id: Int)      = new DataParameter[ShotData](id, this)
+  override def read(buf: PacketBuffer)              = new ShotData(buf)
+  override def createKey(id: Int)                   = new DataParameter[ShotData](id, this)
   override def copyValue(value: ShotData): ShotData = value
 }

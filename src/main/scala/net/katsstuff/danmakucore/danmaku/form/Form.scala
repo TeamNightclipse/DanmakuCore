@@ -56,13 +56,11 @@ abstract class Form extends RegistryValueWithItemModel[Form] {
 
   override def canRightClick(player: EntityPlayer, hand: EnumHand) = true
 
-  def playShotSound(user: EntityLivingBase, shotData: ShotData): Unit = {
+  def playShotSound(user: EntityLivingBase, shotData: ShotData): Unit =
     user.playSound(LibSounds.SHOT1, 0.1F, 1F)
-  }
 
-  def playShotSound(world: World, pos: Vector3, shotData: ShotData): Unit = {
+  def playShotSound(world: World, pos: Vector3, shotData: ShotData): Unit =
     DanmakuHelper.playSoundAt(world, pos, LibSounds.SHOT1, 0.1F, 1F)
-  }
 
   /**
     * Called each tick for danmaku that uses this form. While you can emulate the most of a

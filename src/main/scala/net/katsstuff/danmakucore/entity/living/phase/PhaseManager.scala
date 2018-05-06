@@ -93,7 +93,7 @@ class PhaseManager(val entity: EntityDanmakuMob) extends INBTSerializable[NBTTag
     * Removes a phase.
     */
   def removePhase(phase: Phase): Unit = _phaseList -= phase
-  def removePhase(index: Int):   Unit = _phaseList.remove(index)
+  def removePhase(index: Int): Unit   = _phaseList.remove(index)
 
   /**
     * Gets the index of a phase.

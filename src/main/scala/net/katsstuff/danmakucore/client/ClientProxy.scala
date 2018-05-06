@@ -14,7 +14,13 @@ import net.katsstuff.danmakucore.CommonProxy
 import net.katsstuff.danmakucore.client.handler.{BossBarHandler, DanmakuRenderer, HUDHandler, SpellcardHandler}
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.client.render.{RenderFallingData, RenderSpellcard}
-import net.katsstuff.danmakucore.danmaku.{ClientDanmakuHandler, DanmakuChanges, DanmakuHandler, DanmakuState, DanmakuVariant}
+import net.katsstuff.danmakucore.danmaku.{
+  ClientDanmakuHandler,
+  DanmakuChanges,
+  DanmakuHandler,
+  DanmakuState,
+  DanmakuVariant
+}
 import net.katsstuff.danmakucore.danmaku.form.Form
 import net.katsstuff.danmakucore.data.ShotData
 import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss
@@ -41,7 +47,10 @@ import net.minecraftforge.common.util.Constants
 import net.minecraftforge.fml.client.registry.{IRenderFactory, RenderingRegistry}
 import net.minecraftforge.fml.common.event.{FMLServerStartingEvent, FMLServerStoppedEvent}
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.network.FMLNetworkEvent.{ClientConnectedToServerEvent, ClientDisconnectionFromServerEvent}
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.{
+  ClientConnectedToServerEvent,
+  ClientDisconnectionFromServerEvent
+}
 
 object ClientProxy {
 
@@ -56,10 +65,10 @@ object ClientProxy {
 class ClientProxy extends CommonProxy {
   MinecraftForge.EVENT_BUS.register(this)
 
-  private val bossBarHandler   = new BossBarHandler
-  private val spellcardHandler = new SpellcardHandler
+  private val bossBarHandler                             = new BossBarHandler
+  private val spellcardHandler                           = new SpellcardHandler
   private var clientDanmakuHandler: ClientDanmakuHandler = _
-  private var danmakuRenderer:      DanmakuRenderer      = _
+  private var danmakuRenderer: DanmakuRenderer           = _
 
   override def defaultWorld: World = Minecraft.getMinecraft.world
 
@@ -84,7 +93,7 @@ class ClientProxy extends CommonProxy {
     unregisterDanmaku()
 
   private def registerDanmaku(): Unit = {
-    if(clientDanmakuHandler == null) {
+    if (clientDanmakuHandler == null) {
       clientDanmakuHandler = new ClientDanmakuHandler
       danmakuRenderer = new DanmakuRenderer(clientDanmakuHandler)
       MinecraftForge.EVENT_BUS.register(clientDanmakuHandler)
@@ -93,7 +102,7 @@ class ClientProxy extends CommonProxy {
   }
 
   private def unregisterDanmaku(): Unit = {
-    if(clientDanmakuHandler != null) {
+    if (clientDanmakuHandler != null) {
       MinecraftForge.EVENT_BUS.unregister(clientDanmakuHandler)
       MinecraftForge.EVENT_BUS.unregister(danmakuRenderer)
       clientDanmakuHandler = null
@@ -137,7 +146,7 @@ class ClientProxy extends CommonProxy {
       if (!ItemNBTHelper.hasTag(stack, ShotData.NbtShotData, Constants.NBT.TAG_COMPOUND)) 0xFFFFFF
       else {
         val shot = ShotData.fromNBTItemStack(stack)
-        if(pass == 0) shot.edgeColor
+        if (pass == 0) shot.edgeColor
         else shot.coreColor
       }
     }

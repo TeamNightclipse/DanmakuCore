@@ -42,10 +42,9 @@ object PlayerChangeHandler {
     }
   }
 
-  def getPlayerChange(player: EntityPlayer): Array[Double] = {
+  def getPlayerChange(player: EntityPlayer): Array[Double] =
     changes.get(player) match {
       case Some(change) => Array(change(X) - change(PrevX), change(Y) - change(PrevY), change(Z) - change(PrevZ))
-      case None => Array(0D, 0D, 0D)
+      case None         => Array(0D, 0D, 0D)
     }
-  }
 }

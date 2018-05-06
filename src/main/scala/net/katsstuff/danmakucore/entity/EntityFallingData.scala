@@ -31,11 +31,11 @@ import net.minecraftforge.fml.relauncher.Side
   */
 object FallingDataTypes {
   def scoreGreen: DataType = ScoreGreen
-  def scoreBlue:  DataType = ScoreBlue
-  def power:      DataType = Power
-  def bigPower:   DataType = BigPower
-  def life:       DataType = Life
-  def bomb:       DataType = Bomb
+  def scoreBlue: DataType  = ScoreBlue
+  def power: DataType      = Power
+  def bigPower: DataType   = BigPower
+  def life: DataType       = Life
+  def bomb: DataType       = Bomb
 }
 object EntityFallingData {
   trait DataType
@@ -72,9 +72,9 @@ object EntityFallingData {
   private val DataTypeKey = EntityDataManager.createKey(classOf[EntityFallingData], DataTypeSerializer)
 
   implicit val info: EntityInfo[EntityFallingData] = new EntityInfo[EntityFallingData] {
-    override def name:                 String            = LibEntityName.FALLING_DATA
+    override def name: String                            = LibEntityName.FALLING_DATA
     override def create(world: World): EntityFallingData = new EntityFallingData(world)
-    override def tracking:             TrackingInfo      = TrackingInfo(range = 40, updateFrequency = 3)
+    override def tracking: TrackingInfo                  = TrackingInfo(range = 40, updateFrequency = 3)
   }
 }
 class EntityFallingData(
@@ -127,7 +127,7 @@ class EntityFallingData(
         TouhouHelper.changeAndSyncPlayerData(_.addPower(amount), player)
       case DataType.Life =>
         TouhouHelper.changeAndSyncPlayerData(_.addLives(amount.toInt), player)
-        //player.playSound(LibSounds.EXTEND, 1F, 1F) //TODO: Extend
+      //player.playSound(LibSounds.EXTEND, 1F, 1F) //TODO: Extend
       case DataType.Bomb =>
         TouhouHelper.changeAndSyncPlayerData(_.addBombs(amount.toInt), player)
       //player.playSound(LibSounds.BOMB, 1F, 1F) //TODO: Bomb

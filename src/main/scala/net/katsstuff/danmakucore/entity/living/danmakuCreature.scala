@@ -56,12 +56,11 @@ trait TEntityDanmakuCreature extends EntityCreature with EntityFlying {
     } else super.travel(strafe, vertical, forward)
   }
 
-  override def getBlockPathWeight(pos: BlockPos): Float = {
+  override def getBlockPathWeight(pos: BlockPos): Float =
     if (this.world.isAirBlock(pos)) 5F + super.getBlockPathWeight(pos)
     else super.getBlockPathWeight(pos)
 
-    //super.getBlockPathWeight(pos)
-  }
+  //super.getBlockPathWeight(pos)
 
   override def isOnLadder: Boolean = !isFlying && super.isOnLadder
 

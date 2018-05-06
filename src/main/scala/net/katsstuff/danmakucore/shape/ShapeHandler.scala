@@ -84,7 +84,7 @@ object ShapeHandler {
     def shape: Shape
 
     def allDrawn: Set[ShapeResult]
-    def tick:     Int
+    def tick: Int
   }
 
   abstract private class ShapeEntryDynamicPos[T] extends ShapeEntry {
@@ -101,14 +101,14 @@ object ShapeHandler {
 
     def create(tick: Int, allDrawn: Set[ShapeResult]): IShapeEntry
 
-    protected def getCurrentPos:         Vector3
+    protected def getCurrentPos: Vector3
     protected def getCurrentOrientation: Quat
   }
 
   private case class ShapeEntryEntity(shape: Shape, dynPos: Entity, tick: Int, allDrawn: Set[ShapeResult])
       extends ShapeEntryDynamicPos[Entity] {
-    override protected def getCurrentPos = new Vector3(dynPos)
-    override protected def getCurrentOrientation:               Quat        = Quat.orientationOf(dynPos)
+    override protected def getCurrentPos                                    = new Vector3(dynPos)
+    override protected def getCurrentOrientation: Quat                      = Quat.orientationOf(dynPos)
     override def create(tick: Int, allDrawn: Set[ShapeResult]): IShapeEntry = copy(tick = tick, allDrawn = allDrawn)
   }
 
@@ -118,8 +118,8 @@ object ShapeHandler {
       tick: Int,
       allDrawn: Set[ShapeResult]
   ) extends ShapeEntryDynamicPos[EntityLivingBase] {
-    override protected def getCurrentPos = new Vector3(dynPos)
-    override protected def getCurrentOrientation:               Quat        = Quat.orientationOf(dynPos)
+    override protected def getCurrentPos                                    = new Vector3(dynPos)
+    override protected def getCurrentOrientation: Quat                      = Quat.orientationOf(dynPos)
     override def create(tick: Int, allDrawn: Set[ShapeResult]): IShapeEntry = copy(tick = tick, allDrawn = allDrawn)
   }
 

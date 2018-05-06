@@ -9,5 +9,5 @@
 package net.katsstuff.danmakucore.network
 
 object DanCoreDataSerializers {
-  def shotData:    ShotDataSerializer.type = ShotDataSerializer
+  def shotData: ShotDataSerializer.type = ShotDataSerializer
 }

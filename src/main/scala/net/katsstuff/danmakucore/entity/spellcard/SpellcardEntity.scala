@@ -29,8 +29,8 @@ abstract class SpellcardEntity(
 ) extends INBTSerializable[NBTTagCompound] {
   private val NbtTime = "time"
 
-  val rng            = new Random
-  protected var time = 0
+  val rng                            = new Random
+  protected var time                 = 0
   var danmakuLevel: EnumDanmakuLevel = ConfigHandler.danmaku.danmakuLevel
 
   def onUpdate(): Unit = {
@@ -49,7 +49,7 @@ abstract class SpellcardEntity(
   def posUser: Vector3 = new Vector3(user)
   def posCard: Vector3 = new Vector3(cardEntity)
 
-  def posTarget:             Option[Vector3] = target.map(new Vector3(_))
+  def posTarget: Option[Vector3]             = target.map(new Vector3(_))
   def directionUserToTarget: Option[Vector3] = posTarget.map(posB => Vector3.directionToPos(posUser, posB).asImmutable)
 
   override def serializeNBT: NBTTagCompound = {

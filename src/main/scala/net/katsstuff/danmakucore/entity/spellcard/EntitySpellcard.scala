@@ -76,11 +76,10 @@ class EntitySpellcard(
       if (spellcardInfo != null) spellcardInfo.tick()
 
       if (!world.isRemote) {
-        if(user.isDead) {
+        if (user.isDead) {
           DanmakuHelper.removeDanmaku(user, 40F, RemoveMode.Enemy, dropBonus = true)
           setDead()
-        }
-        else {
+        } else {
           _spellcardEntity.onUpdate()
 
           if (user.isInstanceOf[EntityPlayer] && ticksExisted < spellcardTpe.removeTime) {

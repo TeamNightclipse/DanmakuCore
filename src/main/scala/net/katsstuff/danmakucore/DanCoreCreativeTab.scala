@@ -11,8 +11,8 @@ package net.katsstuff.danmakucore
 import net.katsstuff.danmakucore.lib.LibMod
 import net.minecraft.creativetab.CreativeTabs
 
-abstract class DanCoreCreativeTab private[danmakucore](val label: String)
-  extends CreativeTabs(s"${LibMod.Id}.$label") {
+abstract class DanCoreCreativeTab private[danmakucore] (val label: String)
+    extends CreativeTabs(s"${LibMod.Id}.$label") {
   setNoTitle()
   setBackgroundImageName("item_search.png")
   override def hasSearchBar = true

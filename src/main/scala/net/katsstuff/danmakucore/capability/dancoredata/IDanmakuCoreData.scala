@@ -14,37 +14,37 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayerMP
 
 trait IDanmakuCoreData {
-  def power:                    Float
+  def power: Float
   def power_=(newPower: Float): Unit
 
-  def getPower:                  Float = power
-  def setPower(newPower: Float): Unit  = power = newPower
-  def addPower(newPower: Float): Unit  = power += newPower
+  def getPower: Float                 = power
+  def setPower(newPower: Float): Unit = power = newPower
+  def addPower(newPower: Float): Unit = power += newPower
 
-  def score:                  Int
+  def score: Int
   def score_=(newScore: Int): Unit
 
-  def getScore:                Int  = score
+  def getScore: Int                 = score
   def setScore(newScore: Int): Unit = score = newScore
   def addScore(newScore: Int): Unit = score += newScore
 
-  def lives:                  Int
+  def lives: Int
   def lives_=(newLives: Int): Unit
 
-  def getLives:                Int  = lives
+  def getLives: Int                 = lives
   def setLives(newLives: Int): Unit = lives = newLives
   def addLives(newLives: Int): Unit = lives += newLives
-  def addLife():               Unit = addLives(1)
-  def removeLife():            Unit = addLives(-1)
+  def addLife(): Unit               = addLives(1)
+  def removeLife(): Unit            = addLives(-1)
 
-  def bombs:                  Int
+  def bombs: Int
   def bombs_=(newBombs: Int): Unit
 
-  def getBombs:                Int  = bombs
+  def getBombs: Int                 = bombs
   def setBombs(newBombs: Int): Unit = bombs = newBombs
   def addBombs(newBombs: Int): Unit = bombs += newBombs
-  def addBomb():               Unit = addBombs(1)
-  def removeBomb():            Unit = addBombs(-1)
+  def addBomb(): Unit               = addBombs(1)
+  def removeBomb(): Unit            = addBombs(-1)
 
   def syncTo(playerMP: EntityPlayerMP, target: Entity): Unit =
     DanCorePacketHandler.sendTo(new DanCoreDataPacket(this, target), playerMP)

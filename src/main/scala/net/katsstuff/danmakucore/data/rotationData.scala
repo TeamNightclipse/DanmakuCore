@@ -17,7 +17,7 @@ import net.minecraftforge.common.util.Constants
 /**
 	* If a [[net.katsstuff.danmakucore.danmaku.DanmakuState]] rotates, defines how.
 	*/
-abstract sealed class AbstractRotationData {
+sealed abstract class AbstractRotationData {
 
   /**
 		* If rotation is enabled
@@ -74,9 +74,9 @@ final case class RotationData(
     @BeanProperty endTime: Int
 ) extends AbstractRotationData {
 
-  def setEnabled(enabled: Boolean):        RotationData = copy(enabled = enabled)
+  def setEnabled(enabled: Boolean): RotationData        = copy(enabled = enabled)
   def setRotationQuat(rotationQuat: Quat): RotationData = copy(rotationQuat = rotationQuat)
-  def setEndTime(endTime: Int):            RotationData = copy(endTime = endTime)
+  def setEndTime(endTime: Int): RotationData            = copy(endTime = endTime)
 
   def setRotationVec(vector: Vector3): RotationData = {
     val angle = rotationQuat.computeAngle

@@ -49,4 +49,4 @@ object DamageSourceDanmakuChainDeath {
     new DamageSourceDanmakuChainDeath(immediateSource, trueSource)
 }
 class DamageSourceDanmakuChainDeath private (immediateSource: Entity, trueSource: Entity)
-  extends EntityDamageSourceIndirect("chainExplosion", immediateSource, trueSource) {}
+    extends EntityDamageSourceIndirect("chainExplosion", immediateSource, trueSource) {}

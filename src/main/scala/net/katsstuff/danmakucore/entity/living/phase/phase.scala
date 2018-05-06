@@ -54,18 +54,18 @@ abstract class Phase(val manager: PhaseManager) extends INBTSerializable[NBTTagC
     */
   protected var level: EnumDanmakuLevel = ConfigHandler.danmaku.danmakuLevel
 
-  private var _isActive = false
+  private var _isActive                                  = false
   private var spellcardInfo: Option[SpellcardInfoServer] = None
 
-  def counter:                      Int  = _counter
-  def getCounter:                   Int  = counter
+  def counter: Int                       = _counter
+  def getCounter: Int                    = counter
   protected def setCounter(i: Int): Unit = _counter = i
 
-  protected def getInterval:         Int  = interval
+  protected def getInterval: Int          = interval
   protected def setInterval(i: Int): Unit = interval = i
 
-  protected def getLevel:                        EnumDanmakuLevel = level
-  protected def setLevel(lvl: EnumDanmakuLevel): Unit             = level = lvl
+  protected def getLevel: EnumDanmakuLevel            = level
+  protected def setLevel(lvl: EnumDanmakuLevel): Unit = level = lvl
 
   /**
     * Initiate the state of this [[Phase]]

@@ -28,7 +28,7 @@ private[danmakucore] class FormDanModel(name: String, resource: ResourceLocation
   override protected def createRenderer: IRenderForm = {
     new IRenderForm with IResourceManagerReloadListener {
       private var danModel: DanModel = _
-      private var modelList = -1
+      private var modelList          = -1
 
       MirrorRenderHelper.registerResourceReloadListener(this)
 
@@ -47,7 +47,8 @@ private[danmakucore] class FormDanModel(name: String, resource: ResourceLocation
           //Using VBOs here break for some models
           /*if (OpenGlHelper.useVbo()) {
             danModel.drawVBOs()
-          } else*/ if (modelList != -1) {
+          } else*/
+          if (modelList != -1) {
             GlStateManager.callList(modelList)
           } else {
             val tes = Tessellator.getInstance

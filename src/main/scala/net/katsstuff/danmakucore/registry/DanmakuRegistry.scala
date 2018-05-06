@@ -20,11 +20,11 @@ import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.registries.{ForgeRegistry, IForgeRegistry}
 
 object DanmakuRegistry {
-  val Form:           IForgeRegistry[Form]           = GameRegistry.findRegistry(classOf[Form])
-  val SubEntity:      IForgeRegistry[SubEntityType]  = GameRegistry.findRegistry(classOf[SubEntityType])
+  val Form: IForgeRegistry[Form]                     = GameRegistry.findRegistry(classOf[Form])
+  val SubEntity: IForgeRegistry[SubEntityType]       = GameRegistry.findRegistry(classOf[SubEntityType])
   val DanmakuVariant: IForgeRegistry[DanmakuVariant] = GameRegistry.findRegistry(classOf[DanmakuVariant])
-  val Spellcard:      IForgeRegistry[Spellcard]      = GameRegistry.findRegistry(classOf[Spellcard])
-  val Phase:          IForgeRegistry[PhaseType]      = GameRegistry.findRegistry(classOf[PhaseType])
+  val Spellcard: IForgeRegistry[Spellcard]           = GameRegistry.findRegistry(classOf[Spellcard])
+  val Phase: IForgeRegistry[PhaseType]               = GameRegistry.findRegistry(classOf[PhaseType])
 
   def getId[T <: RegistryValue[T]](clazz: Class[T], value: T): Int =
     GameRegistry

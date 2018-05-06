@@ -59,7 +59,7 @@ class PhaseSpellcard(manager: PhaseManager, val phaseType: PhaseTypeSpellcard, v
       }
     }
   }
-  override def isSpellcard = true
+  override def isSpellcard                  = true
   override def spellcard: Option[Spellcard] = Some(_spellcard)
 
   override def serializeNBT: NBTTagCompound = {

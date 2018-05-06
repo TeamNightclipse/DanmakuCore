@@ -58,7 +58,7 @@ object DanmakuTemplate {
       if (orientation == null) {
         if (user != null) orientation = Quat.orientationOf(user)
         else if (source != null) orientation = Quat.orientationOf(source)
-        else if(direction != null) orientation = Quat.fromEuler(direction.yaw.toFloat, direction.pitch.toFloat, 0F)
+        else if (direction != null) orientation = Quat.fromEuler(direction.yaw.toFloat, direction.pitch.toFloat, 0F)
         else
           throw new IllegalArgumentException(
             "could not find a orientation for builder, and neither source, user or direction is set"
@@ -247,7 +247,7 @@ final case class DanmakuTemplate(
       updateFrequency = 5
     )
 
-    val first = DanmakuState(entityData, extraData, trackingData)
+    val first   = DanmakuState(entityData, extraData, trackingData)
     val created = extraData.subEntity.onCreate(first)
     extraData.subEntity.onInstantiate(created)
   }

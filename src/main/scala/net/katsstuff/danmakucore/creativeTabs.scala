@@ -20,6 +20,6 @@ object SpellcardsCreativeTab extends DanCoreCreativeTab("spellcard") {
 
 //JAVA API
 object DanCoreCreativeTabs {
-  def danmaku:    DanmakuCreativeTab.type   = DanmakuCreativeTab
+  def danmaku: DanmakuCreativeTab.type       = DanmakuCreativeTab
   def spellcards: SpellcardsCreativeTab.type = SpellcardsCreativeTab
 }

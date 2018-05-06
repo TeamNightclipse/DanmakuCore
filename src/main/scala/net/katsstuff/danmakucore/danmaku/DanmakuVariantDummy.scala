@@ -13,7 +13,7 @@ import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData}
 object DanmakuVariantDummy extends DanmakuVariant {
   def instance: DanmakuVariantDummy.type = this
 
-  override def getShotData: ShotData = ShotData.DefaultShotData
+  override def getShotData: ShotData         = ShotData.DefaultShotData
   override def getMovementData: MovementData = MovementData.constant(0D)
   override def getRotationData: RotationData = RotationData.none
 }

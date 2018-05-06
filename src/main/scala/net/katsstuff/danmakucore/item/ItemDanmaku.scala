@@ -41,13 +41,13 @@ object ItemDanmaku {
   val GravityX: DoubleNBTProperty[ItemStack] = DoubleNBTProperty.ofStack("gravityx")
   val GravityY: DoubleNBTProperty[ItemStack] = DoubleNBTProperty.ofStack("gravityy")
   val GravityZ: DoubleNBTProperty[ItemStack] = DoubleNBTProperty.ofStack("gravityz")
-  val Speed:    DoubleNBTProperty[ItemStack] = DoubleNBTProperty.ofStack("speed", 0.4D)
+  val Speed: DoubleNBTProperty[ItemStack]    = DoubleNBTProperty.ofStack("speed", 0.4D)
   val DanPattern: NBTProperty[Pattern, ItemStack] = ByteNBTProperty
     .ofStack("pattern")
     .modify(Pattern.fromId(_).get, Pattern.idOf)
-  val Amount:   IntNBTProperty[ItemStack]     = IntNBTProperty.ofStack("amount", 1)
+  val Amount: IntNBTProperty[ItemStack]       = IntNBTProperty.ofStack("amount", 1)
   val Infinity: BooleanNBTProperty[ItemStack] = BooleanNBTProperty.ofStack("infinity")
-  val Custom:   BooleanNBTProperty[ItemStack] = BooleanNBTProperty.ofStack("custom")
+  val Custom: BooleanNBTProperty[ItemStack]   = BooleanNBTProperty.ofStack("custom")
   val Variant: NBTProperty[ResourceLocation, ItemStack] = StringNBTProperty
     .ofStack("variant", () => LibDanmakuVariants.DEFAULT_TYPE.fullNameString)
     .modify(new ResourceLocation(_), _.toString)

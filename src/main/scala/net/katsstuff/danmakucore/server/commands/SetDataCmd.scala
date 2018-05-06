@@ -31,6 +31,12 @@ private[danmakucore] case class SetDataCmd[T](name: String, parse: String => T, 
       val res    = parse.apply(arg)
 
       process(player, res)
-      notifyCommandListener(player: ICommandSender, this: ICommand, s"$translationKey.success", res.toString, player.getName)
+      notifyCommandListener(
+        player: ICommandSender,
+        this: ICommand,
+        s"$translationKey.success",
+        res.toString,
+        player.getName
+      )
     }
 }

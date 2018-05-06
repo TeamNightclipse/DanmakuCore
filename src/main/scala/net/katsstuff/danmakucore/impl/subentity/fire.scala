@@ -19,9 +19,8 @@ private[danmakucore] class SubEntityTypeFire(name: String, multiplier: Float) ex
 }
 
 private[subentity] class SubEntityFire(multiplier: Float) extends SubEntityDefault {
-  protected override def impactEntity(danmaku: DanmakuState, rayTrace: RayTraceResult): DanmakuUpdate = {
+  override protected def impactEntity(danmaku: DanmakuState, rayTrace: RayTraceResult): DanmakuUpdate =
     super.impactEntity(danmaku, rayTrace).addCallbackIf(!danmaku.world.isRemote) {
       rayTrace.entityHit.setFire((danmaku.shot.damage * multiplier).toInt)
     }
-  }
 }

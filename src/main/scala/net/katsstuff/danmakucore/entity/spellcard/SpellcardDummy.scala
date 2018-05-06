@@ -14,10 +14,10 @@ object SpellcardDummy extends Spellcard {
 
   def instance: SpellcardDummy.type = this
 
-  override def instantiate(card: EntitySpellcard,
-      target: Option[EntityLivingBase]): SpellcardEntity = new SpellcardEntity(this, card, target) {
-    override def onSpellcardUpdate(): Unit = {}
-  }
+  override def instantiate(card: EntitySpellcard, target: Option[EntityLivingBase]): SpellcardEntity =
+    new SpellcardEntity(this, card, target) {
+      override def onSpellcardUpdate(): Unit = {}
+    }
 
   override def level = 0
 

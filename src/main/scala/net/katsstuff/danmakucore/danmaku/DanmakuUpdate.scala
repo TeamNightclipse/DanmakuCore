@@ -20,17 +20,17 @@ object DanmakuUpdate {
 }
 case class DanmakuUpdate(state: Option[DanmakuState], signals: Seq[DanmakuUpdateSignal], callbacks: Seq[() => Unit]) {
 
-  @inline def isEmpty:  Boolean = state.isEmpty
+  @inline def isEmpty: Boolean  = state.isEmpty
   @inline def nonEmpty: Boolean = state.nonEmpty
 
   def addCallbackFunc(f: () => Unit): DanmakuUpdate = copy(callbacks = callbacks :+ f)
-  def addCallback(f: => Unit):        DanmakuUpdate = addCallbackFunc(() => f)
-  def addCallback(f: Runnable):       DanmakuUpdate = addCallbackFunc(() => f.run())
+  def addCallback(f: => Unit): DanmakuUpdate        = addCallbackFunc(() => f)
+  def addCallback(f: Runnable): DanmakuUpdate       = addCallbackFunc(() => f.run())
 
   def addCallbackIfFunc(cond: Boolean)(f: () => Unit): DanmakuUpdate =
     if (cond) copy(callbacks = callbacks :+ f) else this
 
-  def addCallbackIf(cond: Boolean)(f: => Unit):  DanmakuUpdate = addCallbackIfFunc(cond)(() => f)
+  def addCallbackIf(cond: Boolean)(f: => Unit): DanmakuUpdate  = addCallbackIfFunc(cond)(() => f)
   def addCallbackIf(cond: Boolean, f: Runnable): DanmakuUpdate = addCallbackIfFunc(cond)(() => f.run())
 
   def andThen(f: DanmakuState => DanmakuUpdate): DanmakuUpdate = state match {

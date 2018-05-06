@@ -40,7 +40,7 @@ object DanCoreRenderHelper {
 
   private val swizzleRegex = """^.+\.[rgbaxyzwstpq]$"""
 
-  val baseDanmakuShaderLoc:  ResourceLocation = DanmakuCore.resource("shaders/danmaku")
+  val baseDanmakuShaderLoc: ResourceLocation  = DanmakuCore.resource("shaders/danmaku")
   val fancyDanmakuShaderLoc: ResourceLocation = DanmakuCore.resource("shaders/danmaku_fancy")
 
   def initialize(): Unit = {

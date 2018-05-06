@@ -23,7 +23,7 @@ class DanmakuVariantGeneric(
 
   private lazy val shotData = shotDataSup()
 
-  override def getShotData:     ShotData     = shotData
+  override def getShotData: ShotData         = shotData
   override def getMovementData: MovementData = movement
   override def getRotationData: RotationData = rotation
 }

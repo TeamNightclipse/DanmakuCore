@@ -25,17 +25,17 @@ import net.minecraft.world.World
 object DanCoreImplicits {
 
   implicit class RichFunction0[A](val function: () => A) extends AnyVal {
-    def asJava:  JSupplier[A] = () => function()
+    def asJava: JSupplier[A]  = () => function()
     def asGuava: GSupplier[A] = () => function()
   }
 
   implicit class RichFunction1[A, B](val function1: A => B) extends AnyVal {
-    def asJava:  JFunction[A, B] = a => function1(a)
+    def asJava: JFunction[A, B]  = a => function1(a)
     def asGuava: GFunction[A, B] = a => function1(a)
   }
 
   implicit class RichFunction1Boolean[A](val function1: A => Boolean) extends AnyVal {
-    def asJava:  JPredicate[A] = a => function1(a)
+    def asJava: JPredicate[A]  = a => function1(a)
     def asGuava: GPredicate[A] = a => function1(a)
   }
 

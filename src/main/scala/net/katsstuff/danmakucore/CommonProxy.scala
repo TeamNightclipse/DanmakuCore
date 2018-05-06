@@ -11,7 +11,13 @@ package net.katsstuff.danmakucore
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 
-import net.katsstuff.danmakucore.danmaku.{DanmakuChanges, DanmakuHandler, DanmakuState, DanmakuVariant, ServerDanmakuHandler}
+import net.katsstuff.danmakucore.danmaku.{
+  DanmakuChanges,
+  DanmakuHandler,
+  DanmakuState,
+  DanmakuVariant,
+  ServerDanmakuHandler
+}
 import net.katsstuff.danmakucore.danmodel.DanModelReader
 import net.katsstuff.danmakucore.danmaku.form.Form
 import net.katsstuff.danmakucore.danmaku.subentity.SubEntityType
@@ -305,11 +311,11 @@ class CommonProxy {
       lifetime: Int
   ): Unit = {}
 
-  def updateDanmaku(changes: DanmakuChanges):  Unit = serverDanmakuHandler.updateDanmaku(changes)
+  def updateDanmaku(changes: DanmakuChanges): Unit  = serverDanmakuHandler.updateDanmaku(changes)
   def spawnDanmaku(states: Seq[DanmakuState]): Unit = serverDanmakuHandler.spawnDanmaku(states)
 
   private[danmakucore] def forceUpdateDanmakuClient(state: DanmakuState): Unit = ()
-  private[danmakucore] def updateDanmakuClient(changes: DanmakuChanges):  Unit = ()
+  private[danmakucore] def updateDanmakuClient(changes: DanmakuChanges): Unit  = ()
   private[danmakucore] def spawnDanmakuClient(states: Seq[DanmakuState]): Unit = ()
 
   def danmakuHandler: DanmakuHandler = serverDanmakuHandler

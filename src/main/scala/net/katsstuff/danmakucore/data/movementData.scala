@@ -18,7 +18,7 @@ import net.minecraftforge.common.util.Constants
 /**
 	* Defines how a [[net.katsstuff.danmakucore.danmaku.DanmakuState]] will move.
 	*/
-abstract sealed class AbstractMovementData {
+sealed abstract class AbstractMovementData {
 
   /**
 		* The speed that the [[net.katsstuff.danmakucore.danmaku.DanmakuState]] starts with.
@@ -77,10 +77,10 @@ final case class MovementData(
     @BeanProperty gravity: Vector3
 ) extends AbstractMovementData {
 
-  def setSpeedOriginal(speedOriginal: Double):         MovementData = copy(speedOriginal = speedOriginal)
-  def setSpeedLimit(speedLimit: Double):               MovementData = copy(upperSpeedLimit = speedLimit)
+  def setSpeedOriginal(speedOriginal: Double): MovementData         = copy(speedOriginal = speedOriginal)
+  def setSpeedLimit(speedLimit: Double): MovementData               = copy(upperSpeedLimit = speedLimit)
   def setSpeedAcceleration(speedAcceleration: Double): MovementData = copy(speedAcceleration = speedAcceleration)
-  def setGravity(gravity: Vector3):                    MovementData = copy(gravity = gravity)
+  def setGravity(gravity: Vector3): MovementData                    = copy(gravity = gravity)
 
   def setConstant(speed: Double): MovementData =
     copy(speedOriginal = speed, upperSpeedLimit = speed, speedAcceleration = 0D)

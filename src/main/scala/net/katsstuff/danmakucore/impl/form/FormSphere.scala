@@ -25,7 +25,6 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 //Name parameter for adding special effects to sphere
 private[danmakucore] class FormSphere(name: String = LibFormName.DEFAULT) extends FormGeneric(name) {
 
-
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = new IRenderForm {
 
@@ -66,8 +65,8 @@ private[danmakucore] class FormSphere(name: String = LibFormName.DEFAULT) extend
         manager: RenderManager,
         shaderProgram: MirrorShaderProgram
     ): Unit = {
-      val shot  = danmaku.shot
-      val dist  = x * x + y * y + z * z
+      val shot = danmaku.shot
+      val dist = x * x + y * y + z * z
 
       DanCoreRenderHelper.updateDanmakuShaderAttributes(shaderProgram, this, shot)
       DanCoreRenderHelper.transformDanmaku(shot, orientation)

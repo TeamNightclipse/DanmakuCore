@@ -74,7 +74,7 @@ class EntityAIMoveRanged(
         else if (distY < maxAttackDistanceY * -0.5F) flyingUp = true
 
         entity.getMoveHelper.strafe(if (strafingBackwards) -0.5F else 0.5F, if (strafingClockwise) 0.5F else -0.5F)
-        entity.setMoveVertical(if(flyingUp) 0.5F else -0.5F)
+        entity.setMoveVertical(if (flyingUp) 0.5F else -0.5F)
         entity.faceEntity(target, 30.0F, 30.0F)
       } else entity.getLookHelper.setLookPositionWithEntity(target, 30.0F, 30.0F)
     }

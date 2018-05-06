@@ -29,7 +29,7 @@ class BossBarHandler {
   @SubscribeEvent
   def onBossBar(event: RenderGameOverlayEvent.BossInfo): Unit = {
     val bossInfo = event.getBossInfo
-    val mc = Minecraft.getMinecraft
+    val mc       = Minecraft.getMinecraft
     danmakuBosses.foreach { boss =>
       if (bossInfo.getUniqueId == boss.getBossInfoUUID) {
         GlStateManager.pushMatrix()
@@ -43,9 +43,8 @@ class BossBarHandler {
           if (remainingSpellcards > 8) {
             Gui.drawModalRectWithCustomSizedTexture(baseX, baseY, 0F, 0F, 12, 12, 12F, 12F)
             mc.fontRenderer.drawStringWithShadow("x" + remainingSpellcards, baseX + 14F, baseY + 4F, 0xFFFFFF)
-          }
-          else {
-            for(j <- 0 until remainingSpellcards) {
+          } else {
+            for (j <- 0 until remainingSpellcards) {
               Gui.drawModalRectWithCustomSizedTexture(baseX + (j * 14), baseY, 0F, 0F, 12, 12, 12F, 12F)
             }
           }

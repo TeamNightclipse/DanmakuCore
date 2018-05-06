@@ -31,10 +31,10 @@ object LogHelper {
   private[danmakucore] def debug(obj: Any): Unit = log(Level.DEBUG, obj)
   private[danmakucore] def error(obj: Any): Unit = log(Level.ERROR, obj)
   private[danmakucore] def fatal(obj: Any): Unit = log(Level.FATAL, obj)
-  private[danmakucore] def info(obj: Any):  Unit = log(Level.INFO, obj)
+  private[danmakucore] def info(obj: Any): Unit  = log(Level.INFO, obj)
   private[danmakucore] def trace(obj: Any): Unit = log(Level.TRACE, obj)
-  private[danmakucore] def warn(obj: Any):  Unit = log(Level.WARN, obj)
+  private[danmakucore] def warn(obj: Any): Unit  = log(Level.WARN, obj)
 
   private[danmakucore] def error(obj: Any, e: Throwable): Unit = log(Level.ERROR, e, obj)
-  private[danmakucore] def warn(obj: Any, e: Throwable):  Unit = log(Level.WARN, e, obj)
+  private[danmakucore] def warn(obj: Any, e: Throwable): Unit  = log(Level.WARN, e, obj)
 }

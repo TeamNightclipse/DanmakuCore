@@ -52,7 +52,7 @@ class SpellcardInfoServer(uuid: UUID, name: ITextComponent, mirrorText: Boolean)
     sendPacketAll(SetSpellcardInfoMirror(uuid, mirrorText))
   }
 
-  override def getPosX = 1F
+  override def getPosX        = 1F
   override def getPosY: Float = position
   def addPlayer(player: EntityPlayerMP): Unit = {
     sentTo += player

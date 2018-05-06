@@ -31,8 +31,8 @@ class EntityHoverHelper(entity: EntityLiving) extends EntityFlyHelper(entity) {
       val sinYaw = MathHelper.sin(entity.rotationYaw * 0.017453292F)
       val cosYaw = MathHelper.cos(entity.rotationYaw * 0.017453292F)
 
-      val movX           = forward * cosYaw - strafe * sinYaw
-      val movY           = strafe * cosYaw + forward * sinYaw
+      val movX         = forward * cosYaw - strafe * sinYaw
+      val movY         = strafe * cosYaw + forward * sinYaw
       val pathNavigate = entity.getNavigator
 
       if (pathNavigate != null) {

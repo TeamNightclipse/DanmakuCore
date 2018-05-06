@@ -35,7 +35,7 @@ private[danmakucore] class FormSphereCircle extends FormGeneric(LibFormName.CIRC
         partialTicks: Float,
         manager: RenderManager
     ): Unit = {
-      val shot = danmaku.shot
+      val shot  = danmaku.shot
       val alpha = 0.3F
       val dist  = x * x + y * y + z * z
 

@@ -82,18 +82,21 @@ object DanmakuCore {
     MinecraftForge.EVENT_BUS.register(DanmakuCoreDataHandler)
     MinecraftForge.EVENT_BUS.register(DanmakuHitBehaviorHandler)
     MinecraftForge.EVENT_BUS.register(PlayerChangeHandler)
-    BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(LibItems.DANMAKU, (source: IBlockSource, stack: ItemStack) => {
-      val iPos         = BlockDispenser.getDispensePosition(source)
-      val directionVec = source.getBlockState.getValue(BlockDispenser.FACING).getDirectionVec
-      val pos          = Vector3(iPos.getX, iPos.getY, iPos.getZ)
-      val direction    = Vector3(directionVec.getX, directionVec.getY, directionVec.getZ)
-      if (ItemDanmaku.shootDanmaku(stack, source.getWorld, None, None, alternateMode = false, pos, direction, 0)) {
-        stack.shrink(1)
+    BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(
+      LibItems.DANMAKU,
+      (source: IBlockSource, stack: ItemStack) => {
+        val iPos         = BlockDispenser.getDispensePosition(source)
+        val directionVec = source.getBlockState.getValue(BlockDispenser.FACING).getDirectionVec
+        val pos          = Vector3(iPos.getX, iPos.getY, iPos.getZ)
+        val direction    = Vector3(directionVec.getX, directionVec.getY, directionVec.getZ)
+        if (ItemDanmaku.shootDanmaku(stack, source.getWorld, None, None, alternateMode = false, pos, direction, 0)) {
+          stack.shrink(1)
+        }
+        val shot = ShotData.fromNBTItemStack(stack)
+        shot.form.playShotSound(source.getWorld, pos, shot)
+        stack
       }
-      val shot = ShotData.fromNBTItemStack(stack)
-      shot.form.playShotSound(source.getWorld, pos, shot)
-      stack
-    })
+    )
   }
 
   @Mod.EventHandler
@@ -107,7 +110,6 @@ object DanmakuCore {
   }
 
   @Mod.EventHandler
-  def serverStopped(event: FMLServerStoppedEvent): Unit = {
+  def serverStopped(event: FMLServerStoppedEvent): Unit =
     proxy.serverStopped(event)
-  }
 }

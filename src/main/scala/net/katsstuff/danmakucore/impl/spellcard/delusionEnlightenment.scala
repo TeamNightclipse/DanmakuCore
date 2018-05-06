@@ -23,9 +23,9 @@ private[danmakucore] class SpellcardDelusionEnlightenment
     extends Spellcard(LibSpellcardName.DELUSION_OF_ENLIGHTENMENT) {
   override def instantiate(card: EntitySpellcard, target: Option[EntityLivingBase]) =
     new SpellcardEntityDelusionEnlightenment(this, card, target)
-  override def level      = 1
-  override def removeTime = 50
-  override def endTime    = 140
+  override def level                       = 1
+  override def removeTime                  = 50
+  override def endTime                     = 140
   override def touhouUser: TouhouCharacter = TouhouCharacter.YOUMU_KONPAKU
 }
 

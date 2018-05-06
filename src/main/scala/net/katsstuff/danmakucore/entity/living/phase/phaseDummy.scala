@@ -9,7 +9,7 @@
 package net.katsstuff.danmakucore.entity.living.phase
 
 object PhaseTypeDummy extends PhaseType {
-  def instance: PhaseTypeDummy.type = this
+  def instance: PhaseTypeDummy.type                    = this
   override def instantiate(phaseManager: PhaseManager) = new PhaseDummy(phaseManager, this)
 }
 private[phase] class PhaseDummy(manager: PhaseManager, val phaseType: PhaseTypeDummy.type) extends Phase(manager)

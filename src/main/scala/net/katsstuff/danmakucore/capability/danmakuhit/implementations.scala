@@ -22,7 +22,7 @@ object AllyDanmakuHitBehavior extends DanmakuHitBehavior {
         .flatMap(user => Option(user.getCapability(CapabilityDanmakuHitBehaviorJ.HIT_BEHAVIOR, null)))
         .contains(AllyDanmakuHitBehavior)
 
-    if(!isAlly) {
+    if (!isAlly) {
       hitEntity.attackEntityFrom(source, damage)
     }
   }

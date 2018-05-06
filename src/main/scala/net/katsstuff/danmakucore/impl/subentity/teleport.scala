@@ -19,7 +19,7 @@ private[danmakucore] class SubEntityTypeTeleport(name: String) extends SubEntity
 }
 
 private[subentity] class SubEntityTeleport extends SubEntityDefault {
-  protected override def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): DanmakuUpdate = {
+  override protected def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): DanmakuUpdate = {
     super.impact(danmaku, rayTrace).addCallbackIf(danmaku.user.isDefined && !danmaku.world.isRemote) {
       val usr = danmaku.user.get
       usr.rotationYaw = danmaku.orientation.yaw.toFloat

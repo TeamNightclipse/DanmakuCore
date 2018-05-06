@@ -29,7 +29,7 @@ import net.minecraftforge.common.util.INBTSerializable
 	* Holds general information about the effect
 	* and behavior of a [[net.katsstuff.danmakucore.danmaku.DanmakuState]]
 	*/
-abstract sealed class AbstractShotData {
+sealed abstract class AbstractShotData {
 
   /**
 		* The physical appearance of the [[net.katsstuff.danmakucore.danmaku.DanmakuState]]
@@ -176,13 +176,11 @@ final case class MutableShotData(
   def scaleSize(scaleX: Float, scaleY: Float, scaleZ: Float): MutableShotData =
     copy(sizeX = sizeX * scaleX, sizeY = sizeY * scaleY, sizeZ = sizeZ * scaleZ)
 
-  def setMainColor(color: Int): Unit = {
+  def setMainColor(color: Int): Unit =
     if (edgeColor == 0xFFFFFF || edgeColor == 0x000000) setCoreColor(color) else setEdgeColor(color)
-  }
 
-  def setSecondaryColor(color: Int): Unit = {
+  def setSecondaryColor(color: Int): Unit =
     if (edgeColor == 0xFFFFFF || edgeColor == 0x000000) setEdgeColor(color) else setCoreColor(color)
-  }
 
   def deserializeByteBuf(buf: ByteBuf) {
     form = Option(DanmakuRegistry.getObjById(classOf[Form], buf.readInt())).getOrElse {
@@ -318,27 +316,25 @@ final case class ShotData(
     )
   }
 
-  def setForm(form: Form):                                 ShotData = copy(form = form)
+  def setForm(form: Form): ShotData                                 = copy(form = form)
   def setRenderProperties(properties: Map[String, Float]): ShotData = copy(renderProperties = properties)
-  def setEdgeColor(color: Int):                            ShotData = copy(edgeColor = color)
-  def setCoreColor(color: Int):                            ShotData = copy(coreColor = color)
-  def setDamage(damage: Float):                            ShotData = copy(damage = damage)
-  def setSize(sizeX: Float, sizeY: Float, sizeZ: Float):   ShotData = copy(sizeX = sizeX, sizeY = sizeY, sizeZ = sizeZ)
-  def setSize(size: Float):                                ShotData = setSize(size, size, size)
-  def setSizeX(sizeX: Float):                              ShotData = copy(sizeX = sizeX)
-  def setSizeY(sizeY: Float):                              ShotData = copy(sizeY = sizeY)
-  def setSizeZ(sizeZ: Float):                              ShotData = copy(sizeZ = sizeZ)
-  def setDelay(delay: Int):                                ShotData = copy(delay = delay)
-  def setEnd(end: Int):                                    ShotData = copy(end = end)
-  def setSubEntity(subEntity: SubEntityType):              ShotData = copy(subEntity = subEntity)
+  def setEdgeColor(color: Int): ShotData                            = copy(edgeColor = color)
+  def setCoreColor(color: Int): ShotData                            = copy(coreColor = color)
+  def setDamage(damage: Float): ShotData                            = copy(damage = damage)
+  def setSize(sizeX: Float, sizeY: Float, sizeZ: Float): ShotData   = copy(sizeX = sizeX, sizeY = sizeY, sizeZ = sizeZ)
+  def setSize(size: Float): ShotData                                = setSize(size, size, size)
+  def setSizeX(sizeX: Float): ShotData                              = copy(sizeX = sizeX)
+  def setSizeY(sizeY: Float): ShotData                              = copy(sizeY = sizeY)
+  def setSizeZ(sizeZ: Float): ShotData                              = copy(sizeZ = sizeZ)
+  def setDelay(delay: Int): ShotData                                = copy(delay = delay)
+  def setEnd(end: Int): ShotData                                    = copy(end = end)
+  def setSubEntity(subEntity: SubEntityType): ShotData              = copy(subEntity = subEntity)
 
-  def setMainColor(color: Int): ShotData = {
+  def setMainColor(color: Int): ShotData =
     if (edgeColor == 0xFFFFFF || edgeColor == 0x000000) setCoreColor(color) else setEdgeColor(color)
-  }
 
-  def setSecondaryColor(color: Int): ShotData = {
+  def setSecondaryColor(color: Int): ShotData =
     if (edgeColor == 0xFFFFFF || edgeColor == 0x000000) setEdgeColor(color) else setCoreColor(color)
-  }
 
   def scaleSize(scale: Float): ShotData = scaleSize(scale, scale, scale)
   def scaleSize(scaleX: Float, scaleY: Float, scaleZ: Float): ShotData =

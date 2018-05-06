@@ -17,8 +17,8 @@ import javax.annotation.Nullable
 object DanCoreJavaHelper {
 
   def option[A](@Nullable obj: A): Option[A] = Option(obj)
-  def some[A](obj: A):             Some[A]   = Some(obj)
-  def none[A]:                     Option[A] = None
+  def some[A](obj: A): Some[A]               = Some(obj)
+  def none[A]: Option[A]                     = None
 
   def optional[A](option: Option[A]): Optional[A] = option.fold[Optional[A]](Optional.empty())(Optional.of)
 

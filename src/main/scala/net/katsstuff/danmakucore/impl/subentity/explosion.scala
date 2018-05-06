@@ -20,10 +20,9 @@ private[danmakucore] class SubEntityTypeExplosion(name: String, strength: Float)
 
 private[subentity] class SubEntityExplosion(strength: Float) extends SubEntityDefault {
 
-  override protected def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): DanmakuUpdate = {
+  override protected def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): DanmakuUpdate =
     super.impact(danmaku, rayTrace).addCallbackIf(!danmaku.world.isRemote) {
       val cause = danmaku.user.orElse(danmaku.source).orNull
       danmaku.world.createExplosion(cause, rayTrace.hitVec.x, rayTrace.hitVec.y, rayTrace.hitVec.z, strength, false)
     }
-  }
 }

@@ -8,7 +8,8 @@
  */
 package net.katsstuff.danmakucore.capability.dancoredata
 
-case class BoundlessDanmakuCoreData(var power: Float, var score: Int, var lives: Int, var bombs: Int) extends IDanmakuCoreData {
+case class BoundlessDanmakuCoreData(var power: Float, var score: Int, var lives: Int, var bombs: Int)
+    extends IDanmakuCoreData {
 
   def this() {
     this(0F, 0, 0, 0)

@@ -65,26 +65,25 @@ trait DanmakuHandler {
 
   def profiler: Profiler
 
-  protected var danmaku:              Map[Int, DanmakuState]           = HashMap.empty[Int, DanmakuState]
-  protected var newDanmaku:           ArrayBuffer[DanmakuState]        = ArrayBuffer.empty[DanmakuState]
-  protected var danmakuChanges:       ArrayBuffer[DanmakuChanges]      = ArrayBuffer.empty[DanmakuChanges]
+  protected var danmaku: Map[Int, DanmakuState]                        = HashMap.empty[Int, DanmakuState]
+  protected var newDanmaku: ArrayBuffer[DanmakuState]                  = ArrayBuffer.empty[DanmakuState]
+  protected var danmakuChanges: ArrayBuffer[DanmakuChanges]            = ArrayBuffer.empty[DanmakuChanges]
   protected var forcedDanmakuUpdates: ArrayBuffer[(Int, DanmakuState)] = ArrayBuffer.empty[(Int, DanmakuState)]
   protected val chunkMap: mutable.WeakHashMap[World, mutable.LongMap[DanmakuChunk]] =
     mutable.WeakHashMap.empty[World, mutable.LongMap[DanmakuChunk]]
-  protected var isChunkMapPolpulated: Boolean                    = false
-  var working:                        ParMap[Int, DanmakuUpdate] = _
+  protected var isChunkMapPolpulated: Boolean = false
+  var working: ParMap[Int, DanmakuUpdate]     = _
 
   protected def isReady: Boolean = working != null
 
   protected def updateStates(
       tempMap: mutable.Map[Int, DanmakuState],
       updates: ArrayBuffer[(Int, Option[DanmakuState])]
-  ): Unit = {
+  ): Unit =
     updates.foreach {
       case (id, Some(state)) => tempMap.put(id, state)
       case (id, None)        => tempMap.remove(id)
     }
-  }
 
   protected def processSignalsAndForcedDanmaku(
       stateToSignals: ArrayBuffer[(DanmakuState, Seq[DanmakuUpdateSignal])]
@@ -161,7 +160,9 @@ trait DanmakuHandler {
 
   def allDanmaku: Iterable[DanmakuState] = danmaku.values
 
-  def collectDanmakuInAABB[A](world: World, aabb: AxisAlignedBB)(f: PartialFunction[DanmakuState, A]): immutable.IndexedSeq[A] = {
+  def collectDanmakuInAABB[A](world: World, aabb: AxisAlignedBB)(
+      f: PartialFunction[DanmakuState, A]
+  ): immutable.IndexedSeq[A] = {
     if (!isChunkMapPolpulated) {
       populateChunkMap()
     }

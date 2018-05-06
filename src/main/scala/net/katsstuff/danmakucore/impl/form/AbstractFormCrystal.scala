@@ -17,7 +17,7 @@ import org.lwjgl.opengl.GL11
 
 import net.katsstuff.mirror.data.Quat
 
-private[danmakucore] abstract class AbstractFormCrystal(name: String) extends FormGeneric(name) {
+abstract private[danmakucore] class AbstractFormCrystal(name: String) extends FormGeneric(name) {
 
   //noinspection ConvertExpressionToSAM
   @SideOnly(Side.CLIENT)

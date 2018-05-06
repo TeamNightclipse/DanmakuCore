@@ -18,8 +18,8 @@ abstract class RegistryValue[A <: IForgeRegistryEntry[A]]
   /**
     * The full name as of this value. Both modId and name.
     */
-  def fullName:       ResourceLocation = getRegistryName
-  def fullNameString: String           = fullName.toString
+  def fullName: ResourceLocation = getRegistryName
+  def fullNameString: String     = fullName.toString
 
   /**
     * Get the mod id for this value.

@@ -22,7 +22,7 @@ import net.minecraft.client.renderer.{BufferBuilder, GlStateManager, OpenGlHelpe
 
 class DanModel(private[this] val data: Array[Byte], private[this] val pieces: Int, private[this] val danAlpha: Float) {
 
-  private val models = ArrayBuffer.empty[VBOModel]
+  private val models        = ArrayBuffer.empty[VBOModel]
   private var generatingVBO = false
 
   def render(bb: BufferBuilder, danmakuColor: Int): Unit = {
@@ -92,18 +92,17 @@ class DanModel(private[this] val data: Array[Byte], private[this] val pieces: In
   }
 
   def drawBuffer(bb: BufferBuilder): Unit = {
-    if(generatingVBO) {
+    if (generatingVBO) {
       bb.finishDrawing()
       val format = bb.getVertexFormat
-      val data = bb.getByteBuffer
-      val count = data.limit / format.getSize
+      val data   = bb.getByteBuffer
+      val count  = data.limit / format.getSize
       val buffer = new MirrorArrayBuffer(count, OpenGlHelper.GL_ARRAY_BUFFER, OpenGlHelper.GL_STATIC_DRAW)
       buffer.bufferData(data)
       val vboModel = VBOModel(format, buffer, bb.getVertexCount, bb.getDrawMode)
       bb.reset()
       models += vboModel
-    }
-    else {
+    } else {
       Tessellator.getInstance().draw()
     }
   }
@@ -115,9 +114,8 @@ class DanModel(private[this] val data: Array[Byte], private[this] val pieces: In
     generatingVBO = false
   }
 
-  def drawVBOs(): Unit = {
+  def drawVBOs(): Unit =
     models.foreach(_.draw())
-  }
 
   def deleteVBOs(): Unit = {
     models.foreach(_.arrayBuffer.delete())

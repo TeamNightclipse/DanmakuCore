@@ -18,23 +18,23 @@ object MathUtil {
 
   def fuzzyEqual(a: Double, b: Double): Boolean = Math.abs(a - b) <= Epsilon
 
-  def fuzzyCompare(a: Float, b: Float):   Int = if (Math.abs(a - b) <= Epsilon) 0 else JFloat.compare(a, b)
+  def fuzzyCompare(a: Float, b: Float): Int   = if (Math.abs(a - b) <= Epsilon) 0 else JFloat.compare(a, b)
   def fuzzyCompare(a: Double, b: Double): Int = if (Math.abs(a - b) <= Epsilon) 0 else JDouble.compare(a, b)
 
   implicit class RichFloat(val self: Float) extends AnyVal {
-    def ==~(that: Float):  Boolean = fuzzyEqual(self, that)
+    def ==~(that: Float): Boolean = fuzzyEqual(self, that)
     def !=~(that: Float): Boolean = !fuzzyEqual(self, that)
-    def >~(that: Float):  Boolean = fuzzyCompare(self, that) > 0
-    def <~(that: Float):  Boolean = fuzzyCompare(self, that) < 0
+    def >~(that: Float): Boolean  = fuzzyCompare(self, that) > 0
+    def <~(that: Float): Boolean  = fuzzyCompare(self, that) < 0
     def >=~(that: Float): Boolean = fuzzyCompare(self, that) >= 0
     def <=~(that: Float): Boolean = fuzzyCompare(self, that) <= 0
   }
 
   implicit class RichDouble(val self: Double) extends AnyVal {
-    def =~(that: Double):  Boolean = fuzzyEqual(self, that)
+    def =~(that: Double): Boolean  = fuzzyEqual(self, that)
     def !=~(that: Double): Boolean = !fuzzyEqual(self, that)
-    def >~(that: Double):  Boolean = fuzzyCompare(self, that) > 0
-    def <~(that: Double):  Boolean = fuzzyCompare(self, that) < 0
+    def >~(that: Double): Boolean  = fuzzyCompare(self, that) > 0
+    def <~(that: Double): Boolean  = fuzzyCompare(self, that) < 0
     def >=~(that: Double): Boolean = fuzzyCompare(self, that) >= 0
     def <=~(that: Double): Boolean = fuzzyCompare(self, that) <= 0
   }

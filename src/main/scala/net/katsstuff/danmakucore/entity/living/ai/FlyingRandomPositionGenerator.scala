@@ -43,13 +43,16 @@ object FlyingRandomPositionGenerator {
     var weight   = -99999.0F
 
     if (entity.hasHome) {
-      val d0 = entity.getHomePosition.distanceSq(MathHelper.floor(entity.posX), MathHelper.floor(entity.posY), MathHelper.floor(entity.posZ)) + 4.0D
+      val d0 = entity.getHomePosition.distanceSq(
+        MathHelper.floor(entity.posX),
+        MathHelper.floor(entity.posY),
+        MathHelper.floor(entity.posZ)
+      ) + 4.0D
       val maxDist = entity.getMaximumHomeDistance + maxXz
       flag = d0 < maxDist * maxDist
-    }
-    else flag = false
+    } else flag = false
 
-    for(_ <- 0 until 10) {
+    for (_ <- 0 until 10) {
       var xMod = rand.nextInt(2 * maxXz + 1) - maxXz
       var yMod = rand.nextInt(2 * maxY + 1) - maxY
       var zMod = rand.nextInt(2 * maxXz + 1) - maxXz
@@ -62,7 +65,8 @@ object FlyingRandomPositionGenerator {
         }
 
         val pos = new BlockPos(xMod + entity.posX, yMod + entity.posY, zMod + entity.posZ)
-        if((!flag || entity.isWithinHomeDistanceFromPosition(pos)) && (navigate.canEntityStandOnPos(pos) || entity.world.isAirBlock(pos))) {
+        if ((!flag || entity.isWithinHomeDistanceFromPosition(pos)) && (navigate.canEntityStandOnPos(pos) || entity.world
+              .isAirBlock(pos))) {
           val currentWeight = entity.getBlockPathWeight(pos)
           if (currentWeight > weight) {
             weight = currentWeight

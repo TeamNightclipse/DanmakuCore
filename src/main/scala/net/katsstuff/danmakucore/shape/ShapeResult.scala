@@ -59,8 +59,8 @@ object ShapeResult {
 }
 case class ShapeResult(isDone: Boolean, spawnedDanmaku: Set[DanmakuState]) {
 
-  private[danmakucore] val promise: Option[Promise[ShapeResult]] = if(!isDone) Some(Promise[ShapeResult]) else None
-  val next: Option[Future[ShapeResult]] = promise.map(_.future)
+  private[danmakucore] val promise: Option[Promise[ShapeResult]] = if (!isDone) Some(Promise[ShapeResult]) else None
+  val next: Option[Future[ShapeResult]]                          = promise.map(_.future)
 
   /**
     * The danmaku the shape spawned for this tick.
