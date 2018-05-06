@@ -108,17 +108,20 @@ trait DanmakuHandler {
 
   protected def start(): Unit = {
     profiler.startSection("danmaku")
-
     profiler.startSection("processChanges")
-    processSignalsAndForcedDanmaku(danmakuChanges.flatMap(c => danmaku.get(c.id).map(_ -> c.signals)))
+
+    if (danmakuChanges.nonEmpty || forcedDanmakuUpdates.nonEmpty) {
+      processSignalsAndForcedDanmaku(danmakuChanges.flatMap(c => danmaku.get(c.id).map(_ -> c.signals)))
+      danmakuChanges.clear()
+      forcedDanmakuUpdates.clear()
+    }
 
     profiler.endStartSection("startUpdates")
 
-    working = danmaku.par.mapValues(_.update).toMap ++ newDanmaku.par.map(state => state.id -> state.update).toMap
-
-    danmakuChanges.clear()
-    newDanmaku.clear()
-    forcedDanmakuUpdates.clear()
+    if (danmaku.nonEmpty || newDanmaku.nonEmpty) {
+      working = danmaku.par.mapValues(_.update).toMap ++ newDanmaku.par.map(state => state.id -> state.update).toMap
+      newDanmaku.clear()
+    }
 
     profiler.endSection()
     profiler.endSection()
@@ -127,19 +130,26 @@ trait DanmakuHandler {
   protected def stop(): Unit = {
     profiler.startSection("danmaku")
     profiler.startSection("gatherUpdates")
-    val updated = working.seq
 
-    profiler.endStartSection("processCallbacks")
-    danmakuChanges ++= updated.flatMap {
-      case (_, DanmakuUpdate(optState, stateUpdates, callbacks)) =>
-        callbacks.foreach(_.apply())
-        optState.map(state => DanmakuChanges(state.id, stateUpdates))
+    if (working != null) {
+      val updated = working.seq
+
+      profiler.endStartSection("processCallbacks")
+      danmakuChanges ++= updated.flatMap {
+        case (_, DanmakuUpdate(optState, stateUpdates, callbacks)) =>
+          if(callbacks.nonEmpty) {
+            callbacks.foreach(_.apply())
+          }
+
+          if (stateUpdates.nonEmpty) optState.map(state => DanmakuChanges(state.id, stateUpdates))
+          else Nil
+      }
+
+      danmaku = updated.flatMap(t => t._2.state.map(state => t._1 -> state))
+      working = null
+      chunkMap.clear()
+      isChunkMapPolpulated = false
     }
-
-    danmaku = updated.flatMap(t => t._2.state.map(state => t._1 -> state))
-    working = null
-    chunkMap.clear()
-    isChunkMapPolpulated = false
 
     profiler.endSection()
     profiler.endSection()
