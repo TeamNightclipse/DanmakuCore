@@ -39,7 +39,13 @@ import net.minecraftforge.fml.common.event._
 import net.minecraftforge.fml.common.{FMLCommonHandler, Mod, SidedProxy}
 import net.minecraftforge.fml.relauncher.Side
 
-@Mod(modid = LibMod.Id, name = LibMod.Name, version = LibMod.Version, modLanguage = "scala")
+@Mod(
+  modid = LibMod.Id,
+  name = LibMod.Name,
+  version = LibMod.Version,
+  modLanguage = "scala",
+  dependencies = "required-after:mirror@[0.2.0,);"
+)
 object DanmakuCore {
   MinecraftForge.EVENT_BUS.register(CommonProxy)
 
