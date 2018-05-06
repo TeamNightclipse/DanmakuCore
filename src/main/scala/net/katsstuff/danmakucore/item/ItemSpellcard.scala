@@ -15,6 +15,7 @@ import javax.annotation.Nullable
 import scala.collection.JavaConverters._
 
 import net.katsstuff.danmakucore.SpellcardsCreativeTab
+import net.katsstuff.danmakucore.capability.owner.HasOwnerProvider
 import net.katsstuff.danmakucore.entity.living.TouhouCharacter
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard
 import net.katsstuff.danmakucore.lib.LibItemName
@@ -26,8 +27,10 @@ import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.{ActionResult, EnumActionResult, EnumHand, NonNullList, ResourceLocation}
 import net.minecraft.world.World
+import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 object ItemSpellcard {
@@ -49,7 +52,7 @@ object ItemSpellcard {
     stack
   }
 }
-class ItemSpellcard extends ItemBase(LibItemName.SPELLCARD) with OwnedBy {
+class ItemSpellcard extends ItemBase(LibItemName.SPELLCARD) {
   maxStackSize = 1
   setMaxDamage(0)
   setCreativeTab(SpellcardsCreativeTab)
@@ -92,5 +95,6 @@ class ItemSpellcard extends ItemBase(LibItemName.SPELLCARD) with OwnedBy {
     list.add(s"${I18n.format(s"$item.endTime")} : ${spellcard.endTime}")
   }
 
-  def character(stack: ItemStack): TouhouCharacter = ItemSpellcard.getSpellcard(stack).touhouUser
+  override def initCapabilities(stack: ItemStack, nbt: NBTTagCompound): ICapabilityProvider =
+    HasOwnerProvider(ItemSpellcard.getSpellcard(stack).touhouUser)
 }

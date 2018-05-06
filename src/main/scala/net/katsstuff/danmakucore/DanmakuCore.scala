@@ -11,6 +11,7 @@ package net.katsstuff.danmakucore
 import net.katsstuff.danmakucore.capability.callableentity.CapabilityCallableEntityS
 import net.katsstuff.danmakucore.capability.dancoredata.{CapabilityDanCoreDataS, DanmakuCoreDataHandler}
 import net.katsstuff.danmakucore.capability.danmakuhit.{CapabilityDanmakuHitBehaviorS, DanmakuHitBehaviorHandler}
+import net.katsstuff.danmakucore.capability.owner.CapabilityHasOwnerS
 import net.katsstuff.danmakucore.client.ClientProxy
 import net.katsstuff.danmakucore.data.ShotData
 import net.katsstuff.danmakucore.entity.EntityFallingData
@@ -61,6 +62,7 @@ object DanmakuCore {
     CapabilityDanCoreDataS.register()
     CapabilityDanmakuHitBehaviorS.register()
     CapabilityCallableEntityS.register()
+    CapabilityHasOwnerS.register()
   }
 
   @Mod.EventHandler

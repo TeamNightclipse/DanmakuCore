@@ -6,12 +6,8 @@
  * DanmakuCore is Open Source and distributed under the
  * the DanmakuCore license: https://github.com/Katrix-/DanmakuCore/blob/master/LICENSE.md
  */
-package net.katsstuff.danmakucore.item
+package net.katsstuff.danmakucore.capability.owner
 
 import net.katsstuff.danmakucore.entity.living.TouhouCharacter
-import net.minecraft.item.ItemStack
 
-trait OwnedBy {
-
-  def character(stack: ItemStack): TouhouCharacter
-}
+case class HasOwner(character: TouhouCharacter)

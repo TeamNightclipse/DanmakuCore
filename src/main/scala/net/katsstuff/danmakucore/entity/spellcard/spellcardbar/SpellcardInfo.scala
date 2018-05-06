@@ -10,17 +10,49 @@ package net.katsstuff.danmakucore.entity.spellcard.spellcardbar
 
 import java.util.UUID
 
+import scala.beans.BeanProperty
+
 import net.minecraft.util.text.ITextComponent
 
-abstract class SpellcardInfo(val uuid: UUID, private var name: ITextComponent, private var mirrorText: Boolean) {
-  def getUuid: UUID = uuid
+/**
+  * Represents the text that appears when a spellcard is declared.
+  * @param uuid A [[UUID]] that identifies this info.
+  * @param name The name shown when rendering this info.
+  * @param mirrorText If the rendered text should be mirrored.
+  */
+abstract class SpellcardInfo(
+    @BeanProperty val uuid: UUID,
+    private var name: ITextComponent,
+    private var mirrorText: Boolean
+) {
 
-  def getName:                       ITextComponent = name
-  def setName(name: ITextComponent): Unit           = this.name = name
+  /**
+    * The name shown when rendering this info.
+    */
+  def getName: ITextComponent = name
 
-  def shouldMirrorText:                   Boolean = mirrorText
-  def setMirrorText(mirrorText: Boolean): Unit    = this.mirrorText = mirrorText
+  /**
+    * Sets the name shown when rendering this info.
+    */
+  def setName(name: ITextComponent): Unit = this.name = name
 
+  /**
+    * If the rendered text should be mirrored.
+    */
+  def shouldMirrorText: Boolean = mirrorText
+
+  /**
+    * Sets if the rendered text should be mirrored.
+    */
+  def setMirrorText(mirrorText: Boolean): Unit = this.mirrorText = mirrorText
+
+  /**
+    * Get the X position where to render this.
+    */
   def getPosX: Float
+
+  /**
+    * Get the Y position where to render this.
+    */
   def getPosY: Float
 }
