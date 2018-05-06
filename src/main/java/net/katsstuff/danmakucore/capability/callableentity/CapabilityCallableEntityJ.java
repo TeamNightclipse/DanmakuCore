@@ -8,7 +8,6 @@
  */
 package net.katsstuff.danmakucore.capability.callableentity;
 
-import net.katsstuff.danmakucore.capability.callableentity.CallableEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 

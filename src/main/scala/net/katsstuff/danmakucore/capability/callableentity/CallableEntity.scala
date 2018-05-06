@@ -18,12 +18,12 @@ trait CallableEntity {
   /**
     * Sets the call distance
     */
-  def setEntityCallDistance(distance: Int): Unit
+  def setCallDistance(distance: Int): Unit
 
   /**
     * Gets the call distance
     */
-  def getEntityCallDistance: Int
+  def getCallDistance: Int
 
   /**
     * Called when an entity within the call distance that also implements this is attacked.

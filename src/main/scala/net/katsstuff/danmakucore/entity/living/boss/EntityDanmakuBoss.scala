@@ -124,7 +124,7 @@ abstract class EntityDanmakuBoss(world: World) extends EntityDanmakuMob(world) {
     }
     val pointSpawns = rand.nextInt(10)
     for (_ <- 0 until pointSpawns) {
-      world.spawnEntity(TouhouHelper.createScoreBlue(world, null, pos, direction))
+      world.spawnEntity(TouhouHelper.createScoreBlue(world, None, pos, direction))
     }
     if (rand.nextInt(100) < 20) world.spawnEntity(TouhouHelper.createBomb(world, pos, direction))
     if (rand.nextInt(100) < 5) world.spawnEntity(TouhouHelper.createLife(world, pos, direction))

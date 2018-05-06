@@ -17,19 +17,19 @@ import net.minecraftforge.common.capabilities.{Capability, CapabilityManager}
 object CapabilityCallableEntityS {
 
   def register(): Unit = {
-    val factory: Callable[_ <: DefaultCallableEntity] = () => new DefaultCallableEntity
+    val factory: Callable[_ <: CallableEntity] = () => new DefaultCallableEntity
     CapabilityManager.INSTANCE.register(
-      classOf[DefaultCallableEntity],
-      new Capability.IStorage[DefaultCallableEntity] {
+      classOf[CallableEntity],
+      new Capability.IStorage[CallableEntity] {
         override def writeNBT(
-            capability: Capability[DefaultCallableEntity],
-            instance: DefaultCallableEntity,
+            capability: Capability[CallableEntity],
+            instance: CallableEntity,
             side: EnumFacing
         ): NBTBase = null
 
         override def readNBT(
-            capability: Capability[DefaultCallableEntity],
-            instance: DefaultCallableEntity,
+            capability: Capability[CallableEntity],
+            instance: CallableEntity,
             side: EnumFacing,
             nbt: NBTBase
         ): Unit = ()

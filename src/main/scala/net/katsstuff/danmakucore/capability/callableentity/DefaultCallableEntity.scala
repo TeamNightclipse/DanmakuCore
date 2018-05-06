@@ -35,7 +35,7 @@ class DefaultCallableEntity extends CallableEntity {
     }
   }
 
-  override def getEntityCallDistance: Int = distance
+  override def getCallDistance: Int = distance
 
-  override def setEntityCallDistance(distance: Int): Unit = this.distance = distance
+  override def setCallDistance(distance: Int): Unit = this.distance = distance
 }
