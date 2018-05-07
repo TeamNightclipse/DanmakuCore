@@ -27,11 +27,11 @@ plugins {
     //We apply these to get pretty build script
     java
     idea
-    id("com.github.johnrengelman.shadow").version("2.0.4")
 }
 
 apply {
     plugin("net.minecraftforge.gradle.forge")
+    plugin("com.github.johnrengelman.shadow")
 }
 
 val configFile = file("build.properties")
