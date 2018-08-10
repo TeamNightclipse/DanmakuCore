@@ -9,7 +9,7 @@
 package net.katsstuff.danmakucore.impl.shape
 
 import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuTemplate}
-import net.katsstuff.mirror.data.{Quat, Vector3}
+import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
 
 class ShapeRing(template: DanmakuTemplate, amount: Int, radius: Float, baseAngle: Float, distance: Double)

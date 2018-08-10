@@ -14,7 +14,7 @@ import io.netty.buffer.ByteBuf
 import net.katsstuff.danmakucore.capability.dancoredata.{BoundlessDanmakuCoreData, IDanmakuCoreData}
 import net.katsstuff.danmakucore.helper.NBTHelper
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper
-import net.katsstuff.mirror.network.scalachannel.{ClientMessageHandler, MessageConverter}
+import net.katsstuff.teamnightclipse.mirror.network.scalachannel.{ClientMessageHandler, MessageConverter}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.network.NetHandlerPlayClient
 import net.minecraft.entity.Entity

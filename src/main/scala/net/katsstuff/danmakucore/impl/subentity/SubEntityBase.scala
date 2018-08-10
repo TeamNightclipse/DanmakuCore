@@ -15,7 +15,7 @@ import scala.annotation.tailrec
 
 import net.katsstuff.danmakucore.capability.danmakuhit.CapabilityDanmakuHitBehaviorJ
 import net.katsstuff.danmakucore.danmaku.{DamageSourceDanmaku, DanmakuState, DanmakuUpdate}
-import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
 import net.katsstuff.danmakucore.danmaku.subentity.SubEntity
 import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.lib.LibSounds

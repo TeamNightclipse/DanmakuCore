@@ -16,7 +16,7 @@ import net.katsstuff.danmakucore.data.ShotData
 import net.katsstuff.danmakucore.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.lib.{LibFormName, LibSounds}
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
-import net.katsstuff.mirror.data.{Quat, Vector3}
+import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
 import net.minecraft.client.renderer.{BufferBuilder, GlStateManager, Tessellator}
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats

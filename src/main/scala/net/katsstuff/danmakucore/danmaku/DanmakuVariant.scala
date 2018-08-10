@@ -11,7 +11,7 @@ package net.katsstuff.danmakucore.danmaku
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData}
 import net.katsstuff.danmakucore.registry.RegistryValueItemCreatable
-import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
 import net.minecraft.client.renderer.block.model.{ModelResourceLocation => MRL}
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.{EnumHand, ResourceLocation}

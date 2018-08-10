@@ -13,8 +13,8 @@ import scala.util.Random
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.danmakucore.lib.LibFormName
-import net.katsstuff.mirror.client.particles.GlowTexture
-import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.teamnightclipse.mirror.client.particles.GlowTexture
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
 
 private[danmakucore] class FormFire extends FormSphere(LibFormName.FIRE) {
 

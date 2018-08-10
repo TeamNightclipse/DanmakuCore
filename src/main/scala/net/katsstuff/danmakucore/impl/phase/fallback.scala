@@ -13,7 +13,7 @@ import net.katsstuff.danmakucore.entity.living.phase.{Phase, PhaseManager, Phase
 import net.katsstuff.danmakucore.helper.LogHelper
 import net.katsstuff.danmakucore.registry.DanmakuRegistry
 import net.katsstuff.danmakucore.scalastuff.DanmakuCreationHelper
-import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
 
 class PhaseTypeFallback extends PhaseType {
   override def instantiate(phaseManager: PhaseManager) = new PhaseFallback(phaseManager, this)

@@ -15,8 +15,8 @@ import net.katsstuff.danmakucore.entity.living.phase.PhaseManager
 import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.network.{DanCorePacketHandler, PhaseDataPacket}
 import net.katsstuff.danmakucore.scalastuff.{DanmakuHelper, TouhouHelper}
-import net.katsstuff.mirror.data.Vector3
-import net.katsstuff.mirror.network.scalachannel.TargetPoint
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
+import net.katsstuff.teamnightclipse.mirror.network.scalachannel.TargetPoint
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.passive.EntityFlying

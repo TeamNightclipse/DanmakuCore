@@ -15,7 +15,7 @@ import net.katsstuff.danmakucore.danmaku.subentity.SubEntity
 import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.registry.RegistryValueWithItemModel
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
-import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
 import net.minecraft.client.renderer.block.model.{ModelResourceLocation => MRL}
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer

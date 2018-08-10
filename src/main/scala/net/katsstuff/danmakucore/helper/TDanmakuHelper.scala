@@ -14,7 +14,7 @@ import net.katsstuff.danmakucore.danmaku._
 import net.katsstuff.danmakucore.data.{MovementData, RotationData}
 import net.katsstuff.danmakucore.lib.LibSounds
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
-import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.util.{EnumParticleTypes, SoundCategory, SoundEvent}

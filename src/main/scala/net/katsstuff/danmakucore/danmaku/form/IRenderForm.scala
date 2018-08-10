@@ -10,8 +10,8 @@ package net.katsstuff.danmakucore.danmaku.form
 
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
-import net.katsstuff.mirror.client.shaders.MirrorShaderProgram
-import net.katsstuff.mirror.data.Quat
+import net.katsstuff.teamnightclipse.mirror.client.shaders.MirrorShaderProgram
+import net.katsstuff.teamnightclipse.mirror.data.Quat
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraft.util.ResourceLocation

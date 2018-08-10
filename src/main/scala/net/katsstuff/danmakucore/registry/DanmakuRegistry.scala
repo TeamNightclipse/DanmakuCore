@@ -10,6 +10,8 @@ package net.katsstuff.danmakucore.registry
 
 import java.util.Random
 
+import scala.collection.JavaConverters._
+
 import jline.internal.Nullable
 import net.katsstuff.danmakucore.danmaku.DanmakuVariant
 import net.katsstuff.danmakucore.danmaku.form.Form
@@ -40,8 +42,8 @@ object DanmakuRegistry {
       .getValue(id)
 
   def getRandomObject[T <: RegistryValue[T]](clazz: Class[T], rng: Random): T = {
-    val values = GameRegistry.findRegistry(clazz).getValues
+    val values = GameRegistry.findRegistry(clazz).getValuesCollection.asScala.toSeq
     val idx    = rng.nextInt(values.size)
-    values.get(idx)
+    values(idx)
   }
 }

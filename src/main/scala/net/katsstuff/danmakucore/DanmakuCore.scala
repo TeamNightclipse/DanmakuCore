@@ -28,7 +28,7 @@ import net.katsstuff.danmakucore.lib.data.LibItems
 import net.katsstuff.danmakucore.network.{DanCorePacketHandler, ShotDataSerializer}
 import net.katsstuff.danmakucore.server.commands.DanmakuCoreCmd
 import net.katsstuff.danmakucore.shape.ShapeHandler
-import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
 import net.minecraft.block.BlockDispenser
 import net.minecraft.dispenser.IBlockSource
 import net.minecraft.item.ItemStack

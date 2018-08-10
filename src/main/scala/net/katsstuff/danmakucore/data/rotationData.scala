@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.data
 
 import scala.beans.{BeanProperty, BooleanBeanProperty}
 
-import net.katsstuff.mirror.data.{Quat, Vector3}
+import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
 import net.minecraft.nbt.{NBTTagCompound, NBTTagDouble, NBTTagList}
 import net.minecraftforge.common.util.Constants
 

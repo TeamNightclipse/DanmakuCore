@@ -16,7 +16,7 @@ import scala.collection.mutable.ArrayBuffer
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
-import net.katsstuff.mirror.client.render.{MirrorArrayBuffer, VBOModel}
+import net.katsstuff.teamnightclipse.mirror.client.render.{MirrorArrayBuffer, VBOModel}
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{BufferBuilder, GlStateManager, OpenGlHelper, Tessellator}
 

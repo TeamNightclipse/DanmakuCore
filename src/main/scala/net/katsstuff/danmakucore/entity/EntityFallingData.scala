@@ -15,7 +15,7 @@ import net.katsstuff.danmakucore.lib.{LibEntityName, LibSounds}
 import net.katsstuff.danmakucore.misc.LogicalSideOnly
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper
-import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound

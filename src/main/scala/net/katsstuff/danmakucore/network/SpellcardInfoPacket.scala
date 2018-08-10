@@ -11,7 +11,7 @@ package net.katsstuff.danmakucore.network
 import java.util.UUID
 
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.mirror.network.scalachannel.{ClientMessageHandler, Discriminator, MessageConverter}
+import net.katsstuff.teamnightclipse.mirror.network.scalachannel.{ClientMessageHandler, Discriminator, MessageConverter}
 import net.minecraft.client.network.NetHandlerPlayClient
 import net.minecraft.util.text.ITextComponent
 

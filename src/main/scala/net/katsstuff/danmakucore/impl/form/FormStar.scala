@@ -18,7 +18,7 @@ import net.minecraft.client.renderer.{BufferBuilder, GlStateManager, Tessellator
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
-import net.katsstuff.mirror.data.Quat
+import net.katsstuff.teamnightclipse.mirror.data.Quat
 
 private[danmakucore] class FormStar extends FormGeneric(LibFormName.STAR) {
 

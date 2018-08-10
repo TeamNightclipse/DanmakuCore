@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.impl.shape
 
 import net.katsstuff.danmakucore.danmaku.DanmakuTemplate
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
-import net.katsstuff.mirror.data.{Quat, Vector3}
+import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
 
 class ShapeCircle(danmaku: DanmakuTemplate, amount: Int, baseAngle: Float, distance: Double) extends Shape {
   override def draw(pos: Vector3, orientation: Quat, tick: Int): ShapeResult = {

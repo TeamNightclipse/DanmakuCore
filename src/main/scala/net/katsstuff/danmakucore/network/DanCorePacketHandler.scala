@@ -9,7 +9,7 @@
 package net.katsstuff.danmakucore.network
 
 import net.katsstuff.danmakucore.lib.LibMod
-import net.katsstuff.mirror.network.scalachannel.ScalaNetworkWrapper
+import net.katsstuff.teamnightclipse.mirror.network.scalachannel.ScalaNetworkWrapper
 
 object DanCorePacketHandler extends ScalaNetworkWrapper(LibMod.Id) {
   private[danmakucore] def load(): Unit = {

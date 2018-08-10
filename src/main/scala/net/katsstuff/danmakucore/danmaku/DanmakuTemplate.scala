@@ -11,7 +11,7 @@ package net.katsstuff.danmakucore.danmaku
 import javax.annotation.Nullable
 
 import net.katsstuff.danmakucore.data.{MovementData, OrientedBoundingBox, RotationData, ShotData}
-import net.katsstuff.mirror.data.{Quat, Vector3}
+import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.world.World
 import net.minecraftforge.fml.common.FMLCommonHandler

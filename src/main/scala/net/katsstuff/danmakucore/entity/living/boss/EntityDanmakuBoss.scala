@@ -24,7 +24,7 @@ import net.minecraft.network.datasync.{DataSerializers, EntityDataManager}
 import net.minecraft.util.DamageSource
 import net.minecraft.world.{BossInfo, BossInfoServer, World}
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
-import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
 
 object EntityDanmakuBoss {
   private val BossInfoUUID = EntityDataManager.createKey(classOf[EntityDanmakuBoss], DataSerializers.OPTIONAL_UNIQUE_ID)

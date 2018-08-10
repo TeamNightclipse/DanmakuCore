@@ -11,13 +11,7 @@ package net.katsstuff.danmakucore
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 
-import net.katsstuff.danmakucore.danmaku.{
-  DanmakuChanges,
-  DanmakuHandler,
-  DanmakuState,
-  DanmakuVariant,
-  ServerDanmakuHandler
-}
+import net.katsstuff.danmakucore.danmaku._
 import net.katsstuff.danmakucore.danmodel.DanModelReader
 import net.katsstuff.danmakucore.danmaku.form.Form
 import net.katsstuff.danmakucore.danmaku.subentity.SubEntityType
@@ -34,9 +28,9 @@ import net.katsstuff.danmakucore.item.{ItemDanmaku, ItemSpellcard}
 import net.katsstuff.danmakucore.lib._
 import net.katsstuff.danmakucore.lib.data.LibShotData
 import net.katsstuff.danmakucore.network.SpellcardInfoPacket
-import net.katsstuff.mirror.client.particles.GlowTexture
-import net.katsstuff.mirror.data.Vector3
-import net.katsstuff.mirror.misc.IdState
+import net.katsstuff.teamnightclipse.mirror.client.particles.GlowTexture
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
+import net.katsstuff.teamnightclipse.mirror.misc.IdState
 import net.minecraft.entity.Entity
 import net.minecraft.init.SoundEvents
 import net.minecraft.item.Item

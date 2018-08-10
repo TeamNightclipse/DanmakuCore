@@ -14,13 +14,7 @@ import net.katsstuff.danmakucore.CommonProxy
 import net.katsstuff.danmakucore.client.handler.{BossBarHandler, DanmakuRenderer, HUDHandler, SpellcardHandler}
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.client.render.{RenderFallingData, RenderSpellcard}
-import net.katsstuff.danmakucore.danmaku.{
-  ClientDanmakuHandler,
-  DanmakuChanges,
-  DanmakuHandler,
-  DanmakuState,
-  DanmakuVariant
-}
+import net.katsstuff.danmakucore.danmaku._
 import net.katsstuff.danmakucore.danmaku.form.Form
 import net.katsstuff.danmakucore.data.ShotData
 import net.katsstuff.danmakucore.entity.living.boss.EntityDanmakuBoss
@@ -30,8 +24,8 @@ import net.katsstuff.danmakucore.item.{ItemDanmaku, ItemSpellcard}
 import net.katsstuff.danmakucore.lib.data.LibItems
 import net.katsstuff.danmakucore.network.SpellcardInfoPacket
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper
-import net.katsstuff.mirror.client.particles.{GlowTexture, ParticleUtil}
-import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.teamnightclipse.mirror.client.particles.{GlowTexture, ParticleUtil}
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.ModelBakery
 import net.minecraft.client.renderer.color.IItemColor

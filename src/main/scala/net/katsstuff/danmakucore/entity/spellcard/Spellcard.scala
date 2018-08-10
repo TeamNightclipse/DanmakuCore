@@ -14,7 +14,7 @@ import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.entity.living.TouhouCharacter
 import net.katsstuff.danmakucore.registry.RegistryValueItemCreatable
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper
-import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
 import net.minecraft.client.renderer.block.model.{ModelResourceLocation => MRL}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{EntityLiving, EntityLivingBase}

@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.network
 
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.danmaku.DanmakuState
-import net.katsstuff.mirror.network.scalachannel.{ClientMessageHandler, MessageConverter}
+import net.katsstuff.teamnightclipse.mirror.network.scalachannel.{ClientMessageHandler, MessageConverter}
 import net.minecraft.client.network.NetHandlerPlayClient
 
 case class DanmakuForceUpdatePacket(state: DanmakuState)

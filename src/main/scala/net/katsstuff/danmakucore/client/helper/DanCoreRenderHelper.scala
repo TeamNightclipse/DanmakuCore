@@ -11,16 +11,9 @@ package net.katsstuff.danmakucore.client.helper
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.data.ShotData
-import net.katsstuff.mirror.client.shaders.{
-  MirrorShaderProgram,
-  MirrorUniform,
-  ShaderManager,
-  ShaderType,
-  UniformBase,
-  UniformType
-}
-import net.katsstuff.mirror.data.Quat
-import net.minecraft.client.renderer.{GlStateManager, OpenGlHelper, Tessellator}
+import net.katsstuff.teamnightclipse.mirror.client.shaders._
+import net.katsstuff.teamnightclipse.mirror.data.Quat
+import net.minecraft.client.renderer.{GlStateManager, OpenGlHelper}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 

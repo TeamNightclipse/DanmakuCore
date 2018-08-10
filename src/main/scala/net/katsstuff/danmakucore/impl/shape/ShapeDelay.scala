@@ -9,7 +9,7 @@
 package net.katsstuff.danmakucore.impl.shape
 
 import net.katsstuff.danmakucore.danmaku.DanmakuState
-import net.katsstuff.mirror.data.{Quat, Vector3}
+import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
 import net.katsstuff.danmakucore.shape.{Shape, ShapeResult}
 
 class ShapeDelay(shape: Shape, delay: Int) extends Shape {

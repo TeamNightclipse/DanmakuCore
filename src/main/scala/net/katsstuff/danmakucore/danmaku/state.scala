@@ -17,8 +17,8 @@ import net.katsstuff.danmakucore.data.{MovementData, OrientedBoundingBox, Rotati
 import net.katsstuff.danmakucore.danmaku.subentity.SubEntity
 import net.katsstuff.danmakucore.helper.MathUtil._
 import net.katsstuff.danmakucore.network.{DanCorePacketHandler, DanmakuForceUpdatePacket}
-import net.katsstuff.mirror.data.{Quat, Vector3}
-import net.katsstuff.mirror.network.scalachannel.MessageConverter
+import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
+import net.katsstuff.teamnightclipse.mirror.network.scalachannel.MessageConverter
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.entity.{Entity, EntityLivingBase, EntityTracker}
 import net.minecraft.util.math.{AxisAlignedBB, MathHelper}

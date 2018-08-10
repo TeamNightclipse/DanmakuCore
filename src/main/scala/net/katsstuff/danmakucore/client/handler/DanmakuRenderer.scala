@@ -16,8 +16,8 @@ import net.katsstuff.danmakucore.danmaku.{DanmakuHandler, DanmakuState}
 import net.katsstuff.danmakucore.danmaku.form.Form
 import net.katsstuff.danmakucore.handler.ConfigHandler
 import net.katsstuff.danmakucore.helper.LogHelper
-import net.katsstuff.mirror.client.shaders.{MirrorShaderProgram, ShaderManager}
-import net.katsstuff.mirror.data.Quat
+import net.katsstuff.teamnightclipse.mirror.client.shaders.{MirrorShaderProgram, ShaderManager}
+import net.katsstuff.teamnightclipse.mirror.data.Quat
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.{GlStateManager, OpenGlHelper, RenderGlobal}

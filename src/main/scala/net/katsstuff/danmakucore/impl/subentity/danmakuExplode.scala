@@ -9,7 +9,7 @@
 package net.katsstuff.danmakucore.impl.subentity
 
 import net.katsstuff.danmakucore.danmaku.{DanmakuState, DanmakuTemplate, DanmakuUpdate}
-import net.katsstuff.mirror.data.{Quat, Vector3}
+import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
 import net.katsstuff.danmakucore.danmaku.subentity.SubEntityType
 import net.katsstuff.danmakucore.lib.data.LibSubEntities
 import net.katsstuff.danmakucore.scalastuff.DanmakuCreationHelper

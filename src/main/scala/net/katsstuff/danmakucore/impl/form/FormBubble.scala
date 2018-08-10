@@ -12,12 +12,12 @@ import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
-import net.katsstuff.mirror.client.shaders._
+import net.katsstuff.teamnightclipse.mirror.client.shaders._
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.danmaku.form.{IRenderForm, RenderingProperty}
 import net.katsstuff.danmakucore.lib.LibFormName
-import net.katsstuff.mirror.client.helper.MirrorRenderHelper
-import net.katsstuff.mirror.data.Quat
+import net.katsstuff.teamnightclipse.mirror.client.helper.MirrorRenderHelper
+import net.katsstuff.teamnightclipse.mirror.data.Quat
 import net.minecraft.client.renderer.{GlStateManager, OpenGlHelper}
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.util.ResourceLocation

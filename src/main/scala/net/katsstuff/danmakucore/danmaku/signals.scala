@@ -11,8 +11,8 @@ package net.katsstuff.danmakucore.danmaku
 import io.netty.buffer.ByteBuf
 import net.katsstuff.danmakucore.data.{MovementData, RotationData, ShotData}
 import net.katsstuff.danmakucore.scalastuff.TouhouHelper
-import net.katsstuff.mirror.data.{Quat, Vector3}
-import net.katsstuff.mirror.network.scalachannel.{Discriminator, MessageConverter}
+import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
+import net.katsstuff.teamnightclipse.mirror.network.scalachannel.{Discriminator, MessageConverter}
 import net.minecraft.entity.EntityLivingBase
 import net.minecraftforge.fml.common.FMLCommonHandler
 

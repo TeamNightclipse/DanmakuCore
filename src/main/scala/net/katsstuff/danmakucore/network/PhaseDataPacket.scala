@@ -9,7 +9,7 @@
 package net.katsstuff.danmakucore.network
 
 import net.katsstuff.danmakucore.entity.living.EntityDanmakuMob
-import net.katsstuff.mirror.network.scalachannel.{ClientMessageHandler, MessageConverter}
+import net.katsstuff.teamnightclipse.mirror.network.scalachannel.{ClientMessageHandler, MessageConverter}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.network.NetHandlerPlayClient
 import net.minecraft.entity.Entity

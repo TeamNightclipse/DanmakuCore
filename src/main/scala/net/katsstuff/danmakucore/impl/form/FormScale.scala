@@ -14,8 +14,8 @@ import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.danmaku.form.IRenderForm
 import net.katsstuff.danmakucore.lib.LibFormName
-import net.katsstuff.mirror.client.helper.MirrorRenderHelper
-import net.katsstuff.mirror.data.Quat
+import net.katsstuff.teamnightclipse.mirror.client.helper.MirrorRenderHelper
+import net.katsstuff.teamnightclipse.mirror.data.Quat
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}

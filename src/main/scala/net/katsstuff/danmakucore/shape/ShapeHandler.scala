@@ -10,7 +10,7 @@ package net.katsstuff.danmakucore.shape
 
 import scala.concurrent.{Future, Promise}
 
-import net.katsstuff.mirror.data.{Quat, Vector3}
+import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent

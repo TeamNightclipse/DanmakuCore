@@ -8,7 +8,7 @@
  */
 package net.katsstuff.danmakucore.data
 
-import net.katsstuff.mirror.data.{Quat, Vector3}
+import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
 import net.minecraft.util.math.AxisAlignedBB
 
 case class OrientedBoundingBox(aabb: AxisAlignedBB, pos: Vector3, orientation: Quat) {

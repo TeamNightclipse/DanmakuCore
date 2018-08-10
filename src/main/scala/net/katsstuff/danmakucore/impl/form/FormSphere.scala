@@ -14,9 +14,9 @@ import net.katsstuff.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.danmakucore.danmaku.DanmakuState
 import net.katsstuff.danmakucore.danmaku.form.{IRenderForm, RenderingProperty}
 import net.katsstuff.danmakucore.lib.LibFormName
-import net.katsstuff.mirror.client.helper.MirrorRenderHelper
-import net.katsstuff.mirror.client.shaders.MirrorShaderProgram
-import net.katsstuff.mirror.data.Quat
+import net.katsstuff.teamnightclipse.mirror.client.helper.MirrorRenderHelper
+import net.katsstuff.teamnightclipse.mirror.client.shaders.MirrorShaderProgram
+import net.katsstuff.teamnightclipse.mirror.data.Quat
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.util.ResourceLocation

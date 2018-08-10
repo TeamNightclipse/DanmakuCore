@@ -11,7 +11,7 @@ package net.katsstuff.danmakucore.impl.form
 import net.katsstuff.danmakucore.danmodel.FormDanModel
 import net.katsstuff.danmakucore.data.ShotData
 import net.katsstuff.danmakucore.scalastuff.DanmakuHelper
-import net.katsstuff.mirror.data.Vector3
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.{ResourceLocation, SoundEvent}
 import net.minecraft.world.World

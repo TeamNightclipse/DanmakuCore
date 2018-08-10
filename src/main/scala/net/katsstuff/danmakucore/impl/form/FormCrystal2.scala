@@ -11,7 +11,7 @@ package net.katsstuff.danmakucore.impl.form
 import org.lwjgl.opengl.GL11
 
 import net.katsstuff.danmakucore.lib.LibFormName
-import net.katsstuff.mirror.client.helper.MirrorRenderHelper
+import net.katsstuff.teamnightclipse.mirror.client.helper.MirrorRenderHelper
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 /**

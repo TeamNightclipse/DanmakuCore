@@ -25,9 +25,8 @@ import net.katsstuff.danmakucore.misc._
 import net.katsstuff.danmakucore.registry.{DanmakuRegistry, RegistryValueWithItemModel}
 import net.katsstuff.danmakucore.scalastuff.DanmakuCreationHelper
 import net.katsstuff.danmakucore.{DanmakuCore, DanmakuCreativeTab}
-import net.katsstuff.mirror.client.helper.Tooltip
-import net.katsstuff.mirror.data.{Quat, Vector3}
-import net.minecraft.client.resources.I18n
+import net.katsstuff.teamnightclipse.mirror.client.helper.Tooltip
+import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.EntityLivingBase
@@ -258,12 +257,14 @@ class ItemDanmaku extends ItemBase(LibItemName.DANMAKU) {
 
   override def getSubItems(tab: CreativeTabs, subItems: NonNullList[ItemStack]): Unit =
     if (isInCreativeTab(tab)) {
-      subItems.addAll(DanmakuRegistry.DanmakuVariant.getValues.asScala.sorted.map(ItemDanmaku.createStack).asJava)
+      subItems.addAll(
+        DanmakuRegistry.DanmakuVariant.getValuesCollection.asScala.toSeq.sorted.map(ItemDanmaku.createStack).asJava
+      )
     }
 
   @SideOnly(Side.CLIENT) override def hasEffect(stack: ItemStack): Boolean = ItemDanmaku.Infinity.get(stack)
-  override def getUnlocalizedName(stack: ItemStack): String =
-    s"${getUnlocalizedName()}.${ItemDanmaku.getController(stack).unlocalizedName}"
+  override def getTranslationKey(stack: ItemStack): String =
+    s"${getTranslationKey()}.${ItemDanmaku.getController(stack).unlocalizedName}"
 
   override def onItemRightClick(world: World, player: EntityPlayer, hand: EnumHand): ActionResult[ItemStack] = {
     val stack   = player.getHeldItem(hand)

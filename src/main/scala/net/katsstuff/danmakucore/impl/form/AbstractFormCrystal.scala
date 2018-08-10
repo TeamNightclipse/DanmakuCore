@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
-import net.katsstuff.mirror.data.Quat
+import net.katsstuff.teamnightclipse.mirror.data.Quat
 
 abstract private[danmakucore] class AbstractFormCrystal(name: String) extends FormGeneric(name) {
 

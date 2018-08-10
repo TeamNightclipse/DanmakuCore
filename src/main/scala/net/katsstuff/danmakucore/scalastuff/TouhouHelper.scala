@@ -14,8 +14,8 @@ import net.katsstuff.danmakucore.entity.{EntityFallingData, FallingDataTypes}
 import net.katsstuff.danmakucore.helper.{RemoveMode, TTouhouHelper}
 import net.katsstuff.danmakucore.misc.LogicalSideOnly
 import net.katsstuff.danmakucore.scalastuff.DanCoreImplicits._
-import net.katsstuff.mirror.data.Vector3
-import net.katsstuff.mirror.network.scalachannel.TargetPoint
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
+import net.katsstuff.teamnightclipse.mirror.network.scalachannel.TargetPoint
 import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
 import net.minecraft.entity.{Entity, EntityAgeable, EntityLivingBase}
 import net.minecraft.world.World

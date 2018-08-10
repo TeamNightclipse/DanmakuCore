@@ -23,9 +23,9 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-import net.katsstuff.mirror.client.helper.MirrorRenderHelper
-import net.katsstuff.mirror.client.shaders.MirrorShaderProgram
-import net.katsstuff.mirror.data.{Quat, Vector3}
+import net.katsstuff.teamnightclipse.mirror.client.helper.MirrorRenderHelper
+import net.katsstuff.teamnightclipse.mirror.client.shaders.MirrorShaderProgram
+import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
 
 private[danmakucore] class FormLaser extends FormGeneric(LibFormName.LASER) {
 

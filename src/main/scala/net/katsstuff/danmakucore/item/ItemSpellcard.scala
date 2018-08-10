@@ -16,13 +16,12 @@ import scala.collection.JavaConverters._
 
 import net.katsstuff.danmakucore.SpellcardsCreativeTab
 import net.katsstuff.danmakucore.capability.owner.HasOwnerProvider
-import net.katsstuff.danmakucore.entity.living.TouhouCharacter
 import net.katsstuff.danmakucore.entity.spellcard.Spellcard
 import net.katsstuff.danmakucore.lib.LibItemName
 import net.katsstuff.danmakucore.lib.data.{LibItems, LibSpellcards}
 import net.katsstuff.danmakucore.misc.StringNBTProperty
 import net.katsstuff.danmakucore.registry.DanmakuRegistry
-import net.katsstuff.mirror.client.helper.Tooltip
+import net.katsstuff.teamnightclipse.mirror.client.helper.Tooltip
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
@@ -59,7 +58,9 @@ class ItemSpellcard extends ItemBase(LibItemName.SPELLCARD) {
 
   override def getSubItems(tab: CreativeTabs, subItems: NonNullList[ItemStack]): Unit =
     if (isInCreativeTab(tab)) {
-      subItems.addAll(DanmakuRegistry.Spellcard.getValues.asScala.sorted.map(ItemSpellcard.createStack).asJava)
+      subItems.addAll(
+        DanmakuRegistry.Spellcard.getValuesCollection.asScala.toSeq.sorted.map(ItemSpellcard.createStack).asJava
+      )
     }
 
   override def onItemRightClick(world: World, player: EntityPlayer, hand: EnumHand): ActionResult[ItemStack] = {
@@ -74,8 +75,8 @@ class ItemSpellcard extends ItemBase(LibItemName.SPELLCARD) {
     } else super.onItemRightClick(world, player, hand)
   }
 
-  override def getUnlocalizedName(stack: ItemStack): String =
-    s"${super.getUnlocalizedName}.${ItemSpellcard.getSpellcard(stack).unlocalizedName}"
+  override def getTranslationKey(stack: ItemStack): String =
+    s"${getTranslationKey()}.${ItemSpellcard.getSpellcard(stack).unlocalizedName}"
 
   @SideOnly(Side.CLIENT)
   override def addInformation(
