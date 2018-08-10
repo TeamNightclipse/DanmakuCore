@@ -1,4 +1,4 @@
-package net.katsstuff.danmakucore.danmodelfromobj
+package net.katsstuff.teamnightclipse.danmakucore.danmakucore.danmodelfromobj
 
 import java.io.File
 import java.nio.file.{Path, Paths}

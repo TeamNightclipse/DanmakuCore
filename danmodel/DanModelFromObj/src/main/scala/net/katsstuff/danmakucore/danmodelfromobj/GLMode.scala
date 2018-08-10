@@ -1,4 +1,4 @@
-package net.katsstuff.danmakucore.danmodelfromobj
+package net.katsstuff.teamnightclipse.danmakucore.danmakucore.danmodelfromobj
 
 sealed abstract case class GLMode private (int: Int)
 object GLMode {
