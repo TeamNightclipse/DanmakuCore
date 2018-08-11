@@ -14,4 +14,7 @@ DanmakuCore is a mod to help make danmaku stuff without setting up all the tedio
 
 DanmakuCore is currently still in development. Once it's in a state where I feel that I can release it I will. If you still want to use it, compile it yourself.
 
+DanmakuCore is licensed under the **LGPL** (GNU Lesser General Public License). 
+Unless specified otherwise, the assets for DanmakuCore are licensed under Creative Commons **CC-BY-NC-SA** http://creativecommons.org/licenses/by-nc-sa/4.0/.
+
 Credits to [Touhou Concealed the Conclusion](https://github.com/danmaq/touhou-ctc-danmakufu) for some assets
