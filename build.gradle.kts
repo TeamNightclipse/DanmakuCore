@@ -31,6 +31,8 @@ plugins {
     //We apply these to get pretty build script
     java
     idea
+    maven
+    signing
     id("com.github.johnrengelman.shadow").version("2.0.4")
 }
 
@@ -92,12 +94,12 @@ dependencies {
 
 shadowJar.apply {
     classifier = "shaded"
-    relocate("shapeless", "net.katsstuff.teamnightclipse.mirror.shade.shapeless")
     dependencies {
         exclude(dependency("com.chuusai:shapeless_2.11:2.3.3"))
         exclude(dependency("net.katsstuff.teamnightclipse:mirror:1.12.2-0.3.0"))
     }
     exclude("dummyThing")
+    relocate("shapeless", "net.katsstuff.teamnightclipse.mirror.shade.shapeless")
 }
 
 tasks.withType<Jar> {
@@ -118,15 +120,17 @@ tasks.withType<ProcessResources> {
     }
 }
 
+fun parseConfig(config: File): ConfigObject {
+    val prop = Properties()
+    prop.load(config.reader())
+    return ConfigSlurper().parse(prop)
+}
+
 idea.module.inheritOutputDirs = true
 
 val reobf: NamedDomainObjectContainer<IReobfuscator> by extensions
 
-tasks.get("build").dependsOn(shadowJar)
-
-artifacts {
-    add("archives", shadowJar)
-}
+tasks["build"].dependsOn(shadowJar)
 
 reobf {
     "shadowJar" {
@@ -134,11 +138,91 @@ reobf {
     }
 }
 
-tasks.get("reobfShadowJar").mustRunAfter("shadowJar")
-tasks.get("build").dependsOn("reobfShadowJar")
+tasks["reobfShadowJar"].mustRunAfter(shadowJar)
+tasks["build"].dependsOn("reobfShadowJar")
 
-fun parseConfig(config: File): ConfigObject {
-    val prop = Properties()
-    prop.load(config.reader())
-    return ConfigSlurper().parse(prop)
+val deobfJar by tasks.creating(Jar::class) {
+    classifier = "dev"
+    from(java.sourceSets["main"].output)
+}
+
+val sourcesJar by tasks.creating(Jar::class) {
+    classifier = "sources"
+    from(java.sourceSets["main"].allSource)
+}
+
+val javadocJar by tasks.creating(Jar::class) {
+    classifier = "javadoc"
+    dependsOn(scaladoc)
+    from(scaladoc.destinationDir)
+}
+
+artifacts {
+    add("archives", shadowJar)
+    add("archives", sourcesJar)
+    add("archives", javadocJar)
+    add("archives", deobfJar)
+}
+
+signing {
+    sign(configurations.archives)
+}
+
+tasks {
+    "uploadArchives"(Upload::class) {
+        repositories {
+            withConvention(MavenRepositoryHandlerConvention::class) {
+                mavenDeployer {
+                    beforeDeployment {
+                        signing.signPom(this)
+                    }
+
+                    withGroovyBuilder {
+                        val releasesUri = """https://api.bintray.com/maven/team-nightclipse/maven/DanmakuCore/;publish=1"""
+                        "repository"("url" to uri(releasesUri)) {
+                            "authentication"("userName" to properties["bintray.user"], "password" to properties["bintray.apikey"])
+                        }
+                        /*
+                        "snapshotRepository"("url" to uri("TODO")) {
+                            "authentication"("userName" to properties["bintray.user"], "password" to properties["bintray.apikey"])
+                        }
+                        */
+                    }
+
+                    pom.project {
+                        withGroovyBuilder {
+                            "description"("A library for Minecraft for creating Danmaku")
+
+                            "licenses" {
+                                "license" {
+                                    "name"("GNU General Lesser Public License (LGPL) version 3.0")
+                                    "url"("http://www.gnu.org/licenses/lgpl.txt")
+                                    "distribution"("repo")
+                                }
+                            }
+
+                            "scm" {
+                                "url"("https://github.com/TeamNightclipse/DanmakuCore")
+                                "connection"("scm:git:github.com/TeamNightclipse/DanmakuCore")
+                                "developerConnection"("scm:git:github.com/TeamNightclipse/DanmakuCore")
+                            }
+
+                            "issueManagement" {
+                                "system"("github")
+                                "url"("https://github.com/TeamNightclipse/DanmakuCore/issues")
+                            }
+
+                            "developers" {
+                                "developer" {
+                                    "id"("Nikolai Frid")
+                                    "email"("katrix97@hotmail.com")
+                                    "url"("http://katsstuff.net/")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
