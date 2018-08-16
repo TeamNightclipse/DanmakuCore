@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with DanmakuCore.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.katsstuff.teamnightclipse.danmakucore.helper
+package danmaku
 
 import java.lang.{Double => JDouble, Float => JFloat}
 
