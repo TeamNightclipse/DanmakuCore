@@ -22,6 +22,10 @@ import net.minecraft.util.math.AxisAlignedBB
 
 case class OrientedBoundingBox(aabb: AxisAlignedBB, pos: Vector3, orientation: Quat) {
 
+  def toWorldSpace(pos: Vector3, orientation: Quat): OrientedBoundingBox = {
+    copy(aabb = aabb.offset(pos.x, pos.y, pos.z), orientation = this.orientation * orientation, pos = pos)
+  }
+
   //http://www.dyn4j.org/2010/01/sat/
   def intersects(thatBoundingBox: AxisAlignedBB): Boolean = {
     val rotated = orientation * Vector3.Forward

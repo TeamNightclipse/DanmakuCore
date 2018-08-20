@@ -84,10 +84,10 @@ sealed abstract class AbstractQuat { self =>
     val tz = this.z
     val tw = this.w
 
+    val newW = tw * w - tx * x - ty * y - tz * z
     val newX = tw * x + tx * w + ty * z - tz * y
     val newY = tw * y + ty * w + tz * x - tx * z
     val newZ = tw * z + tz * w + tx * y - ty * x
-    val newW = tw * w - tx * x - ty * y - tz * z
     create(newX, newY, newZ, newW)
   }
   def multiply(x: Double, y: Double, z: Double, w: Double): Self = this * (x, y, z, w)

@@ -21,14 +21,14 @@ import java.lang.{Double => JDouble, Float => JFloat}
 
 //We use Util instead of helper to avoid collision with minecraft's MathHelper
 object MathUtil {
-  val Epsilon = 1E-5
+  final val Epsilon = 1E-5
 
-  def fuzzyEqual(a: Float, b: Float): Boolean = Math.abs(a - b) <= Epsilon
+  final def fuzzyEqual(a: Float, b: Float): Boolean = Math.abs(a - b) <= Epsilon
 
-  def fuzzyEqual(a: Double, b: Double): Boolean = Math.abs(a - b) <= Epsilon
+  final def fuzzyEqual(a: Double, b: Double): Boolean = Math.abs(a - b) <= Epsilon
 
-  def fuzzyCompare(a: Float, b: Float): Int   = if (Math.abs(a - b) <= Epsilon) 0 else JFloat.compare(a, b)
-  def fuzzyCompare(a: Double, b: Double): Int = if (Math.abs(a - b) <= Epsilon) 0 else JDouble.compare(a, b)
+  final def fuzzyCompare(a: Float, b: Float): Int   = if (Math.abs(a - b) <= Epsilon) 0 else JFloat.compare(a, b)
+  final def fuzzyCompare(a: Double, b: Double): Int = if (Math.abs(a - b) <= Epsilon) 0 else JDouble.compare(a, b)
 
   implicit class RichFloat(val self: Float) extends AnyVal {
     @inline def ==~(that: Float): Boolean = fuzzyEqual(self, that)

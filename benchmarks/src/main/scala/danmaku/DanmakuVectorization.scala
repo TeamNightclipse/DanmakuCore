@@ -391,7 +391,7 @@ class DanmakuVectorization {
     danmakuArr2
   }
 
-  @Benchmark
+  //@Benchmark
   def alwaysSOA(): Array[Danmaku] = {
     rotate()
     calcSpeed()

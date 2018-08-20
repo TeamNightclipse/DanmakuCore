@@ -36,6 +36,13 @@ final case class MovementData(
     gravity: Vector3
 )
 
+
+final case class RotationData(
+    enabled: Boolean,
+    rotationQuat: Quat,
+    endTime: Int
+)
+
 case class Danmaku(
     shot: ShotData,
     pos: Vector3,
