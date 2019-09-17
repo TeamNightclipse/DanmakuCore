@@ -124,19 +124,16 @@ abstract class EntityDanmakuBoss(world: World) extends EntityDanmakuMob(world) {
 
   override def syncPhaseManagerToClient = true
 
+  override def powerSpawns: Int = rand.nextInt(8) + 3
+
+  override def pointSpawns: Int = rand.nextInt(10) + 4
+
   override protected def dropPhaseLoot(source: DamageSource): Unit = {
     super.dropPhaseLoot(source)
     val direction =
       if (source.getImmediateSource != null) Vector3.directionToEntity(this, source.getImmediateSource)
       else Vector3.Down
-    val powerSpawns = rand.nextInt(8)
-    for (_ <- 0 until powerSpawns) {
-      world.spawnEntity(TouhouHelper.createPower(world, pos, direction))
-    }
-    val pointSpawns = rand.nextInt(10)
-    for (_ <- 0 until pointSpawns) {
-      world.spawnEntity(TouhouHelper.createScoreBlue(world, None, pos, direction))
-    }
+
     if (rand.nextInt(100) < 20) world.spawnEntity(TouhouHelper.createBomb(world, pos, direction))
     if (rand.nextInt(100) < 5) world.spawnEntity(TouhouHelper.createLife(world, pos, direction))
   }
