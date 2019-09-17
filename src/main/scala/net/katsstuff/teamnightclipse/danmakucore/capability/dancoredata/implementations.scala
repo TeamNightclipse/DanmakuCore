@@ -17,6 +17,8 @@
  */
 package net.katsstuff.teamnightclipse.danmakucore.capability.dancoredata
 
+import net.minecraft.util.math.MathHelper
+
 case class BoundlessDanmakuCoreData(var power: Float, var score: Int, var lives: Int, var bombs: Int)
     extends IDanmakuCoreData {
 
@@ -26,10 +28,10 @@ case class BoundlessDanmakuCoreData(var power: Float, var score: Int, var lives:
 }
 
 case class BoundedDanmakuCoreData(
-    var power: Float,
+    private var _power: Float,
     var score: Int,
-    var lives: Int,
-    var bombs: Int,
+    private var _lives: Int,
+    private var _bombs: Int,
     powerBound: Float,
     lifeBombBound: Int
 ) extends IDanmakuCoreData {
@@ -41,4 +43,16 @@ case class BoundedDanmakuCoreData(
   def this() {
     this(4F, 9)
   }
+
+  override def power: Float = _power
+
+  override def power_=(newPower: Float): Unit = _power = MathHelper.clamp(newPower, 0, powerBound)
+
+  override def lives: Int = _lives
+
+  override def lives_=(newLives: Int): Unit = _lives = MathHelper.clamp(newLives, 0, lifeBombBound)
+
+  override def bombs: Int = _bombs
+
+  override def bombs_=(newBombs: Int): Unit = _bombs = MathHelper.clamp(newBombs, 0, lifeBombBound)
 }
