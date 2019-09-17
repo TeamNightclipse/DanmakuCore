@@ -19,9 +19,9 @@ package net.katsstuff.teamnightclipse.danmakucore.registry
 
 import java.util.Random
 
-import scala.collection.JavaConverters._
+import javax.annotation.Nullable
 
-import jline.internal.Nullable
+import scala.collection.JavaConverters._
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.DanmakuVariant
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.form.Form
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.subentity.SubEntityType
