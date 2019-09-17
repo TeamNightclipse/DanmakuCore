@@ -70,7 +70,7 @@ repositories {
 }
 
 dependencies {
-    compile("net.katsstuff.teamnightclipse:mirror:1.12.2-0.4.0")
+    compile("net.katsstuff.teamnightclipse:mirror:1.12.2-0.5.0")
     compile("net.ilexiconn:llibrary:1.7.9-1.12.2")
     compile("org.scala-lang:scala-library:2.11.4") //Gets ourself a better compiler
 }
@@ -79,7 +79,7 @@ shadowJar.apply {
     classifier = "shaded"
     dependencies {
         exclude(dependency("com.chuusai:shapeless_2.11:2.3.3"))
-        exclude(dependency("net.katsstuff.teamnightclipse:mirror:1.12.2-0.3.0"))
+        exclude(dependency("net.katsstuff.teamnightclipse:mirror:1.12.2-0.5.0"))
     }
     exclude("dummyThing")
     relocate("shapeless", "net.katsstuff.teamnightclipse.mirror.shade.shapeless")
@@ -147,6 +147,7 @@ artifacts {
 }
 
 signing {
+    useGpgCmd()
     sign(configurations.archives)
 }
 
