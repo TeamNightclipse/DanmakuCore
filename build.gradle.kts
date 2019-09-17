@@ -1,30 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import groovy.util.ConfigObject
 import groovy.util.ConfigSlurper
-import net.minecraftforge.gradle.user.IReobfuscator
 import net.minecraftforge.gradle.user.ReobfMappingType
-import net.minecraftforge.gradle.user.ReobfTaskFactory
-import net.minecraftforge.gradle.user.patcherUser.forge.ForgeExtension
-import org.gradle.api.internal.HasConvention
 import org.gradle.jvm.tasks.Jar
 import java.util.Properties
-
-buildscript {
-    repositories {
-        jcenter()
-        maven {
-            name = "forge"
-            setUrl("http://files.minecraftforge.net/maven")
-        }
-    }
-    dependencies {
-        classpath("net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT")
-    }
-}
-
-apply {
-    plugin("net.minecraftforge.gradle.forge")
-}
 
 plugins {
     scala
@@ -34,6 +13,7 @@ plugins {
     maven
     signing
     id("com.github.johnrengelman.shadow").version("2.0.4")
+    id("net.minecraftforge.gradle.forge").version("2.3-SNAPSHOT")
 }
 
 val scaladoc: ScalaDoc by tasks
@@ -56,25 +36,21 @@ version = "${config["mc_version"]}-${config["version"]}"
 group = "net.katsstuff.teamnightclipse"
 base.archivesBaseName = "danmakucore"
 
-java.sourceSets {
-    "main" {
-        //Join compilation
-        java {
-            setSrcDirs(listOf<File>())
-        }
-        withConvention(ScalaSourceSet::class) {
-            scala {
-                srcDir("src/main/java")
-            }
+sourceSets["main"].apply {
+    java {
+        setSrcDirs(listOf<File>())
+    }
+    withConvention(ScalaSourceSet::class) {
+        scala {
+            srcDir("src/main/java")
         }
     }
 }
 
-val minecraft = the<ForgeExtension>()
-minecraft.apply {
+minecraft {
     version = "${config["mc_version"]}-${config["forge_version"]}"
     runDir = if (file("../run1.12").exists()) "../run1.12" else "run"
-    mappings = "snapshot_20180810"
+    mappings = "stable_39"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     replace("@VERSION@", project.version)
@@ -86,10 +62,17 @@ repositories {
         name = "TeamNightclipse Bintray"
         setUrl("https://dl.bintray.com/team-nightclipse/maven/")
     }
+    maven {
+        name = "ilexiconn"
+        setUrl("https://maven.mcmoddev.com")
+    }
+    jcenter()
 }
 
 dependencies {
-    compile("net.katsstuff.teamnightclipse:mirror:1.12.2-0.3.0")
+    compile("net.katsstuff.teamnightclipse:mirror:1.12.2-0.4.0")
+    compile("net.ilexiconn:llibrary:1.7.9-1.12.2")
+    compile("org.scala-lang:scala-library:2.11.4") //Gets ourself a better compiler
 }
 
 shadowJar.apply {
@@ -110,12 +93,12 @@ tasks.withType<ProcessResources> {
     inputs.property("version", project.version)
     inputs.property("mcversion", minecraft.version)
 
-    from(java.sourceSets["main"].resources.srcDirs) {
+    from(sourceSets["main"].resources.srcDirs) {
         include("mcmod.info")
         expand(mapOf("version" to project.version, "mcversion" to minecraft.version))
     }
 
-    from(java.sourceSets["main"].resources.srcDirs) {
+    from(sourceSets["main"].resources.srcDirs) {
         exclude("mcmod.info")
     }
 }
@@ -128,14 +111,10 @@ fun parseConfig(config: File): ConfigObject {
 
 idea.module.inheritOutputDirs = true
 
-val reobf: NamedDomainObjectContainer<IReobfuscator> by extensions
-
 tasks["build"].dependsOn(shadowJar)
 
-reobf {
-    "shadowJar" {
-        mappingType = ReobfMappingType.SEARGE
-    }
+reobf.create("shadowJar") {
+    mappingType = ReobfMappingType.SEARGE
 }
 
 tasks["reobfShadowJar"].mustRunAfter(shadowJar)
@@ -143,12 +122,12 @@ tasks["build"].dependsOn("reobfShadowJar")
 
 val deobfJar by tasks.creating(Jar::class) {
     classifier = "dev"
-    from(java.sourceSets["main"].output)
+    from(sourceSets["main"].output)
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
     classifier = "sources"
-    from(java.sourceSets["main"].allSource)
+    from(sourceSets["main"].allSource)
 }
 
 val javadocJar by tasks.creating(Jar::class) {
