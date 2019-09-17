@@ -44,9 +44,12 @@ class SubEntityDefault extends SubEntityBase {
         }
       } else DanmakuUpdate.noUpdates(danmaku.copy(extra = danmaku.extra.copy(shot = shot.copy(delay = delay - 1))))
     } else {
-      val rotation = danmaku.rotation
-      val newDirection =
-        if (rotation.isEnabled && danmaku.ticksExisted < rotation.getEndTime) rotate(danmaku) else danmaku.direction
+      val rotation     = danmaku.rotation
+      val shouldRotate = rotation.isEnabled && danmaku.ticksExisted < rotation.getEndTime
+      val newDirection = if (shouldRotate) rotate(danmaku) else danmaku.direction
+      val (newPrevOrientation, newOrientation) =
+        if (shouldRotate) (danmaku.orientation, danmaku.orientation * rotation.rotationQuat)
+        else (danmaku.prevOrientation, danmaku.orientation)
 
       val newMotion = updateMotionWithGravity(danmaku, danmaku.accelerate)
       val updated = danmaku.copy(
@@ -55,6 +58,8 @@ class SubEntityDefault extends SubEntityBase {
           pos = danmaku.pos + newMotion,
           prevPos = danmaku.pos,
           direction = newDirection,
+          orientation = newOrientation,
+          prevOrientation = newPrevOrientation,
           ticksExisted = danmaku.ticksExisted + 1
         )
       )
