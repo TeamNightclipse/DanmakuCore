@@ -87,6 +87,9 @@ shadowJar.apply {
 
 tasks.withType<Jar> {
     exclude("**/*.psd")
+    manifest {
+        attributes(mapOf("FMLAT" to "danmakucore_at.cfg"))
+    }
 }
 
 tasks.withType<ProcessResources> {
