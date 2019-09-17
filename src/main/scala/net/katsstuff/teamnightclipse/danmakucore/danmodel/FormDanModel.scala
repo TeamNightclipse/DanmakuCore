@@ -17,7 +17,7 @@
  */
 package net.katsstuff.teamnightclipse.danmakucore.danmodel
 
-import org.lwjgl.opengl.GL11
+import java.util.function.Predicate
 
 import net.katsstuff.teamnightclipse.danmakucore.client.helper.DanCoreRenderHelper
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.DanmakuState
@@ -27,15 +27,17 @@ import net.katsstuff.teamnightclipse.mirror.client.helper.MirrorRenderHelper
 import net.katsstuff.teamnightclipse.mirror.data.Quat
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.{GLAllocation, GlStateManager, OpenGlHelper, Tessellator}
-import net.minecraft.client.resources.{IResourceManager, IResourceManagerReloadListener}
+import net.minecraft.client.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.client.resource.{IResourceType, ISelectiveResourceReloadListener, VanillaResourceType}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import org.lwjgl.opengl.GL11
 
 private[danmakucore] class FormDanModel(name: String, resource: ResourceLocation) extends FormGeneric(name) {
 
   @SideOnly(Side.CLIENT)
   override protected def createRenderer: IRenderForm = {
-    new IRenderForm with IResourceManagerReloadListener {
+    new IRenderForm with ISelectiveResourceReloadListener {
       private var danModel: DanModel = _
       private var modelList          = -1
 
@@ -73,20 +75,22 @@ private[danmakucore] class FormDanModel(name: String, resource: ResourceLocation
         }
       }
 
-      override def onResourceManagerReload(resourceManager: IResourceManager): Unit = {
-        if (danModel != null) {
-          danModel.deleteVBOs()
-        }
+      override def onResourceManagerReload(resourceManager: IResourceManager, resourcePredicate: Predicate[IResourceType]): Unit = {
+        if(resourcePredicate.test(VanillaResourceType.MODELS)) {
+          if (danModel != null) {
+            danModel.deleteVBOs()
+          }
 
-        if (modelList != -1) {
-          GlStateManager.glDeleteLists(modelList, 1)
-          modelList = -1
-        }
+          if (modelList != -1) {
+            GlStateManager.glDeleteLists(modelList, 1)
+            modelList = -1
+          }
 
-        danModel = DanModelReader.readModel(resource).map(_._2).toOption.orNull
+          danModel = DanModelReader.readModel(resource).map(_._2).toOption.orNull
 
-        if (OpenGlHelper.vboSupported && danModel != null) {
-          danModel.generateVBOs()
+          if (OpenGlHelper.vboSupported && danModel != null) {
+            danModel.generateVBOs()
+          }
         }
       }
     }
