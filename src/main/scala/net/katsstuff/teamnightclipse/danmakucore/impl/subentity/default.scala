@@ -19,6 +19,7 @@ package net.katsstuff.teamnightclipse.danmakucore.impl.subentity
 
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.subentity.{SubEntity, SubEntityType}
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
 
 class SubEntityTypeDefault(name: String) extends SubEntityType(name) {
   override def instantiate: SubEntity = new SubEntityDefault
@@ -48,14 +49,28 @@ class SubEntityDefault extends SubEntityBase {
       val shouldRotate = rotation.isEnabled && danmaku.ticksExisted < rotation.getEndTime
       val newDirection = if (shouldRotate) rotate(danmaku) else danmaku.direction
       val (newPrevOrientation, newOrientation) =
-        if (shouldRotate) (danmaku.orientation, danmaku.orientation * rotation.rotationQuat)
+        if (shouldRotate) (danmaku.orientation, rotation.rotationQuat * danmaku.orientation)
         else (danmaku.prevOrientation, danmaku.orientation)
 
       val newMotion = updateMotionWithGravity(danmaku, danmaku.accelerate)
+      val newPos =
+        if (shouldRotate && (rotation.pivot ne Vector3.Zero)) {
+          val posWithNewMot = danmaku.pos + newMotion
+
+          val dir         = newOrientation * -rotation.pivot
+          val globalPivot = posWithNewMot - dir
+          val rotatedDir  = rotation.rotationQuat * dir
+          val rotatedPos  = rotatedDir + globalPivot
+
+          rotatedPos
+        } else {
+          danmaku.pos + newMotion
+        }
+
       val updated = danmaku.copy(
         entity = danmaku.entity.copy(
           motion = newMotion,
-          pos = danmaku.pos + newMotion,
+          pos = newPos,
           prevPos = danmaku.pos,
           direction = newDirection,
           orientation = newOrientation,

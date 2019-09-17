@@ -43,16 +43,26 @@ sealed abstract class AbstractRotationData {
 		*/
   def rotationQuat: Quat
 
+  /**
+    * The local space point where the rotation should take place around
+    */
+  def pivot: Vector3
+
   def serializeNBT: NBTTagCompound = {
     val tag  = new NBTTagCompound
-    val list = new NBTTagList
-    list.appendTag(new NBTTagDouble(rotationQuat.x))
-    list.appendTag(new NBTTagDouble(rotationQuat.y))
-    list.appendTag(new NBTTagDouble(rotationQuat.z))
-    list.appendTag(new NBTTagDouble(rotationQuat.w))
-    tag.setTag(RotationData.NbtRotation, list)
+    val rotList = new NBTTagList
+    rotList.appendTag(new NBTTagDouble(rotationQuat.x))
+    rotList.appendTag(new NBTTagDouble(rotationQuat.y))
+    rotList.appendTag(new NBTTagDouble(rotationQuat.z))
+    rotList.appendTag(new NBTTagDouble(rotationQuat.w))
+    tag.setTag(RotationData.NbtRotation, rotList)
     tag.setInteger(RotationData.NbtRotationEnd, endTime)
     tag.setBoolean(RotationData.NbtRotationEnabled, enabled)
+    val pivotList = new NBTTagList
+    pivotList.appendTag(new NBTTagDouble(pivot.x))
+    pivotList.appendTag(new NBTTagDouble(pivot.y))
+    pivotList.appendTag(new NBTTagDouble(pivot.z))
+    tag.setTag(RotationData.NbtRotationPivot, pivotList)
     tag
   }
 }
@@ -60,8 +70,12 @@ sealed abstract class AbstractRotationData {
 final case class MutableRotationData(
     @BooleanBeanProperty var enabled: Boolean,
     @BeanProperty var rotationQuat: Quat,
-    @BeanProperty var endTime: Int
+    @BeanProperty var endTime: Int,
+    @BeanProperty var pivot: Vector3
 ) extends AbstractRotationData {
+
+  @deprecated("Use the one that also includes the pivot", since = "0.8.0")
+  def this(enabled: Boolean, rotationQuat: Quat, endTime: Int) = this(enabled, rotationQuat, endTime, Vector3.Zero)
 
   def setRotationVec(vector: Vector3): MutableRotationData = {
     val angle = rotationQuat.computeAngle
@@ -77,11 +91,21 @@ final case class MutableRotationData(
 
   def copyObj: MutableRotationData = copy()
 }
+object MutableRotationData {
+
+  @deprecated("Use the one that also includes the pivot", since = "0.8.0")
+  def apply(enabled: Boolean, rotationQuat: Quat, endTime: Int): MutableRotationData =
+    new MutableRotationData(enabled, rotationQuat, endTime, Vector3.Zero)
+}
 final case class RotationData(
     @BooleanBeanProperty enabled: Boolean,
     @BeanProperty rotationQuat: Quat,
-    @BeanProperty endTime: Int
+    @BeanProperty endTime: Int,
+    @BeanProperty pivot: Vector3
 ) extends AbstractRotationData {
+
+  @deprecated("Use the one that also includes the pivot", since = "0.8.0")
+  def this(enabled: Boolean, rotationQuat: Quat, endTime: Int) = this(enabled, rotationQuat, endTime, Vector3.Zero)
 
   def setEnabled(enabled: Boolean): RotationData        = copy(enabled = enabled)
   def setRotationQuat(rotationQuat: Quat): RotationData = copy(rotationQuat = rotationQuat)
@@ -96,21 +120,30 @@ final case class RotationData(
     val vector = rotationQuat.computeVector
     copy(rotationQuat = Quat.fromAxisAngle(vector, angle))
   }
+
+  def setPivot(pivot: Vector3): RotationData = copy(pivot = pivot)
 }
 
 object RotationData {
 
+  @deprecated("Use the one that also includes the pivot", since = "0.8.0")
+  def apply(enabled: Boolean, rotationQuat: Quat, endTime: Int): RotationData =
+    new RotationData(enabled, rotationQuat, endTime, Vector3.Zero)
+
   final val NbtRotation        = "rotation"
   final val NbtRotationEnd     = "end"
   final val NbtRotationEnabled = "enabled"
+  final val NbtRotationPivot   = "pivot"
 
-  val none = RotationData(enabled = false, Quat.Identity, 9999)
+  val none = RotationData(enabled = false, Quat.Identity, 9999, Vector3.Zero)
 
   def fromNBT(tag: NBTTagCompound): RotationData = {
-    val list     = tag.getTagList(NbtRotation, Constants.NBT.TAG_DOUBLE)
-    val rotation = Quat(list.getDoubleAt(0), list.getDoubleAt(1), list.getDoubleAt(2), list.getDoubleAt(3))
-    val endTime  = tag.getInteger(NbtRotationEnd)
-    val enabled  = tag.getBoolean(NbtRotationEnabled)
-    RotationData(enabled, rotation, endTime)
+    val rotList   = tag.getTagList(NbtRotation, Constants.NBT.TAG_DOUBLE)
+    val rotation  = Quat(rotList.getDoubleAt(0), rotList.getDoubleAt(1), rotList.getDoubleAt(2), rotList.getDoubleAt(3))
+    val endTime   = tag.getInteger(NbtRotationEnd)
+    val enabled   = tag.getBoolean(NbtRotationEnabled)
+    val pivotList = tag.getTagList(NbtRotationPivot, Constants.NBT.TAG_DOUBLE)
+    val pivot     = Vector3(pivotList.getDoubleAt(0), pivotList.getDoubleAt(1), pivotList.getDoubleAt(2))
+    RotationData(enabled, rotation, endTime, pivot)
   }
 }
