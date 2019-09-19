@@ -40,7 +40,7 @@ import net.katsstuff.teamnightclipse.mirror.data.Vector3
 object EntityDanmakuBoss {
   private val BossInfoUUID = EntityDataManager.createKey(classOf[EntityDanmakuBoss], DataSerializers.OPTIONAL_UNIQUE_ID)
 }
-abstract class EntityDanmakuBoss(world: World) extends EntityDanmakuMob(world) {
+abstract class EntityDanmakuBoss(_world: World) extends EntityDanmakuMob(_world) {
   setupPhases()
   DanmakuCore.proxy.addDanmakuBoss(this)
 
