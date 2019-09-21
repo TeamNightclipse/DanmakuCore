@@ -17,8 +17,9 @@
  */
 package net.katsstuff.teamnightclipse.danmakucore.shape
 
-import scala.concurrent.{Future, Promise}
+import net.katsstuff.teamnightclipse.danmakucore.DanmakuCore
 
+import scala.concurrent.{Future, Promise}
 import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -32,8 +33,24 @@ object ShapeHandler {
     *
     * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
     */
+  def createShape(shape: Shape, pos: Vector3, orientation: Quat, spawnDanmaku: Boolean): Future[ShapeResult] =
+    createEntry(ShapeEntryPosition(shape, pos, orientation, 0, Set.empty, spawnDanmaku))
+
+  /**
+    * Creates a new shape with a position as an anchor
+    *
+    * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
+    */
   def createShape(shape: Shape, pos: Vector3, orientation: Quat): Future[ShapeResult] =
-    createEntry(ShapeEntryPosition(shape, pos, orientation, 0, Set.empty))
+    createShape(shape, pos, orientation, spawnDanmaku = true)
+
+  /**
+    * Creates a new shape with an entity as an anchor
+    *
+    * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
+    */
+  def createShape(shape: Shape, anchor: Entity, spawnDanmaku: Boolean): Future[ShapeResult] =
+    createEntry(ShapeEntryEntity(shape, anchor, 0, Set.empty, spawnDanmaku))
 
   /**
     * Creates a new shape with an entity as an anchor
@@ -41,7 +58,15 @@ object ShapeHandler {
     * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
     */
   def createShape(shape: Shape, anchor: Entity): Future[ShapeResult] =
-    createEntry(ShapeEntryEntity(shape, anchor, 0, Set.empty))
+    createShape(shape, anchor, spawnDanmaku = true)
+
+  /**
+    * Creates a new shape with a living entity(eye height) as an anchor.
+    *
+    * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
+    */
+  def createShape(shape: Shape, anchor: EntityLivingBase, spawnDanmaku: Boolean): Future[ShapeResult] =
+    createEntry(ShapeEntryEntityLiving(shape, anchor, 0, Set.empty, spawnDanmaku))
 
   /**
     * Creates a new shape with a living entity(eye height) as an anchor.
@@ -49,7 +74,7 @@ object ShapeHandler {
     * @return A set that will contain all the danmaku spawned by the shape. The set's content will change over time
     */
   def createShape(shape: Shape, anchor: EntityLivingBase): Future[ShapeResult] =
-    createEntry(ShapeEntryEntityLiving(shape, anchor, 0, Set.empty))
+    createShape(shape, anchor, spawnDanmaku = true)
 
   /**
     * Creates a new shape with a from the specific [[ShapeEntry]]
@@ -98,11 +123,16 @@ object ShapeHandler {
 
   abstract private class ShapeEntryDynamicPos[T] extends ShapeEntry {
     def dynPos: T
+    def spawnDanmaku: Boolean
 
     override def draw: (ShapeResult, Option[IShapeEntry]) = {
       val pos         = getCurrentPos
       val orientation = getCurrentOrientation
       val ret         = shape.draw(pos, orientation, tick)
+
+      if(spawnDanmaku) {
+        DanmakuCore.spawnDanmaku(ret.spawnedDanmaku.toSeq)
+      }
 
       shape.doEffects(pos, orientation, tick, ret, allDrawn)
       if (ret.isDone) (ret, None) else (ret, Some(create(tick + 1, allDrawn + ret)))
@@ -114,7 +144,7 @@ object ShapeHandler {
     protected def getCurrentOrientation: Quat
   }
 
-  private case class ShapeEntryEntity(shape: Shape, dynPos: Entity, tick: Int, allDrawn: Set[ShapeResult])
+  private case class ShapeEntryEntity(shape: Shape, dynPos: Entity, tick: Int, allDrawn: Set[ShapeResult], spawnDanmaku: Boolean)
       extends ShapeEntryDynamicPos[Entity] {
     override protected def getCurrentPos                                    = new Vector3(dynPos)
     override protected def getCurrentOrientation: Quat                      = Quat.orientationOf(dynPos)
@@ -125,7 +155,8 @@ object ShapeHandler {
       shape: Shape,
       dynPos: EntityLivingBase,
       tick: Int,
-      allDrawn: Set[ShapeResult]
+      allDrawn: Set[ShapeResult],
+      spawnDanmaku: Boolean
   ) extends ShapeEntryDynamicPos[EntityLivingBase] {
     override protected def getCurrentPos                                    = new Vector3(dynPos)
     override protected def getCurrentOrientation: Quat                      = Quat.orientationOf(dynPos)
@@ -137,7 +168,8 @@ object ShapeHandler {
       pos: Vector3,
       orientation: Quat,
       tick: Int,
-      allDrawn: Set[ShapeResult]
+      allDrawn: Set[ShapeResult],
+      spawnDanmaku: Boolean
   ) extends ShapeEntry {
     override def draw: (ShapeResult, Option[IShapeEntry]) = {
       val ret = shape.draw(pos, orientation, tick)
