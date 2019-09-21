@@ -201,13 +201,16 @@ object DanmakuTemplate {
     }
 
     def setRotationData(rotation: Quat): Builder =
-      setRotationData(new RotationData(true, rotation, 9999))
+      setRotationData(new RotationData(true, rotation, 9999, Vector3.Zero))
 
     def setRotationData(axis: Vector3, angle: Float): Builder =
-      setRotationData(new RotationData(true, Quat.fromAxisAngle(axis, angle), 9999))
+      setRotationData(new RotationData(true, Quat.fromAxisAngle(axis, angle), 9999, Vector3.Zero))
 
     def setRotationData(axis: Vector3, angle: Float, endTime: Int): Builder =
-      setRotationData(new RotationData(true, Quat.fromAxisAngle(axis, angle), endTime))
+      setRotationData(new RotationData(true, Quat.fromAxisAngle(axis, angle), endTime, Vector3.Zero))
+
+    def setRotationData(axis: Vector3, angle: Float, endTime: Int, pivot: Vector3): Builder =
+      setRotationData(new RotationData(true, Quat.fromAxisAngle(axis, angle), endTime, pivot))
   }
 }
 
