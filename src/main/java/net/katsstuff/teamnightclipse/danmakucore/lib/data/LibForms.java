@@ -54,4 +54,6 @@ public final class LibForms {
 	public static final Form NOTE1 = FormDummy.instance();
 	@ObjectHolder(LibFormName.BUBBLE)
 	public static final Form BUBBLE = FormDummy.instance();
+	@ObjectHolder(LibFormName.TALISMAN)
+	public static final Form TALISMAN = FormDummy.instance();
 }

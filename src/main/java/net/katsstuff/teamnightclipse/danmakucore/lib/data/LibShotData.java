@@ -47,6 +47,7 @@ public class LibShotData {
 	public static final ShotData SHOT_HEART = shotData(LibForms.HEART, COLOR_VANILLA_RED, 1.5F, 0.4F);
 	public static final ShotData SHOT_NOTE1 = shotData(LibForms.NOTE1, COLOR_VANILLA_RED, 1.3F, 0.4F);
 	public static final ShotData SHOT_BUBBLE = shotData(LibForms.BUBBLE, 0xFFFFFF, 1.3F, 1F).setCoreColor(COLOR_VANILLA_RED);
+	public static final ShotData SHOT_TALISMAN = shotData(LibForms.TALISMAN, COLOR_VANILLA_RED, 2F, 0.2F);
 	
 	private static ShotData shotData(Form form, int color, float damage, float size) {
 		return ShotData.DefaultShotData().setForm(form).setEdgeColor(color).setDamage(damage).setSize(size);

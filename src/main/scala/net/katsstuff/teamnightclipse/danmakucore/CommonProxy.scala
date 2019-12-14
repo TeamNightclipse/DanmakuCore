@@ -79,7 +79,8 @@ object CommonProxy {
         new FormLaser,
         DanModelReader.createForm(new ResourceLocation(LibMod.Id, "models/form/heart"), LibFormName.HEART),
         noteForm(LibFormName.NOTE1, SoundEvents.BLOCK_NOTE_HARP, "models/form/note1"),
-        new FormBubble
+        new FormBubble,
+        new FormTalisman
       )
   }
 
@@ -139,7 +140,8 @@ object CommonProxy {
         DanmakuVariantGeneric.withSpeed(LASER, () => LibShotData.SHOT_LASER, 0D),
         DanmakuVariantGeneric.withSpeed(HEART, () => LibShotData.SHOT_HEART, 0.4D),
         DanmakuVariantGeneric.withSpeed(NOTE1, () => LibShotData.SHOT_NOTE1, 0.4D),
-        DanmakuVariantGeneric.withSpeed(BUBBLE, () => LibShotData.SHOT_BUBBLE, 0.4D)
+        DanmakuVariantGeneric.withSpeed(BUBBLE, () => LibShotData.SHOT_BUBBLE, 0.4D),
+        DanmakuVariantGeneric.withSpeed(TALISMAN, () => LibShotData.SHOT_TALISMAN, 0.4D)
       )
   }
 

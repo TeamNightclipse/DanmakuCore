@@ -70,6 +70,7 @@ danmakuvariant.danmakucore.laser.name=Laser Danmaku
 danmakuvariant.danmakucore.heart.name=Heart Danmaku
 danmakuvariant.danmakucore.note1.name=Single Note Danmaku
 danmakuvariant.danmakucore.bubble.name=Bubble Danmaku
+danmakuvariant.danmakucore.talisman.name=Talisman Danmaku
 
 #Forms
 form.danmakucore.normal=Normal Shape
@@ -88,6 +89,7 @@ form.danmakucore.sphere_pointed=Pointed Sphere Shape
 form.danmakucore.heart=Heart Shape
 form.danmakucore.note1=Single Note Shape
 form.danmakucore.bubble=Bubble Shape
+form.danmakucore.talisman=Talisman Shape
 
 
 #Stack Names normal
@@ -113,6 +115,7 @@ item.danmaku.danmakuvariant.danmakucore.laser.name=Laser Danmaku
 item.danmaku.danmakuvariant.danmakucore.heart.name=Heart Danmaku
 item.danmaku.danmakuvariant.danmakucore.note1.name=Single Note Danmaku
 item.danmaku.danmakuvariant.danmakucore.bubble.name=Bubble Danmaku
+item.danmaku.danmakuvariant.danmakucore.talisman.name=Talisman Danmaku
 
 #Stack names custom
 item.danmaku.form.danmakucore.normal.name=Custom Normal Danmaku
@@ -131,6 +134,7 @@ item.danmaku.form.danmakucore.sphere_pointed=Custom Pointed Sphere Danmaku
 item.danmaku.form.danmakucore.heart=Custom Heart Danmaku
 item.danmaku.form.danmakucore.note1=Custom Single Note Danmaku
 item.danmaku.form.danmakucore.bubble=Custom Bubble Danmaku
+item.danmaku.form.danmakucore.talisman=Custom Talisman Danmaku
 
 #Vibrant colors
 item.danmaku.color.16711680=Strong Red

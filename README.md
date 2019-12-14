@@ -17,4 +17,7 @@ DanmakuCore is currently still in development. Once it's in a state where I feel
 DanmakuCore is licensed under the **LGPL** (GNU Lesser General Public License). 
 Unless specified otherwise, the assets for DanmakuCore are licensed under Creative Commons **CC-BY-NC-SA** http://creativecommons.org/licenses/by-nc-sa/4.0/.
 
-Credits to [Touhou Concealed the Conclusion](https://github.com/danmaq/touhou-ctc-danmakufu) for some assets
+## Credits
+* Credits to [Touhou Concealed the Conclusion](https://github.com/danmaq/touhou-ctc-danmakufu) for misc assets
+* @TartaricAcid For chinese translation
+* Nanashi#3755 for the talisman texture

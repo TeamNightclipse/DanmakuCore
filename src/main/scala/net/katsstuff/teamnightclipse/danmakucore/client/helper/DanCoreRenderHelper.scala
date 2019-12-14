@@ -44,6 +44,7 @@ object DanCoreRenderHelper {
 
   val baseDanmakuShaderLoc: ResourceLocation  = DanmakuCore.resource("shaders/danmaku")
   val fancyDanmakuShaderLoc: ResourceLocation = DanmakuCore.resource("shaders/danmaku_fancy")
+  val texturedDanmakuShaderLoc: ResourceLocation = DanmakuCore.resource("shaders/danmaku_textured")
 
   def initialize(): Unit = {
     if (OpenGlHelper.shadersSupported) {
@@ -81,6 +82,27 @@ object DanCoreRenderHelper {
           "coreHardness" -> UniformBase(UniformType.UnFloat, 1),
           "edgeHardness" -> UniformBase(UniformType.UnFloat, 1),
           "edgeGlow"     -> UniformBase(UniformType.UnFloat, 1)
+        ),
+        shader => {
+          shader.begin()
+          shader.getUniformS("coreColor").foreach { uniform =>
+            uniform.set(1F, 1F, 1F)
+            uniform.upload()
+          }
+          shader.getUniformS("edgeColor").foreach { uniform =>
+            uniform.set(1F, 0F, 0F)
+            uniform.upload()
+          }
+          shader.end()
+        }
+      )
+
+      ShaderManager.initProgram(
+        texturedDanmakuShaderLoc,
+        Seq(ShaderType.Vertex, ShaderType.Fragment),
+        Map(
+          "coreColor"    -> UniformBase(UniformType.Vec3, 1),
+          "edgeColor"    -> UniformBase(UniformType.Vec3, 1)
         ),
         shader => {
           shader.begin()
