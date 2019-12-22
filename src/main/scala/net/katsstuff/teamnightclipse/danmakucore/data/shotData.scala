@@ -109,6 +109,19 @@ sealed abstract class AbstractShotData {
 		*/
   def subEntity: SubEntityType
 
+  /**
+    * A set of values that the subebtity can use to customize it's behavior.
+    */
+  def subEntityProperties: Map[String, Double]
+
+  /**
+    * Get a specific subentity property with the given name
+    * @param name The name of the subentity property.
+    * @param default The default value if it is not found.
+    */
+  def getSubEntityProperty(name: String, default: Double): Double =
+    subEntityProperties.getOrElse(name, default)
+
   def serializeByteBuf(buf: ByteBuf) {
     buf.writeInt(DanmakuRegistry.getId(classOf[Form], form))
 
@@ -130,6 +143,16 @@ sealed abstract class AbstractShotData {
     buf.writeInt(delay)
     buf.writeInt(end)
     buf.writeInt(DanmakuRegistry.getId(classOf[SubEntityType], subEntity))
+
+    {
+      val packetBuf = new PacketBuffer(buf)
+      packetBuf.writeInt(subEntityProperties.size)
+      for ((k, v) <- subEntityProperties) {
+        require(k.length <= 32, "Too long subentity property")
+        packetBuf.writeString(k)
+        packetBuf.writeDouble(v)
+      }
+    }
   }
 
   def serializeNBT: NBTTagCompound = {
@@ -149,6 +172,11 @@ sealed abstract class AbstractShotData {
     tag.setInteger(ShotData.NbtDelay, delay)
     tag.setInteger(ShotData.NbtEnd, end)
     tag.setString(ShotData.NbtSubEntity, subEntity.fullNameString)
+    tag.setTag(ShotData.NbtSubentityProperties, {
+      val compound = new NBTTagCompound
+      renderProperties.foreach { case (k, v) => compound.setDouble(k, v) }
+      compound
+    })
     tag
   }
 
@@ -168,9 +196,25 @@ final case class MutableShotData(
     @BeanProperty var sizeZ: Float = 0.5F,
     @BeanProperty var delay: Int = 0,
     @BeanProperty var end: Int = 80,
-    @BeanProperty var subEntity: SubEntityType = LibSubEntities.DEFAULT_TYPE
+    @BeanProperty var subEntity: SubEntityType = LibSubEntities.DEFAULT_TYPE,
+    @BeanProperty var subEntityProperties: Map[String, Double] = Map.empty
 ) extends AbstractShotData
     with INBTSerializable[NBTTagCompound] {
+
+  @deprecated("Prefer the constructor with all the params", since = "0.8")
+  def this(
+      form: Form,
+      renderProperties: Map[String, Float],
+      edgeColor: Int,
+      coreColor: Int,
+      damage: Float,
+      sizeX: Float,
+      sizeY: Float,
+      sizeZ: Float,
+      delay: Int,
+      end: Int,
+      subEntity: SubEntityType
+  ) = this(form, renderProperties, edgeColor, coreColor, damage, sizeX, sizeY, sizeZ, delay, end, subEntity)
 
   def setSize(sizeX: Float, sizeY: Float, sizeZ: Float): MutableShotData = {
     this.sizeX = sizeX
@@ -218,6 +262,17 @@ final case class MutableShotData(
       LogHelper.warn("Found null subEntity type. Setting to default")
       LibSubEntities.DEFAULT_TYPE
     }
+    subEntityProperties = {
+      val packetBuf = new PacketBuffer(buf)
+      val amount    = packetBuf.readInt()
+      Seq
+        .fill(amount) {
+          val key   = packetBuf.readString(64)
+          val value = packetBuf.readDouble()
+          key -> value
+        }
+        .toMap
+    }
   }
 
   override def deserializeNBT(tag: NBTTagCompound): Unit = {
@@ -243,6 +298,11 @@ final case class MutableShotData(
         LogHelper.warn("Found null subEntity type. Setting to default")
         LibSubEntities.DEFAULT_TYPE
       }
+    subEntityProperties = {
+      val compound = tag.getCompoundTag(ShotData.NbtSubentityProperties)
+      val keys     = compound.getKeySet.asScala
+      keys.map(s => s -> compound.getDouble(s)).toMap
+    }
   }
 
   def copyObj: MutableShotData = copy()
@@ -264,8 +324,24 @@ final case class ShotData(
     @BeanProperty sizeZ: Float = 0.5F,
     @BeanProperty delay: Int = 0,
     @BeanProperty end: Int = 80,
-    @BeanProperty subEntity: SubEntityType = LibSubEntities.DEFAULT_TYPE
+    @BeanProperty subEntity: SubEntityType = LibSubEntities.DEFAULT_TYPE,
+    @BeanProperty subEntityProperties: Map[String, Double] = Map.empty
 ) extends AbstractShotData {
+
+  @deprecated("Prefer the constructor with all the params", since = "0.8")
+  def this(
+      form: Form,
+      renderProperties: Map[String, Float],
+      edgeColor: Int,
+      coreColor: Int,
+      damage: Float,
+      sizeX: Float,
+      sizeY: Float,
+      sizeZ: Float,
+      delay: Int,
+      end: Int,
+      subEntity: SubEntityType
+  ) = this(form, renderProperties, edgeColor, coreColor, damage, sizeX, sizeY, sizeZ, delay, end, subEntity)
 
   def this(buf: ByteBuf) {
     this(
@@ -294,6 +370,17 @@ final case class ShotData(
       subEntity = Option(DanmakuRegistry.getObjById(classOf[SubEntityType], buf.readInt)).getOrElse {
         LogHelper.warn("Found null subEntity type. Setting to default")
         LibSubEntities.DEFAULT_TYPE
+      },
+      subEntityProperties = {
+        val packetBuf = new PacketBuffer(buf)
+        val amount    = packetBuf.readInt()
+        Seq
+          .fill(amount) {
+            val key   = packetBuf.readString(64)
+            val value = packetBuf.readDouble()
+            key -> value
+          }
+          .toMap
       }
     )
   }
@@ -321,7 +408,12 @@ final case class ShotData(
         .getOrElse {
           LogHelper.warn("Found null subEntity type. Setting to default")
           LibSubEntities.DEFAULT_TYPE
-        }
+        },
+      subEntityProperties = {
+        val compound = tag.getCompoundTag(ShotData.NbtSubentityProperties)
+        val keys     = compound.getKeySet.asScala
+        keys.map(s => s -> compound.getDouble(s)).toMap
+      }
     )
   }
 
@@ -349,6 +441,9 @@ final case class ShotData(
   def scaleSize(scaleX: Float, scaleY: Float, scaleZ: Float): ShotData =
     copy(sizeX = sizeX * scaleX, sizeY = sizeY * scaleY, sizeZ = sizeZ * scaleZ)
 
+  def addSubEntityProperty(name: String, value: Double): ShotData =
+    copy(subEntityProperties = subEntityProperties.updated(name, value))
+
   override def asMutable: MutableShotData =
     MutableShotData(form, renderProperties, edgeColor, coreColor, damage, sizeX, sizeY, sizeZ, delay, end, subEntity)
 
@@ -357,18 +452,19 @@ final case class ShotData(
 
 object ShotData {
 
-  final val NbtForm             = "form"
-  final val NbtRenderProperties = "renderProperties"
-  final val NbtColor            = "color"
-  final val NbtCoreColor        = "coreColor"
-  final val NbtDamage           = "damage"
-  final val NbtSizeX            = "sizeX"
-  final val NbtSizeY            = "sizeY"
-  final val NbtSizeZ            = "sizeZ"
-  final val NbtDelay            = "delay"
-  final val NbtEnd              = "end"
-  final val NbtSubEntity        = "subEntity"
-  final val NbtShotData         = "shotData"
+  final val NbtForm                = "form"
+  final val NbtRenderProperties    = "renderProperties"
+  final val NbtColor               = "color"
+  final val NbtCoreColor           = "coreColor"
+  final val NbtDamage              = "damage"
+  final val NbtSizeX               = "sizeX"
+  final val NbtSizeY               = "sizeY"
+  final val NbtSizeZ               = "sizeZ"
+  final val NbtDelay               = "delay"
+  final val NbtEnd                 = "end"
+  final val NbtSubEntity           = "subEntity"
+  final val NbtSubentityProperties = "subEntityProperties"
+  final val NbtShotData            = "shotData"
 
   final val DefaultShotData = ShotData()
 
