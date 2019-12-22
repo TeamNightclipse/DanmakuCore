@@ -310,7 +310,20 @@ final case class MutableShotData(
   override def asMutable: MutableShotData = this
 
   override def asImmutable: ShotData =
-    ShotData(form, renderProperties, edgeColor, coreColor, damage, sizeX, sizeY, sizeZ, delay, end, subEntity)
+    ShotData(
+      form,
+      renderProperties,
+      edgeColor,
+      coreColor,
+      damage,
+      sizeX,
+      sizeY,
+      sizeZ,
+      delay,
+      end,
+      subEntity,
+      subEntityProperties
+    )
 }
 
 final case class ShotData(
@@ -445,7 +458,20 @@ final case class ShotData(
     copy(subEntityProperties = subEntityProperties.updated(name, value))
 
   override def asMutable: MutableShotData =
-    MutableShotData(form, renderProperties, edgeColor, coreColor, damage, sizeX, sizeY, sizeZ, delay, end, subEntity)
+    MutableShotData(
+      form,
+      renderProperties,
+      edgeColor,
+      coreColor,
+      damage,
+      sizeX,
+      sizeY,
+      sizeZ,
+      delay,
+      end,
+      subEntity,
+      subEntityProperties
+    )
 
   override def asImmutable: ShotData = this
 }
@@ -480,6 +506,8 @@ object ShotData {
     stack
   }
 
-  implicit val converter: MessageConverter[ShotData] =
-    MessageConverter[NBTTagCompound].modify(new ShotData(_))(_.serializeNBT)
+  implicit val converter: MessageConverter[ShotData] = new MessageConverter[ShotData] {
+    override def writeBytes(a: ShotData, buf: ByteBuf): Unit = a.serializeByteBuf(buf)
+    override def readBytes(buf: ByteBuf): ShotData = new ShotData(buf)
+  }
 }
