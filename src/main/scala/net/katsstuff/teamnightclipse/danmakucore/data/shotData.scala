@@ -214,7 +214,7 @@ final case class MutableShotData(
       delay: Int,
       end: Int,
       subEntity: SubEntityType
-  ) = this(form, renderProperties, edgeColor, coreColor, damage, sizeX, sizeY, sizeZ, delay, end, subEntity)
+  ) = this(form, renderProperties, edgeColor, coreColor, damage, sizeX, sizeY, sizeZ, delay, end, subEntity, Map.empty)
 
   def setSize(sizeX: Float, sizeY: Float, sizeZ: Float): MutableShotData = {
     this.sizeX = sizeX
@@ -341,7 +341,7 @@ final case class ShotData(
       delay: Int,
       end: Int,
       subEntity: SubEntityType
-  ) = this(form, renderProperties, edgeColor, coreColor, damage, sizeX, sizeY, sizeZ, delay, end, subEntity)
+  ) = this(form, renderProperties, edgeColor, coreColor, damage, sizeX, sizeY, sizeZ, delay, end, subEntity, Map.empty)
 
   def this(buf: ByteBuf) {
     this(
