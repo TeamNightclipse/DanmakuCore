@@ -22,16 +22,24 @@ import java.lang.reflect.Field
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.debug.{DebugRenderer, DebugRendererPathfinding}
 import net.minecraft.pathfinding.Path
+import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException
 import net.minecraftforge.fml.relauncher.{ReflectionHelper, Side, SideOnly}
 
 object DebugHelper {
   @SideOnly(Side.CLIENT)
   private var pathTarget: Field = _
 
+  private var triedToFindPathTarget = false
+
   @SideOnly(Side.CLIENT)
   def renderPath(path: Path, entityId: Int): Unit = {
-    if (pathTarget == null) {
-      pathTarget = ReflectionHelper.findField(classOf[Path], "target")
+    if (pathTarget == null && !triedToFindPathTarget) {
+      pathTarget = try {
+        ReflectionHelper.findField(classOf[Path], "target", "field_186314_d")
+      } catch {
+        case _: UnableToFindFieldException => null
+      }
+      triedToFindPathTarget = true
     }
     try pathTarget.set(path, path.getFinalPathPoint)
     catch {

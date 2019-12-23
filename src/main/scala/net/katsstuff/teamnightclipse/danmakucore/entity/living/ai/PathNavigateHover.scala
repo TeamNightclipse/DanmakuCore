@@ -18,9 +18,9 @@
 package net.katsstuff.teamnightclipse.danmakucore.entity.living.ai
 
 import scala.annotation.tailrec
-
 import net.katsstuff.teamnightclipse.danmakucore.helper.DebugHelper
 import net.katsstuff.teamnightclipse.danmakucore.entity.living.TEntityDanmakuCreature
+import net.katsstuff.teamnightclipse.danmakucore.handler.ConfigHandler
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.pathfinding.{Path, PathNavigateFlying}
@@ -31,7 +31,7 @@ class PathNavigateHover(flyingMob: TEntityDanmakuCreature, _world: World)
     extends PathNavigateFlying(flyingMob, _world) {
 
   override def debugPathFinding(): Unit = {
-    if (currentPath != null) {
+    if (currentPath != null && ConfigHandler.client.entities.debugPathfinding) {
       val path = currentPath
       DebugHelper.setPathfinding(true)
       Minecraft.getMinecraft.addScheduledTask(new Runnable {

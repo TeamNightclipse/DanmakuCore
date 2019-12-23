@@ -88,6 +88,9 @@ public class ConfigHandler {
 
 			@Comment("Currently not implemented")
 			public boolean circleBossBar = false;
+
+			@Comment("Shows debug information for pathfinding")
+			public boolean debugPathfinding = false;
 		}
 
 		@Comment("Should DanmakuCore use shaders for some danmaku? Note that not all Danmaku will work as well without shaders.")
