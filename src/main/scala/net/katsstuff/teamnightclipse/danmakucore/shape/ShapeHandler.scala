@@ -21,7 +21,7 @@ import net.katsstuff.teamnightclipse.danmakucore.DanmakuCore
 
 import scala.concurrent.{Future, Promise}
 import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
-import net.minecraft.entity.{Entity, EntityLivingBase}
+import net.minecraft.entity.{Entity, EntityLiving, EntityLivingBase}
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
@@ -130,7 +130,7 @@ object ShapeHandler {
       val orientation = getCurrentOrientation
       val ret         = shape.draw(pos, orientation, tick)
 
-      if(spawnDanmaku) {
+      if (spawnDanmaku) {
         DanmakuCore.spawnDanmaku(ret.spawnedDanmaku.toSeq)
       }
 
@@ -144,8 +144,13 @@ object ShapeHandler {
     protected def getCurrentOrientation: Quat
   }
 
-  private case class ShapeEntryEntity(shape: Shape, dynPos: Entity, tick: Int, allDrawn: Set[ShapeResult], spawnDanmaku: Boolean)
-      extends ShapeEntryDynamicPos[Entity] {
+  private case class ShapeEntryEntity(
+      shape: Shape,
+      dynPos: Entity,
+      tick: Int,
+      allDrawn: Set[ShapeResult],
+      spawnDanmaku: Boolean
+  ) extends ShapeEntryDynamicPos[Entity] {
     override protected def getCurrentPos                                    = new Vector3(dynPos)
     override protected def getCurrentOrientation: Quat                      = Quat.orientationOf(dynPos)
     override def create(tick: Int, allDrawn: Set[ShapeResult]): IShapeEntry = copy(tick = tick, allDrawn = allDrawn)
@@ -158,8 +163,17 @@ object ShapeHandler {
       allDrawn: Set[ShapeResult],
       spawnDanmaku: Boolean
   ) extends ShapeEntryDynamicPos[EntityLivingBase] {
-    override protected def getCurrentPos                                    = new Vector3(dynPos)
-    override protected def getCurrentOrientation: Quat                      = Quat.orientationOf(dynPos)
+    override protected def getCurrentPos = new Vector3(dynPos)
+    override protected def getCurrentOrientation: Quat = {
+      val target = dynPos match {
+        case living: EntityLiving => Option(living.getAttackTarget).orElse(Option(living.getRevengeTarget))
+        case _                    => Option(dynPos.getRevengeTarget)
+      }
+
+      target.fold(Quat.orientationOf(dynPos)) { target =>
+        Quat.orientationOfVec(Vector3.directionToEntity(dynPos, target))
+      }
+    }
     override def create(tick: Int, allDrawn: Set[ShapeResult]): IShapeEntry = copy(tick = tick, allDrawn = allDrawn)
   }
 
