@@ -34,4 +34,6 @@ public class LibFormName {
 	public static final String NOTE1 = "note1";
 	public static final String BUBBLE = "bubble";
 	public static final String TALISMAN = "talisman";
+	public static final String HEART_CARD = "heart_card";
+	public static final String RHOMB_CARD = "rhomb_card";
 }

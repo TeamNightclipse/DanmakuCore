@@ -17,18 +17,13 @@
  */
 package net.katsstuff.teamnightclipse.danmakucore.impl.form
 
-import net.katsstuff.teamnightclipse.danmakucore.DanmakuCore
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.DanmakuState
-import net.katsstuff.teamnightclipse.danmakucore.lib.LibFormName
 import net.minecraft.util.ResourceLocation
 
-private[danmakucore] class FormKunai extends FormTextured(LibFormName.KUNAI) {
-
-  private val texture = DanmakuCore.resource("textures/entity/danmaku/kunai.png")
-
+class FormTexturedStatic(name: String, width: Double, length: Double, texture: ResourceLocation) extends FormTextured(name) {
   override def getTexture(danmaku: DanmakuState): ResourceLocation = texture
 
-  override def quadWidth(danmaku: DanmakuState): Double = 1D
+  override def quadWidth(danmaku: DanmakuState): Double = width
 
-  override def quadLength(danmaku: DanmakuState): Double = 2D
+  override def quadLength(danmaku: DanmakuState): Double = length
 }

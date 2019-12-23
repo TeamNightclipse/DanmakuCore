@@ -68,7 +68,7 @@ object CommonProxy {
       .registerAll(
         new FormCrystal1,
         new FormCrystal2,
-        new FormKunai,
+        new FormTexturedStatic(LibFormName.KUNAI, 1D, 2D, DanmakuCore.resource("textures/entity/danmaku/kunai.png")),
         new FormPointedSphere,
         new FormScale,
         new FormSphere,
@@ -80,7 +80,14 @@ object CommonProxy {
         DanModelReader.createForm(new ResourceLocation(LibMod.Id, "models/form/heart"), LibFormName.HEART),
         noteForm(LibFormName.NOTE1, SoundEvents.BLOCK_NOTE_HARP, "models/form/note1"),
         new FormBubble,
-        new FormTalisman
+        new FormTexturedStatic(
+          LibFormName.TALISMAN,
+          1D,
+          20D / 16D,
+          DanmakuCore.resource("textures/entity/danmaku/talisman.png")
+        ),
+        new FormTexturedStatic(LibFormName.HEART_CARD, 1D, 1D, DanmakuCore.resource("textures/entity/danmaku/heart_card.png")),
+        new FormTexturedStatic(LibFormName.RHOMB_CARD, 1D, 1D, DanmakuCore.resource("textures/entity/danmaku/rhomb_card.png"))
       )
   }
 
@@ -141,7 +148,9 @@ object CommonProxy {
         DanmakuVariantGeneric.withSpeed(HEART, () => LibShotData.SHOT_HEART, 0.4D),
         DanmakuVariantGeneric.withSpeed(NOTE1, () => LibShotData.SHOT_NOTE1, 0.4D),
         DanmakuVariantGeneric.withSpeed(BUBBLE, () => LibShotData.SHOT_BUBBLE, 0.4D),
-        DanmakuVariantGeneric.withSpeed(TALISMAN, () => LibShotData.SHOT_TALISMAN, 0.4D)
+        DanmakuVariantGeneric.withSpeed(TALISMAN, () => LibShotData.SHOT_TALISMAN, 0.4D),
+        DanmakuVariantGeneric.withSpeed(HEART_CARD, () => LibShotData.SHOT_HEART_CARD, 0.4D),
+        DanmakuVariantGeneric.withSpeed(RHOMB_CARD, () => LibShotData.SHOT_RHOMB_CARD, 0.4D)
       )
   }
 
