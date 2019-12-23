@@ -19,24 +19,25 @@ package net.katsstuff.teamnightclipse.danmakucore.javastuff
 
 import java.util
 
+import scala.collection.JavaConverters._
+
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.{DanmakuState, DanmakuTemplate}
+import net.katsstuff.teamnightclipse.danmakucore.scalastuff.{DanmakuCreationHelper => ScalaDanmakuCreationHelper}
 import net.katsstuff.teamnightclipse.mirror.data.Quat
-import net.katsstuff.teamnightclipse.danmakucore.impl.shape.{ShapeCircle, ShapeRandomRing, ShapeRing, ShapeSphere, ShapeWide}
-import net.katsstuff.teamnightclipse.danmakucore.shape.Shape
 
 /**
   * A few helper methods for the most used shapes.
   */
 object DanmakuCreationHelper {
   def createWideShot(
-      orientation: Quat,
+      orientation: Quat, //Don't use. Set in the danmaku itself instead
       danmaku: DanmakuTemplate,
       amount: Int,
       wideAngle: Float,
       baseAngle: Float,
       distance: Double
   ): util.Set[DanmakuState] =
-    drawSingle(danmaku, orientation, new ShapeWide(danmaku, amount, wideAngle, baseAngle, distance))
+    ScalaDanmakuCreationHelper.createWideShot(danmaku, amount, wideAngle, baseAngle, distance).asJava
 
   def createCircleShot(
       orientation: Quat,
@@ -44,7 +45,7 @@ object DanmakuCreationHelper {
       amount: Int,
       baseAngle: Float,
       distance: Double
-  ): util.Set[DanmakuState] = drawSingle(danmaku, orientation, new ShapeCircle(danmaku, amount, baseAngle, distance))
+  ): util.Set[DanmakuState] = ScalaDanmakuCreationHelper.createCircleShot(danmaku, amount, baseAngle, distance).asJava
 
   def createRingShot(
       orientation: Quat,
@@ -54,7 +55,7 @@ object DanmakuCreationHelper {
       baseAngle: Float,
       distance: Double
   ): util.Set[DanmakuState] =
-    drawSingle(danmaku, orientation, new ShapeRing(danmaku, amount, size, baseAngle, distance))
+    ScalaDanmakuCreationHelper.createRingShot(danmaku, amount, size, baseAngle, distance).asJava
 
   def createRandomRingShot(
       orientation: Quat,
@@ -62,7 +63,7 @@ object DanmakuCreationHelper {
       amount: Int,
       size: Float,
       distance: Double
-  ): util.Set[DanmakuState] = drawSingle(danmaku, orientation, new ShapeRandomRing(danmaku, amount, size, distance))
+  ): util.Set[DanmakuState] = ScalaDanmakuCreationHelper.createRandomRingShot(danmaku, amount, size, distance).asJava
 
   def createSphereShot(
       orientation: Quat,
@@ -72,8 +73,5 @@ object DanmakuCreationHelper {
       baseAngle: Float,
       distance: Double
   ): util.Set[DanmakuState] =
-    drawSingle(danmaku, orientation, new ShapeSphere(danmaku, rings, bands, baseAngle, distance))
-
-  private def drawSingle(danmaku: DanmakuTemplate, orientation: Quat, shape: Shape) =
-    shape.draw(danmaku.pos, orientation, 0).getSpawnedDanmaku
+    ScalaDanmakuCreationHelper.createSphereShot(danmaku, rings, bands, baseAngle, distance).asJava
 }

@@ -17,11 +17,15 @@
  */
 package net.katsstuff.teamnightclipse.danmakucore.scalastuff
 
-import scala.collection.JavaConverters._
-
 import net.katsstuff.teamnightclipse.danmakucore.DanmakuCore
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.{DanmakuState, DanmakuTemplate}
-import net.katsstuff.teamnightclipse.danmakucore.impl.shape.{ShapeCircle, ShapeRandomRing, ShapeRing, ShapeSphere, ShapeWide}
+import net.katsstuff.teamnightclipse.danmakucore.impl.shape.{
+  ShapeCircle,
+  ShapeRandomRing,
+  ShapeRing,
+  ShapeSphere,
+  ShapeWide
+}
 import net.katsstuff.teamnightclipse.danmakucore.shape.Shape
 
 /**
@@ -34,16 +38,64 @@ object DanmakuCreationHelper {
       amount: Int,
       wideAngle: Float,
       baseAngle: Float,
-      distance: Double
+      distance: Double,
+      spawnDanmaku: Boolean = true
   ): Set[DanmakuState] =
-    drawSingle(danmaku, new ShapeWide(danmaku, amount, wideAngle, baseAngle, distance))
+    drawSingle(danmaku, new ShapeWide(danmaku, amount, wideAngle, baseAngle, distance), spawnDanmaku)
 
   def createCircleShot(
       danmaku: DanmakuTemplate,
       amount: Int,
       baseAngle: Float,
+      distance: Double,
+      spawnDanmaku: Boolean = true
+  ): Set[DanmakuState] = drawSingle(danmaku, new ShapeCircle(danmaku, amount, baseAngle, distance), spawnDanmaku)
+
+  def createRingShot(
+      danmaku: DanmakuTemplate,
+      amount: Int,
+      size: Float,
+      baseAngle: Float,
+      distance: Double,
+      spawnDanmaku: Boolean = true
+  ): Set[DanmakuState] =
+    drawSingle(danmaku, new ShapeRing(danmaku, amount, size, baseAngle, distance), spawnDanmaku)
+
+  def createRandomRingShot(
+      danmaku: DanmakuTemplate,
+      amount: Int,
+      size: Float,
+      distance: Double,
+      spawnDanmaku: Boolean = true
+  ): Set[DanmakuState] = drawSingle(danmaku, new ShapeRandomRing(danmaku, amount, size, distance), spawnDanmaku)
+
+  def createSphereShot(
+      danmaku: DanmakuTemplate,
+      rings: Int,
+      bands: Int,
+      baseAngle: Float,
+      distance: Double,
+      spawnDanmaku: Boolean = true
+  ): Set[DanmakuState] =
+    drawSingle(danmaku, new ShapeSphere(danmaku, rings, bands, baseAngle, distance), spawnDanmaku)
+
+  @deprecated("Use the method that takes all the parameters", since = "0.8")
+  def createWideShot(
+      danmaku: DanmakuTemplate,
+      amount: Int,
+      wideAngle: Float,
+      baseAngle: Float,
       distance: Double
-  ): Set[DanmakuState] = drawSingle(danmaku, new ShapeCircle(danmaku, amount, baseAngle, distance))
+  ): Set[DanmakuState] =
+    drawSingle(danmaku, new ShapeWide(danmaku, amount, wideAngle, baseAngle, distance), spawnDanmaku = true)
+
+  @deprecated("Use the method that takes all the parameters", since = "0.8")
+  def createCircleShot(
+      danmaku: DanmakuTemplate,
+      amount: Int,
+      baseAngle: Float,
+      distance: Double
+  ): Set[DanmakuState] = drawSingle(danmaku, new ShapeCircle(danmaku, amount, baseAngle, distance), spawnDanmaku = true)
 
   def createRingShot(
       danmaku: DanmakuTemplate,
@@ -52,15 +104,17 @@ object DanmakuCreationHelper {
       baseAngle: Float,
       distance: Double
   ): Set[DanmakuState] =
-    drawSingle(danmaku, new ShapeRing(danmaku, amount, size, baseAngle, distance))
+    drawSingle(danmaku, new ShapeRing(danmaku, amount, size, baseAngle, distance), spawnDanmaku = true)
 
+  @deprecated("Use the method that takes all the parameters", since = "0.8")
   def createRandomRingShot(
       danmaku: DanmakuTemplate,
       amount: Int,
       size: Float,
       distance: Double
-  ): Set[DanmakuState] = drawSingle(danmaku, new ShapeRandomRing(danmaku, amount, size, distance))
+  ): Set[DanmakuState] = drawSingle(danmaku, new ShapeRandomRing(danmaku, amount, size, distance), spawnDanmaku = true)
 
+  @deprecated("Use the method that takes all the parameters", since = "0.8")
   def createSphereShot(
       danmaku: DanmakuTemplate,
       rings: Int,
@@ -68,11 +122,13 @@ object DanmakuCreationHelper {
       baseAngle: Float,
       distance: Double
   ): Set[DanmakuState] =
-    drawSingle(danmaku, new ShapeSphere(danmaku, rings, bands, baseAngle, distance))
+    drawSingle(danmaku, new ShapeSphere(danmaku, rings, bands, baseAngle, distance), spawnDanmaku = true)
 
-  private def drawSingle(danmaku: DanmakuTemplate, shape: Shape): Set[DanmakuState] = {
+  private def drawSingle(danmaku: DanmakuTemplate, shape: Shape, spawnDanmaku: Boolean): Set[DanmakuState] = {
     val res = shape.draw(danmaku.pos, danmaku.orientation, 0).spawnedDanmaku
-    DanmakuCore.proxy.spawnDanmaku(res.toSeq)
+    if(spawnDanmaku) {
+      DanmakuCore.proxy.spawnDanmaku(res.toSeq)
+    }
     res
   }
 
