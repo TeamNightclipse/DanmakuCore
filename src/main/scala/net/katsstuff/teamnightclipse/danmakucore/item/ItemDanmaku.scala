@@ -204,7 +204,7 @@ object ItemDanmaku {
         offset: Double
     ): Set[DanmakuState] = {
       val wide = if (alternateMode) 60F else 120F
-      DanmakuCreationHelper.createRandomRingShot(template, amount, wide, offset)
+      DanmakuCreationHelper.createRandomRingShot(template, amount, wide, offset, spawnDanmaku = true)
     }
   }
   def randomRing: Pattern = RandomRing
@@ -218,7 +218,7 @@ object ItemDanmaku {
         offset: Double
     ): Set[DanmakuState] = {
       val wide = if (alternateMode) amount * 4F else amount * 8F
-      DanmakuCreationHelper.createWideShot(template, amount, wide, 0F, offset)
+      DanmakuCreationHelper.createWideShot(template, amount, wide, 0F, offset, spawnDanmaku = true)
     }
   }
   def wide: Pattern = Wide
@@ -230,7 +230,7 @@ object ItemDanmaku {
         shotSpeed: Double,
         alternateMode: Boolean,
         offset: Double
-    ): Set[DanmakuState] = DanmakuCreationHelper.createCircleShot(template, amount, 0F, offset)
+    ): Set[DanmakuState] = DanmakuCreationHelper.createCircleShot(template, amount, 0F, offset, spawnDanmaku = true)
   }
   def circle: Pattern = Circle
 
@@ -256,7 +256,7 @@ object ItemDanmaku {
         alternateMode: Boolean,
         offset: Double
     ): Set[DanmakuState] =
-      DanmakuCreationHelper.createSphereShot(template, amount, amount / 2, 0F, offset)
+      DanmakuCreationHelper.createSphereShot(template, amount, amount / 2, 0F, offset, spawnDanmaku = true)
   }
   def sphere: Pattern = Sphere
 }
@@ -272,8 +272,9 @@ class ItemDanmaku extends ItemBase(LibItemName.DANMAKU) {
     }
 
   @SideOnly(Side.CLIENT) override def hasEffect(stack: ItemStack): Boolean = ItemDanmaku.Infinity.get(stack)
-  override def getTranslationKey(stack: ItemStack): String =
-    s"${getTranslationKey()}.${ItemDanmaku.getController(stack).unlocalizedName}"
+
+  override def getUnlocalizedName(stack: ItemStack): String =
+    s"${getUnlocalizedName()}.${ItemDanmaku.getController(stack).unlocalizedName}"
 
   override def onItemRightClick(world: World, player: EntityPlayer, hand: EnumHand): ActionResult[ItemStack] = {
     val stack   = player.getHeldItem(hand)

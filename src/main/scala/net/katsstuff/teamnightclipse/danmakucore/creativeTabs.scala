@@ -21,10 +21,10 @@ import net.katsstuff.teamnightclipse.danmakucore.lib.data.LibItems
 import net.minecraft.item.ItemStack
 
 object DanmakuCreativeTab extends DanCoreCreativeTab("danmaku") {
-  override def createIcon: ItemStack = new ItemStack(LibItems.DANMAKU)
+  override def getTabIconItem: ItemStack = new ItemStack(LibItems.DANMAKU)
 }
 object SpellcardsCreativeTab extends DanCoreCreativeTab("spellcard") {
-  override def createIcon: ItemStack = new ItemStack(LibItems.SPELLCARD)
+  override def getTabIconItem: ItemStack = new ItemStack(LibItems.SPELLCARD)
 }
 
 //JAVA API

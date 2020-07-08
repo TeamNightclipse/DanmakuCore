@@ -84,8 +84,8 @@ class ItemSpellcard extends ItemBase(LibItemName.SPELLCARD) {
     } else super.onItemRightClick(world, player, hand)
   }
 
-  override def getTranslationKey(stack: ItemStack): String =
-    s"${getTranslationKey()}.${ItemSpellcard.getSpellcard(stack).unlocalizedName}"
+  override def getUnlocalizedName(stack: ItemStack): String =
+    s"${getUnlocalizedName()}.${ItemSpellcard.getSpellcard(stack).unlocalizedName}"
 
   @SideOnly(Side.CLIENT)
   override def addInformation(

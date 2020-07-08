@@ -1,15 +1,13 @@
 pluginManagement {
     repositories {
         jcenter()
+        mavenCentral()
         gradlePluginPortal()
-        maven {
-            name = "forge"
-            setUrl("http://files.minecraftforge.net/maven")
-        }
+        maven("http://files.minecraftforge.net/maven")
     }
     resolutionStrategy {
         eachPlugin {
-            if(requested.id.namespace == "net.minecraftforge.gradle") {
+            if(requested.id.namespace == "net.minecraftforge") {
                 useModule("net.minecraftforge.gradle:ForgeGradle:${requested.version}")
             }
         }

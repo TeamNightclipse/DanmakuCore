@@ -37,7 +37,9 @@ object DanmakuCreationHelper {
       baseAngle: Float,
       distance: Double
   ): util.Set[DanmakuState] =
-    ScalaDanmakuCreationHelper.createWideShot(danmaku, amount, wideAngle, baseAngle, distance).asJava
+    ScalaDanmakuCreationHelper
+      .createWideShot(danmaku, amount, wideAngle, baseAngle, distance, spawnDanmaku = true)
+      .asJava
 
   def createCircleShot(
       orientation: Quat,
@@ -45,7 +47,8 @@ object DanmakuCreationHelper {
       amount: Int,
       baseAngle: Float,
       distance: Double
-  ): util.Set[DanmakuState] = ScalaDanmakuCreationHelper.createCircleShot(danmaku, amount, baseAngle, distance).asJava
+  ): util.Set[DanmakuState] =
+    ScalaDanmakuCreationHelper.createCircleShot(danmaku, amount, baseAngle, distance, spawnDanmaku = true).asJava
 
   def createRingShot(
       orientation: Quat,
@@ -55,7 +58,7 @@ object DanmakuCreationHelper {
       baseAngle: Float,
       distance: Double
   ): util.Set[DanmakuState] =
-    ScalaDanmakuCreationHelper.createRingShot(danmaku, amount, size, baseAngle, distance).asJava
+    ScalaDanmakuCreationHelper.createRingShot(danmaku, amount, size, baseAngle, distance, spawnDanmaku = true).asJava
 
   def createRandomRingShot(
       orientation: Quat,
@@ -63,7 +66,8 @@ object DanmakuCreationHelper {
       amount: Int,
       size: Float,
       distance: Double
-  ): util.Set[DanmakuState] = ScalaDanmakuCreationHelper.createRandomRingShot(danmaku, amount, size, distance).asJava
+  ): util.Set[DanmakuState] =
+    ScalaDanmakuCreationHelper.createRandomRingShot(danmaku, amount, size, distance, spawnDanmaku = true).asJava
 
   def createSphereShot(
       orientation: Quat,
@@ -73,5 +77,5 @@ object DanmakuCreationHelper {
       baseAngle: Float,
       distance: Double
   ): util.Set[DanmakuState] =
-    ScalaDanmakuCreationHelper.createSphereShot(danmaku, rings, bands, baseAngle, distance).asJava
+    ScalaDanmakuCreationHelper.createSphereShot(danmaku, rings, bands, baseAngle, distance, spawnDanmaku = true).asJava
 }

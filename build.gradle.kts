@@ -1,9 +1,18 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import groovy.util.ConfigObject
 import groovy.util.ConfigSlurper
-import net.minecraftforge.gradle.user.ReobfMappingType
 import org.gradle.jvm.tasks.Jar
+import java.io.File
 import java.util.Properties
+import java.time.LocalDateTime
+
+buildscript {
+    repositories {
+        maven("https://files.minecraftforge.net/maven")
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
 
 plugins {
     scala
@@ -13,12 +22,13 @@ plugins {
     maven
     signing
     id("com.github.johnrengelman.shadow").version("2.0.4")
-    id("net.minecraftforge.gradle.forge").version("2.3-SNAPSHOT")
+    id("net.minecraftforge.gradle").version("3.0.179")
 }
 
 val scaladoc: ScalaDoc by tasks
 val compileJava: JavaCompile by tasks
 val compileScala: ScalaCompile by tasks
+val jar: Jar by tasks
 val shadowJar: ShadowJar by tasks
 
 val config = parseConfig(file("build.properties"))
@@ -48,13 +58,23 @@ sourceSets["main"].apply {
 }
 
 minecraft {
-    version = "${config["mc_version"]}-${config["forge_version"]}"
-    runDir = if (file("../run1.12").exists()) "../run1.12" else "run"
-    mappings = "stable_39"
-    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+    mappings("snapshot", "20171003-1.12")
 
-    replace("@VERSION@", project.version)
-    replaceIn("LibMod.scala")
+    accessTransformer(file("src/main/resources/danmakucore_at.cfg"))
+
+    runs {
+        create("client") {
+            workingDirectory(if (file("../run1.12").exists()) "../run1.12" else "run")
+
+            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
+            property("forge.logging.console.level", "debug")
+        }
+
+        create("server") {
+            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
+            property("forge.logging.console.level", "debug")
+        }
+    }
 }
 
 repositories {
@@ -67,37 +87,50 @@ repositories {
         setUrl("https://maven.mcmoddev.com")
     }
     jcenter()
+    mavenLocal()
 }
 
 dependencies {
-    compile("net.katsstuff.teamnightclipse:mirror:1.12.2-0.5.0")
+    minecraft("net.minecraftforge:forge:${config["mc_version"]}-${config["forge_version"]}")
+
+    compileOnly("net.katsstuff.teamnightclipse:mirror:1.12.2-0.6.0-SNAPSHOT")
+    runtimeOnly("net.katsstuff.teamnightclipse:mirror:1.12.2-0.6.0-SNAPSHOT:dev")
     compile("org.scala-lang:scala-library:2.11.4") //Gets ourself a better compiler
 }
 
 shadowJar.apply {
     classifier = "shaded"
-    dependencies {
-        exclude(dependency("com.chuusai:shapeless_2.11:2.3.3"))
-        exclude(dependency("net.katsstuff.teamnightclipse:mirror:1.12.2-0.5.0"))
-    }
-    exclude("dummyThing")
+    configurations = listOf()
+
     relocate("shapeless", "net.katsstuff.teamnightclipse.mirror.shade.shapeless")
 }
 
-tasks.withType<Jar> {
+
+jar.apply {
     exclude("**/*.psd")
     manifest {
-        attributes(mapOf("FMLAT" to "danmakucore_at.cfg"))
+        attributes(
+                mapOf(
+                        "FMLAT" to "danmakucore_at.cfg",
+                        "Specification-Title" to "DanmakuCore",
+                        "Specification-Vendor" to "TeamNightclipse",
+                        "Specification-Version" to "1", // We are version 1 of ourselves
+                        "Implementation-Title" to project.name,
+                        "Implementation-Version" to version,
+                        "Implementation-Vendor" to "TeamNightclipse",
+                        "Implementation-Timestamp" to LocalDateTime.now().toString()
+                )
+        )
     }
 }
 
 tasks.withType<ProcessResources> {
     inputs.property("version", project.version)
-    inputs.property("mcversion", minecraft.version)
+    inputs.property("mcversion", config["mc_version"])
 
     from(sourceSets["main"].resources.srcDirs) {
         include("mcmod.info")
-        expand(mapOf("version" to project.version, "mcversion" to minecraft.version))
+        expand(mapOf("version" to project.version, "mcversion" to config["mc_version"]))
     }
 
     from(sourceSets["main"].resources.srcDirs) {
@@ -113,14 +146,13 @@ fun parseConfig(config: File): ConfigObject {
 
 idea.module.inheritOutputDirs = true
 
-tasks["build"].dependsOn(shadowJar)
-
-reobf.create("shadowJar") {
-    mappingType = ReobfMappingType.SEARGE
+reobf {
+    create("shadowJar") {
+        mappings = tasks.getByName<net.minecraftforge.gradle.mcp.task.GenerateSRG>("createMcpToSrg").output
+    }
 }
 
-tasks["reobfShadowJar"].mustRunAfter(shadowJar)
-tasks["build"].dependsOn("reobfShadowJar")
+tasks["build"].dependsOn(shadowJar)
 
 val deobfJar by tasks.creating(Jar::class) {
     classifier = "dev"

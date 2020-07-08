@@ -105,7 +105,7 @@ class DanModel(private[this] val data: Array[Byte], private[this] val pieces: In
       bb.finishDrawing()
       val format = bb.getVertexFormat
       val data   = bb.getByteBuffer
-      val count  = data.limit / format.getSize
+      val count  = data.limit / format.getElementCount
       val buffer = new MirrorArrayBuffer(count, OpenGlHelper.GL_ARRAY_BUFFER, OpenGlHelper.GL_STATIC_DRAW)
       buffer.bufferData(data)
       val vboModel = VBOModel(format, buffer, bb.getVertexCount, bb.getDrawMode)

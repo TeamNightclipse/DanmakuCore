@@ -21,5 +21,5 @@ import net.minecraft.item.Item
 
 class ItemBase(val name: String) extends Item {
   setRegistryName(name)
-  setTranslationKey(name)
+  setUnlocalizedName(name)
 }

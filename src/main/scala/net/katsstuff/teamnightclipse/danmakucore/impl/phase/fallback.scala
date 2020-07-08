@@ -43,7 +43,8 @@ private[phase] class PhaseFallback(manager: PhaseManager, val phaseType: PhaseTy
       val pos       = user.pos
       val direction = Vector3.directionEntity(user)
       variant.create(user.world, Some(user), alternateMode = false, pos, direction, None).foreach { template =>
-        DanmakuCreationHelper.createCircleShot(template.toBuilder.setUser(user).build, amount, 0F, 0.2D)
+        DanmakuCreationHelper
+          .createCircleShot(template.toBuilder.setUser(user).build, amount, 0F, 0.2D, spawnDanmaku = true)
       }
     }
   }

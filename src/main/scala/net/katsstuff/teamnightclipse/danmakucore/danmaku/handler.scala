@@ -267,7 +267,7 @@ class ServerDanmakuHandler extends DanmakuHandler {
 @SideOnly(Side.CLIENT)
 class ClientDanmakuHandler extends DanmakuHandler {
 
-  val profiler: Profiler = Minecraft.getMinecraft.profiler
+  val profiler: Profiler = Minecraft.getMinecraft.mcProfiler
 
   @SubscribeEvent(priority = EventPriority.HIGHEST)
   def onTick(event: TickEvent.ClientTickEvent): Unit = {

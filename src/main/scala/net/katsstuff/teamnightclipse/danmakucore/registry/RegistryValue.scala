@@ -33,12 +33,12 @@ abstract class RegistryValue[A <: IForgeRegistryEntry[A]]
   /**
     * Get the mod id for this value.
     */
-  def modId: String = fullName.getNamespace
+  def modId: String = fullName.getResourceDomain
 
   /**
     * Get the short name for this value.
     */
-  def name: String = fullName.getPath
+  def name: String = fullName.getResourcePath
 
   override def compareTo(other: RegistryValue[A]): Int =
     fullNameString.compareToIgnoreCase(other.getRegistryName.toString)

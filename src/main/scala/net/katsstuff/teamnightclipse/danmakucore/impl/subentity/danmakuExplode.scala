@@ -50,6 +50,6 @@ private[subentity] class SubEntityDanmakuExplosion extends SubEntityDefault {
       danmaku.entity.rawBoundingBoxes
     )
 
-    DanmakuCreationHelper.createSphereShot(template, 16, 16, 0F, 0D)
+    DanmakuCreationHelper.createSphereShot(template, 16, 16, 0F, 0D, spawnDanmaku = true)
   }
 }
