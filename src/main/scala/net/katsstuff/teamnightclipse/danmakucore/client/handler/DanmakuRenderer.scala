@@ -159,7 +159,7 @@ class DanmakuRenderer(handler: DanmakuHandler) {
         GlStateManager.disableLighting()
         GlStateManager.disableCull()
         GlStateManager.disableBlend()
-        GL11.glTranslated(x, y + shot.sizeY / 2, z)
+        GlStateManager.translate(x, y + shot.sizeY / 2, z)
 
         danmaku.boundingBoxes.foreach { obb =>
           val aabb = obb.aabb
@@ -172,6 +172,18 @@ class DanmakuRenderer(handler: DanmakuHandler) {
             1F,
             0F,
             1F
+          )
+          GlStateManager.popMatrix()
+        }
+
+        if (danmaku.rotation.enabled) {
+          val pivot = danmaku.rotation.pivot
+
+          GlStateManager.pushMatrix()
+          GlStateManager.rotate(danmaku.orientation.toQuaternion)
+          GlStateManager.translate(pivot.x, pivot.y + shot.sizeY / 2, pivot.z)
+          RenderGlobal.renderFilledBox(
+            -0.1, -0.1, -0.1, 0.1, 0.1, 0.1, 1F, 0F, 0F, 1F
           )
           GlStateManager.popMatrix()
         }
