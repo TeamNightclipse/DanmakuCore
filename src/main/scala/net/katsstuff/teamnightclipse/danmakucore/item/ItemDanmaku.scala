@@ -22,7 +22,6 @@ import java.util
 import javax.annotation.Nullable
 
 import scala.collection.JavaConverters._
-
 import net.katsstuff.teamnightclipse.danmakucore.{DanmakuCore, DanmakuCreativeTab}
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.{DanmakuState, DanmakuTemplate, DanmakuVariant}
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.form.Form
@@ -99,7 +98,12 @@ object ItemDanmaku {
       } else false
     } else {
       getVariant(stack).create(world, user, alternateMode, pos, direction, hand).exists { template =>
-        val newTemplate = template.toBuilder.setShot(shot).setMovementData(shotSpeed, gravity).build
+        val newTemplate =
+          template.toBuilder
+            .clearBoundingBoxes()
+            .setShot(shot)
+            .setMovementData(shotSpeed, gravity)
+            .build
         danmakuPattern.makeDanmaku(newTemplate, amount, shotSpeed, alternateMode, offset)
         true
       }
@@ -173,6 +177,7 @@ object ItemDanmaku {
       case 3 => Some(Circle)
       case 4 => Some(Ring)
       case 5 => Some(Sphere)
+      case _ => None
     }
   }
   case object Line extends Pattern {
