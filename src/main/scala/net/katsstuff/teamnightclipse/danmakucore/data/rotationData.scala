@@ -18,9 +18,9 @@
 package net.katsstuff.teamnightclipse.danmakucore.data
 
 import scala.beans.{BeanProperty, BooleanBeanProperty}
-
 import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
 import net.minecraft.nbt.{NBTTagCompound, NBTTagDouble, NBTTagList}
+import net.minecraft.util.math.MathHelper
 import net.minecraftforge.common.util.Constants
 
 /**
@@ -145,5 +145,60 @@ object RotationData {
     val pivotList = tag.getTagList(NbtRotationPivot, Constants.NBT.TAG_DOUBLE)
     val pivot     = Vector3(pivotList.getDoubleAt(0), pivotList.getDoubleAt(1), pivotList.getDoubleAt(2))
     RotationData(enabled, rotation, endTime, pivot)
+  }
+
+  def fromEulerLocal(yaw: Float, pitch: Float, roll: Float, orientation: Quat): Quat = {
+    val clampedPitch = if (pitch > 90F || pitch < -90F) Math.IEEEremainder(pitch, 180F) else pitch
+    val clampedYaw   = if (yaw > 180F || yaw < -180F) Math.IEEEremainder(yaw, 360F) else yaw
+    val clampedRoll  = if (roll > 180F || roll < -180F) Math.IEEEremainder(roll, 360F) else roll
+
+    fromEulerRadLocal(
+      Math.toRadians(clampedYaw).toFloat,
+      Math.toRadians(clampedPitch).toFloat,
+      Math.toRadians(clampedRoll).toFloat,
+      orientation
+    )
+  }
+
+  //TODO: Move this to Mirror at some point
+  def fromEulerRadLocal(yaw: Float, pitch: Float, roll: Float, orientation: Quat): Quat = {
+    val cy = MathHelper.cos(yaw / 2)
+    val cp = MathHelper.cos(pitch / 2)
+    val cr = MathHelper.cos(roll / 2)
+
+    val sy = MathHelper.sin(yaw / 2)
+    val sp = MathHelper.sin(pitch / 2)
+    val sr = MathHelper.sin(roll / 2)
+
+    val u = orientation * Vector3.Up
+    val r = orientation * Vector3.Right
+    val f = orientation * Vector3.Forward
+
+    val yx = sy * u.x
+    val yy = sy * u.y
+    val yz = sy * u.z
+    val yw = cy
+
+    val px = sp * r.x
+    val py = sp * r.y
+    val pz = sp * r.z
+    val pw = cp
+
+    val rx = sr * f.x
+    val ry = sr * f.y
+    val rz = sr * f.z
+    val rw = cr
+
+    val ypx = yw * px + yx * pw + yy * pz - yz * py
+    val ypy = yw * py + yy * pw + yz * px - yx * pz
+    val ypz = yw * pz + yz * pw + yx * py - yy * px
+    val ypw = yw * pw - yx * px - yy * py - yz * pz
+
+    val yprx = ypw * rx + ypx * rw + ypy * rz - ypz * ry
+    val ypry = ypw * ry + ypy * rw + ypz * rx - ypx * rz
+    val yprz = ypw * rz + ypz * rw + ypx * ry - ypy * rx
+    val yprw = ypw * rw - ypx * rx - ypy * ry - ypz * rz
+
+    Quat(yprx, ypry, yprz, yprw)
   }
 }
