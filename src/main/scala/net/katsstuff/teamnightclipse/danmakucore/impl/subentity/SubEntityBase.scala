@@ -101,7 +101,7 @@ abstract class SubEntityBase extends SubEntity {
     * Add the gravity to the motion.
     */
   protected def updateMotionWithGravity(danmaku: DanmakuState, motion: Vector3): Vector3 =
-    motion + danmaku.movement.gravity
+    motion + danmaku.movement.gravity * (danmaku.entity.ticksExisted * danmaku.entity.ticksExisted)
 
   protected def hitCheck(danmaku: DanmakuState, exclude: Predicate[Entity]): DanmakuUpdate =
     hitCheck(danmaku, exclude.asScala)
