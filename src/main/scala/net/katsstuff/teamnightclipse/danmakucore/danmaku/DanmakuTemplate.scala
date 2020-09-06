@@ -211,6 +211,11 @@ object DanmakuTemplate {
 
     def setRotationData(axis: Vector3, angle: Float, endTime: Int, pivot: Vector3): Builder =
       setRotationData(new RotationData(true, Quat.fromAxisAngle(axis, angle), endTime, pivot))
+
+    def clearBoundingBoxes(): Builder = {
+      this.rawBoundingBoxes = null
+      this
+    }
   }
 }
 
@@ -263,7 +268,7 @@ final case class DanmakuTemplate(
     val created = extraData.subEntity.onCreate(first)
     extraData.subEntity.onInstantiate(created)
   }
-  def toBuilder =
+  def toBuilder: DanmakuTemplate.Builder =
     DanmakuTemplate.Builder(
       world,
       user.orNull,

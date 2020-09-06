@@ -17,10 +17,11 @@
  */
 package net.katsstuff.teamnightclipse.danmakucore.impl.subentity
 
-import net.katsstuff.teamnightclipse.danmakucore.danmaku.{DanmakuState, DanmakuUpdate, DanmakuUpdateSignal}
+import net.katsstuff.teamnightclipse.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.subentity.{SubEntity, SubEntityType}
-import net.minecraft.util.math.RayTraceResult
-import net.minecraftforge.fml.common.FMLCommonHandler
+import net.minecraft.block.state.IBlockState
+import net.minecraft.entity.Entity
+import net.minecraft.util.math.AxisAlignedBB
 
 private[danmakucore] class SubEntityTypeExplosion(name: String, strength: Float) extends SubEntityType(name) {
   override def instantiate: SubEntity =
@@ -29,12 +30,20 @@ private[danmakucore] class SubEntityTypeExplosion(name: String, strength: Float)
 
 private[subentity] class SubEntityExplosion(strength: Float) extends SubEntityDefault {
 
-  override protected def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): DanmakuUpdate =
-    super.impact(danmaku, rayTrace).addCallbackIf(!danmaku.world.isRemote) {
+  override protected def impactBlock(danmaku: DanmakuState, aabb: AxisAlignedBB, block: IBlockState): DanmakuUpdate =
+    super.impactBlock(danmaku, aabb, block).addCallbackIf(!danmaku.world.isRemote) {
+      val cause        = danmaku.user.orElse(danmaku.source).orNull
+      val realStrength = danmaku.shot.getSubEntityProperty("explosion_strength", strength)
+      val center       = aabb.getCenter
+
+      danmaku.world.createExplosion(cause, center.x, center.y, center.z, realStrength.toFloat, false)
+    }
+
+  override protected def impactEntity(danmaku: DanmakuState, entity: Entity): DanmakuUpdate =
+    super.impactEntity(danmaku, entity).addCallbackIf(!danmaku.world.isRemote) {
       val cause        = danmaku.user.orElse(danmaku.source).orNull
       val realStrength = danmaku.shot.getSubEntityProperty("explosion_strength", strength)
 
-      danmaku.world
-        .createExplosion(cause, rayTrace.hitVec.x, rayTrace.hitVec.y, rayTrace.hitVec.z, realStrength.toFloat, false)
+      danmaku.world.createExplosion(cause, entity.posX, entity.posY, entity.posZ, realStrength.toFloat, false)
     }
 }

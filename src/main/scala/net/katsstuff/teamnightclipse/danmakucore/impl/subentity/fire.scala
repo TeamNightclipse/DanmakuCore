@@ -17,10 +17,9 @@
  */
 package net.katsstuff.teamnightclipse.danmakucore.impl.subentity
 
-import net.katsstuff.teamnightclipse.danmakucore.danmaku.{DanmakuState, DanmakuUpdate, DanmakuUpdateSignal}
+import net.katsstuff.teamnightclipse.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.subentity.{SubEntity, SubEntityType}
-import net.minecraft.util.math.RayTraceResult
-import net.minecraftforge.fml.common.FMLCommonHandler
+import net.minecraft.entity.Entity
 
 private[danmakucore] class SubEntityTypeFire(name: String, multiplier: Float) extends SubEntityType(name) {
   override def instantiate: SubEntity =
@@ -28,10 +27,10 @@ private[danmakucore] class SubEntityTypeFire(name: String, multiplier: Float) ex
 }
 
 private[subentity] class SubEntityFire(multiplier: Float) extends SubEntityDefault {
-  override protected def impactEntity(danmaku: DanmakuState, rayTrace: RayTraceResult): DanmakuUpdate =
-    super.impactEntity(danmaku, rayTrace).addCallbackIf(!danmaku.world.isRemote) {
+  override protected def impactEntity(danmaku: DanmakuState, entity: Entity): DanmakuUpdate =
+    super.impactEntity(danmaku, entity).addCallbackIf(!danmaku.world.isRemote) {
       val realMultiplier = danmaku.shot.getSubEntityProperty("fire_multiplier", multiplier)
 
-      rayTrace.entityHit.setFire((danmaku.shot.damage * realMultiplier).toInt)
+      entity.setFire((danmaku.shot.damage * realMultiplier).toInt)
     }
 }

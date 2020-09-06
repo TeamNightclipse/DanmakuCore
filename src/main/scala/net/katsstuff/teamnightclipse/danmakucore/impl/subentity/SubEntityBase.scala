@@ -20,18 +20,20 @@ package net.katsstuff.teamnightclipse.danmakucore.impl.subentity
 import java.util.Random
 import java.util.function.Predicate
 
-import scala.annotation.tailrec
-
 import net.katsstuff.teamnightclipse.danmakucore.capability.danmakuhit.CapabilityDanmakuHitBehaviorJ
-import net.katsstuff.teamnightclipse.danmakucore.danmaku.{DamageSourceDanmaku, DanmakuState, DanmakuUpdate}
-import net.katsstuff.teamnightclipse.mirror.data.Vector3
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.subentity.SubEntity
+import net.katsstuff.teamnightclipse.danmakucore.danmaku.{DamageSourceDanmaku, DanmakuState, DanmakuUpdate}
 import net.katsstuff.teamnightclipse.danmakucore.handler.ConfigHandler
 import net.katsstuff.teamnightclipse.danmakucore.lib.LibSounds
 import net.katsstuff.teamnightclipse.danmakucore.scalastuff.DanCoreImplicits._
 import net.katsstuff.teamnightclipse.danmakucore.scalastuff.DanmakuHelper
+import net.katsstuff.teamnightclipse.mirror.data.Vector3
+import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.{Entity, EntityLivingBase, MultiPartEntityPart}
-import net.minecraft.util.math.RayTraceResult
+import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
+
+import scala.annotation.tailrec
+import scala.collection.JavaConverters._
 
 abstract class SubEntityBase extends SubEntity {
   protected val rand = new Random
@@ -39,7 +41,7 @@ abstract class SubEntityBase extends SubEntity {
   /**
     * Called when the danmaku hits a block.
     */
-  protected def impactBlock(danmaku: DanmakuState, raytrace: RayTraceResult): DanmakuUpdate = {
+  protected def impactBlock(danmaku: DanmakuState, aabb: AxisAlignedBB, block: IBlockState): DanmakuUpdate = {
     val shot = danmaku.shot
     if (shot.sizeZ <= 1F || shot.sizeZ / shot.sizeX <= 3 || shot.sizeZ / shot.sizeY <= 3) DanmakuUpdate.empty
     else DanmakuUpdate.noUpdates(danmaku)
@@ -48,8 +50,8 @@ abstract class SubEntityBase extends SubEntity {
   /**
     * Called when the danmaku hits an entity.
     */
-  protected def impactEntity(danmaku: DanmakuState, raytrace: RayTraceResult): DanmakuUpdate =
-    attackEntity(danmaku, raytrace.entityHit)
+  protected def impactEntity(danmaku: DanmakuState, entity: Entity): DanmakuUpdate =
+    attackEntity(danmaku, entity)
 
   protected def attackEntity(danmaku: DanmakuState, entity: Entity): DanmakuUpdate = {
     val shot        = danmaku.shot
@@ -92,67 +94,52 @@ abstract class SubEntityBase extends SubEntity {
   }
 
   /**
-    * Called on any impact. Called after [[impactBlock]] and [[impactEntity]].
-    */
-  protected def impact(danmaku: DanmakuState, raytrace: RayTraceResult): DanmakuUpdate =
-    DanmakuUpdate.noUpdates(danmaku)
-
-  /**
     * Add the gravity to the motion.
     */
   protected def updateMotionWithGravity(danmaku: DanmakuState, motion: Vector3): Vector3 =
-    motion + danmaku.movement.gravity * (danmaku.entity.ticksExisted * danmaku.entity.ticksExisted)
+    motion + danmaku.movement.gravity * ((danmaku.entity.ticksExisted * danmaku.entity.ticksExisted) / 2D)
 
   protected def hitCheck(danmaku: DanmakuState, exclude: Predicate[Entity]): DanmakuUpdate =
     hitCheck(danmaku, exclude.asScala)
 
   protected def hitCheck(danmaku: DanmakuState, exclude: Entity => Boolean): DanmakuUpdate = {
-    val direction     = danmaku.direction
-    val shot          = danmaku.shot
-    val motion        = danmaku.motion
     val boundingBoxes = danmaku.boundingBoxes
 
-    val start = danmaku.pos.offset(direction, -shot.sizeZ / 2)
-    val end   = start.offset(direction, shot.sizeZ).add(motion)
-
-    val bb = danmaku.encompassingAABB.expand(motion.x, motion.y, motion.z).grow(1D)
+    val bb = danmaku.encompassingAABB
     val potentialHits = danmaku.world.collectEntitiesWithinAABB[Entity, Entity](bb) {
       case e if e.canBeCollidedWith && !e.noClip && exclude(e) => e
     }
 
-    var groundRay: RayTraceResult = null
     val afterEntityImpact =
       potentialHits.foldLeft[DanmakuUpdate](DanmakuUpdate.noUpdates(danmaku)) { (update, potentialHit) =>
         update.state match {
-          case Some(state) =>
+          case Some(_) =>
             val entityAabb = potentialHit.getEntityBoundingBox
-            if (boundingBoxes.exists(_.intersects(entityAabb))) {
-              val rayTraceResult = entityAabb.calculateIntercept(start.toVec3d, end.toVec3d)
-              if (rayTraceResult != null) {
-                val rayToHit = danmaku.world.rayTraceBlocks(start.toVec3d, rayTraceResult.hitVec, false, true, false)
-                if (rayToHit != null && (rayToHit.typeOfHit == RayTraceResult.Type.BLOCK)) {
-                  groundRay = rayToHit
-                  update
-                } else {
-                  val rayHit = new RayTraceResult(potentialHit)
-                  update.andThen(impactEntity(_, rayHit)).andThenWithCallbacks(state)(impact(_, rayHit))
-                }
-              } else update
-            } else update
+            if (boundingBoxes.exists(_.intersects(entityAabb)))
+              update.andThen(impactEntity(_, potentialHit))
+            else
+              update
           case None => update
         }
       }
 
-    if (groundRay == null) {
-      val ray = danmaku.world.rayTraceBlocks(start.toVec3d, end.toVec3d, false, true, false)
-      if (ray != null && (ray.typeOfHit == RayTraceResult.Type.BLOCK)) groundRay = ray
-    }
+    val blockBoundingBoxes = (danmaku: DanmakuState) =>
+      danmaku.world
+        .getCollisionBoxes(null, bb)
+        .asScala
+        .sortBy(_.getCenter.distanceTo(danmaku.pos))
+        .foldLeft(afterEntityImpact) { (update, hitBB) =>
+          update.state match {
+            case Some(_) =>
+              if (boundingBoxes.exists(_.intersects(hitBB)))
+                update.andThen(impactBlock(_, hitBB, danmaku.world.getBlockState(new BlockPos(hitBB.getCenter))))
+              else
+                update
+            case None => update
+          }
+      }
 
-    if (groundRay != null) {
-      afterEntityImpact
-        .andThen(impactBlock(_, groundRay))
-        .andThenWithCallbacks(afterEntityImpact.state.getOrElse(danmaku))(impact(_, groundRay))
-    } else afterEntityImpact
+    afterEntityImpact.andThen(blockBoundingBoxes)
   }
 
   /**

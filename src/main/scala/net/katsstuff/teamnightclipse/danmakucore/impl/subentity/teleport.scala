@@ -17,10 +17,11 @@
  */
 package net.katsstuff.teamnightclipse.danmakucore.impl.subentity
 
-import net.katsstuff.teamnightclipse.danmakucore.danmaku.{DanmakuState, DanmakuUpdate, DanmakuUpdateSignal}
+import net.katsstuff.teamnightclipse.danmakucore.danmaku.{DanmakuState, DanmakuUpdate}
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.subentity.{SubEntity, SubEntityType}
-import net.minecraft.util.math.RayTraceResult
-import net.minecraftforge.fml.common.FMLCommonHandler
+import net.minecraft.block.state.IBlockState
+import net.minecraft.entity.Entity
+import net.minecraft.util.math.AxisAlignedBB
 
 private[danmakucore] class SubEntityTypeTeleport(name: String) extends SubEntityType(name) {
   override def instantiate: SubEntity =
@@ -28,12 +29,23 @@ private[danmakucore] class SubEntityTypeTeleport(name: String) extends SubEntity
 }
 
 private[subentity] class SubEntityTeleport extends SubEntityDefault {
-  override protected def impact(danmaku: DanmakuState, rayTrace: RayTraceResult): DanmakuUpdate = {
-    super.impact(danmaku, rayTrace).addCallbackIf(danmaku.user.isDefined && !danmaku.world.isRemote) {
-      val usr = danmaku.user.get
-      usr.rotationYaw = danmaku.orientation.yaw.toFloat
-      usr.rotationPitch = danmaku.orientation.pitch.toFloat
-      usr.setPositionAndUpdate(danmaku.pos.x, danmaku.pos.y, danmaku.pos.z)
+
+  override protected def impactBlock(danmaku: DanmakuState, aabb: AxisAlignedBB, block: IBlockState): DanmakuUpdate =
+    super.impactBlock(danmaku, aabb, block).addCallbackIf(danmaku.user.isDefined && !danmaku.world.isRemote) {
+      val user = danmaku.user.get
+      val center = aabb.getCenter
+
+      user.rotationYaw = danmaku.orientation.yaw.toFloat
+      user.rotationPitch = danmaku.orientation.pitch.toFloat
+      user.setPositionAndUpdate(center.x, center.y, center.z)
     }
-  }
+
+  override protected def impactEntity(danmaku: DanmakuState, entity: Entity): DanmakuUpdate =
+    super.impactEntity(danmaku, entity).addCallbackIf(danmaku.user.isDefined && !danmaku.world.isRemote) {
+      val user = danmaku.user.get
+
+      user.rotationYaw = danmaku.orientation.yaw.toFloat
+      user.rotationPitch = danmaku.orientation.pitch.toFloat
+      user.setPositionAndUpdate(entity.posX, entity.posY, entity.posZ)
+    }
 }

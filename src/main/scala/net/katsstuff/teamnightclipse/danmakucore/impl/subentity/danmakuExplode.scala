@@ -22,7 +22,9 @@ import net.katsstuff.teamnightclipse.mirror.data.{Quat, Vector3}
 import net.katsstuff.teamnightclipse.danmakucore.danmaku.subentity.SubEntityType
 import net.katsstuff.teamnightclipse.danmakucore.lib.data.LibSubEntities
 import net.katsstuff.teamnightclipse.danmakucore.scalastuff.DanmakuCreationHelper
-import net.minecraft.util.math.RayTraceResult
+import net.minecraft.block.state.IBlockState
+import net.minecraft.entity.Entity
+import net.minecraft.util.math.{AxisAlignedBB, RayTraceResult}
 
 private[danmakucore] class SubEntityTypeDanmakuExplosion(name: String) extends SubEntityType(name) {
   override def instantiate = new SubEntityDanmakuExplosion
@@ -30,8 +32,11 @@ private[danmakucore] class SubEntityTypeDanmakuExplosion(name: String) extends S
 
 private[subentity] class SubEntityDanmakuExplosion extends SubEntityDefault {
 
-  override protected def impact(danmaku: DanmakuState, raytrace: RayTraceResult): DanmakuUpdate =
-    super.impact(danmaku, raytrace).addCallbackIf(!danmaku.world.isRemote)(createSphere(danmaku))
+  override protected def impactBlock(danmaku: DanmakuState, aabb: AxisAlignedBB, block: IBlockState): DanmakuUpdate =
+    super.impactBlock(danmaku, aabb, block).addCallbackIf(!danmaku.world.isRemote)(createSphere(danmaku))
+
+  override protected def impactEntity(danmaku: DanmakuState, entity: Entity): DanmakuUpdate =
+    super.impactEntity(danmaku, entity).addCallbackIf(!danmaku.world.isRemote)(createSphere(danmaku))
 
   override def subEntityTick(danmaku: DanmakuState): DanmakuUpdate =
     super.subEntityTick(danmaku).addCallbackIf(danmaku.isShotEndTime && !danmaku.world.isRemote)(createSphere(danmaku))
