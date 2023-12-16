@@ -1,0 +1,9 @@
+{
+    "required": true,
+    "package": "net.katsstuff.danmakucore.mixin",
+    "compatibilityLevel": "JAVA_8",
+    "client": [
+        "MixinLevelRenderer"
+    ],
+    "refmap": "mixins.danmakucore.refmap.json"
+}
