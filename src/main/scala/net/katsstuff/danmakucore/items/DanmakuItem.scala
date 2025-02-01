@@ -1,12 +1,15 @@
 package net.katsstuff.danmakucore.items
 
-import net.katsstuff.danmakucore.client.mirrorshaders.ShaderManager
+import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.danmaku.TopDanmakuBehaviorsHandler.{BehaviorPair, DanmakuSpawnData}
-import net.katsstuff.danmakucore.danmaku.behaviors.{ComplexMotionBehavior, DanmakuBehaviors, RotateOrientationBehavior, SimpleMotionBehavior}
+import net.katsstuff.danmakucore.danmaku.behaviors.{
+  ComplexMotionBehavior,
+  DanmakuBehaviors,
+  RotateOrientationBehavior,
+}
 import net.katsstuff.danmakucore.danmaku.data.ShotData
 import net.katsstuff.danmakucore.danmaku.form.DanCoreForms
 import net.katsstuff.danmakucore.math.{Quat, Vector3}
-import net.katsstuff.danmakucore.{DanmakuCore, DanmakuCreativeTab}
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.context.UseOnContext
@@ -14,7 +17,7 @@ import net.minecraft.world.item.{Item, ItemStack}
 import net.minecraft.world.level.Level
 import net.minecraft.world.{InteractionHand, InteractionResult, InteractionResultHolder}
 
-class DanmakuItem(todo: () => Nothing) extends Item(new Item.Properties().tab(DanmakuCreativeTab)) {
+class DanmakuItem(todo: () => Nothing) extends Item(new Item.Properties()) {
   override def getDescriptionId(stack: ItemStack): String =
     super.getDescriptionId(stack) // TODO s"${getDescriptionId()}.${todo}"
 
@@ -25,12 +28,7 @@ class DanmakuItem(todo: () => Nothing) extends Item(new Item.Properties().tab(Da
     println(player.getRotationVector.x)
     println(player.getRotationVector.y)
 
-    if (player.isCrouching) {
-      if (level.isClientSide) {
-        ShaderManager.reloadBlocking()
-        println("Reloaded shaders")
-      }
-    } else if (!level.isClientSide) {
+    if (!level.isClientSide) {
       DanmakuCore.spawnDanmaku(
         Seq(
           DanmakuSpawnData(
@@ -41,7 +39,10 @@ class DanmakuItem(todo: () => Nothing) extends Item(new Item.Properties().tab(Da
               endTime = 500
             ),
             Seq(
-              BehaviorPair(DanmakuBehaviors.complexMotionBehavior, ComplexMotionBehavior.Data(Vector3.directionEntity(player) * 0.002F)),
+              BehaviorPair(
+                DanmakuBehaviors.complexMotionBehavior,
+                ComplexMotionBehavior.Data(Vector3.directionEntity(player) * 0.002F)
+              ),
               BehaviorPair(DanmakuBehaviors.rotateOrientationBehavior, RotateOrientationBehavior.Data(Quat.Identity)),
               BehaviorPair(DanmakuBehaviors.mandatoryEndBehavior, ())
             ),

@@ -1,45 +1,106 @@
 package net.katsstuff.danmakucore.client.mirrormodels
 
 import java.io.IOException
-import java.nio.FloatBuffer
-import scala.collection.mutable
-import scala.jdk.CollectionConverters._
-import scala.util.Using
+
+import scala.jdk.CollectionConverters.*
+
 import com.mojang.blaze3d.platform.GlConst
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.math.{Vector3f, Vector4f}
+import com.mojang.blaze3d.vertex.*
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.ShaderInstance
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.phys.Vec2
-import net.minecraftforge.client.model.obj.{MaterialLibrary, OBJLoader, OBJModel}
-import org.lwjgl.opengl.{GL11, GL15, GL20, GL30, GL31}
-import org.lwjgl.system.{MemoryStack, MemoryUtil}
+import net.minecraftforge.client.model.obj.{ObjLoader, ObjMaterialLibrary, ObjModel}
+import org.joml.{Matrix4f, Vector3f, Vector4f}
+import org.lwjgl.opengl.{GL11, GL15, GL31}
 
-class MirrorMesh(val vbo: Int, val vao: Int, val ebo: Int, val indicesCount: Int, val vertexCount: Int) {
+class MirrorMesh(val vertexBuffer: VertexBuffer, val drawState: BufferBuilder.DrawState) {
 
-  def draw(): Unit = {
+  private def setupShader(modelViewMatrix: Matrix4f, projectionMatrix: Matrix4f, shader: ShaderInstance): Unit = {
+    for (i <- 0 until 12) do {
+      val j = RenderSystem.getShaderTexture(i)
+      shader.setSampler("Sampler" + i, j)
+    }
+
+    if (shader.MODEL_VIEW_MATRIX != null) shader.MODEL_VIEW_MATRIX.set(modelViewMatrix)
+
+    if (shader.PROJECTION_MATRIX != null) shader.PROJECTION_MATRIX.set(projectionMatrix)
+
+    if (shader.INVERSE_VIEW_ROTATION_MATRIX != null)
+      shader.INVERSE_VIEW_ROTATION_MATRIX.set(RenderSystem.getInverseViewRotationMatrix)
+
+    if (shader.COLOR_MODULATOR != null) shader.COLOR_MODULATOR.set(RenderSystem.getShaderColor)
+
+    if (shader.GLINT_ALPHA != null) shader.GLINT_ALPHA.set(RenderSystem.getShaderGlintAlpha)
+
+    if (shader.FOG_START != null) shader.FOG_START.set(RenderSystem.getShaderFogStart)
+
+    if (shader.FOG_END != null) shader.FOG_END.set(RenderSystem.getShaderFogEnd)
+
+    if (shader.FOG_COLOR != null) shader.FOG_COLOR.set(RenderSystem.getShaderFogColor)
+
+    if (shader.FOG_SHAPE != null) shader.FOG_SHAPE.set(RenderSystem.getShaderFogShape.getIndex)
+
+    if (shader.TEXTURE_MATRIX != null) shader.TEXTURE_MATRIX.set(RenderSystem.getTextureMatrix)
+
+    if (shader.GAME_TIME != null) shader.GAME_TIME.set(RenderSystem.getShaderGameTime)
+
+    if (shader.SCREEN_SIZE != null) {
+      val window = Minecraft.getInstance.getWindow
+      shader.SCREEN_SIZE.set(window.getWidth.toFloat, window.getHeight.toFloat)
+    }
+
+    if (
+      shader.LINE_WIDTH != null && ((drawState.mode == VertexFormat.Mode.LINES) || (drawState.mode == VertexFormat.Mode.LINE_STRIP))
+    ) shader.LINE_WIDTH.set(RenderSystem.getShaderLineWidth)
+
+    RenderSystem.setupShaderLights(shader)
+  }
+
+  def drawWithShader(
+      modelViewMatrix: Matrix4f,
+      projectionMatrix: Matrix4f,
+      shader: ShaderInstance
+  ): Unit = {
+    setupShader(modelViewMatrix, projectionMatrix, shader)
+    shader.apply()
     bind()
-    RenderSystem.drawElements(GlConst.GL_TRIANGLES, indicesCount, GlConst.GL_UNSIGNED_INT)
+    GL11.glDrawElements(
+      VertexFormat.Mode.QUADS.asGLMode,
+      drawState.indexCount,
+      VertexFormat.IndexType.least(drawState.indexCount).asGLType,
+      0
+    )
     unbind()
+    shader.clear()
   }
 
-  def drawInstanced(count: Int): Unit = {
+  def drawInstancedWithShader(
+      modelViewMatrix: Matrix4f,
+      projectionMatrix: Matrix4f,
+      shader: ShaderInstance,
+      count: Int
+  ): Unit = {
+    setupShader(modelViewMatrix, projectionMatrix, shader)
+    shader.apply()
     bind()
-    GL31.glDrawElementsInstanced(GlConst.GL_TRIANGLES, indicesCount, GlConst.GL_UNSIGNED_INT, 0, count)
+    GL31.glDrawElementsInstanced(
+      VertexFormat.Mode.QUADS.asGLMode,
+      drawState.indexCount,
+      VertexFormat.IndexType.least(drawState.indexCount).asGLType,
+      0,
+      count
+    )
     unbind()
+    shader.clear()
   }
 
-  def bind(): Unit =
-    RenderSystem.glBindVertexArray(() => vao)
+  def bind(): Unit = vertexBuffer.bind()
 
-  def unbind(): Unit =
-    RenderSystem.glBindVertexArray(() => 0)
+  def unbind(): Unit = VertexBuffer.unbind()
 
-  def delete(): Unit = {
-    RenderSystem.glDeleteVertexArrays(vao)
-    RenderSystem.glDeleteBuffers(vbo)
-    RenderSystem.glDeleteBuffers(ebo)
-  }
+  def delete(): Unit = vertexBuffer.close()
 }
 object MirrorMesh {
 
@@ -50,14 +111,14 @@ object MirrorMesh {
     obj => field.get(obj).asInstanceOf[B]
   }
 
-  private val objModelClass = classOf[OBJModel]
+  private val objModelClass = classOf[ObjModel]
   private val positionsFieldGetter =
-    accessibleFieldGetter[OBJModel, java.util.List[Vector3f]](objModelClass, "positions")
-  private val texCoordsFieldGetter = accessibleFieldGetter[OBJModel, java.util.List[Vec2]](objModelClass, "texCoords")
-  private val normalsFieldGetter   = accessibleFieldGetter[OBJModel, java.util.List[Vector3f]](objModelClass, "normals")
-  private val colorsFieldGetter    = accessibleFieldGetter[OBJModel, java.util.List[Vector4f]](objModelClass, "colors")
+    accessibleFieldGetter[ObjModel, java.util.List[Vector3f]](objModelClass, "positions")
+  private val texCoordsFieldGetter = accessibleFieldGetter[ObjModel, java.util.List[Vec2]](objModelClass, "texCoords")
+  private val normalsFieldGetter   = accessibleFieldGetter[ObjModel, java.util.List[Vector3f]](objModelClass, "normals")
+  private val colorsFieldGetter    = accessibleFieldGetter[ObjModel, java.util.List[Vector4f]](objModelClass, "colors")
   private val objModelPartsGetter =
-    accessibleFieldGetter[OBJModel, java.util.Map[String, AnyRef]](objModelClass, "parts")
+    accessibleFieldGetter[ObjModel, java.util.Map[String, AnyRef]](objModelClass, "parts")
 
   private val modelObjectClass = objModelClass.getDeclaredClasses.find(_.getSimpleName == "ModelObject").get
   private val modelGroupClass  = objModelClass.getDeclaredClasses.find(_.getSimpleName == "ModelGroup").get
@@ -76,7 +137,7 @@ object MirrorMesh {
     )
 
   private val modelMeshMatGetter =
-    accessibleFieldGetter[AnyRef, MaterialLibrary.Material](
+    accessibleFieldGetter[AnyRef, ObjMaterialLibrary.Material](
       modelMeshClass.asInstanceOf[Class[_ <: AnyRef]],
       "mat"
     )
@@ -87,25 +148,16 @@ object MirrorMesh {
       "faces"
     )
 
-  //TODO: Make it work with reloading
-  //noinspection DuplicatedCode
+  // TODO: Make it work with reloading
+  // noinspection DuplicatedCode
   def make(
       modelLoc: ResourceLocation,
-      posIdx: Int,
-      texCoordsIdx: Option[Int] = None,
-      normalsIdx: Option[Int] = None,
-      colorsIdx: Option[Int] = None,
+      vertexFormat: VertexFormat,
       initExtra: () => Unit = () => ()
   ): MirrorMesh = {
-    val objModel = OBJLoader.INSTANCE.loadModel(
-      new OBJModel.ModelSettings(modelLoc, false, false, false, false, null)
+    val objModel = ObjLoader.INSTANCE.loadModel(
+      new ObjModel.ModelSettings(modelLoc, false, false, false, false, null)
     )
-
-    val vao: Int = GL30.glGenVertexArrays()
-    GL30.glBindVertexArray(vao)
-
-    val vbo: Int = GL15.glGenBuffers
-    val ebo: Int = GL15.glGenBuffers
 
     def requireOnlyOne[A](iterable: Iterable[A]): A = {
       if (iterable.isEmpty) throw new IOException("Requires at least one Object in OBJ file")
@@ -117,150 +169,121 @@ object MirrorMesh {
       else first
     }
 
-    val (indicesCount, vertexCount) = Using(MemoryStack.stackPush()) { stack =>
-      val positions = positionsFieldGetter(objModel).asScala
-      val texCoords = texCoordsFieldGetter(objModel).asScala
-      val normals   = normalsFieldGetter(objModel).asScala
-      val colors    = colorsFieldGetter(objModel).asScala
+    val positions = positionsFieldGetter(objModel).asScala
+    val texCoords = texCoordsFieldGetter(objModel).asScala
+    val normals   = normalsFieldGetter(objModel).asScala
+    val colors    = colorsFieldGetter(objModel).asScala
 
-      val modelGroup = requireOnlyOne(objModelPartsGetter(objModel).asScala.values)
-      val groupMeshes = modelObjectMeshesGetter(modelGroup).asScala
-      val mesh = if (groupMeshes.isEmpty) {
-        val modelObj = requireOnlyOne(modelGroupPartsGetter(modelGroup).asScala.values)
-        requireOnlyOne(modelObjectMeshesGetter(modelObj).asScala)
-      } else {
-        requireOnlyOne(groupMeshes)
+    val modelGroup  = requireOnlyOne(objModelPartsGetter(objModel).asScala.values)
+    val groupMeshes = modelObjectMeshesGetter(modelGroup).asScala
+    val mesh = if (groupMeshes.isEmpty) {
+      val modelObj = requireOnlyOne(modelGroupPartsGetter(modelGroup).asScala.values)
+      requireOnlyOne(modelObjectMeshesGetter(modelObj).asScala)
+    } else {
+      requireOnlyOne(groupMeshes)
+    }
+
+    // Ignored for now
+    // val mat = modelMeshMatGetter(mesh)
+    val faces = modelMeshFacesGetter(mesh).asScala
+
+    // TODO: IBO is not generated optimally by this
+    val bb = Tesselator.getInstance().getBuilder
+    bb.begin(VertexFormat.Mode.TRIANGLES, vertexFormat)
+
+    faces.foreach { face =>
+      if (face.length != 3) {
+        throw new IOException("MirrorMesh can only use models with triangles")
       }
 
-      // Ignored for now
-      // val mat = modelMeshMatGetter(mesh)
-      val faces = modelMeshFacesGetter(mesh).asScala
+      val defaultNormal = {
+        val a  = positions(face(0)(0))
+        val ab = positions(face(1)(0))
+        val ac = positions(face(2)(0))
 
-      val indiciesCapacity = faces.length * 3
-      val indices =
-        if (indiciesCapacity <= 256) stack.callocInt(indiciesCapacity) else MemoryUtil.memCallocInt(indiciesCapacity)
+        val abs = new Vector3f(ab)
+        abs.sub(a)
+        val acs = new Vector3f(ac)
+        acs.sub(a)
+        abs.cross(acs)
+        abs.normalize
+        abs
+      }
 
-      val verticies = mutable.Map[Vector3f, (Vec2, Vector3f, Vector4f)]()
+      face.foreach { vertexArr =>
+        val pos      = positions(vertexArr(0))
+        val texCoord = vertexArr.lift(1).flatMap(texCoords.lift).getOrElse(Vec2.ZERO)
+        val normal   = vertexArr.lift(2).flatMap(normals.lift).getOrElse(defaultNormal)
+        val color    = vertexArr.lift(3).flatMap(colors.lift).getOrElse(new Vector4f(1, 1, 1, 1))
 
-      faces.foreach { face =>
-        if (face.length != 3) {
-          throw new IOException("MirrorMesh can only use models with triangles")
+        vertexFormat.getElements.asScala.foreach { element =>
+          element.getUsage match {
+            case VertexFormatElement.Usage.POSITION =>
+              bb.vertex(pos.x, pos.y, pos.z)
+
+            case VertexFormatElement.Usage.UV =>
+              bb.uv(texCoord.x, texCoord.y)
+
+            case VertexFormatElement.Usage.NORMAL =>
+              bb.normal(normal.x, normal.y, normal.z)
+            case VertexFormatElement.Usage.COLOR =>
+              bb.color(color.x, color.y, color.z, color.w)
+            case _ =>
+          }
         }
+        bb.endVertex()
+      }
+    }
 
-        val defaultNormal = {
-          val a = positions(face(0)(0))
-          val ab = positions(face(1)(0))
-          val ac = positions(face(2)(0))
-          val abs = ab.copy
-          abs.sub(a)
-          val acs = ac.copy
-          acs.sub(a)
-          abs.cross(acs)
-          abs.normalize
-          abs
-        }
-
-        face.foreach { faceArr =>
-          val posIdx = faceArr(0)
-
-          indices.put(posIdx)
-
-          verticies.put(
-            positions(posIdx),
-            (
-              faceArr.lift(1).flatMap(texCoords.lift).getOrElse(Vec2.ZERO),
-              faceArr.lift(2).flatMap(normals.lift).getOrElse(defaultNormal),
-              faceArr.lift(3).flatMap(colors.lift).getOrElse(new Vector4f(1, 1, 1, 1))
-            )
-          )
-        }
+    /*
+    extension (bb: BufferBuilder)
+      private def float(f: Float): Unit = {
+        bb.putFloat(0, f)
+        bb.nextElement()
       }
 
-      val sizePerVertex =
-        (3 +
-          (if (texCoordsIdx.isEmpty) 0 else 2) +
-          (if (normalsIdx.isEmpty) 0 else 3) +
-          (if (colorsIdx.isEmpty) 0 else 4)) * 4
+    val bb = Tesselator.getInstance().getBuilder
+    bb.begin(VertexFormat.Mode.QUADS, DanCoreShaders.entireDanmakuVertexFormat)
+    bb.vertex(0, 0, 0) /*.normal(0, 1, 0)*/ .color(1F, 0, 0, 1F) // .color(0, 0, 0, 1F)
+    // bb.float(1.1)
+    // bb.float(2.5)
+    // bb.float(3)
+    // bb.float(3)
+    bb.endVertex()
 
-      val verticiesCapacity = positions.length * sizePerVertex / 4
-      val verticesBuf: FloatBuffer =
-        if (verticiesCapacity <= 256) stack.callocFloat(verticiesCapacity)
-        else MemoryUtil.memCallocFloat(verticiesCapacity)
+    bb.vertex(0, 1, 0) /*.normal(0, 1, 0)*/ .color(0, 1F, 0, 1F) // .color(0, 0, 0, 1F)
+    // bb.float(1.1)
+    // bb.float(2.5)
+    // bb.float(3)
+    // bb.float(3)
+    bb.endVertex()
 
-      positions.foreach { pos =>
-        verticesBuf.put(pos.x())
-        verticesBuf.put(pos.y())
-        verticesBuf.put(pos.z())
+    bb.vertex(1, 1, 0) /*.normal(0, 1, 0)*/ .color(0, 0, 1F, 1F) // .color(0, 0, 0, 1F)
+    // bb.float(1.1)
+    // bb.float(2.5)
+    // bb.float(3)
+    // bb.float(3)
+    bb.endVertex()
 
-        val (vTexCoords, vNormals, vColors) = verticies(pos)
-        if (texCoordsIdx.isDefined) {
-          verticesBuf.put(vTexCoords.x)
-          verticesBuf.put(vTexCoords.y)
-        }
+    bb.vertex(1, 0, 0) /*.normal(0, 1, 0)*/ .color(0, 0, 0, 1F) // .color(0, 0, 0, 1F)
+    // bb.float(1.1)
+    // bb.float(2.5)
+    // bb.float(3)
+    // bb.float(3)
+    bb.endVertex()
+     */
 
-        if (normalsIdx.isDefined) {
-          verticesBuf.put(vNormals.x())
-          verticesBuf.put(vNormals.y())
-          verticesBuf.put(vNormals.z())
-        }
+    val vb             = new VertexBuffer(VertexBuffer.Usage.STATIC)
+    val renderedBuffer = bb.end()
+    vb.bind()
+    vb.upload(renderedBuffer)
+    initExtra()
 
-        if (colorsIdx.isDefined) {
-          verticesBuf.put(vColors.x())
-          verticesBuf.put(vColors.y())
-          verticesBuf.put(vColors.z())
-          verticesBuf.put(vColors.w())
-        }
-      }
+    VertexBuffer.unbind()
+    GL15.glBindBuffer(GlConst.GL_ARRAY_BUFFER, 0)
+    GL15.glBindBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, 0)
 
-
-      verticesBuf.flip()
-      GL15.glBindBuffer(GlConst.GL_ARRAY_BUFFER, vbo)
-      GL15.glBufferData(GlConst.GL_ARRAY_BUFFER, verticesBuf, GlConst.GL_STATIC_DRAW)
-
-      indices.flip()
-      GL15.glBindBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, ebo)
-      GL15.glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, indices, GlConst.GL_STATIC_DRAW)
-
-      GL20.glVertexAttribPointer(posIdx, 3, GlConst.GL_FLOAT, false, sizePerVertex, 0)
-      GL20.glEnableVertexAttribArray(posIdx)
-
-      texCoordsIdx.foreach { texCoordsIdx =>
-        GL20.glVertexAttribPointer(texCoordsIdx, 2, GlConst.GL_FLOAT, false, sizePerVertex, 3 * 4)
-        GL20.glEnableVertexAttribArray(texCoordsIdx)
-      }
-
-      normalsIdx.foreach { normalsIdx =>
-        val offset = if (texCoordsIdx.isEmpty) 3 else 5
-
-        GL20.glVertexAttribPointer(normalsIdx, 3, GlConst.GL_FLOAT, false, sizePerVertex, offset * 4)
-        GL20.glEnableVertexAttribArray(normalsIdx)
-      }
-
-      colorsIdx.foreach { colorsIdx =>
-        val normalsOffset = if (texCoordsIdx.isEmpty) 3 else 5
-        val offset = if (normalsIdx.isEmpty) normalsOffset else normalsOffset + 3
-
-        GL20.glVertexAttribPointer(colorsIdx, 4, GlConst.GL_FLOAT, false, sizePerVertex, offset * 4)
-        GL20.glEnableVertexAttribArray(colorsIdx)
-      }
-
-      initExtra()
-
-      GL30.glBindVertexArray(0)
-      GL15.glBindBuffer(GlConst.GL_ARRAY_BUFFER, 0)
-      GL15.glBindBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, 0)
-
-      if (verticiesCapacity > 256) {
-        MemoryUtil.memFree(verticesBuf)
-      }
-      if (indiciesCapacity > 256) {
-        MemoryUtil.memFree(indices)
-      }
-
-      (faces.length * 3, verticies.size)
-    }.get
-
-    new MirrorMesh(vbo, vao, ebo, indicesCount, vertexCount)
+    new MirrorMesh(vb, renderedBuffer.drawState())
   }
 
 }

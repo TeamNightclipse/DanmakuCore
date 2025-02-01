@@ -1,3 +1,4 @@
+//noinspection ScalaUnusedSymbol,ScalaWeakerAccess
 package net.katsstuff.danmakucore.math
 
 import java.text.NumberFormat
@@ -418,9 +419,9 @@ object MutableQuat {
   }
 
   def fromEuler(yaw: Float, pitch: Float, roll: Float): MutableQuat = {
-    val clampedPitch = if (pitch > 90F || pitch < -90F) Math.IEEEremainder(pitch, 180F) else pitch
-    val clampedYaw   = if (yaw > 180F || yaw < -180F) Math.IEEEremainder(yaw, 360F) else yaw
-    val clampedRoll  = if (roll > 180F || roll < -180F) Math.IEEEremainder(roll, 360F) else roll
+    val clampedPitch = if (pitch > 90F || pitch < -90F) Math.IEEEremainder(pitch, 180F) else pitch.toDouble
+    val clampedYaw   = if (yaw > 180F || yaw < -180F) Math.IEEEremainder(yaw, 360F) else yaw.toDouble
+    val clampedRoll  = if (roll > 180F || roll < -180F) Math.IEEEremainder(roll, 360F) else roll.toDouble
 
     fromEulerRad(
       Math.toRadians(clampedYaw).toFloat,
@@ -574,9 +575,9 @@ object Quat {
   }
 
   def fromEuler(yaw: Float, pitch: Float, roll: Float): Quat = {
-    val clampedPitch = if (pitch > 90F || pitch < -90F) Math.IEEEremainder(pitch, 180F) else pitch
-    val clampedYaw   = if (yaw > 180F || yaw < -180F) Math.IEEEremainder(yaw, 360F) else yaw
-    val clampedRoll  = if (roll > 180F || roll < -180F) Math.IEEEremainder(roll, 360F) else roll
+    val clampedPitch = if (pitch > 90F || pitch < -90F) Math.IEEEremainder(pitch, 180F) else pitch.toDouble
+    val clampedYaw   = if (yaw > 180F || yaw < -180F) Math.IEEEremainder(yaw, 360F) else yaw.toDouble
+    val clampedRoll  = if (roll > 180F || roll < -180F) Math.IEEEremainder(roll, 360F) else roll.toDouble
 
     fromEulerRad(
       Math.toRadians(clampedYaw).toFloat,

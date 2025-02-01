@@ -1,6 +1,6 @@
 modLoader = "kotori_scala"
 #modLoader = "javafml"
-loaderVersion = "[2.13.3,2.14.0)"
+loaderVersion = "[3.3.0,)"
 #loaderVersion = "[41,)"
 license = "GNU LGPL 3.0"
 # A URL to refer people to when problems occur with this mod
@@ -32,13 +32,13 @@ description = '''
 [[dependencies.danmakucore]]
 modId = "forge"
 mandatory = true
-versionRange = "[41,)"
+versionRange = "[47.3.0,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.danmakucore]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.19,1.20)"
+versionRange = "[1.20.1,)"
 ordering = "NONE"
 side = "BOTH"

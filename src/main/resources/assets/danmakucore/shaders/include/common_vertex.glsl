@@ -1,0 +1,1 @@
+#moj_import <danmakucore:common_shared.glsl>

@@ -1,8 +1,9 @@
+//noinspection ScalaUnusedSymbol,ScalaWeakerAccess
 package net.katsstuff.danmakucore.math
 
-import com.mojang.math.Matrix4f
-
 import java.nio.FloatBuffer
+
+import org.joml.Matrix4f
 
 sealed trait AbstractMat4 { self =>
   type Self <: AbstractMat4 { type Self = self.Self }
@@ -188,25 +189,25 @@ sealed trait AbstractMat4 { self =>
     )
   }
 
-  // noinspection DuplicatedCode
-  def addToBuffer(buffer: FloatBuffer): Unit = {
-    buffer.put(m00.toFloat)
-    buffer.put(m01.toFloat)
-    buffer.put(m02.toFloat)
-    buffer.put(m03.toFloat)
-    buffer.put(m10.toFloat)
-    buffer.put(m11.toFloat)
-    buffer.put(m12.toFloat)
-    buffer.put(m13.toFloat)
-    buffer.put(m20.toFloat)
-    buffer.put(m21.toFloat)
-    buffer.put(m22.toFloat)
-    buffer.put(m23.toFloat)
-    buffer.put(m30.toFloat)
-    buffer.put(m31.toFloat)
-    buffer.put(m32.toFloat)
-    buffer.put(m33.toFloat)
-  }
+  // Be careful here. Column major vs row major
+  def toMatrix4f: Matrix4f = new Matrix4f(
+    m00.toFloat,
+    m10.toFloat,
+    m20.toFloat,
+    m30.toFloat,
+    m01.toFloat,
+    m11.toFloat,
+    m21.toFloat,
+    m31.toFloat,
+    m02.toFloat,
+    m12.toFloat,
+    m22.toFloat,
+    m32.toFloat,
+    m03.toFloat,
+    m13.toFloat,
+    m23.toFloat,
+    m33.toFloat
+  )
 
   def asMutable: MutableMat4
 
@@ -395,4 +396,23 @@ object Mat4 {
       0,       0,       0,       1
     )
   // format: ON
+
+  def fromMatrix4f(mat: Matrix4f): Mat4 = Mat4(
+    mat.m00,
+    mat.m10,
+    mat.m20,
+    mat.m30,
+    mat.m01,
+    mat.m11,
+    mat.m21,
+    mat.m31,
+    mat.m02,
+    mat.m12,
+    mat.m22,
+    mat.m32,
+    mat.m03,
+    mat.m13,
+    mat.m23,
+    mat.m33
+  )
 }

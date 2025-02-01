@@ -1,3 +1,4 @@
+//noinspection ScalaUnusedSymbol,ScalaWeakerAccess
 package net.katsstuff.danmakucore.math
 
 import java.text.NumberFormat
@@ -217,7 +218,7 @@ sealed trait AbstractVector3 extends Any { self =>
 
   def toVec3d: Vec3 = new Vec3(x, y, z)
 
-  def toBlockPos: BlockPos = new BlockPos(x, y, z)
+  def toBlockPos: BlockPos = new BlockPos(x.toInt, y.toInt, z.toInt)
 
   override def toString: String = {
     val format = NumberFormat.getNumberInstance
@@ -603,7 +604,7 @@ object Vector3 {
     override def y: Double = toVec3i.getY
     override def z: Double = toVec3i.getZ
 
-    override def create(x: Double, y: Double, z: Double): WrappedVec3i = new Vec3i(x, y, z)
+    override def create(x: Double, y: Double, z: Double): WrappedVec3i = new Vec3i(x.toInt, y.toInt, z.toInt)
     override def asMutable: MutableVector3                             = MutableVector3(x, y, z)
     override def asImmutable: Vector3                                  = Vector3(x, y, z)
 

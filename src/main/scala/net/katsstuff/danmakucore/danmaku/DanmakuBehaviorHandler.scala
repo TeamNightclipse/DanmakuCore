@@ -95,7 +95,7 @@ class DanmakuBehaviorHandler(
     @tailrec
     def registerBehaviorData(
         idx: Int,
-        behaviorsForDanmaku: List[TopDanmakuBehaviorsHandler.BehaviorPair[A] forSome { type A }],
+        behaviorsForDanmaku: List[TopDanmakuBehaviorsHandler.BehaviorPair[_]],
         handlerBehaviors: List[Behavior[_]]
     ): Unit = (behaviorsForDanmaku, handlerBehaviors) match {
       case (Nil, Nil) => ()

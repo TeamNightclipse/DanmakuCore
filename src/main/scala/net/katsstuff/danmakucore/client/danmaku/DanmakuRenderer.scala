@@ -1,69 +1,159 @@
 package net.katsstuff.danmakucore.client.danmaku
 
-import scala.util.Using
-import net.katsstuff.danmakucore.client.mirrorshaders.ShaderManager
+import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.math.Axis
+import net.katsstuff.danmakucore.client.DanCoreShaders
 import net.katsstuff.danmakucore.danmaku.TopDanmakuBehaviorsHandler
 import net.katsstuff.danmakucore.danmaku.form.DanCoreForms
-import net.katsstuff.danmakucore.events.AfterEntityRenderEvent
 import net.katsstuff.danmakucore.math.{Mat4, Vector3}
+import net.minecraft.client.renderer.{GameRenderer, LevelRenderer, RenderType}
+import net.minecraft.client.{Camera, Minecraft}
+import net.minecraftforge.client.event.{RenderGuiOverlayEvent, RenderLevelStageEvent}
+import net.minecraftforge.event.TickEvent
+import net.minecraftforge.event.TickEvent.RenderTickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import org.lwjgl.system.MemoryStack
+import org.joml.{AxisAngle4f, Matrix4f, Vector3f}
 
 class DanmakuRenderer(handler: TopDanmakuBehaviorsHandler) {
 
   private var hasRunInit = false
 
   def init(): Unit = {
-    DanCoreForms.DanCoreForms.getEntries.forEach(f => f.get().clientForm.init())
+    DanCoreForms.registry.getEntries.forEach(f => f.get().clientForm.init())
     hasRunInit = true
   }
 
+  @SubscribeEvent def onRenderHud(event: RenderGuiOverlayEvent.Pre): Unit = {
+    val minecraft = Minecraft.getInstance()
+    if (event.getOverlay.id.getPath != "chat_panel") {
+      return
+    }
+
+    val gameRenderer = minecraft.gameRenderer
+    val camera       = gameRenderer.getMainCamera
+
+    val pose = new PoseStack
+    pose.mulPose(Axis.ZP.rotationDegrees(0))
+
+    pose.mulPose(Axis.XP.rotationDegrees(camera.getXRot))
+    pose.mulPose(Axis.YP.rotationDegrees(camera.getYRot + 180.0F))
+
+    // renderDanmaku(camera, pose, gameRenderer.getProjectionMatrix(minecraft.options.fov.get().toInt))
+
+    // val gui = new GuiGraphics(minecraft, minecraft.renderBuffers().bufferSource())
+    // gui.fillGradient(0, 0, 200, 200, 0xFF0000FF, 0x00FF00FF)
+
+    // val bb = minecraft.renderBuffers().bufferSource().getBuffer(RenderType.gui())// Tesselator.getInstance().getBuilder
+    // bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR)
+    // bb.vertex(0, 0, 0).color(1F, 0, 0, 1F).endVertex()
+    // bb.vertex(0, 300, 0).color(0, 1F, 0, 1F).endVertex()
+    // bb.vertex(300, 300, 0).color(0, 0, 1F, 1F).endVertex()
+    // bb.vertex(300, 0, 0).color(0, 0, 0, 1F).endVertex()
+    // minecraft.renderBuffers().bufferSource().endLastBatch()
+    // Tesselator.getInstance().end()
+
+    // gui.drawCenteredString(minecraft.font, "Testing", 200, 200, 0xFFFFFFFF)
+  }
+
+  @SubscribeEvent def onRender(event: RenderTickEvent): Unit = {}
+
+  @SubscribeEvent def onRenderAfterLevel(event: RenderLevelStageEvent): Unit = {
+    // TODO: Change this to after_particles. Works better
+    if (event.getStage != RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+      return
+    }
+
+    renderDanmaku(event.getCamera, event.getPoseStack, event.getProjectionMatrix)
+  }
+
+  // renderDanmaku(event.getCamera, event.getPoseStack, event.getProjectionMatrix)
+
   // noinspection DuplicatedCode
-  @SubscribeEvent def onRenderAfterLevel(event: AfterEntityRenderEvent): Unit = {
+  private def renderDanmaku(camera: Camera, pose: PoseStack, projMatrix: Matrix4f): Unit = {
     if (!hasRunInit) {
       init()
     }
 
-    val renderData = handler.renderData(event.getPartialTick)
+    val scaleMat = new Matrix4f()
+    scaleMat.scaling(1F)
+
+    // val renderData = handler.renderData(event.getPartialTick)
+    val renderData = Vector(
+      TopDanmakuBehaviorsHandler.RenderData(
+        form = DanCoreForms.SphereForm.get(),
+        renderProperties =
+          DanCoreForms.SphereForm.get().clientForm.defaultAttributeValues.map(t => t._1 -> t._2.default) ++ Map(
+            "coreSize"     -> 0.75F,
+            "coreHardness" -> 2.5F,
+            "edgeHardness" -> 5.0F,
+            "edgeGlow"     -> 3.0F
+          ),
+        modelMat = (Mat4.fromMatrix4f(scaleMat) * Mat4
+          .fromAxes(
+            Vector3.Right,
+            Vector3.Up,
+            Vector3.Forward,
+            Vector3(2, -59, 2)
+          )).asMutable,
+        modelViewMat = Mat4.Identity.asMutable,
+        0xFFFFFFFF,
+        0xFFFF0000,
+        5,
+        80,
+        distanceFromCamera = 15
+      ),
+      TopDanmakuBehaviorsHandler.RenderData(
+        form = DanCoreForms.SphereForm.get(),
+        renderProperties =
+          DanCoreForms.SphereForm.get().clientForm.defaultAttributeValues.map(t => t._1 -> t._2.default) ++ Map(
+            "coreSize"     -> 0.75F,
+            "coreHardness" -> 2.5F,
+            "edgeHardness" -> 5.0F,
+            "edgeGlow"     -> 3.0F
+          ),
+        modelMat = (Mat4.fromMatrix4f(scaleMat) * Mat4
+          .fromAxes(
+            Vector3.Right,
+            Vector3.Up,
+            Vector3.Forward,
+            Vector3(-2, -59, -2)
+          )).asMutable,
+        modelViewMat = Mat4.Identity.asMutable,
+        0xFFFFFFFF,
+        0xFF00FF00,
+        5,
+        80,
+        distanceFromCamera = 15
+      )
+    )
 
     if (renderData.nonEmpty) {
-      val cameraPos = event.getCamera.getPosition
+      val cameraPos = camera.getPosition
 
-      val poseStack = event.getPoseStack
-      poseStack.pushPose()
+      pose.pushPose()
+      pose.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z)
+      val modelViewMatrix = pose.last.pose
 
-      poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z)
+      if (Math.random() > 0.99) {
+        val pos = new Vector3f()
+        modelViewMatrix.getTranslation(pos)
+        println(s"Pos: $pos")
+        val rot = new AxisAngle4f()
+        modelViewMatrix.getRotation(rot)
+        println(s"Rot: $rot")
+        val scale = new Vector3f()
+        modelViewMatrix.getScale(scale)
+        println(s"Scale: $scale")
+        println()
+      }
 
-      val modelViewMatrix = poseStack.last.pose // Make sure this is correct
-      val projectionMatrix = event.getProjectionMatrix
+      val originalShader = RenderSystem.getShader
+      val tempVec        = Vector3.Zero.asMutable
 
-      Using(MemoryStack.stackPush()) { stack =>
-        val tempVec = Vector3.Zero.asMutable
-
-        val buffer = stack.mallocFloat(16)
-        modelViewMatrix.store(buffer)
-        val modelViewMat = Mat4(
-          m00 = buffer.get(),
-          m01 = buffer.get(),
-          m02 = buffer.get(),
-          m03 = buffer.get(),
-          m10 = buffer.get(),
-          m11 = buffer.get(),
-          m12 = buffer.get(),
-          m13 = buffer.get(),
-          m20 = buffer.get(),
-          m21 = buffer.get(),
-          m22 = buffer.get(),
-          m23 = buffer.get(),
-          m30 = buffer.get(),
-          m31 = buffer.get(),
-          m32 = buffer.get(),
-          m33 = buffer.get()
-        )
-
-        renderData
-          .filter { data =>
-            /*
+      renderData.view
+        .filter { data =>
+          /*
             val pos = tempVec.set(
               data.modelMat.m03,
               data.modelMat.m13,
@@ -82,40 +172,70 @@ class DanmakuRenderer(handler: TopDanmakuBehaviorsHandler) {
               pos.z + scaleZ
             )
             frustum.isVisible(aabb)
-             */
+           */
 
-            true
-          }
-          .view
-          .map { data =>
-            val dataModelViewMat = data.modelViewMat
-            modelViewMat.multiplyMutableDest(data.modelMat, dataModelViewMat)
-            tempVec.set(
-              dataModelViewMat.m03,
-              dataModelViewMat.m13,
-              dataModelViewMat.m23
-            )
+          true
+        }
+        .groupBy(_.form.clientForm.renderType)
+        .foreach { case (renderType, danmaku) =>
+          val minecraft = Minecraft.getInstance()
 
-            data.copy(distanceFromCamera = tempVec.lengthSquared)
-          }
-          .sortBy(_.distanceFromCamera)(implicitly[Ordering[Double]].reverse)
-          .toSeq
-          .groupBy(_.form.clientForm.shaderLoc)
-          .flatMap { case (shaderLoc, renderData) =>
-            ShaderManager.getProgram(shaderLoc).map(_ -> renderData)
-          }
-          .foreach { case (shader, formDanmaku) =>
-            shader.begin()
+          renderType.setupRenderState()
 
-            formDanmaku.groupBy(_.form.clientForm).foreach { case (form, danmaku) =>
-              form.render(shader, danmaku, modelViewMatrix, projectionMatrix)
+          // TODO: Need to figure out how these two differ
+          val modelViewMat = Mat4.fromMatrix4f(modelViewMatrix) // Mat4.fromMatrix4f(RenderSystem.getModelViewMatrix)
+
+          danmaku
+            .map { data =>
+              val dataModelViewMat = data.modelViewMat
+              modelViewMat.multiplyMutableDest(data.modelMat, dataModelViewMat)
+              tempVec.set(dataModelViewMat.m03, dataModelViewMat.m13, dataModelViewMat.m23)
+
+              data.copy(distanceFromCamera = tempVec.lengthSquared)
+            }
+            .toSeq
+            .sortBy(_.distanceFromCamera)(implicitly[Ordering[Double]].reverse)
+            .groupBy(_.form.clientForm)
+            .foreach { case (clientform, danmaku) =>
+              clientform.render(
+                RenderSystem.getShader,
+                danmaku,
+                modelViewMatrix,
+                RenderSystem.getProjectionMatrix
+              )
             }
 
-            shader.end()
-          }
-      }.get
+          renderType.clearRenderState()
 
-      poseStack.popPose()
+          // if Math.random() > 0.95 then println("Before: " + pose.last.pose)
+
+          val m = danmaku.head.modelMat
+          pose.pushPose()
+          pose.mulPoseMatrix(m.toMatrix4f)
+          // if Math.random() > 0.95 then println("After: " + pose.last.pose)
+
+          LevelRenderer.renderLineBox(
+            pose,
+            minecraft.renderBuffers().bufferSource().getBuffer(RenderType.lines()),
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1F,
+            0F,
+            0F,
+            1F,
+            0F,
+            1F,
+            0F
+          )
+          pose.popPose()
+        }
+
+      originalShader.apply()
+      pose.popPose()
     }
   }
 }

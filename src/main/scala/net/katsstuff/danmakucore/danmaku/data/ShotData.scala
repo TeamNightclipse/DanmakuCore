@@ -2,6 +2,7 @@ package net.katsstuff.danmakucore.danmaku.data
 
 import net.katsstuff.danmakucore.danmaku.form.Form
 
+//noinspection ScalaUnusedSymbol,ScalaWeakerAccess
 case class ShotData(
     form: Form,
     renderProperties: Map[String, Float] = Map.empty,

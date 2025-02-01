@@ -1,3 +1,4 @@
+//noinspection ScalaUnusedSymbol,ScalaWeakerAccess
 package net.katsstuff.danmakucore.math
 
 import net.minecraft.world.phys.AABB
