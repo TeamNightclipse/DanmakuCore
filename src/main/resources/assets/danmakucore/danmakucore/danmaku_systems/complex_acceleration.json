@@ -1,0 +1,105 @@
+{
+  "vectors": [
+    {
+      "name": "posX",
+      "default": 0.0,
+      "link": "PosX"
+    },
+    {
+      "name": "posY",
+      "default": 0.0,
+      "link": "PosY"
+    },
+    {
+      "name": "posZ",
+      "default": 0.0,
+      "link": "PosZ"
+    },
+    {
+      "name": "oldPosX",
+      "default": 0.0,
+      "link": "OldPosX"
+    },
+    {
+      "name": "oldPosY",
+      "default": 0.0,
+      "link": "OldPosY"
+    },
+    {
+      "name": "oldPosZ",
+      "default": 0.0,
+      "link": "OldPosZ"
+    },
+    {
+      "name": "motionX",
+      "default": 0.0
+    },
+    {
+      "name": "motionY",
+      "default": 0.0
+    },
+    {
+      "name": "motionZ",
+      "default": 0.0
+    },
+    {
+      "name": "accelerationX",
+      "default": 0.0
+    },
+    {
+      "name": "accelerationY",
+      "default": 0.0
+    },
+    {
+      "name": "accelerationZ",
+      "default": 0.0
+    }
+  ],
+  "operations": [
+    {
+      "type": "Assign",
+      "operands": ["posX"],
+      "dest": "oldPosX"
+    },
+    {
+      "type": "Assign",
+      "operands": ["posY"],
+      "dest": "oldPosY"
+    },
+    {
+      "type": "Assign",
+      "operands": ["posZ"],
+      "dest": "oldPosZ"
+    },
+    {
+      "type": "Add",
+      "operands": ["motionX", "accelerationX"],
+      "dest": "motionX"
+    },
+    {
+      "type": "Add",
+      "operands": ["motionY", "accelerationY"],
+      "dest": "motionY"
+    },
+    {
+      "type": "Add",
+      "operands": ["motionZ", "accelerationZ"],
+      "dest": "motionZ"
+    },
+    {
+      "type": "Add",
+      "operands": ["posX", "motionX"],
+      "dest": "posX"
+    },
+    {
+      "type": "Add",
+      "operands": ["posY", "motionY"],
+      "dest": "posY"
+    },
+    {
+      "type": "Add",
+      "operands": ["posZ", "motionZ"],
+      "dest": "posZ"
+    }
+  ]
+}

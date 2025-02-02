@@ -1,0 +1,111 @@
+{
+  "vectors": [
+    {
+      "name": "rotationX",
+      "default": 0.0
+    },
+    {
+      "name": "rotationY",
+      "default": 0.0
+    },
+    {
+      "name": "rotationZ",
+      "default": 0.0
+    },
+    {
+      "name": "rotationW",
+      "default": 0.0
+    },
+    {
+      "name": "forwardX",
+      "default": 0.0
+    },
+    {
+      "name": "forwardY",
+      "default": 0.0
+    },
+    {
+      "name": "forwardZ",
+      "default": 0.0
+    },
+    {
+      "name": "oldPosX",
+      "default": 0.0,
+      "link": "OldPosX"
+    },
+    {
+      "name": "oldPosY",
+      "default": 0.0,
+      "link": "OldPosY"
+    },
+    {
+      "name": "oldPosZ",
+      "default": 0.0,
+      "link": "OldPosZ"
+    },
+    {
+      "name": "posX",
+      "default": 0.0,
+      "link": "PosX"
+    },
+    {
+      "name": "posY",
+      "default": 0.0,
+      "link": "PosY"
+    },
+    {
+      "name": "posZ",
+      "default": 0.0,
+      "link": "PosZ"
+    }
+  ],
+  "operations": [
+    {
+      "type": "Assign",
+      "operands": ["posX"],
+      "dest": "oldPosX"
+    },
+    {
+      "type": "Assign",
+      "operands": ["posY"],
+      "dest": "oldPosY"
+    },
+    {
+      "type": "Assign",
+      "operands": ["posZ"],
+      "dest": "oldPosZ"
+    },
+    {
+      "type": "RotateVec",
+      "operands": [
+        "rotationX",
+        "rotationY",
+        "rotationZ",
+        "rotationW",
+        "forwardX",
+        "forwardY",
+        "forwardZ"
+      ],
+      "dest": [
+        "forwardX",
+        "forwardY",
+        "forwardZ"
+      ]
+    },
+    {
+      "type": "Fma",
+      "operands": ["forwardX", "motionX", "posX"],
+      "dest": "posX"
+    },
+    {
+      "type": "Fma",
+      "operands": ["forwardY", "motionY", "posY"],
+      "dest": "posY"
+    },
+    {
+      "type": "Fma",
+      "operands": ["forwardZ", "motionZ", "posZ"],
+      "dest": "posZ"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "vectors": [
+    {
+      "name": "posZ",
+      "default": 0.0,
+      "link": "PosZ"
+    },
+    {
+      "name": "oldPosZ",
+      "default": 0.0,
+      "link": "OldPosZ"
+    },
+    {
+      "name": "motionZ",
+      "default": 0.0
+    }
+  ],
+  "operations": [
+    {
+      "type": "Assign",
+      "operands": ["posZ"],
+      "dest": "oldPosZ"
+    },
+    {
+      "type": "Add",
+      "operands": ["posZ", "motionZ"],
+      "dest": "posZ"
+    }
+  ]
+}

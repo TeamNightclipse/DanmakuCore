@@ -1,0 +1,39 @@
+{
+  "vectors": [
+    {
+      "name": "posY",
+      "default": 0.0,
+      "link": "PosY"
+    },
+    {
+      "name": "oldPosY",
+      "default": 0.0,
+      "link": "OldPosY"
+    },
+    {
+      "name": "motionY",
+      "default": 0.0
+    },
+    {
+      "name": "gravityY",
+      "default": 0.0
+    }
+  ],
+  "operations": [
+    {
+      "type": "Assign",
+      "operands": ["posY"],
+      "dest": "oldPosY"
+    },
+    {
+      "type": "Gravity",
+      "operands": ["gravityY", "motionY"],
+      "dest": "motionY"
+    },
+    {
+      "type": "Add",
+      "operands": ["posY", "motionY"],
+      "dest": "posY"
+    }
+  ]
+}

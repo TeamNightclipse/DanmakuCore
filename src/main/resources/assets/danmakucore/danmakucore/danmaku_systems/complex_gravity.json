@@ -1,0 +1,105 @@
+{
+  "vectors": [
+    {
+      "name": "posX",
+      "default": 0.0,
+      "link": "PosX"
+    },
+    {
+      "name": "posY",
+      "default": 0.0,
+      "link": "PosY"
+    },
+    {
+      "name": "posZ",
+      "default": 0.0,
+      "link": "PosZ"
+    },
+    {
+      "name": "oldPosX",
+      "default": 0.0,
+      "link": "OldPosX"
+    },
+    {
+      "name": "oldPosY",
+      "default": 0.0,
+      "link": "OldPosY"
+    },
+    {
+      "name": "oldPosZ",
+      "default": 0.0,
+      "link": "OldPosZ"
+    },
+    {
+      "name": "motionX",
+      "default": 0.0
+    },
+    {
+      "name": "motionY",
+      "default": 0.0
+    },
+    {
+      "name": "motionZ",
+      "default": 0.0
+    },
+    {
+      "name": "gravityX",
+      "default": 0.0
+    },
+    {
+      "name": "gravityY",
+      "default": 0.0
+    },
+    {
+      "name": "gravityZ",
+      "default": 0.0
+    }
+  ],
+  "operations": [
+    {
+      "type": "Assign",
+      "operands": ["posX"],
+      "dest": "oldPosX"
+    },
+    {
+      "type": "Assign",
+      "operands": ["posY"],
+      "dest": "oldPosY"
+    },
+    {
+      "type": "Assign",
+      "operands": ["posZ"],
+      "dest": "oldPosZ"
+    },
+    {
+      "type": "Gravity",
+      "operands": ["gravityX", "motionX"],
+      "dest": "motionX"
+    },
+    {
+      "type": "Gravity",
+      "operands": ["gravityY", "motionY"],
+      "dest": "motionY"
+    },
+    {
+      "type": "Gravity",
+      "operands": ["gravityZ", "motionZ"],
+      "dest": "motionZ"
+    },
+    {
+      "type": "Add",
+      "operands": ["posX", "motionX"],
+      "dest": "posX"
+    },
+    {
+      "type": "Add",
+      "operands": ["posY", "motionY"],
+      "dest": "posY"
+    },
+    {
+      "type": "Add",
+      "operands": ["posZ", "motionZ"],
+      "dest": "posZ"
+    }
+  ]
+}

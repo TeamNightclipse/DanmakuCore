@@ -1,0 +1,39 @@
+{
+  "vectors": [
+    {
+      "name": "posZ",
+      "default": 0.0,
+      "link": "PosZ"
+    },
+    {
+      "name": "oldPosZ",
+      "default": 0.0,
+      "link": "OldPosZ"
+    },
+    {
+      "name": "motionZ",
+      "default": 0.0
+    },
+    {
+      "name": "accelerationZ",
+      "default": 0.0
+    }
+  ],
+  "operations": [
+    {
+      "type": "Assign",
+      "operands": ["posX"],
+      "dest": "oldPosX"
+    },
+    {
+      "type": "Add",
+      "operands": ["motionX", "accelerationX"],
+      "dest": "motionX"
+    },
+    {
+      "type": "Add",
+      "operands": ["posX", "motionX"],
+      "dest": "posX"
+    }
+  ]
+}
