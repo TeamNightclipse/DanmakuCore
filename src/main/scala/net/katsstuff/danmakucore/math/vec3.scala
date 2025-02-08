@@ -210,6 +210,30 @@ sealed trait AbstractVector3 extends Any { self =>
     }
   }
 
+  def lerpTo(target: AbstractVector3, alpha: Double, dest: MutableVector3): MutableVector3 =
+    dest.set(x + alpha * (target.x - x), y + alpha * (target.y - y), z + alpha * (target.z - z))
+
+  // From libgdx
+  def slerpTo(target: AbstractVector3, alpha: Double, dest: MutableVector3): MutableVector3 = {
+    val dotProd = this.dot(target)
+
+    if (Math.abs(dotProd) > 0.9995) lerpTo(target, alpha, dest).normalize
+    else {
+      val theta0 = Math.acos(dotProd)
+      val theta = (theta0 * alpha).toFloat
+
+      val st = Mth.sin(theta)
+      val tx = target.x - x * dotProd
+      val ty = target.y - y * dotProd
+      val tz = target.z - z * dotProd
+      val l2 = tx * tx + ty * ty + tz * tz
+      val dl = st * (if (l2 < 0.0001F) 1F else 1F / Math.sqrt(l2).toFloat)
+
+      val thetaCos = Mth.cos(theta)
+      dest.set(this.x * thetaCos + tx * dl, this.y * thetaCos + ty * dl, this.z * thetaCos + tz * dl).normalize
+    }
+  }
+
   def transformDirection(mat: AbstractMat4): Self = mat.transformDirection(this)
 
   def asMutable: MutableVector3

@@ -3,44 +3,47 @@
     {
       "name": "posX",
       "default": 0.0,
-      "link": "PosX"
+      "link": ["PosX"]
     },
     {
       "name": "posY",
       "default": 0.0,
-      "link": "PosY"
+      "link": ["PosY"]
     },
     {
       "name": "posZ",
       "default": 0.0,
-      "link": "PosZ"
+      "link": ["PosZ"]
     },
     {
       "name": "oldPosX",
       "default": 0.0,
-      "link": "OldPosX"
+      "link": ["OldPosX"]
     },
     {
       "name": "oldPosY",
       "default": 0.0,
-      "link": "OldPosY"
+      "link": ["OldPosY"]
     },
     {
       "name": "oldPosZ",
       "default": 0.0,
-      "link": "OldPosZ"
+      "link": ["OldPosZ"]
     },
     {
       "name": "motionX",
-      "default": 0.0
+      "default": 0.0,
+      "link": ["DirectionX"]
     },
     {
       "name": "motionY",
-      "default": 0.0
+      "default": 0.0,
+      "link": ["DirectionY"]
     },
     {
       "name": "motionZ",
-      "default": 0.0
+      "default": 0.0,
+      "link": ["DirectionZ"]
     },
     {
       "name": "accelerationX",

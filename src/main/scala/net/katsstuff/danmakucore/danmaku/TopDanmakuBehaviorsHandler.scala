@@ -1,24 +1,18 @@
 package net.katsstuff.danmakucore.danmaku
 
 import scala.language.existentials
-
 import java.util.UUID
-
 import scala.annotation.tailrec
 import scala.collection.mutable
-
 import com.mojang.logging.LogUtils
-import net.katsstuff.danmakucore.danmaku.TopDanmakuBehaviorsHandler.{
-  DanmakuSpawnData,
-  RelationshipWithDepth,
-  RenderData
-}
+import net.katsstuff.danmakucore.danmaku.TopDanmakuBehaviorsHandler.{DanmakuSpawnData, RelationshipWithDepth, RenderData}
 import net.katsstuff.danmakucore.danmaku.behaviors.Behavior
 import net.katsstuff.danmakucore.danmaku.data.ShotData
 import net.katsstuff.danmakucore.danmaku.form.Form
 import net.katsstuff.danmakucore.math.{MutableMat4, Quat, Vector3}
 import net.minecraftforge.event.TickEvent.ServerTickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import org.joml.Matrix4f
 
 class TopDanmakuBehaviorsHandler {
 
@@ -140,7 +134,7 @@ class TopDanmakuBehaviorsHandler {
     while (remainingRelationships.nonEmpty) {
       val RelationshipWithDepth(childId, parentId, _) = remainingRelationships.dequeue()
       (localRenderData.get(childId), localRenderData.get(parentId)) match {
-        case (Some(child), Some(parent)) => child.modelMat *= parent.modelMat
+        case (Some(child), Some(parent)) => child.modelMat.mul(parent.modelMat)
         case (None, Some(_))             => localRenderData.remove(childId) // Probably not needed
         case (Some(_), None)             => localRenderData.remove(childId)
         case (None, None)                =>                                 // Already gone
@@ -175,8 +169,8 @@ object TopDanmakuBehaviorsHandler {
   case class RenderData(
       form: Form,
       renderProperties: Map[String, Float],
-      modelMat: MutableMat4,
-      modelViewMat: MutableMat4,
+      modelMat: Matrix4f,
+      modelViewMat: Matrix4f,
       mainColor: Int,
       secondaryColor: Int,
       ticksExisted: Short,

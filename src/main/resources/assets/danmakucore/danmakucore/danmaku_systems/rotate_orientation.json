@@ -3,42 +3,42 @@
     {
       "name": "oldOrientationX",
       "default": 0.0,
-      "link": "OldOrientationX"
+      "link": ["OldOrientationX"]
     },
     {
       "name": "oldOrientationY",
       "default": 0.0,
-      "link": "OldOrientationY"
+      "link": ["OldOrientationY"]
     },
     {
       "name": "oldOrientationZ",
       "default": 0.0,
-      "link": "OldOrientationZ"
+      "link": ["OldOrientationZ"]
     },
     {
       "name": "oldOrientationW",
       "default": 0.0,
-      "link": "OldOrientationW"
+      "link": ["OldOrientationW"]
     },
     {
       "name": "orientationX",
       "default": 0.0,
-      "link": "OrientationX"
+      "link": ["OrientationX"]
     },
     {
       "name": "orientationY",
       "default": 0.0,
-      "link": "OrientationY"
+      "link": ["OrientationY"]
     },
     {
       "name": "orientationZ",
       "default": 0.0,
-      "link": "OrientationZ"
+      "link": ["OrientationZ"]
     },
     {
       "name": "orientationW",
       "default": 0.0,
-      "link": "OrientationW"
+      "link": ["OrientationW"]
     },
     {
       "name": "rotationX",
@@ -59,12 +59,12 @@
     {
       "name": "posZ",
       "default": 0.0,
-      "link": "PosZ"
+      "link": ["PosZ"]
     },
     {
       "name": "oldPosZ",
       "default": 0.0,
-      "link": "OldPosZ"
+      "link": ["OldPosZ"]
     },
     {
       "name": "motionZ",

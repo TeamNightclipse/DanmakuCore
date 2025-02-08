@@ -2,34 +2,64 @@ package net.katsstuff.danmakucore.danmaku
 
 import java.lang
 
-import jdk.incubator.vector.{FloatVector, VectorMask, VectorSpecies}
+import jdk.incubator.vector.{FloatVector, IntVector, VectorMask, VectorOperators, VectorSpecies}
+import net.katsstuff.danmakucore.danmaku.CompiledDanmakuSystem.Operation
 import net.katsstuff.danmakucore.danmaku.DanmakuSystem.OperationType
-import net.katsstuff.danmakucore.danmaku.TypedDanmakuSystem.Operation
-import net.minecraft.resources.ResourceLocation
+import net.katsstuff.danmakucore.danmaku.form.Form
+import net.katsstuff.danmakucore.math.MutableMat4
+import org.joml.Matrix4f
 
-class VectorApiTypedDanmakuSystem(
-    scalars: Array[Float],
-    vectors: Array[Array[Float]],
-    ticksExisted: Array[Float],
-    endTime: Array[Float],
-    dead: Array[Boolean],
-    operations: Array[Operation],
-    deadCount: Int,
-    arrayLength: Int
-) extends TypedDanmakuSystem(
-      scalars,
-      vectors,
-      ticksExisted,
-      endTime,
-      dead,
-      operations,
-      deadCount,
-      arrayLength
+//noinspection DuplicatedCode
+class VectorApiCompiledDanmakuSystem(
+    _scalars: Array[Float],
+    _vectors: Array[Array[Float]], // n * m * 4
+    // Builtin vectors
+    _ticksExisted: Array[Int],       // n * 4
+    _endTime: Array[Int],            // n * 4
+    _dead: Array[Boolean],           // n
+    _mainColor: Array[Int],          // n * 4
+    _secondaryColor: Array[Int],     // n * 4
+    _transformMats: Array[Matrix4f], // n * 16
+    _modelViewMats: Array[Matrix4f], // n * 16
+    _forms: Array[Form],
+    // Misc
+    _vectorDefaults: Seq[Float],
+    _operations: Array[Operation],
+    _deadCount: Int,
+    _arrayLength: Int,
+    _currentSize: Int,
+    _addValuesFloatArr: Array[Float],
+    _addValuesIntArr: Array[Int],
+    _mappings: Map[DanmakuSystem.VectorLink, Int],
+    _renderPropertyLinks: Map[String, Int]
+) extends CompiledDanmakuSystem(
+      _scalars,
+      _vectors,
+      _ticksExisted,
+      _endTime,
+      _dead,
+      _mainColor,
+      _secondaryColor,
+      _transformMats,
+      _modelViewMats,
+      _forms,
+      _vectorDefaults,
+      _operations,
+      _deadCount,
+      _arrayLength,
+      _currentSize,
+      _addValuesFloatArr,
+      _addValuesIntArr,
+      _mappings,
+      _renderPropertyLinks
     ) {
   inline def species: VectorSpecies[lang.Float] = FloatVector.SPECIES_PREFERRED
 
   inline def vec(inline arr: Array[Float], inline i: Int): FloatVector =
     FloatVector.fromArray(species, arr, i)
+
+  inline def intVec(inline arr: Array[Int], inline i: Int): IntVector =
+    IntVector.fromArray(species.withLanes(classOf[lang.Integer]), arr, i)
 
   private inline def actVec2(
       op: Operation,
@@ -109,11 +139,11 @@ class VectorApiTypedDanmakuSystem(
         val op1 = operands(1)
         var i   = 0
         while i + species.length <= arrayLength do
-          val t = vec(ticksExisted, i)
+          val t = intVec(ticksExisted, i)
 
           vec(op0, i)
             .add(vec(op1, i))
-            .mul(t.mul(t).div(2F))
+            .mul(t.mul(t).convert(VectorOperators.I2F, 0).div(FloatVector.broadcast(species, 2F)))
             .intoArray(dest, i)
 
           i += species.length
@@ -136,18 +166,18 @@ class VectorApiTypedDanmakuSystem(
     local:
       var i = 0
       while i + species.length <= arrayLength do
-        vec(ticksExisted, i).add(1F).intoArray(ticksExisted, i)
+        intVec(ticksExisted, i).add(1).intoArray(ticksExisted, i)
         i += species.length
 
       while i < arrayLength do
-        ticksExisted(i) += 1F
+        ticksExisted(i) += 1
         i += 1
 
     local:
       var i = 0
       while i + species.length <= arrayLength do
-        val deadMask     = VectorMask.fromArray(species, dead, i)
-        val overTime     = vec(endTime, i).lt(vec(ticksExisted, i))
+        val deadMask     = VectorMask.fromArray(species.withLanes(classOf[lang.Integer]), dead, i)
+        val overTime     = intVec(endTime, i).lt(intVec(ticksExisted, i))
         val recentlyDead = overTime.andNot(deadMask)
 
         deadMask.or(overTime).intoArray(dead, i)

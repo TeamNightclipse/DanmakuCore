@@ -3,16 +3,17 @@
     {
       "name": "posY",
       "default": 0.0,
-      "link": "PosY"
+      "link": ["PosY"]
     },
     {
       "name": "oldPosY",
       "default": 0.0,
-      "link": "OldPosY"
+      "link": ["OldPosY"]
     },
     {
       "name": "motionY",
-      "default": 0.0
+      "default": 0.0,
+      "link": ["DirectionY"]
     },
     {
       "name": "gravityY",

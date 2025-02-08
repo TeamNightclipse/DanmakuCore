@@ -12,6 +12,7 @@ import net.katsstuff.danmakucore.danmaku.TopDanmakuBehaviorsHandler.{DanmakuSpaw
 import net.katsstuff.danmakucore.danmaku.behaviors.{Behavior, MainColumns}
 import net.katsstuff.danmakucore.math.{Mat4, MutableMat4}
 import net.minecraft.util.Mth
+import org.joml.{Matrix4f, Quaternionf}
 
 class DanmakuBehaviorHandler(
     val behaviors: List[Behavior[_]],
@@ -41,8 +42,8 @@ class DanmakuBehaviorHandler(
 
   private def dead: Int = mainColumns.currentDead.length
 
-  private var transformMats: Array[MutableMat4] = Array.fill(currentMaxSize)(Mat4.Identity.asMutable)
-  private var familyDepth: Array[Short]         = new Array[Short](currentMaxSize)
+  private var transformMats: Array[Matrix4f] = Array.fill(currentMaxSize)(new Matrix4f())
+  private var familyDepth: Array[Short]      = new Array[Short](currentMaxSize)
 
   private val extraDataNameToIdx = behaviors.iterator.flatMap(_.extraColumns).distinct.zipWithIndex.toMap
 
@@ -205,20 +206,11 @@ class DanmakuBehaviorHandler(
       registerBehaviorData(idx, danmaku.behaviors.toList, behaviors)
 
       val mat = transformMats(idx)
-      mat.setIdentity()
-
-      mat.m00 = scaleX(i)
-      mat.m11 = scaleY(i)
-      mat.m22 = scaleZ(i)
-
-      danmaku.orientation.toMatTo(tempMat) =* mat
-
-      tempMat.setIdentity()
-      tempMat.m03 = danmaku.pos.x
-      tempMat.m13 = danmaku.pos.y
-      tempMat.m23 = danmaku.pos.z
-
-      tempMat =* mat
+      mat.scaling(scaleX(i), scaleY(i), scaleZ(i))
+      mat.rotate(
+        new Quaternionf(danmaku.orientation.x, danmaku.orientation.y, danmaku.orientation.z, danmaku.orientation.w)
+      )
+      mat.translate(danmaku.pos.x.toFloat, danmaku.pos.y.toFloat, danmaku.pos.z.toFloat)
 
       danmaku.children.map(d => d.copy(parent = Some(thisId)))
     }
@@ -243,8 +235,6 @@ class DanmakuBehaviorHandler(
   def computeTransformMats(partialTicks: Float): Unit = {
     // If nothing can change, then local space stays constant
     if (requiredMainColumns.nonEmpty) {
-      val temp = Mat4.Identity.asMutable
-
       // noinspection DuplicatedCode
       val posX    = mainColumns.posX
       val posY    = mainColumns.posY
@@ -268,24 +258,24 @@ class DanmakuBehaviorHandler(
       while (i < currentSize) {
         if (!mainColumns.dead(i)) {
           val mat = transformMats(i)
-          mat.setIdentity()
+          mat.scaling(
+            if (requiresScaleX) Mth.lerp(partialTicks, oldScaleX(i), scaleX(i)) else scaleX(i),
+            if (requiresScaleY) Mth.lerp(partialTicks, oldScaleY(i), scaleY(i)) else scaleY(i),
+            if (requiresScaleZ) Mth.lerp(partialTicks, oldScaleZ(i), scaleZ(i)) else scaleZ(i)
+          )
 
-          mat.m00 = if (requiresScaleX) Mth.lerp(partialTicks, oldScaleX(i), scaleX(i)) else scaleX(i)
-          mat.m11 = if (requiresScaleY) Mth.lerp(partialTicks, oldScaleY(i), scaleY(i)) else scaleY(i)
-          mat.m22 = if (requiresScaleZ) Mth.lerp(partialTicks, oldScaleZ(i), scaleZ(i)) else scaleZ(i)
+          val ori =
+            if (requiresOrientation) oldOrientation(i).slerp(orientation(i), partialTicks)
+            else orientation(i)
 
-          if (requiresOrientation) oldOrientation(i).slerp(orientation(i), partialTicks).toMatTo(temp)
-          else orientation(i).toMatTo(temp)
-
-          temp =* mat
+          mat.rotate(new Quaternionf(ori.x, ori.y, ori.z, ori.w))
 
           if (requiresPosX || requiresPosY || requiresPosZ) {
-            temp.setIdentity()
-            temp.m03 = if (requiresPosX) Mth.lerp(partialTicks, oldPosX(i), posX(i)) else posX(i)
-            temp.m13 = if (requiresPosX) Mth.lerp(partialTicks, oldPosY(i), posY(i)) else posY(i)
-            temp.m23 = if (requiresPosX) Mth.lerp(partialTicks, oldPosZ(i), posZ(i)) else posZ(i)
-
-            temp =* mat
+            mat.translate(
+              if (requiresPosX) Mth.lerp(partialTicks, oldPosX(i), posX(i)) else posX(i),
+              if (requiresPosX) Mth.lerp(partialTicks, oldPosY(i), posY(i)) else posY(i),
+              if (requiresPosX) Mth.lerp(partialTicks, oldPosZ(i), posZ(i)) else posZ(i)
+            )
           }
         }
 
@@ -317,7 +307,7 @@ class DanmakuBehaviorHandler(
           form(idx),
           renderProperties(idx),
           transformMats(idx),
-          Mat4.Identity.asMutable,
+          new Matrix4f(),
           mainColor(idx), // Interpolate with partialTicks color
           secondaryColor(idx),
           ticksExisted(idx),
@@ -353,13 +343,13 @@ class DanmakuBehaviorHandler(
     mainColumns = newMainColumns
 
     val oldTransformMats = transformMats
-    val newTransformMats = new Array[MutableMat4](newMaxSize)
+    val newTransformMats = new Array[Matrix4f](newMaxSize)
     System.arraycopy(oldTransformMats, 0, newTransformMats, 0, currentSize)
 
     {
       var i: Int = currentSize
       while (i < newMaxSize) {
-        newTransformMats(i) = Mat4.Identity.asMutable
+        newTransformMats(i) = new Matrix4f()
         i += 1
       }
     }

@@ -300,6 +300,23 @@ final case class MutableMat4(
 
   def multiplyScalarMutable(scalar: Double): Unit = this *= scalar
 
+  def setWorld(pos: AbstractVector3, forward: AbstractVector3, up: AbstractVector3): MutableMat4 = {
+    val forwardNormalized = forward.normalize
+    val right = forwardNormalized.cross(up).normalize
+    val newUp = right.cross(forwardNormalized).normalize
+
+    setAxes(right, newUp, forwardNormalized * -1, pos)
+  }
+
+  def setAxes(xAxis: AbstractVector3, yAxis: AbstractVector3, zAxis: AbstractVector3, pos: AbstractVector3): MutableMat4 =
+    // format: OFF
+    set(
+      xAxis.x, xAxis.y, xAxis.z, pos.x,
+      yAxis.x, yAxis.y, yAxis.z, pos.y,
+      zAxis.x, zAxis.y, zAxis.z, pos.z,
+      0, 0, 0, 1
+    )
+
   override def transpose: MutableMat4                      = super.transpose
   override def multiplyScalar(scalar: Double): MutableMat4 = super.multiplyScalar(scalar)
   def copyObj: MutableMat4                                 = copy()

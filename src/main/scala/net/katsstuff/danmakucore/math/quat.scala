@@ -220,6 +220,40 @@ sealed abstract class AbstractQuat { self =>
     )
   }
 
+  // Taken from libgdx
+  def slerpTo(end: AbstractQuat, alpha: Float, dest: MutableQuat): MutableQuat = {
+    val dotProd = this.dot(end)
+    val absDot = Math.abs(dotProd)
+
+    // Set the first and second scale for the interpolation
+    var scale0 = 1F - alpha
+    var scale1 = alpha
+
+    // Check if the angle between the 2 quaternions was big enough to
+    // warrant such calculations
+    if ((1 - absDot) > 0.1) {
+      // Get the angle between the 2 quaternions,
+      // and then store the sin() of that angle
+      val angle = Math.acos(absDot).toFloat
+      val invSinTheta = 1F / Mth.sin(angle)
+      // Calculate the scale for q1 and q2, according to the angle and
+      // it's sine value
+      scale0 = Mth.sin((1F - alpha) * angle) * invSinTheta
+      scale1 = Mth.sin(alpha * angle) * invSinTheta
+    }
+
+    if (dotProd < 0F) scale1 = -scale1
+
+    // Calculate the x, y, z and w values for the quaternion by using a
+    // special form of linear interpolation for quaternions.
+    dest.set(
+      x = (scale0 * x) + (scale1 * end.x),
+      y = (scale0 * y) + (scale1 * end.y),
+      z = (scale0 * z) + (scale1 * end.z),
+      w = (scale0 * w) + (scale1 * end.w)
+    )
+  }
+
   def asImmutable: Quat
 
   def asMutable: MutableQuat
@@ -377,6 +411,63 @@ final case class MutableQuat(
   override def asMutable: MutableQuat = this
 
   def copyObj: MutableQuat = copy()
+
+  def lookRotation(forward: AbstractVector3, up: AbstractVector3): MutableQuat = {
+    val vect3 = forward.normalize
+    val vect1 = up.cross(forward).normalize
+    val vect2 = forward.cross(vect1)
+    fromAxes(vect1, vect2, vect3)
+  }
+
+  def fromAxes(xAxis: AbstractVector3, yAxis: AbstractVector3, zAxis: AbstractVector3): MutableQuat =
+    fromAxes(xAxis.x, yAxis.x, zAxis.x, xAxis.y, yAxis.y, zAxis.y, xAxis.z, yAxis.z, zAxis.z)
+
+  def fromAxes(
+    xx: Double, xy: Double, xz: Double,
+    yx: Double, yy: Double, yz: Double,
+    zx: Double, zy: Double, zz: Double
+  ): MutableQuat = {
+    // format: ON
+    val t = xx + yy + zz
+
+    if (t >= 0) {
+      val squared = Math.sqrt(t + 1)
+      val w = 0.5F * squared
+      val s = 0.5F / squared
+
+      val x = (zy - yz) * s
+      val y = (xz - zx) * s
+      val z = (yx - xy) * s
+      set(x, y, z, w)
+    } else if ((xx > yy) && (xx > zz)) {
+      val squared = Math.sqrt(1.0 + xx - yy - zz)
+      val x = squared * 0.5F
+
+      val s = 0.5F / squared
+      val y = (yx + xy) * s
+      val z = (xz + zx) * s
+      val w = (zy - yz) * s
+      set(x, y, z, w)
+    } else if (yy > zz) {
+      val squared = Math.sqrt(1.0 + yy - xx - zz)
+      val y = squared * 0.5F
+
+      val s = 0.5F / squared
+      val x = (yx + xy) * s
+      val z = (zy + yz) * s
+      val w = (xz - zx) * s
+      set(x, y, z, w)
+    } else {
+      val squared = Math.sqrt(1.0 + zz - xx - yy)
+      val z = squared * 0.5F
+
+      val s = 0.5F / squared
+      val x = (xz + zx) * s
+      val y = (zy + yz) * s
+      val w = (yx - xy) * s
+      set(x, y, z, w)
+    }
+  }
 
   // Beyond this is just methods that call super, but with defined Type so that Java likes them
 

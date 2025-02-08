@@ -89,14 +89,8 @@ class DanmakuRenderer(handler: TopDanmakuBehaviorsHandler) {
             "edgeHardness" -> 5.0F,
             "edgeGlow"     -> 3.0F
           ),
-        modelMat = (Mat4.fromMatrix4f(scaleMat) * Mat4
-          .fromAxes(
-            Vector3.Right,
-            Vector3.Up,
-            Vector3.Forward,
-            Vector3(2, -59, 2)
-          )).asMutable,
-        modelViewMat = Mat4.Identity.asMutable,
+        modelMat = scaleMat.translate(2, -59, 2, new Matrix4f()),
+        modelViewMat = new Matrix4f(),
         0xFFFFFFFF,
         0xFFFF0000,
         5,
@@ -112,14 +106,8 @@ class DanmakuRenderer(handler: TopDanmakuBehaviorsHandler) {
             "edgeHardness" -> 5.0F,
             "edgeGlow"     -> 3.0F
           ),
-        modelMat = (Mat4.fromMatrix4f(scaleMat) * Mat4
-          .fromAxes(
-            Vector3.Right,
-            Vector3.Up,
-            Vector3.Forward,
-            Vector3(-2, -59, -2)
-          )).asMutable,
-        modelViewMat = Mat4.Identity.asMutable,
+        modelMat = scaleMat.translate(-2, -59, -2, new Matrix4f()),
+        modelViewMat = new Matrix4f(),
         0xFFFFFFFF,
         0xFF00FF00,
         5,
@@ -149,7 +137,7 @@ class DanmakuRenderer(handler: TopDanmakuBehaviorsHandler) {
       }
 
       val originalShader = RenderSystem.getShader
-      val tempVec        = Vector3.Zero.asMutable
+      val tempVec        = new Vector3f()
 
       renderData.view
         .filter { data =>
@@ -183,13 +171,13 @@ class DanmakuRenderer(handler: TopDanmakuBehaviorsHandler) {
           renderType.setupRenderState()
 
           // TODO: Need to figure out how these two differ
-          val modelViewMat = Mat4.fromMatrix4f(modelViewMatrix) // Mat4.fromMatrix4f(RenderSystem.getModelViewMatrix)
+          val modelViewMat = modelViewMatrix // RenderSystem.getModelViewMatrix
 
           danmaku
             .map { data =>
               val dataModelViewMat = data.modelViewMat
-              modelViewMat.multiplyMutableDest(data.modelMat, dataModelViewMat)
-              tempVec.set(dataModelViewMat.m03, dataModelViewMat.m13, dataModelViewMat.m23)
+              modelViewMat.mul(data.modelMat, dataModelViewMat)
+              dataModelViewMat.getColumn(3, tempVec)
 
               data.copy(distanceFromCamera = tempVec.lengthSquared)
             }
@@ -211,7 +199,7 @@ class DanmakuRenderer(handler: TopDanmakuBehaviorsHandler) {
 
           val m = danmaku.head.modelMat
           pose.pushPose()
-          pose.mulPoseMatrix(m.toMatrix4f)
+          pose.mulPoseMatrix(m)
           // if Math.random() > 0.95 then println("After: " + pose.last.pose)
 
           LevelRenderer.renderLineBox(

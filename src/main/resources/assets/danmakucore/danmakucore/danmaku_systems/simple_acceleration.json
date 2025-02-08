@@ -3,16 +3,17 @@
     {
       "name": "posZ",
       "default": 0.0,
-      "link": "PosZ"
+      "link": ["PosZ"]
     },
     {
       "name": "oldPosZ",
       "default": 0.0,
-      "link": "OldPosZ"
+      "link": ["OldPosZ"]
     },
     {
       "name": "motionZ",
-      "default": 0.0
+      "default": 0.0,
+      "link": ["DirectionZ"]
     },
     {
       "name": "accelerationZ",
