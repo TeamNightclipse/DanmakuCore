@@ -23,7 +23,6 @@ class CompiledDanmakuSystem(
     protected var modelViewMats: Array[Matrix4f], // n * 16
     protected var forms: Array[Form],
     // Misc
-    val vectorDefaults: Seq[Float],
     protected val operations: Array[Operation],
     protected var deadCount: Int,
     protected var arrayLength: Int,
@@ -378,6 +377,17 @@ class CompiledDanmakuSystem(
         scalars(op.dest(1)) = w * y2 + y * w2 + z * x2 - x * z2
         scalars(op.dest(2)) = w * z2 + z * w2 + x * y2 - y * x2
         scalars(op.dest(3)) = w * w2 - x * x2 - y * y2 - z * z2
+
+      case OperationType.NormalizeVec =>
+        val x = scalars(op.scalarOperands(0))
+        val y = scalars(op.scalarOperands(1))
+        val z = scalars(op.scalarOperands(2))
+
+        val scalar = 1F / Math.sqrt(x * x + y * y + z * z).toFloat
+
+        scalars(op.dest(0)) = x / scalar
+        scalars(op.dest(1)) = y / scalar
+        scalars(op.dest(2)) = z / scalar
 
       case OperationType.RotateVec =>
         val rx = scalars(op.scalarOperands(0))

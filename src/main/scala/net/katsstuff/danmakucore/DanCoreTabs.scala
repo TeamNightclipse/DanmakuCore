@@ -5,7 +5,7 @@ import net.minecraft.world.item.CreativeModeTab
 import net.minecraftforge.registries.{DeferredRegister, RegistryObject}
 
 object DanCoreTabs {
-  val registry: DeferredRegister[CreativeModeTab] =
+  val defRegistry: DeferredRegister[CreativeModeTab] =
     DeferredRegister.create(Registries.CREATIVE_MODE_TAB, DanmakuCore.ModId)
 
   /*

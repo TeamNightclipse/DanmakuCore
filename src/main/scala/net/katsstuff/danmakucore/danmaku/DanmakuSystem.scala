@@ -1,16 +1,11 @@
 package net.katsstuff.danmakucore.danmaku
 
-import scala.annotation.tailrec
-import scala.jdk.CollectionConverters.*
-import scala.jdk.OptionConverters.*
-
-import cats.Monad
 import cats.data.{Validated, ValidatedNel}
 import cats.syntax.all.*
+import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
-import com.mojang.serialization.{Codec, DataResult, MapCodec}
 import net.katsstuff.danmakucore.danmaku.form.Form
-import net.katsstuff.danmakucore.math.MutableMat4
+import net.katsstuff.danmakucore.util.CodecUtils.*
 import org.joml.Matrix4f
 
 case class DanmakuSystem(
@@ -18,7 +13,7 @@ case class DanmakuSystem(
     vectors: Seq[DanmakuSystem.Vector],
     operations: Seq[DanmakuSystem.Operation]
 ) {
-  def compile(initialSize: Int): ValidatedNel[String, CompiledDanmakuSystem] = {
+  def compile(initialSize: Int): ValidatedNel[String, (CompiledDanmakuSystem, DanmakuSystemPopulator)] = {
     val scalarMap = scalars.zipWithIndex.map { case (scalar, idx) =>
       scalar.name -> idx
     }.toMap
@@ -26,9 +21,8 @@ case class DanmakuSystem(
       vector.name -> idx
     }.toMap
 
-    val vectorDefaults = vectors.map(_.default)
-    val scalarsArr     = scalars.map(_.default).toArray
-    val vectorsArr     = vectors.map(vector => Array.fill(initialSize)(vector.default)).toArray
+    val scalarsArr = scalars.map(_.default).toArray
+    val vectorsArr = vectors.map(vector => Array.fill(initialSize)(vector.default)).toArray
 
     val mappings = vectors.flatMap(vector => vector.link.map(link => link -> vectorsMap(vector.name))).toMap
     val renderPropertyLinks =
@@ -99,56 +93,57 @@ case class DanmakuSystem(
       }
       .map(_.toArray)
 
-    try {
-      Class.forName("jdk.incubator.vector.FloatVector")
-      compiledOps.map { ops =>
-        new VectorApiCompiledDanmakuSystem(
-          _scalars = scalarsArr,
-          _vectors = vectorsArr,
-          _ticksExisted = new Array[Int](initialSize),
-          _endTime = new Array[Int](initialSize),
-          _dead = new Array[Boolean](initialSize),
-          _mainColor = new Array[Int](initialSize),
-          _secondaryColor = new Array[Int](initialSize),
-          _transformMats = new Array[Matrix4f](initialSize),
-          _modelViewMats = new Array[Matrix4f](initialSize),
-          _forms = new Array[Form](initialSize),
-          _vectorDefaults = vectorDefaults,
-          _operations = ops,
-          _deadCount = 0,
-          _arrayLength = initialSize,
-          _currentSize = 0,
-          _addValuesFloatArr = new Array[Float](0),
-          _addValuesIntArr = new Array[Int](0),
-          _mappings = mappings,
-          _renderPropertyLinks = renderPropertyLinks
-        )
-      }
-    } catch
-      case _: ClassNotFoundException =>
+    val system =
+      try {
+        Class.forName("jdk.incubator.vector.FloatVector")
         compiledOps.map { ops =>
-          new CompiledDanmakuSystem(
-            scalars = scalarsArr,
-            vectors = vectorsArr,
-            ticksExisted = new Array[Int](initialSize),
-            endTime = new Array[Int](initialSize),
-            dead = new Array[Boolean](initialSize),
-            mainColor = new Array[Int](initialSize),
-            secondaryColor = new Array[Int](initialSize),
-            transformMats = new Array[Matrix4f](initialSize),
-            modelViewMats = new Array[Matrix4f](initialSize),
-            forms = new Array[Form](initialSize),
-            vectorDefaults = vectorDefaults,
-            operations = ops,
-            deadCount = 0,
-            arrayLength = initialSize,
-            currentSize = 0,
-            addValuesFloatArr = new Array[Float](0),
-            addValuesIntArr = new Array[Int](0),
-            mappings = mappings,
-            renderPropertyLinks = renderPropertyLinks
+          new VectorApiCompiledDanmakuSystem(
+            _scalars = scalarsArr,
+            _vectors = vectorsArr,
+            _ticksExisted = new Array[Int](initialSize),
+            _endTime = new Array[Int](initialSize),
+            _dead = new Array[Boolean](initialSize),
+            _mainColor = new Array[Int](initialSize),
+            _secondaryColor = new Array[Int](initialSize),
+            _transformMats = new Array[Matrix4f](initialSize),
+            _modelViewMats = new Array[Matrix4f](initialSize),
+            _forms = new Array[Form](initialSize),
+            _operations = ops,
+            _deadCount = 0,
+            _arrayLength = initialSize,
+            _currentSize = 0,
+            _addValuesFloatArr = new Array[Float](0),
+            _addValuesIntArr = new Array[Int](0),
+            _mappings = mappings,
+            _renderPropertyLinks = renderPropertyLinks
           )
         }
+      } catch
+        case _: ClassNotFoundException =>
+          compiledOps.map { ops =>
+            new CompiledDanmakuSystem(
+              scalars = scalarsArr,
+              vectors = vectorsArr,
+              ticksExisted = new Array[Int](initialSize),
+              endTime = new Array[Int](initialSize),
+              dead = new Array[Boolean](initialSize),
+              mainColor = new Array[Int](initialSize),
+              secondaryColor = new Array[Int](initialSize),
+              transformMats = new Array[Matrix4f](initialSize),
+              modelViewMats = new Array[Matrix4f](initialSize),
+              forms = new Array[Form](initialSize),
+              operations = ops,
+              deadCount = 0,
+              arrayLength = initialSize,
+              currentSize = 0,
+              addValuesFloatArr = new Array[Float](0),
+              addValuesIntArr = new Array[Int](0),
+              mappings = mappings,
+              renderPropertyLinks = renderPropertyLinks
+            )
+          }
+
+    system.map(system => system -> new DanmakuSystemPopulator(vectorsMap, vectors.map(v => v.name -> v.default).toMap, system))
   }
 }
 object DanmakuSystem {
@@ -169,7 +164,7 @@ object DanmakuSystem {
     case DirectionX, DirectionY, DirectionZ
     case OldDirectionX, OldDirectionY, OldDirectionZ
 
-    //TODO: Base this on more experimentally verified data
+    // TODO: Base this on more experimentally verified data
     def cost: Int = this match
       case ScaleX | ScaleY | ScaleZ                                              => 0
       case OldScaleX | OldScaleY | OldScaleZ                                     => 3
@@ -217,7 +212,7 @@ object DanmakuSystem {
       case Gravity                                  => 1
       case RgbToColor | HsvToColor                  => 1
 
-    //TODO: Base this on more experimentally verified data
+    // TODO: Base this on more experimentally verified data
     def cost: Int = this match
       case Add | Subtract | Multiply | Divide | Fma => 1
       case Assign                                   => 0
@@ -227,56 +222,6 @@ object DanmakuSystem {
       case Gravity                                  => 6
       case RgbToColor                               => 9
       case HsvToColor                               => 20
-  }
-
-  given Monad[DataResult] with {
-    override def map[A, B](fa: DataResult[A])(f: A => B): DataResult[B] = fa.map(a => f(a))
-
-    override def map2[A, B, Z](fa: DataResult[A], fb: DataResult[B])(f: (A, B) => Z): DataResult[Z] =
-      fa.apply2((a, b) => f(a, b), fb)
-
-    override def map3[A0, A1, A2, Z](f0: DataResult[A0], f1: DataResult[A1], f2: DataResult[A2])(
-        f: (A0, A1, A2) => Z
-    ): DataResult[Z] =
-      f0.apply3((a, b, c) => f(a, b, c), f1, f2)
-
-    override def ap[A, B](ff: DataResult[A => B])(fa: DataResult[A]): DataResult[B] = fa.ap(ff.map(f => (a: A) => f(a)))
-
-    override def flatMap[A, B](fa: DataResult[A])(f: A => DataResult[B]): DataResult[B] = fa.flatMap(a => f(a))
-    override def pure[A](x: A): DataResult[A]                                           = DataResult.success(x)
-
-    @tailrec
-    final override def tailRecM[A, B](a: A)(f: A => DataResult[Either[A, B]]): DataResult[B] = {
-      val result = f(a)
-      if result.error.isPresent then result.asInstanceOf[DataResult[B]]
-      else
-        result.result.get match {
-          case Left(b1) => tailRecM(b1)(f)
-          case Right(v) => map(result)(_ => v)
-        }
-    }
-  }
-
-  private def dataResultToEither[T](dataResult: DataResult[T]): Either[DataResult.PartialResult[T], T] =
-    if dataResult.result().isPresent then Right(dataResult.result().get())
-    else Left(dataResult.error().get)
-
-  import com.mojang.datafixers.util.Either as MojangEither
-
-  private def toScalaEither[A, B](either: MojangEither[A, B]): Either[A, B] =
-    if either.right().isPresent
-    then Right(either.right().get())
-    else Left(either.left().get())
-
-  private def toMojangEither[A, B](either: Either[A, B]): MojangEither[A, B] = either match
-    case Left(value)  => MojangEither.left(value)
-    case Right(value) => MojangEither.right(value)
-
-  extension [A](codec: Codec[A]) {
-    private def optionFieldOf(name: String): MapCodec[Option[A]] =
-      codec.optionalFieldOf(name).xmap[Option[A]](_.toScala, _.toJava)
-
-    private def seqOf: Codec[Seq[A]] = codec.listOf().xmap(_.asScala.toSeq, _.asJava)
   }
 
   private val scalarCodec: Codec[Scalar] = RecordCodecBuilder.create[Scalar] { builder =>
@@ -309,7 +254,7 @@ object DanmakuSystem {
             Codec.STRING,
             Codec.STRING.seqOf
           )
-          .xmap(toScalaEither(_), toMojangEither(_))
+          .xmap[Either[String, Seq[String]]](_.toScala, _.toMojangEither)
           .xmap(
             _.fold[String | Seq[String]](identity, identity),
             {

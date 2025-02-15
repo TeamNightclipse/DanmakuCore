@@ -20,7 +20,7 @@ class DanmakuRenderer(handler: TopDanmakuBehaviorsHandler) {
   private var hasRunInit = false
 
   def init(): Unit = {
-    DanCoreForms.registry.getEntries.forEach(f => f.get().clientForm.init())
+    DanCoreForms.defRegistry.getEntries.forEach(f => f.get().clientForm.init())
     hasRunInit = true
   }
 

@@ -5,8 +5,8 @@ import net.katsstuff.danmakucore.blocks.DanCoreBlocks
 import net.katsstuff.danmakucore.client.DanCoreShaders
 import net.katsstuff.danmakucore.client.danmaku.DanmakuRenderer
 import net.katsstuff.danmakucore.danmaku.TopDanmakuBehaviorsHandler.DanmakuSpawnData
-import net.katsstuff.danmakucore.danmaku.form.DanCoreForms
-import net.katsstuff.danmakucore.danmaku.{DanmakuSystem, DanmakuSystems, TopDanmakuBehaviorsHandler}
+import net.katsstuff.danmakucore.danmaku.form.{DanCoreForms, Form}
+import net.katsstuff.danmakucore.danmaku.{DanmakuInstantiation, DanmakuInstantiations, DanmakuSystem, DanmakuSystems, TopDanmakuBehaviorsHandler}
 import net.katsstuff.danmakucore.items.DanCoreItems
 import net.minecraft.resources.ResourceLocation
 import net.minecraftforge.common.MinecraftForge
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.config.ModConfig
 import net.minecraftforge.fml.event.lifecycle.{FMLClientSetupEvent, FMLCommonSetupEvent}
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
-import net.minecraftforge.registries.DataPackRegistryEvent
+import net.minecraftforge.registries.{DataPackRegistryEvent, NewRegistryEvent, RegistryBuilder}
 
 @Mod(DanmakuCore.ModId)
 object DanmakuCore {
@@ -28,10 +28,10 @@ object DanmakuCore {
 
   modEventBus.addListener(onNewDatapackRegistryEvent)
 
-  DanCoreBlocks.registry.register(modEventBus)
-  DanCoreItems.registry.register(modEventBus)
-  DanCoreForms.registry.register(modEventBus)
-  DanCoreTabs.registry.register(modEventBus)
+  DanCoreBlocks.defRegistry.register(modEventBus)
+  DanCoreItems.defRegistry.register(modEventBus)
+  DanCoreForms.defRegistry.register(modEventBus)
+  DanCoreTabs.defRegistry.register(modEventBus)
 
   ModLoadingContext.get.registerConfig(ModConfig.Type.COMMON, DanCoreCommonConfig.forgeConfig)
 
@@ -46,10 +46,16 @@ object DanmakuCore {
   def spawnDanmaku(danmaku: Seq[DanmakuSpawnData]): Unit = danmakuHandler.addDanmaku(danmaku)
 
   private def commonSetup(event: FMLCommonSetupEvent): Unit = ()
+  
+  @SubscribeEvent
+  def onRegisterRegistries(event: NewRegistryEvent): Unit = {
+    event.create(RegistryBuilder.of[Form](DanCoreForms.formsRegistryKey.location()))
+  }
 
   @SubscribeEvent
   def onNewDatapackRegistryEvent(event: DataPackRegistryEvent.NewRegistry): Unit =
     event.dataPackRegistry(DanmakuSystems.registryKey, DanmakuSystem.codec, DanmakuSystem.codec)
+    event.dataPackRegistry(DanmakuInstantiations.registryKey, DanmakuInstantiation.codec, DanmakuInstantiation.codec)
 
   @SubscribeEvent
   def onServerStarting(event: ServerStartingEvent): Unit = ()

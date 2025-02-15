@@ -23,7 +23,6 @@ class VectorApiCompiledDanmakuSystem(
     _modelViewMats: Array[Matrix4f], // n * 16
     _forms: Array[Form],
     // Misc
-    _vectorDefaults: Seq[Float],
     _operations: Array[Operation],
     _deadCount: Int,
     _arrayLength: Int,
@@ -43,7 +42,6 @@ class VectorApiCompiledDanmakuSystem(
       _transformMats,
       _modelViewMats,
       _forms,
-      _vectorDefaults,
       _operations,
       _deadCount,
       _arrayLength,

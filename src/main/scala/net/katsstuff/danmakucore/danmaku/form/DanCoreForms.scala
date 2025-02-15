@@ -1,15 +1,16 @@
 package net.katsstuff.danmakucore.danmaku.form
 
 import java.util.function.Supplier
-
 import net.katsstuff.danmakucore.DanmakuCore
-import net.minecraftforge.registries.{DeferredRegister, IForgeRegistry, RegistryBuilder}
+import net.minecraft.core.Registry
+import net.minecraft.resources.ResourceKey
+import net.minecraftforge.registries.{DeferredRegister, ForgeRegistry, IForgeRegistry, RegistryBuilder, RegistryManager}
 
 object DanCoreForms {
-  final val registry: DeferredRegister[Form] =
-    DeferredRegister.create[Form](DanmakuCore.resource("forms"), DanmakuCore.ModId)
-  final val Forms: Supplier[IForgeRegistry[Form]] =
-    registry.makeRegistry(() => new RegistryBuilder[Form].setDefaultKey(DanmakuCore.resource("sphere")))
-    
-  final val SphereForm = registry.register("sphere", () => new SphereForm)
+  val formsRegistryKey: ResourceKey[Registry[Form]] = ResourceKey.createRegistryKey(DanmakuCore.resource("forms"))
+  lazy val registry: IForgeRegistry[Form] = RegistryManager.ACTIVE.getRegistry(formsRegistryKey)
+
+  final val defRegistry: DeferredRegister[Form] = DeferredRegister.create(formsRegistryKey, DanmakuCore.ModId)
+
+  final val SphereForm = defRegistry.register("sphere", () => new SphereForm)
 }

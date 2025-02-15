@@ -10,7 +10,7 @@ import net.minecraftforge.registries.{DeferredRegister, ForgeRegistries}
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = DanmakuCore.ModId)
 object DanCoreItems {
-  final val registry = DeferredRegister.create(ForgeRegistries.ITEMS, DanmakuCore.ModId)
+  final val defRegistry = DeferredRegister.create(ForgeRegistries.ITEMS, DanmakuCore.ModId)
   //final val DanmakuItem = registry.register("danmaku", () => new DanmakuItem(() => ???))
 
 
