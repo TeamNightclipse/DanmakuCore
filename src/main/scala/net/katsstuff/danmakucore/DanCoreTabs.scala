@@ -10,7 +10,7 @@ object DanCoreTabs {
 
   /*
   val danmaku: RegistryObject[CreativeModeTab] =
-    registry.register(
+    defRegistry.register(
       "danmaku_tab",
       () =>
         CreativeModeTab
@@ -24,7 +24,7 @@ object DanCoreTabs {
           .build()
     )
   val spellcards: RegistryObject[CreativeModeTab] =
-    registry.register(
+    defRegistry.register(
       "spellcard_tab",
       () =>
         CreativeModeTab
@@ -36,6 +36,5 @@ object DanCoreTabs {
             // b.accept(???)
           }
           .build()
-    )
-    */
+    )*/
 }

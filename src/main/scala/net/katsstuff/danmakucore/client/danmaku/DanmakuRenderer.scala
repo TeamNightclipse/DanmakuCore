@@ -24,40 +24,6 @@ class DanmakuRenderer(handler: TopDanmakuBehaviorsHandler) {
     hasRunInit = true
   }
 
-  @SubscribeEvent def onRenderHud(event: RenderGuiOverlayEvent.Pre): Unit = {
-    val minecraft = Minecraft.getInstance()
-    if (event.getOverlay.id.getPath != "chat_panel") {
-      return
-    }
-
-    val gameRenderer = minecraft.gameRenderer
-    val camera       = gameRenderer.getMainCamera
-
-    val pose = new PoseStack
-    pose.mulPose(Axis.ZP.rotationDegrees(0))
-
-    pose.mulPose(Axis.XP.rotationDegrees(camera.getXRot))
-    pose.mulPose(Axis.YP.rotationDegrees(camera.getYRot + 180.0F))
-
-    // renderDanmaku(camera, pose, gameRenderer.getProjectionMatrix(minecraft.options.fov.get().toInt))
-
-    // val gui = new GuiGraphics(minecraft, minecraft.renderBuffers().bufferSource())
-    // gui.fillGradient(0, 0, 200, 200, 0xFF0000FF, 0x00FF00FF)
-
-    // val bb = minecraft.renderBuffers().bufferSource().getBuffer(RenderType.gui())// Tesselator.getInstance().getBuilder
-    // bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR)
-    // bb.vertex(0, 0, 0).color(1F, 0, 0, 1F).endVertex()
-    // bb.vertex(0, 300, 0).color(0, 1F, 0, 1F).endVertex()
-    // bb.vertex(300, 300, 0).color(0, 0, 1F, 1F).endVertex()
-    // bb.vertex(300, 0, 0).color(0, 0, 0, 1F).endVertex()
-    // minecraft.renderBuffers().bufferSource().endLastBatch()
-    // Tesselator.getInstance().end()
-
-    // gui.drawCenteredString(minecraft.font, "Testing", 200, 200, 0xFFFFFFFF)
-  }
-
-  @SubscribeEvent def onRender(event: RenderTickEvent): Unit = {}
-
   @SubscribeEvent def onRenderAfterLevel(event: RenderLevelStageEvent): Unit = {
     // TODO: Change this to after_particles. Works better
     if (event.getStage != RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
@@ -67,16 +33,11 @@ class DanmakuRenderer(handler: TopDanmakuBehaviorsHandler) {
     renderDanmaku(event.getCamera, event.getPoseStack, event.getProjectionMatrix)
   }
 
-  // renderDanmaku(event.getCamera, event.getPoseStack, event.getProjectionMatrix)
-
   // noinspection DuplicatedCode
   private def renderDanmaku(camera: Camera, pose: PoseStack, projMatrix: Matrix4f): Unit = {
     if (!hasRunInit) {
       init()
     }
-
-    val scaleMat = new Matrix4f()
-    scaleMat.scaling(1F)
 
     // val renderData = handler.renderData(event.getPartialTick)
     val renderData = Vector(
@@ -89,7 +50,7 @@ class DanmakuRenderer(handler: TopDanmakuBehaviorsHandler) {
             "edgeHardness" -> 5.0F,
             "edgeGlow"     -> 3.0F
           ),
-        modelMat = scaleMat.translate(2, -59, 2, new Matrix4f()),
+        modelMat = new Matrix4f().translation(2, -59, 2),
         modelViewMat = new Matrix4f(),
         0xFFFFFFFF,
         0xFFFF0000,
@@ -106,7 +67,7 @@ class DanmakuRenderer(handler: TopDanmakuBehaviorsHandler) {
             "edgeHardness" -> 5.0F,
             "edgeGlow"     -> 3.0F
           ),
-        modelMat = scaleMat.translate(-2, -59, -2, new Matrix4f()),
+        modelMat = new Matrix4f().translation(-2, -59, -2),
         modelViewMat = new Matrix4f(),
         0xFFFFFFFF,
         0xFF00FF00,
@@ -121,8 +82,11 @@ class DanmakuRenderer(handler: TopDanmakuBehaviorsHandler) {
 
       pose.pushPose()
       pose.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z)
-      val modelViewMatrix = pose.last.pose
 
+      // TODO: Need to figure out how these two differ
+      val modelViewMatrix = pose.last.pose // RenderSystem.getModelViewMatrix
+
+      /*
       if (Math.random() > 0.99) {
         val pos = new Vector3f()
         modelViewMatrix.getTranslation(pos)
@@ -135,6 +99,7 @@ class DanmakuRenderer(handler: TopDanmakuBehaviorsHandler) {
         println(s"Scale: $scale")
         println()
       }
+      */
 
       val originalShader = RenderSystem.getShader
       val tempVec        = new Vector3f()
@@ -170,14 +135,10 @@ class DanmakuRenderer(handler: TopDanmakuBehaviorsHandler) {
 
           renderType.setupRenderState()
 
-          // TODO: Need to figure out how these two differ
-          val modelViewMat = modelViewMatrix // RenderSystem.getModelViewMatrix
-
           danmaku
             .map { data =>
-              val dataModelViewMat = data.modelViewMat
-              modelViewMat.mul(data.modelMat, dataModelViewMat)
-              dataModelViewMat.getColumn(3, tempVec)
+              modelViewMatrix.mul(data.modelMat, data.modelViewMat)
+              data.modelViewMat.getColumn(3, tempVec)
 
               data.copy(distanceFromCamera = tempVec.lengthSquared)
             }

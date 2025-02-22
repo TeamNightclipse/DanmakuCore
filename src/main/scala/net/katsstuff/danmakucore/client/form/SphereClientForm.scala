@@ -1,9 +1,9 @@
 package net.katsstuff.danmakucore.client.form
 
-import com.mojang.blaze3d.platform.{GlConst, GlStateManager}
-
 import scala.jdk.CollectionConverters.*
-import com.mojang.blaze3d.systems.RenderSystem
+import scala.util.Using
+
+import com.mojang.blaze3d.platform.{GlConst, GlStateManager}
 import com.mojang.blaze3d.vertex.{BufferBuilder, Tesselator, VertexFormat}
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.client.mirrormodels.MirrorMesh
@@ -11,9 +11,7 @@ import net.katsstuff.danmakucore.client.{DanCoreShaders, DanCoreVertexFormat}
 import net.katsstuff.danmakucore.danmaku.TopDanmakuBehaviorsHandler
 import net.minecraft.client.renderer.{RenderType, ShaderInstance}
 import org.joml.Matrix4f
-import org.lwjgl.opengl.{GL15, GL33, KHRDebug}
-
-import scala.util.Using
+import org.lwjgl.opengl.{GL15, GL33}
 
 class SphereClientForm extends ClientForm {
   private var sphereLow: MirrorMesh  = _
@@ -68,28 +66,28 @@ class SphereClientForm extends ClientForm {
       def extraValues(s: String): Float =
         defaultAttributeValues(s).asValue(data.renderProperties.get(s))
 
-      bb.putFloat(0, data.modelViewMat.m00.toFloat)
-      bb.putFloat(4, data.modelViewMat.m10.toFloat)
-      bb.putFloat(8, data.modelViewMat.m20.toFloat)
-      bb.putFloat(12, data.modelViewMat.m30.toFloat)
+      bb.putFloat(0, data.modelViewMat.m00)
+      bb.putFloat(4, data.modelViewMat.m01)
+      bb.putFloat(8, data.modelViewMat.m02)
+      bb.putFloat(12, data.modelViewMat.m03)
       bb.nextElement()
 
-      bb.putFloat(0, data.modelViewMat.m01.toFloat)
-      bb.putFloat(4, data.modelViewMat.m11.toFloat)
-      bb.putFloat(8, data.modelViewMat.m21.toFloat)
-      bb.putFloat(12, data.modelViewMat.m31.toFloat)
+      bb.putFloat(0, data.modelViewMat.m10)
+      bb.putFloat(4, data.modelViewMat.m11)
+      bb.putFloat(8, data.modelViewMat.m12)
+      bb.putFloat(12, data.modelViewMat.m13)
       bb.nextElement()
 
-      bb.putFloat(0, data.modelViewMat.m02.toFloat)
-      bb.putFloat(4, data.modelViewMat.m12.toFloat)
-      bb.putFloat(8, data.modelViewMat.m22.toFloat)
-      bb.putFloat(12, data.modelViewMat.m32.toFloat)
+      bb.putFloat(0, data.modelViewMat.m20)
+      bb.putFloat(4, data.modelViewMat.m21)
+      bb.putFloat(8, data.modelViewMat.m22)
+      bb.putFloat(12, data.modelViewMat.m23)
       bb.nextElement()
 
-      bb.putFloat(0, data.modelViewMat.m03.toFloat)
-      bb.putFloat(4, data.modelViewMat.m13.toFloat)
-      bb.putFloat(8, data.modelViewMat.m23.toFloat)
-      bb.putFloat(12, data.modelViewMat.m33.toFloat)
+      bb.putFloat(0, data.modelViewMat.m30)
+      bb.putFloat(4, data.modelViewMat.m31)
+      bb.putFloat(8, data.modelViewMat.m32)
+      bb.putFloat(12, data.modelViewMat.m33)
       bb.nextElement()
 
       bb.color(data.mainColor)
@@ -112,13 +110,13 @@ class SphereClientForm extends ClientForm {
       GlStateManager._glBindBuffer(GlConst.GL_ARRAY_BUFFER, attributeBuf)
 
       // Orphan buffer
-      //GL15.glBufferData(GlConst.GL_ARRAY_BUFFER, rendered.vertexBuffer().capacity(), GL15.GL_STREAM_DRAW)
+      // GL15.glBufferData(GlConst.GL_ARRAY_BUFFER, rendered.vertexBuffer().capacity(), GL15.GL_STREAM_DRAW)
 
       GlStateManager._glBufferData(GlConst.GL_ARRAY_BUFFER, rendered.vertexBuffer(), GL15.GL_STREAM_DRAW)
       GlStateManager._glBindBuffer(GlConst.GL_ARRAY_BUFFER, 0)
     }((resource: BufferBuilder#RenderedBuffer) => resource.release())
 
-    //danmaku.foreach(_ => model.drawWithShader(modelViewMatrix, projectionMatrix, shader))
+    // danmaku.foreach(_ => model.drawWithShader(modelViewMatrix, projectionMatrix, shader))
     model.drawInstancedWithShader(modelViewMatrix, projectionMatrix, shader, danmaku.length)
 
   override def render(
