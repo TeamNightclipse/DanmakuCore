@@ -34,9 +34,13 @@ class BlockDanmakuCraftingTable
       player: Player,
       hand: InteractionHand,
       hit: BlockHitResult
-  ): InteractionResult =
-    Minecraft.getInstance().setScreen(new DanmakuEditorScreen)
-    InteractionResult.SUCCESS
+  ): InteractionResult = {
+    if (level.isClientSide) //this.openScreen(level, pPos, pPlayer)
+      Minecraft.getInstance().setScreen(new DanmakuEditorScreen)
+
+    InteractionResult.sidedSuccess(level.isClientSide)
+
+  }
   /*
     if level.isClientSide then InteractionResult.SUCCESS
     else {

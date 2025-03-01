@@ -3,13 +3,11 @@ package net.katsstuff.danmakucore.client.gui
 import scala.compiletime.uninitialized
 
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.tabs.{TabManager, TabNavigationBar}
-import net.minecraft.client.gui.components.{AbstractWidget, Button}
-import net.minecraft.client.gui.layouts.{FrameLayout, GridLayout, SpacerElement}
-import net.minecraft.client.gui.narration.NarrationElementOutput
-import net.minecraft.client.gui.navigation.ScreenRectangle
+import net.minecraft.client.gui.layouts.GridLayout
 import net.minecraft.client.gui.screens.Screen
-import net.minecraft.network.chat.{CommonComponents, Component}
+import net.minecraft.network.chat.Component
 
 class DanmakuEditorScreen extends Screen(Component.literal("Danmaku editor")) {
 
@@ -23,64 +21,43 @@ class DanmakuEditorScreen extends Screen(Component.literal("Danmaku editor")) {
   private var tabNavigationBar: TabNavigationBar = uninitialized
   private var bottomButtons: GridLayout          = uninitialized
 
-  private var node: GridLayout = uninitialized
-
   override def init(): Unit = {
     super.init()
-    node = new GridLayout().columnSpacing(10)
-
-    val nodeWidth = 70
-
-    val rows = node.createRowHelper(1)
-    rows.addChild(
-      new NodeHelper.NodeBackgroundWidget(
-        0,
-        0,
-        nodeWidth,
-        64,
-        0xFFFF0000,
-        0xFFAAAAAA,
-        Component.literal("Node")
-      ) {
-        var dragOffsetX: Double = 0
-        var dragOffsetY: Double = 0
-
-        override def onClick(pMouseX: Double, pMouseY: Double): Unit = {
-          dragOffsetX = pMouseX - node.getX
-          dragOffsetY = pMouseY - node.getY
-        }
-
-        override def onDrag(pMouseX: Double, pMouseY: Double, pDragX: Double, pDragY: Double): Unit = {
-          node.setX((pMouseX - dragOffsetX).toInt)
-          node.setY((pMouseY - dragOffsetY).toInt)
-        }
-      }
+    val node1 = new NodeWidget(
+      x = 50,
+      y = 50,
+      width = 70,
+      height = 64,
+      topColor = 0xFFFF0000,
+      color = 0xFFAAAAAA,
+      title = Component.literal("Node 1"),
+      extraWidgets = () =>
+        Seq(
+          NodeWidget.simpleInput(Component.literal("Input 1"), 0xFF00FF00),
+          NodeWidget.simpleInput(Component.literal("Input 2"), 0xFF00FF00),
+          NodeWidget.simpleOutput(Component.literal("Output 1"), 0xFF0000FF),
+          NodeWidget.simpleOutput(Component.literal("Output 2"), 0xFF0000FF)
+        )
     )
-    rows.addChild(new SpacerElement(nodeWidth, 3))
-
-    rows.addChild(
-      NodeHelper.inputNode(Component.literal("Input 1"), 0xFF00FF00),
-      node.newCellSettings().alignHorizontallyLeft()
-    )
-    rows.addChild(
-      NodeHelper.inputNode(Component.literal("Input 2"), 0xFF00FF00),
-      node.newCellSettings().alignHorizontallyLeft()
-    )
-    rows.addChild(new SpacerElement(nodeWidth, 5))
-    rows.addChild(
-      NodeHelper.outputNode(Component.literal("Output 1"), 0xFF0000FF),
-      node.newCellSettings().alignHorizontallyRight()
-    )
-    rows.addChild(
-      NodeHelper.outputNode(Component.literal("Output 2"), 0xFF0000FF),
-      node.newCellSettings().alignHorizontallyRight()
+    val node2 = new NodeWidget(
+      x = 150,
+      y = 150,
+      width = 80,
+      height = 64,
+      topColor = 0xFFFF00FF,
+      color = 0xFFAAAAAA,
+      title = Component.literal("Node 2"),
+      extraWidgets = () =>
+        Seq(
+          NodeWidget.simpleInput(Component.literal("Input 1"), 0xFF00FF00),
+          NodeWidget.simpleInput(Component.literal("Input 2"), 0xFF00FF00),
+          NodeWidget.simpleOutput(Component.literal("Output 1"), 0xFF0000FF),
+          NodeWidget.simpleOutput(Component.literal("Output 2"), 0xFF0000FF)
+        )
     )
 
-    node.setX(50)
-    node.setY(50)
-
-    node.arrangeElements()
-    node.visitWidgets(v => addRenderableWidget(v))
+    node1.visitWidgets(v => addRenderableWidget(v))
+    node2.visitWidgets(v => addRenderableWidget(v))
 
     /*
     addRenderableWidget(???)
