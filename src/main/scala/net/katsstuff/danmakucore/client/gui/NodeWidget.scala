@@ -9,7 +9,11 @@ import scala.jdk.CollectionConverters.*
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.components.events.{AbstractContainerEventHandler, GuiEventListener}
+import net.minecraft.client.gui.components.events.{
+  AbstractContainerEventHandler,
+  ContainerEventHandler,
+  GuiEventListener
+}
 import net.minecraft.client.gui.components.{AbstractButton, AbstractWidget}
 import net.minecraft.client.gui.layouts.{GridLayout, LayoutElement, LayoutSettings, SpacerElement}
 import net.minecraft.client.gui.narration.{
@@ -19,8 +23,11 @@ import net.minecraft.client.gui.narration.{
   NarrationSupplier
 }
 import net.minecraft.client.gui.navigation.ScreenRectangle
+import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
+import org.joml.{Vector2d, Vector2i}
 
 class NodeWidget(
     x: Int,
@@ -30,7 +37,10 @@ class NodeWidget(
     topColor: Int,
     color: Int,
     title: Component,
-    extraWidgets: () => Seq[NodeWidget.NodeContent]
+    extraWidgets: () => Seq[NodeWidget.NodeContent],
+    addScreenWidget: AbstractWidget => Unit,
+    removeWidget: AbstractWidget => Unit,
+    parent: ContainerEventHandler
 ) extends AbstractContainerEventHandler,
       NarratableEntry,
       LayoutElement {
@@ -68,9 +78,9 @@ class NodeWidget(
     val content = extraWidgets()
     val (miscs, io) =
       content.partitionMap {
-        case NodeWidget.NodeContent.Misc(content) => Left(content)
-        case NodeWidget.NodeContent.Input(i)      => Right(Left(i))
-        case NodeWidget.NodeContent.Output(o)     => Right(Right(o))
+        case NodeWidget.NodeContent.Misc(content) => Left(content(addScreenWidget, removeWidget, parent))
+        case NodeWidget.NodeContent.Input(i)      => Right(Left(i(addScreenWidget, removeWidget, parent)))
+        case NodeWidget.NodeContent.Output(o)     => Right(Right(o(addScreenWidget, removeWidget, parent)))
       }
     val (inputs, outputs) = io.partitionMap(identity)
 
@@ -144,9 +154,9 @@ class NodeWidget(
 }
 object NodeWidget {
   enum NodeContent {
-    case Misc(content: AbstractWidget)
-    case Input(content: AbstractWidget)
-    case Output(content: AbstractWidget)
+    case Misc(content: (AbstractWidget => Unit, AbstractWidget => Unit, ContainerEventHandler) => AbstractWidget)
+    case Input(content: (AbstractWidget => Unit, AbstractWidget => Unit, ContainerEventHandler) => AbstractWidget)
+    case Output(content: (AbstractWidget => Unit, AbstractWidget => Unit, ContainerEventHandler) => AbstractWidget)
   }
 
   private class NodeBackgroundWidget(
@@ -191,7 +201,7 @@ object NodeWidget {
         color = color,
         variant = IOWidgetVariant.Input,
         connectorSize = 5
-      )
+      )(_, _, _)
     )
 
   def simpleOutput(title: Component, color: Int): NodeContent =
@@ -205,7 +215,7 @@ object NodeWidget {
         color = color,
         variant = IOWidgetVariant.Output,
         connectorSize = 5
-      )
+      )(_, _, _)
     )
 
   class NodeIOWidget(
@@ -217,12 +227,17 @@ object NodeWidget {
       color: Int,
       variant: IOWidgetVariant,
       connectorSize: Int
-  ) extends AbstractButton(_x, _y, _width, _height, title) {
+  )(addWidget: AbstractWidget => Unit, removeWidget: AbstractWidget => Unit, parent: ContainerEventHandler)
+      extends AbstractButton(_x, _y, _width, _height, title) {
     def x: Int = getX
 
     def y: Int = getY
 
-    private def connector = {
+    private var connection: BezierCurveWidget | Null = _
+    private var setConnectionDragging                = false
+    private var newConnectionDragging                = false
+
+    private def connectorRectangle = {
       val paddingX = 0
       variant match
         case IOWidgetVariant.Input =>
@@ -242,13 +257,13 @@ object NodeWidget {
     }
 
     override def isMouseOver(pMouseX: Double, pMouseY: Double): Boolean = {
-      val c = connector
+      val c = connectorRectangle
       c.left <= pMouseX && c.right >= pMouseX && c.top <= pMouseY && c.bottom >= pMouseY
     }
 
     override def renderWidget(pGuiGraphics: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float): Unit = {
       isHovered = isMouseOver(pMouseX, pMouseY)
-      
+
       val minecraft = Minecraft.getInstance
       RenderSystem.enableBlend()
       RenderSystem.enableDepthTest()
@@ -266,8 +281,24 @@ object NodeWidget {
         getFGColor | Mth.ceil(this.alpha * 255.0F) << 24
       )
 
-      val c = connector
-      pGuiGraphics.fill(c.left, c.top, c.right, c.bottom, color)
+      val c = connectorRectangle
+      pGuiGraphics.fill(RenderType.gui(), c.left, c.top, c.right, c.bottom, 100, color)
+
+      pGuiGraphics.flush()
+
+      if setConnectionDragging then
+        parent.setFocused(connection)
+        variant match
+          case IOWidgetVariant.Input =>
+            if newConnectionDragging then connection.toDragging = true
+            else connection.fromDragging = true
+
+          case IOWidgetVariant.Output =>
+            if newConnectionDragging then connection.fromDragging = true
+            else connection.toDragging = true
+
+        setConnectionDragging = false
+        newConnectionDragging = false
     }
 
     override def clicked(pMouseX: Double, pMouseY: Double): Boolean =
@@ -278,6 +309,67 @@ object NodeWidget {
 
     override def onPress(): Unit = ()
 
-    override def onClick(pMouseX: Double, pMouseY: Double): Unit = super.onClick(pMouseX, pMouseY)
+    def removeConnection(): Unit = connection = null
+
+    override def onClick(pMouseX: Double, pMouseY: Double): Unit = {
+      super.onClick(pMouseX, pMouseY)
+      if connection == null then
+        val c = connectorRectangle
+        val x = c.left + Mth.floor(c.width / 2D)
+        val y = c.top + Mth.floor(c.height / 2D)
+        connection = new BezierCurveWidget(
+          _from = new Vector2i(x, y),
+          _to = new Vector2i(x, y),
+          width = 1,
+          color = 0xFFFFFFFF,
+          removeWidget = removeWidget
+        )
+        variant match
+          case IOWidgetVariant.Input  => connection.fromWidget = this
+          case IOWidgetVariant.Output => connection.toWidget = this
+
+        addWidget(connection)
+        newConnectionDragging = true
+      end if
+
+      setConnectionDragging = true
+    }
+
+    override def onRelease(pMouseX: Double, pMouseY: Double): Unit = {
+      if connection == null then
+        parent.children().asScala.foreach {
+          case w: BezierCurveWidget if w.isMouseOver(pMouseX, pMouseY) && variant == IOWidgetVariant.Input =>
+            connection = w
+            w.fromWidget = this
+
+          case w: BezierCurveWidget if w.isMouseOver(pMouseX, pMouseY) && variant == IOWidgetVariant.Output =>
+            connection = w
+            w.toWidget = this
+
+          case _ =>
+        }
+    }
+
+    override def setX(pX: Int): Unit = {
+      super.setX(pX)
+      if connection != null then
+        val c = connectorRectangle
+        variant match
+          case IOWidgetVariant.Input =>
+            connection.from = new Vector2d(c.left + (connectorSize / 2D), connection.from.y)
+          case IOWidgetVariant.Output =>
+            connection.to = new Vector2d(c.left + (connectorSize / 2D), connection.to.y)
+    }
+
+    override def setY(pY: Int): Unit = {
+      super.setY(pY)
+      if connection != null then
+        val c = connectorRectangle
+        variant match
+          case IOWidgetVariant.Input =>
+            connection.from = new Vector2d(connection.from.x, c.top + Mth.floor(connectorSize / 2D))
+          case IOWidgetVariant.Output =>
+            connection.to = new Vector2d(connection.to.x, c.top + Mth.floor(connectorSize / 2D))
+    }
   }
 }
