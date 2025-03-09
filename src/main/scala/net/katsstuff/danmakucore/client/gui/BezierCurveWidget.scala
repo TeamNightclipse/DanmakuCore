@@ -3,26 +3,25 @@ package net.katsstuff.danmakucore.client.gui
 import com.mojang.blaze3d.systems.RenderSystem
 import net.katsstuff.danmakucore.client.gui.NodeWidget.NodeIOWidget
 import net.katsstuff.danmakucore.util.Bezier
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.network.chat.Component
 import net.minecraft.util.{FastColor, Mth}
-import org.joml.{Vector2d, Vector2i}
+import org.joml.Vector2d
 
 // Info to continue this:
 // https://pomax.github.io/bezierinfo/
 // https://ciechanow.ski/drawing-bezier-curves/
 // https://www.youtube.com/watch?v=aVwxzDHniEw
 class BezierCurveWidget(
-    _from: Vector2i,
-    _to: Vector2i,
+    _from: Vector2d,
+    _to: Vector2d,
     color: Int,
     width: Float,
-    removeWidget: AbstractWidget => Unit
-) extends AbstractWidget(_from.x - 1, _from.y - 1, 3, 3, Component.empty) {
+    snapLocation: (Double, Double) => (Double, Double)
+) extends AbstractWidget((_from.x - 1).toInt, (_from.y - 1).toInt, 3, 3, Component.empty) {
 
   var fromDragging = false
   var toDragging   = false
@@ -30,10 +29,10 @@ class BezierCurveWidget(
   var _toWidget: NodeIOWidget | Null   = _
   var _fromWidget: NodeIOWidget | Null = _
 
-  private val sizeD2 = 1
+  val sizeD2 = 1
 
-  private val fromD: Vector2d = new Vector2d(_from.x, _from.y)
-  private val toD: Vector2d   = new Vector2d(_to.x, _to.y)
+  private val fromD: Vector2d = new Vector2d(_from)
+  private val toD: Vector2d   = new Vector2d(_to)
 
   private val control1: Vector2d = new Vector2d()
   private val control2: Vector2d = new Vector2d()
@@ -42,11 +41,15 @@ class BezierCurveWidget(
   def fromWidget: NodeIOWidget | Null = _fromWidget
 
   def toWidget_=(widget: NodeIOWidget): Unit = {
-    if _toWidget != null then _toWidget.removeConnection()
+    if _toWidget != null then _toWidget.connection = null
+    if widget != null then widget.connection = this
+
     _toWidget = widget
   }
   def fromWidget_=(widget: NodeIOWidget): Unit = {
-    if _fromWidget != null then _fromWidget.removeConnection()
+    if _fromWidget != null then _fromWidget.connection = null
+    if widget != null then widget.connection = this
+
     _fromWidget = widget
   }
 
@@ -122,18 +125,7 @@ class BezierCurveWidget(
 
   override def renderWidget(pGuiGraphics: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float): Unit = {
     isHovered = isMouseOver(pMouseX, pMouseY)
-
-    // Solution to not always receiving the mouse release event if it was released over something else
-    if (fromDragging || toDragging) && !isHovered then
-      fromDragging = false
-      toDragging = false
-
     val z = if fromDragging || toDragging then 200F else 0F
-
-    if !fromDragging && !toDragging && (_fromWidget == null || _toWidget == null) then
-      if _fromWidget != null then _fromWidget.removeConnection()
-      if _toWidget != null then _toWidget.removeConnection()
-      removeWidget(this)
 
     RenderSystem.enableDepthTest()
 
@@ -183,22 +175,16 @@ class BezierCurveWidget(
   }
 
   override def onDrag(pMouseX: Double, pMouseY: Double, pDragX: Double, pDragY: Double): Unit = {
-    if fromDragging then fromD.set(pMouseX, pMouseY)
-    if toDragging then toD.set(pMouseX, pMouseY)
+    val (snappedX, snappedY) = snapLocation(pMouseX, pMouseY)
+    
+    if fromDragging then fromD.set(snappedX, snappedY)
+    if toDragging then toD.set(snappedX, snappedY)
 
     setControls()
     rectangles = computeRectangles
   }
 
   override def onRelease(pMouseX: Double, pMouseY: Double): Unit = {
-    if fromDragging && _fromWidget != null then
-      _fromWidget.removeConnection()
-      _fromWidget = null
-
-    if toDragging && _toWidget != null then
-      _toWidget.removeConnection()
-      _toWidget = null
-
     fromDragging = false
     toDragging = false
   }

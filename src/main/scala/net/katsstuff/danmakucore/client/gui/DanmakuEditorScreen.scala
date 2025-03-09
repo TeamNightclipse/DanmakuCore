@@ -8,9 +8,8 @@ import net.minecraft.client.gui.components.tabs.{TabManager, TabNavigationBar}
 import net.minecraft.client.gui.layouts.GridLayout
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
-import org.joml.Vector2i
 
-class DanmakuEditorScreen extends Screen(Component.literal("Danmaku editor")) {
+class DanmakuEditorScreen extends Screen(Component.literal("Danmaku editor")), NodeContainer {
 
   // TODO: Grid layout
   // TODO: Toasts
@@ -22,7 +21,9 @@ class DanmakuEditorScreen extends Screen(Component.literal("Danmaku editor")) {
   private var tabNavigationBar: TabNavigationBar = uninitialized
   private var bottomButtons: GridLayout          = uninitialized
 
-  private val widgetsToRemove: collection.mutable.Buffer[AbstractWidget] = collection.mutable.Buffer.empty
+  override protected def addBezierWidget(widget: BezierCurveWidget): BezierCurveWidget = addRenderableWidget(widget)
+
+  override protected def removeBezierWidget(widget: BezierCurveWidget): Unit = removeWidget(widget)
 
   override def init(): Unit = {
     super.init()
@@ -40,10 +41,7 @@ class DanmakuEditorScreen extends Screen(Component.literal("Danmaku editor")) {
           NodeWidget.simpleInput(Component.literal("Input 2"), 0xFF00FF00),
           NodeWidget.simpleOutput(Component.literal("Output 1"), 0xFF0000FF),
           NodeWidget.simpleOutput(Component.literal("Output 2"), 0xFF0000FF)
-        ),
-      addScreenWidget = addRenderableWidget,
-      removeWidget = w => widgetsToRemove += w,
-      parent = this
+        )
     )
     val node2 = new NodeWidget(
       x = 150,
@@ -59,10 +57,7 @@ class DanmakuEditorScreen extends Screen(Component.literal("Danmaku editor")) {
           NodeWidget.simpleInput(Component.literal("Input 2"), 0xFF00FF00),
           NodeWidget.simpleOutput(Component.literal("Output 1"), 0xFF0000FF),
           NodeWidget.simpleOutput(Component.literal("Output 2"), 0xFF0000FF)
-        ),
-      addScreenWidget = addRenderableWidget,
-      removeWidget = w => widgetsToRemove += w,
-      parent = this
+        )
     )
 
     node1.visitWidgets(v => addRenderableWidget(v))
@@ -108,9 +103,6 @@ class DanmakuEditorScreen extends Screen(Component.literal("Danmaku editor")) {
     renderBackground(pGuiGraphics)
     // println(getFocused)
     super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
-
-    widgetsToRemove.foreach(removeWidget)
-    widgetsToRemove.clear()
   }
 
   override def repositionElements(): Unit = {

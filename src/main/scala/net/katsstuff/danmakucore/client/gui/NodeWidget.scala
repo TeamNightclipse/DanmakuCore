@@ -37,10 +37,7 @@ class NodeWidget(
     topColor: Int,
     color: Int,
     title: Component,
-    extraWidgets: () => Seq[NodeWidget.NodeContent],
-    addScreenWidget: AbstractWidget => Unit,
-    removeWidget: AbstractWidget => Unit,
-    parent: ContainerEventHandler
+    extraWidgets: () => Seq[NodeWidget.NodeContent]
 ) extends AbstractContainerEventHandler,
       NarratableEntry,
       LayoutElement {
@@ -78,9 +75,9 @@ class NodeWidget(
     val content = extraWidgets()
     val (miscs, io) =
       content.partitionMap {
-        case NodeWidget.NodeContent.Misc(content) => Left(content(addScreenWidget, removeWidget, parent))
-        case NodeWidget.NodeContent.Input(i)      => Right(Left(i(addScreenWidget, removeWidget, parent)))
-        case NodeWidget.NodeContent.Output(o)     => Right(Right(o(addScreenWidget, removeWidget, parent)))
+        case NodeWidget.NodeContent.Misc(content) => Left(content)
+        case NodeWidget.NodeContent.Input(i)      => Right(Left(i))
+        case NodeWidget.NodeContent.Output(o)     => Right(Right(o))
       }
     val (inputs, outputs) = io.partitionMap(identity)
 
@@ -154,9 +151,9 @@ class NodeWidget(
 }
 object NodeWidget {
   enum NodeContent {
-    case Misc(content: (AbstractWidget => Unit, AbstractWidget => Unit, ContainerEventHandler) => AbstractWidget)
-    case Input(content: (AbstractWidget => Unit, AbstractWidget => Unit, ContainerEventHandler) => AbstractWidget)
-    case Output(content: (AbstractWidget => Unit, AbstractWidget => Unit, ContainerEventHandler) => AbstractWidget)
+    case Misc(content: AbstractWidget)
+    case Input(content: AbstractWidget)
+    case Output(content: AbstractWidget)
   }
 
   private class NodeBackgroundWidget(
@@ -201,7 +198,7 @@ object NodeWidget {
         color = color,
         variant = IOWidgetVariant.Input,
         connectorSize = 5
-      )(_, _, _)
+      )
     )
 
   def simpleOutput(title: Component, color: Int): NodeContent =
@@ -215,7 +212,7 @@ object NodeWidget {
         color = color,
         variant = IOWidgetVariant.Output,
         connectorSize = 5
-      )(_, _, _)
+      )
     )
 
   class NodeIOWidget(
@@ -225,19 +222,19 @@ object NodeWidget {
       _height: Int,
       title: Component,
       color: Int,
-      variant: IOWidgetVariant,
+      val variant: IOWidgetVariant,
       connectorSize: Int
-  )(addWidget: AbstractWidget => Unit, removeWidget: AbstractWidget => Unit, parent: ContainerEventHandler)
-      extends AbstractButton(_x, _y, _width, _height, title) {
+  ) extends AbstractButton(_x, _y, _width, _height, title) {
     def x: Int = getX
 
     def y: Int = getY
 
-    private var connection: BezierCurveWidget | Null = _
-    private var setConnectionDragging                = false
-    private var newConnectionDragging                = false
+    var connection: BezierCurveWidget | Null = _
 
-    private def connectorRectangle = {
+    var _connectorRectangle: ScreenRectangle = computeConnectorRectangle
+    def connectorRectangle: ScreenRectangle = _connectorRectangle
+    
+    def computeConnectorRectangle: ScreenRectangle = {
       val paddingX = 0
       variant match
         case IOWidgetVariant.Input =>
@@ -285,20 +282,6 @@ object NodeWidget {
       pGuiGraphics.fill(RenderType.gui(), c.left, c.top, c.right, c.bottom, 100, color)
 
       pGuiGraphics.flush()
-
-      if setConnectionDragging then
-        parent.setFocused(connection)
-        variant match
-          case IOWidgetVariant.Input =>
-            if newConnectionDragging then connection.toDragging = true
-            else connection.fromDragging = true
-
-          case IOWidgetVariant.Output =>
-            if newConnectionDragging then connection.fromDragging = true
-            else connection.toDragging = true
-
-        setConnectionDragging = false
-        newConnectionDragging = false
     }
 
     override def clicked(pMouseX: Double, pMouseY: Double): Boolean =
@@ -309,49 +292,9 @@ object NodeWidget {
 
     override def onPress(): Unit = ()
 
-    def removeConnection(): Unit = connection = null
-
-    override def onClick(pMouseX: Double, pMouseY: Double): Unit = {
-      super.onClick(pMouseX, pMouseY)
-      if connection == null then
-        val c = connectorRectangle
-        val x = c.left + Mth.floor(c.width / 2D)
-        val y = c.top + Mth.floor(c.height / 2D)
-        connection = new BezierCurveWidget(
-          _from = new Vector2i(x, y),
-          _to = new Vector2i(x, y),
-          width = 1,
-          color = 0xFFFFFFFF,
-          removeWidget = removeWidget
-        )
-        variant match
-          case IOWidgetVariant.Input  => connection.fromWidget = this
-          case IOWidgetVariant.Output => connection.toWidget = this
-
-        addWidget(connection)
-        newConnectionDragging = true
-      end if
-
-      setConnectionDragging = true
-    }
-
-    override def onRelease(pMouseX: Double, pMouseY: Double): Unit = {
-      if connection == null then
-        parent.children().asScala.foreach {
-          case w: BezierCurveWidget if w.isMouseOver(pMouseX, pMouseY) && variant == IOWidgetVariant.Input =>
-            connection = w
-            w.fromWidget = this
-
-          case w: BezierCurveWidget if w.isMouseOver(pMouseX, pMouseY) && variant == IOWidgetVariant.Output =>
-            connection = w
-            w.toWidget = this
-
-          case _ =>
-        }
-    }
-
     override def setX(pX: Int): Unit = {
       super.setX(pX)
+      _connectorRectangle = computeConnectorRectangle
       if connection != null then
         val c = connectorRectangle
         variant match
@@ -363,6 +306,7 @@ object NodeWidget {
 
     override def setY(pY: Int): Unit = {
       super.setY(pY)
+      _connectorRectangle = computeConnectorRectangle
       if connection != null then
         val c = connectorRectangle
         variant match
