@@ -1,32 +1,80 @@
 package net.katsstuff.danmakucore.client.gui
 
+import java.util.UUID
+
+import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
-import net.katsstuff.danmakucore.client.gui.NodeWidget.{IOWidgetVariant, NodeIOWidget}
+import com.google.common.graph.{GraphBuilder, MutableGraph}
+import net.katsstuff.danmakucore.client.gui.NodeWidget.NodeIOWidget
+import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.events.{ContainerEventHandler, GuiEventListener}
 import net.minecraft.client.gui.navigation.ScreenRectangle
 import org.joml.Vector2d
 
-trait NodeContainer extends ContainerEventHandler {
+//noinspection UnstableApiUsage
+trait NodeContainer[NF <: NodeFactory](val nodeFactory: NF) extends ContainerEventHandler {
 
-  protected def addBezierWidget(widget: BezierCurveWidget): BezierCurveWidget
+  private val graph: MutableGraph[GraphNodeIdentifier] = GraphBuilder.directed().build()
+  private val widgetToNodeIdentifierMap: mutable.Map[NodeWidget | NodeIOWidget, GraphNodeIdentifier] = mutable.Map.empty
 
-  protected def removeBezierWidget(widget: BezierCurveWidget): Unit
+  protected def addWidgetToNodeContainer(widget: AbstractWidget): AbstractWidget
+  protected def removeWidgetFromNodeContainer(widget: AbstractWidget): Unit
+
+  def newNodeAt(x: Int, y: Int, nodeType: nodeFactory.NodeType): Unit = {
+    val coreIdentifier: GraphNodeIdentifier.Core = GraphNodeIdentifier.Core(nodeType.identifier, UUID.randomUUID())
+    graph.addNode(coreIdentifier)
+
+    val node = new NodeWidget(
+      x = x,
+      y = y,
+      width = 70, // TODO: Needs to go. Should be derived automatically
+      style = nodeType.make
+    )
+    widgetToNodeIdentifierMap.put(node, coreIdentifier)
+
+    node.visitWidgets { w =>
+      w match
+        case io: NodeIOWidget =>
+          widgetToNodeIdentifierMap.put(
+            io,
+            GraphNodeIdentifier.IO(coreIdentifier, io.style.asInstanceOf[nodeFactory.IONodeContentInfoBase].identifier)
+          )
+
+        case _ => ()
+
+      addWidgetToNodeContainer(w)
+    }
+  }
+
+  def removeNode(node: NodeWidget): Unit = {
+    val coreIdentifier = widgetToNodeIdentifierMap(node)
+
+    graph.removeNode(coreIdentifier)
+    graph.nodes.asScala.foreach {
+      case i: GraphNodeIdentifier.IO if i.core == coreIdentifier => graph.removeEdge(i, coreIdentifier)
+      case _                                                     =>
+    }
+
+    node.visitWidgets(removeWidgetFromNodeContainer)
+  }
 
   private def radiusInRectangle(rect: ScreenRectangle, x: Double, y: Double, size: Double): Boolean = {
-    val xCond = if size > rect.width
+    val xCond =
+      if size > rect.width
       then x - size < rect.left && x + size > rect.right
-    else x - size >= rect.left && x + size <= rect.right
+      else x - size >= rect.left && x + size <= rect.right
 
-    val yCond = if size > rect.height
+    val yCond =
+      if size > rect.height
       then y - size < rect.top && y + size > rect.bottom
-    else y - size >= rect.top && y + size <= rect.bottom
+      else y - size >= rect.top && y + size <= rect.bottom
 
     xCond && yCond
   }
 
   def snapLocation(x: Double, y: Double): (Double, Double) = {
-    val snapRadius = 7
+    val snapRadius = 8
 
     children.asScala
       .collectFirst {
@@ -41,7 +89,7 @@ trait NodeContainer extends ContainerEventHandler {
     children.asScala
       .collectFirst {
         case w: NodeIOWidget if w.mouseClicked(pMouseX, pMouseY, pButton) =>
-          val newConnection = w.connection == null
+          val newConnection = w.connection.isEmpty
           if newConnection then
             val c = w.connectorRectangle
             val x = c.left + (c.width / 2D)
@@ -53,23 +101,27 @@ trait NodeContainer extends ContainerEventHandler {
               color = 0xFFFFFFFF,
               snapLocation = snapLocation
             )
-            w.variant match
-              case IOWidgetVariant.Input  => connection.fromWidget = w
-              case IOWidgetVariant.Output => connection.toWidget = w
+            w.style.variant match
+              case NodeFactory.IOContentVariant.Input  => connection.fromWidget = Some(w)
+              case NodeFactory.IOContentVariant.Output => connection.toWidget = Some(w)
 
-            addBezierWidget(connection)
+            addWidgetToNodeContainer(connection)
           end if
 
-          w.variant match
-            case IOWidgetVariant.Input =>
-              if newConnection then w.connection.toDragging = true
-              else w.connection.fromDragging = true
+          // Should always be set at this point
+          val connection = w.connection.get
 
-            case IOWidgetVariant.Output =>
-              if newConnection then w.connection.fromDragging = true
-              else w.connection.toDragging = true
+          w.style.variant match
+            case NodeFactory.IOContentVariant.Input =>
+              if newConnection then connection.toDragging = true
+              else connection.fromDragging = true
+
+            case NodeFactory.IOContentVariant.Output =>
+              if newConnection then connection.fromDragging = true
+              else connection.toDragging = true
           end match
-          setFocused(w.connection)
+
+          setFocused(connection)
           if (pButton == 0) this.setDragging(true)
 
           true
@@ -82,6 +134,8 @@ trait NodeContainer extends ContainerEventHandler {
     val toRemove = children.asScala.collect {
       case w: BezierCurveWidget if w.fromDragging || w.toDragging =>
         val fromDragging = w.fromDragging
+        w.fromDragging = false
+        w.toDragging = false
 
         val point = if fromDragging then w.from else w.to
         val size  = w.sizeD2
@@ -90,20 +144,29 @@ trait NodeContainer extends ContainerEventHandler {
           case w2: NodeIOWidget if radiusInRectangle(w2.connectorRectangle, point.x, point.y, size) => w2
         }
 
+        def identifierPair = w.fromWidget.map(widgetToNodeIdentifierMap).zip(w.toWidget.map(widgetToNodeIdentifierMap))
+
         io match
           case Some(value) =>
-            if fromDragging then w.fromWidget = value
-            else w.toWidget = value
+            identifierPair.foreach((from, to) => graph.removeEdge(from, to))
+
+            if fromDragging then w.fromWidget = Some(value)
+            else w.toWidget = Some(value)
+
+            identifierPair.foreach((from, to) => graph.putEdge(from, to))
+
             None
 
           case None =>
-            w.fromWidget = null
-            w.toWidget = null
+            identifierPair.foreach((from, to) => graph.removeEdge(from, to))
+
+            w.fromWidget = None
+            w.toWidget = None
 
             Some(w)
     }.flatten
 
-    toRemove.foreach(removeBezierWidget)
+    toRemove.foreach(removeWidgetFromNodeContainer)
 
     children.asScala
       .collect {

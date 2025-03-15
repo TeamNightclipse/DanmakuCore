@@ -9,7 +9,7 @@ import net.minecraft.client.gui.layouts.GridLayout
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
 
-class DanmakuEditorScreen extends Screen(Component.literal("Danmaku editor")), NodeContainer {
+class DanmakuEditorScreen extends Screen(Component.literal("Danmaku editor")), NodeContainer(DanmakuInstantiationNodeFactory) {
 
   // TODO: Grid layout
   // TODO: Toasts
@@ -21,47 +21,17 @@ class DanmakuEditorScreen extends Screen(Component.literal("Danmaku editor")), N
   private var tabNavigationBar: TabNavigationBar = uninitialized
   private var bottomButtons: GridLayout          = uninitialized
 
-  override protected def addBezierWidget(widget: BezierCurveWidget): BezierCurveWidget = addRenderableWidget(widget)
+  override protected def addWidgetToNodeContainer(widget: AbstractWidget): AbstractWidget = addRenderableWidget(widget)
 
-  override protected def removeBezierWidget(widget: BezierCurveWidget): Unit = removeWidget(widget)
+  override protected def removeWidgetFromNodeContainer(widget: AbstractWidget): Unit = removeWidget(widget)
 
   override def init(): Unit = {
     super.init()
-    val node1 = new NodeWidget(
-      x = 50,
-      y = 50,
-      width = 70,
-      height = 64,
-      topColor = 0xFFFF0000,
-      color = 0xFFAAAAAA,
-      title = Component.literal("Node 1"),
-      extraWidgets = () =>
-        Seq(
-          NodeWidget.simpleInput(Component.literal("Input 1"), 0xFF00FF00),
-          NodeWidget.simpleInput(Component.literal("Input 2"), 0xFF00FF00),
-          NodeWidget.simpleOutput(Component.literal("Output 1"), 0xFF0000FF),
-          NodeWidget.simpleOutput(Component.literal("Output 2"), 0xFF0000FF)
-        )
-    )
-    val node2 = new NodeWidget(
-      x = 150,
-      y = 150,
-      width = 80,
-      height = 64,
-      topColor = 0xFFFF00FF,
-      color = 0xFFAAAAAA,
-      title = Component.literal("Node 2"),
-      extraWidgets = () =>
-        Seq(
-          NodeWidget.simpleInput(Component.literal("Input 1"), 0xFF00FF00),
-          NodeWidget.simpleInput(Component.literal("Input 2"), 0xFF00FF00),
-          NodeWidget.simpleOutput(Component.literal("Output 1"), 0xFF0000FF),
-          NodeWidget.simpleOutput(Component.literal("Output 2"), 0xFF0000FF)
-        )
-    )
-
-    node1.visitWidgets(v => addRenderableWidget(v))
-    node2.visitWidgets(v => addRenderableWidget(v))
+    
+    newNodeAt(50, 50, nodeFactory.NodeType.Input)
+    newNodeAt(50, 100, nodeFactory.NodeType.Input)
+    newNodeAt(150, 150, nodeFactory.NodeType.Output)
+    newNodeAt(150, 200, nodeFactory.NodeType.Math)
 
     /*
     addRenderableWidget(???)

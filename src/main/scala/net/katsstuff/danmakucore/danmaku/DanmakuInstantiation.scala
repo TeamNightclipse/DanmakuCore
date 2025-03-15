@@ -1,5 +1,7 @@
 package net.katsstuff.danmakucore.danmaku
 
+import java.util.concurrent.ThreadLocalRandom
+
 import scala.jdk.CollectionConverters.*
 
 import com.google.common.graph.{GraphBuilder, Graphs, ImmutableGraph, Traverser}
@@ -16,6 +18,7 @@ case class DanmakuInstantiation(
     inputs: Seq[DanmakuInstantiation.Input[_]],
     operations: Seq[DanmakuInstantiation.Operation],
     outputs: Map[String, DanmakuInstantiation.Value.FromVariable],
+    groups: Map[String, DanmakuInstantiation],
     form: Form
 ) {
 
@@ -61,8 +64,8 @@ case class DanmakuInstantiation(
 
         val nodeInputValues = state.getValues(operation.inputs)
         val result = operation.behavior match {
-          case DanmakuInstantiation.OperationIdentifier.InlineGroup(group) =>
-            group.evalutate(nodeInputValues)
+          case DanmakuInstantiation.OperationIdentifier.Group(name) =>
+            groups(name).evalutate(nodeInputValues)
           case DanmakuInstantiation.OperationIdentifier.NamedOperation(name) =>
             DanmakuInstantiations.registry(registryAccess).get(name).evalutate(nodeInputValues)
           case DanmakuInstantiation.OperationIdentifier.FundamentalOperation(op) =>
@@ -166,7 +169,7 @@ object DanmakuInstantiation {
   }
 
   enum OperationIdentifier {
-    case InlineGroup(group: DanmakuInstantiation)
+    case Group(name: String)
     case NamedOperation(name: ResourceLocation)
     case FundamentalOperation(op: FundamentalOp)
   }
@@ -176,6 +179,7 @@ object DanmakuInstantiation {
     case Enumerate
     case KnownConstant(constant: ConstantName)
     case Convert(from: VariableType[_], to: VariableType[_])
+    case Random[A](tpe: VariableType[A])
 
     def evaluate(state: EvalutationState): EvalutationState = this match {
       case Math(op) =>
@@ -218,6 +222,10 @@ object DanmakuInstantiation {
           }
           EvalutationState(Map.empty, Map("output" -> result))
 
+      case Enumerate =>
+        val counts = state.ints.getOrElse("count", Seq(1))
+        EvalutationState(Map.empty, Map("output" -> counts.flatMap(count => 0 until count)))
+
       case KnownConstant(constant) =>
         val value = constant match {
           case ConstantName.Pi  => java.lang.Math.PI.toFloat
@@ -225,10 +233,6 @@ object DanmakuInstantiation {
           case ConstantName.Phi => (1 + java.lang.Math.sqrt(5).toFloat) / 2
         }
         EvalutationState(Map("output" -> Seq(value)), Map.empty)
-
-      case Enumerate =>
-        val counts = state.ints.getOrElse("count", Seq(1))
-        EvalutationState(Map.empty, Map("output" -> counts.flatMap(count => 0 until count)))
 
       case Convert(from, to) =>
         (from, to) match {
@@ -241,6 +245,28 @@ object DanmakuInstantiation {
           case (from, to) if from == to => state
           case _                        => throw new IllegalStateException("Cannot convert between these types")
         }
+
+      case Random(VariableType.Float) =>
+        val mins = state.floats.getOrElse("min", Seq(0F))
+        val maxs = state.floats.getOrElse("max", Seq(1F))
+
+        EvalutationState(
+          Map("output" -> (for {
+            min <- mins
+            max <- maxs
+          } yield ThreadLocalRandom.current().nextFloat(min, max))),
+          Map.empty
+        )
+      case Random(VariableType.Int) =>
+        val mins = state.ints.getOrElse("min", Seq(0))
+        val maxs = state.ints.getOrElse("max", Seq(1))
+        EvalutationState(
+          Map.empty,
+          Map("output" -> (for {
+            min <- mins
+            max <- maxs
+          } yield ThreadLocalRandom.current().nextInt(min, max)))
+        )
 
     }
   }
@@ -270,7 +296,7 @@ object DanmakuInstantiation {
   )
 
   enum FundamentalOpType {
-    case Math, Enumerate, KnownConstant, Convert
+    case Math, Enumerate, KnownConstant, Convert, Random
   }
   object FundamentalOpType {
     val codec: Codec[FundamentalOpType] = Codec.STRING.comapFlatMap(
@@ -279,6 +305,7 @@ object DanmakuInstantiation {
         case "enumerate" => DataResult.success(Enumerate)
         case "constant"  => DataResult.success(KnownConstant)
         case "convert"   => DataResult.success(Convert)
+        case "random"    => DataResult.success(Random)
         case _           => DataResult.error(() => "Unknown fundamental op type")
       },
       {
@@ -286,6 +313,7 @@ object DanmakuInstantiation {
         case Enumerate     => "enumerate"
         case KnownConstant => "constant"
         case Convert       => "convert"
+        case Random        => "random"
       }
     )
   }
@@ -296,6 +324,7 @@ object DanmakuInstantiation {
       case FundamentalOp.Enumerate        => FundamentalOpType.Enumerate
       case FundamentalOp.KnownConstant(_) => FundamentalOpType.KnownConstant
       case FundamentalOp.Convert(_, _)    => FundamentalOpType.Convert
+      case FundamentalOp.Random(_)        => FundamentalOpType.Random
     },
     {
       case FundamentalOpType.Math =>
@@ -330,24 +359,33 @@ object DanmakuInstantiation {
             )
             .apply(instance, FundamentalOp.Convert(_, _))
         }
+
+      case FundamentalOpType.Random =>
+        RecordCodecBuilder.create[FundamentalOp.Random[?]] { instance =>
+          instance
+            .group(
+              VariableType.codec.fieldOf("type").forGetter(_.tpe)
+            )
+            .apply(instance, FundamentalOp.Random(_))
+        }
     }
   )
 
   enum OperationIdentifierType {
-    case Named, Fundamental, Inline
+    case Named, Fundamental, Group
   }
   object OperationIdentifierType {
     val codec: Codec[OperationIdentifierType] = Codec.STRING.comapFlatMap(
       {
         case "named"       => DataResult.success(Named)
         case "fundamental" => DataResult.success(Fundamental)
-        case "inline"      => DataResult.success(Inline)
+        case "inline"      => DataResult.success(Group)
         case _             => DataResult.error(() => "Unknown operation identifier type")
       },
       {
         case Named       => "named"
         case Fundamental => "fundamental"
-        case Inline      => "inline"
+        case Group       => "inline"
       }
     )
   }
@@ -357,7 +395,7 @@ object DanmakuInstantiation {
       {
         case OperationIdentifier.NamedOperation(_)       => OperationIdentifierType.Named
         case OperationIdentifier.FundamentalOperation(_) => OperationIdentifierType.Fundamental
-        case OperationIdentifier.InlineGroup(_)          => OperationIdentifierType.Inline
+        case OperationIdentifier.Group(_)                => OperationIdentifierType.Group
       },
       {
         case OperationIdentifierType.Named =>
@@ -365,8 +403,8 @@ object DanmakuInstantiation {
         case OperationIdentifierType.Fundamental =>
           fundamentalOpCodec
             .xmap[OperationIdentifier.FundamentalOperation](OperationIdentifier.FundamentalOperation(_), _.op)
-        case OperationIdentifierType.Inline =>
-          codec.xmap[OperationIdentifier.InlineGroup](OperationIdentifier.InlineGroup(_), _.group)
+        case OperationIdentifierType.Group =>
+          Codec.STRING.xmap[OperationIdentifier.Group](OperationIdentifier.Group(_), _.name)
       }
     )
 
@@ -433,9 +471,14 @@ object DanmakuInstantiation {
             .xmap[Map[String, Value.FromVariable]](_.asScala.toMap, _.asJava)
             .fieldOf("outputs")
             .forGetter(_.outputs),
+          Codec
+            .unboundedMap(Codec.STRING, codec)
+            .xmap[Map[String, DanmakuInstantiation]](_.asScala.toMap, _.asJava)
+            .fieldOf("groups")
+            .forGetter(_.groups),
           DanCoreForms.registry.getCodec.fieldOf("form").forGetter(_.form)
         )
-        .apply(instance, DanmakuInstantiation(_, _, _, _))
+        .apply(instance, DanmakuInstantiation(_, _, _, _, _))
     }
   )
 }

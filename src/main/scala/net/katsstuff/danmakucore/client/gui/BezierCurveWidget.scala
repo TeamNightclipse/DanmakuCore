@@ -26,8 +26,8 @@ class BezierCurveWidget(
   var fromDragging = false
   var toDragging   = false
 
-  var _toWidget: NodeIOWidget | Null   = _
-  var _fromWidget: NodeIOWidget | Null = _
+  var _toWidget: Option[NodeIOWidget]   = None
+  var _fromWidget: Option[NodeIOWidget] = None
 
   val sizeD2 = 1
 
@@ -37,19 +37,19 @@ class BezierCurveWidget(
   private val control1: Vector2d = new Vector2d()
   private val control2: Vector2d = new Vector2d()
 
-  def toWidget: NodeIOWidget | Null   = _toWidget
-  def fromWidget: NodeIOWidget | Null = _fromWidget
+  def toWidget: Option[NodeIOWidget]   = _toWidget
+  def fromWidget: Option[NodeIOWidget] = _fromWidget
 
-  def toWidget_=(widget: NodeIOWidget): Unit = {
-    if _toWidget != null then _toWidget.connection = null
-    if widget != null then widget.connection = this
-
+  def toWidget_=(widget: Option[NodeIOWidget]): Unit = {
+    _toWidget.foreach(_.connection = None)
+    widget.foreach(_.connection = Some(this))
+    
     _toWidget = widget
   }
-  def fromWidget_=(widget: NodeIOWidget): Unit = {
-    if _fromWidget != null then _fromWidget.connection = null
-    if widget != null then widget.connection = this
-
+  def fromWidget_=(widget: Option[NodeIOWidget]): Unit = {
+    _fromWidget.foreach(_.connection = None)
+    widget.foreach(_.connection = Some(this))
+    
     _fromWidget = widget
   }
 
