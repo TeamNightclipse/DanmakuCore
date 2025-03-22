@@ -68,50 +68,9 @@ trait NodeFactory {
   }
 
   def allNodeTypes: Seq[NodeType]
-
-  /*
-  type NodeIdentifier
+  
   type RepresentedObject
 
-  type CoreId <: {
-    type EdgeId
-  }
-
-  trait CoreBase(val id: CoreId)
-  trait InputBase(val to: Core)
-  trait OutputBase(val from: Core)
-
-  type Core <: NodeIdentifier & CoreBase
-  type Input <: NodeIdentifier & InputBase
-  type Output <: NodeIdentifier & OutputBase
-
-  given identifierTypeable: Typeable[NodeIdentifier]
-  given coreTypeable: Typeable[Core]
-  given inputTypeable: Typeable[Input]
-  given outputTypeable: Typeable[Output]
-
-  def core(id: CoreId, uuid: UUID): Core
-  def input(to: Core)(id: to.id.EdgeId): Input
-  def output(from: Core)(id: from.id.EdgeId): Output
-  def independentConnector(uuid: UUID): NodeIdentifier
-
-  case class NodeType(
-    identifier: CoreId,
-    topColor: Int,
-    color: Int,
-    title: Component,
-    contents: Seq[NodeType.Content]
-  )
-
-  object NodeType {
-    enum Content {
-      case Input(identifier: (coreId: CoreId) => core.EdgeId, title: Component, color: Int)
-      case Output(identifier: (coreId: CoreId) => core.EdgeId, title: Component, color: Int)
-      case Misc(make: () => AbstractWidget)
-    }
-  }
-
   //noinspection UnstableApiUsage
-  def buildObject(graph: Graph[NodeIdentifier]): RepresentedObject
-   */
+  def buildObject(graph: Graph[GraphNodeIdentifier], nodes: Map[GraphNodeIdentifier.Core, NodeInfo]): RepresentedObject
 }

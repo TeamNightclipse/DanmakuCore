@@ -20,7 +20,7 @@ class DanmakuSystemPopulator(
     Seq.fill(seq.length - n)(first) ++ seq
   }
 
-  def populate(evalState: DanmakuInstantiation.EvalutationState, forms: Seq[Form]): Unit = {
+  def populate(evalState: DanmakuInstantiation.EvaluationState, forms: Seq[Form]): Unit = {
     val count              = evalState.maxLength
     val arrElems           = vectorMap.size
     val (floatArr, intArr) = compiledSystem.getAddValuesArr(count)
@@ -41,7 +41,7 @@ class DanmakuSystemPopulator(
   }
 
   def populateWithInstantiation(
-      evalState: DanmakuInstantiation.EvalutationState,
+      evalState: DanmakuInstantiation.EvaluationState,
       instantiation: DanmakuInstantiation
   )(implicit registryAccess: RegistryAccess): Unit = populate(instantiation.evalutate(evalState), Seq.fill(evalState.maxLength)(instantiation.form))
 }

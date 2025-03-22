@@ -1,6 +1,14 @@
 package net.katsstuff.danmakucore.client.gui
 
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.*
+import scala.jdk.OptionConverters.*
+
+import com.google.common.graph.{Graph, Graphs, Traverser, ValueGraph, ValueGraphBuilder}
+import com.mojang.logging.LogUtils
 import net.katsstuff.danmakucore.DanmakuCore
+import net.katsstuff.danmakucore.client.gui
+import net.katsstuff.danmakucore.client.gui.DanmakuInstantiationNodeFactory.GraphType
 import net.katsstuff.danmakucore.client.gui.NodeFactory.IOContentVariant
 import net.katsstuff.danmakucore.client.gui.NodeWidget.MutableSpacer
 import net.katsstuff.danmakucore.danmaku.DanmakuInstantiation
@@ -8,6 +16,7 @@ import net.katsstuff.danmakucore.danmaku.DanmakuInstantiation.VariableType
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.components.{AbstractWidget, CycleButton, EditBox}
 import net.minecraft.client.gui.layouts.LayoutSettings
+import net.minecraft.client.resources.model.ModelResourceLocation
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 
@@ -55,44 +64,402 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     override def onContentsChange(listener: () => Unit): Unit = this.listener = listener
   }
 
-  private case object NumberType
+  sealed trait GraphNumberType { this: GraphType =>
+    def toVariableType: VariableType[_] = this match
+      case GraphType.Float => VariableType.Float
+      case GraphType.Int   => VariableType.Int
 
-  private def tpeToColor(tpe: VariableType[?] | NumberType.type): Int = tpe match
-    case VariableType.Float => 0xFF00FF00
-    case VariableType.Int   => 0xFF0000FF
-    case NumberType         => 0xFF00FFFF
+    inline def asGraphType: GraphType = this
+  }
+  enum GraphType {
+    case Int   extends GraphType, GraphNumberType
+    case Float extends GraphType, GraphNumberType
+    case Number
+  }
 
-  private def varTpeButtonBuilder = CycleButton
-    .builder[VariableType[?]] {
-      case VariableType.Float => Component.literal("Float")
-      case VariableType.Int   => Component.literal("Int")
+  private def tpeToColor(tpe: GraphType): Int = tpe match
+    case GraphType.Float  => 0xFF00FF00
+    case GraphType.Int    => 0xFF0000FF
+    case GraphType.Number => 0xFF00FFFF
+
+  private def varTpeNumberButtonBuilder: CycleButton.Builder[GraphNumberType] = CycleButton
+    .builder[GraphNumberType] {
+      case GraphType.Float => Component.literal("Float")
+      case GraphType.Int   => Component.literal("Int")
     }
-    .withValues(VariableType.Float, VariableType.Int)
+    .withValues(GraphType.Float, GraphType.Int)
+
+  // noinspection UnstableApiUsage
+  def typeGraph(
+      graph: Graph[GraphNodeIdentifier],
+      nodes: Map[GraphNodeIdentifier.Core, NodeInfo]
+  ): ValueGraph[GraphNodeIdentifier, GraphType] = {
+    val builder = ValueGraphBuilder
+      .directed()
+      .expectedNodeCount(graph.nodes.size)
+      .build[GraphNodeIdentifier, GraphType]()
+
+    graph.nodes.forEach(n => builder.addNode(n))
+
+    val topoSort = Traverser
+      .forGraph(graph)
+      .depthFirstPostOrder(graph.nodes.asScala.filter(n => graph.predecessors(n).isEmpty).asJava)
+      .asScala
+      .toSeq
+      .reverse
+
+    topoSort.foreach {
+      case GraphNodeIdentifier.Core(_, _) => ()
+      case id @ GraphNodeIdentifier.IO(core, ioId) =>
+        core.identifier match {
+          case NodeType.Input.identifier =>
+            builder.putEdgeValue(core, id, nodes(core).asInstanceOf[Input].graphType.asGraphType)
+
+          case NodeType.Output.identifier =>
+            builder.putEdgeValue(id, core, GraphType.Number)
+
+          case NodeType.Group.identifier     => ???
+          case NodeType.Operation.identifier => ???
+
+          case NodeType.Math.identifier =>
+            ioId match
+              case "a" => builder.putEdgeValue(id, core, GraphType.Number)
+              case "b" => builder.putEdgeValue(id, core, GraphType.Number)
+              case "output" =>
+                val aType = builder.edgeValue(GraphNodeIdentifier.IO(core, "a"), core).toScala
+                val bType = builder.edgeValue(GraphNodeIdentifier.IO(core, "b"), core).toScala
+
+                val tpe = Seq(aType, bType).flatten.distinct match {
+                  case Seq(_, _) => GraphType.Float
+                  case Seq(a)    => a
+                  case Seq()     => GraphType.Number
+                }
+                builder.putEdgeValue(core, id, tpe)
+
+          case NodeType.Enumerate.identifier =>
+            ioId match
+              case "count" =>
+                builder.putEdgeValue(id, core, GraphType.Int)
+
+              case "output" => builder.putEdgeValue(core, id, GraphType.Int)
+
+          case NodeType.KnownConstant.identifier =>
+            builder.putEdgeValue(core, id, GraphType.Float)
+
+          case NodeType.Convert.identifier =>
+            val node = nodes(core).asInstanceOf[Convert]
+
+            ioId match
+              case "input"  => builder.putEdgeValue(id, core, node.fromType.asGraphType)
+              case "output" => builder.putEdgeValue(core, id, node.toType.asGraphType)
+
+          case NodeType.Random.identifier =>
+            val node = nodes(core).asInstanceOf[Random]
+
+            ioId match
+              case "min" | "max" => builder.putEdgeValue(id, core, node.graphType.asGraphType)
+              case "output"      => builder.putEdgeValue(core, id, node.graphType.asGraphType)
+        }
+
+      case id @ GraphNodeIdentifier.Misc(from, to) =>
+        builder.edgeValue(from, id).toScala.foreach { e =>
+          builder.putEdgeValue(id, to, e)
+        }
+    }
+
+    // Once we have filled in all the easy type, we let the types "flow" into the remaining edges
+    var iterationsWithNoProgress = 0
+    val edges                    = graph.edges.asScala.to(mutable.Queue)
+    while edges.nonEmpty && iterationsWithNoProgress < edges.size + 1 do
+      val edge = edges.dequeue()
+      builder.edgeValue(edge).toScala match
+        case Some(_) =>
+          iterationsWithNoProgress = 0
+
+        case None =>
+          builder
+            .predecessors(edge.nodeU())
+            .asScala
+            .headOption
+            .flatMap(n => builder.edgeValue(n, edge.nodeU()).toScala) match
+            case Some(value) =>
+              iterationsWithNoProgress = 0
+              builder.putEdgeValue(edge, value)
+            case None =>
+              iterationsWithNoProgress += 1
+              edges.enqueue(edge)
+    end while
+
+    if edges.nonEmpty then
+      LogUtils.getLogger.warn(
+        s"Could not resolve all types in the graph. Remaining edges: ${edges.map(_.toString).mkString(", ")}"
+      )
+
+    val finalBuilder = ValueGraphBuilder
+      .from(builder)
+      .expectedNodeCount(builder.nodes.size)
+      .immutable[GraphNodeIdentifier, GraphType]()
+
+    builder.nodes.forEach(n => finalBuilder.addNode(n))
+    builder.edges().forEach(e => finalBuilder.putEdgeValue(e, builder.edgeValue(e).get))
+
+    finalBuilder.build()
+  }
+
+  // noinspection DuplicatedCode,UnstableApiUsage
+  def resolveTypes(
+      typeGraph: ValueGraph[GraphNodeIdentifier, GraphType]
+  ): ValueGraph[GraphNodeIdentifier, GraphNumberType] = {
+    val builder = ValueGraphBuilder.from(typeGraph).build[GraphNodeIdentifier, GraphNumberType]()
+
+    typeGraph.nodes.forEach(n => builder.addNode(n))
+
+    val edges = typeGraph.edges.asScala.to(mutable.Queue)
+
+    edges.dequeueAll { edge =>
+      typeGraph.edgeValue(edge) match
+        case t: GraphNumberType =>
+          builder.putEdgeValue(edge, t)
+          true
+        case _ => false
+    }
+
+    var iterationsWithNoProgress = 0
+    while edges.nonEmpty && iterationsWithNoProgress < edges.size + 1 do
+      val edge = edges.dequeue()
+      typeGraph.edgeValue(edge).get match
+        case t: GraphNumberType =>
+          builder.putEdgeValue(edge, t)
+          iterationsWithNoProgress = 0
+        case GraphType.Number =>
+          val predecessors = typeGraph.predecessors(edge.nodeU()).asScala.toSeq
+          val successors   = typeGraph.successors(edge.nodeV()).asScala.toSeq
+
+          val preTypes = predecessors.flatMap(pre =>
+            builder
+              .edgeValue(pre, edge.nodeU())
+              .toScala
+              .map(_.asGraphType)
+              .orElse(typeGraph.edgeValue(pre, edge.nodeU()).toScala)
+          )
+          val sucTypes = successors.flatMap(suc =>
+            builder
+              .edgeValue(edge.nodeV(), suc)
+              .toScala
+              .map(_.asGraphType)
+              .orElse(typeGraph.edgeValue(edge.nodeV(), suc).toScala)
+          )
+
+          val types = (preTypes ++ sucTypes).filter(_ != GraphType.Number)
+          types match
+            case Seq(t: GraphNumberType) =>
+              iterationsWithNoProgress = 0
+              builder.putEdgeValue(edge, t)
+
+            case Seq() =>
+              iterationsWithNoProgress += 1
+              edges.enqueue(edge)
+            case ts =>
+              val floatTypes = ts.count(_ == GraphType.Float)
+              val intTypes   = ts.count(_ == GraphType.Int)
+
+              iterationsWithNoProgress = 0
+              if floatTypes > intTypes then builder.putEdgeValue(edge, GraphType.Float)
+              else builder.putEdgeValue(edge, GraphType.Int)
+    end while
+
+    val finalBuilder = ValueGraphBuilder
+      .from(builder)
+      .expectedNodeCount(builder.nodes.size)
+      .immutable[GraphNodeIdentifier, GraphNumberType]()
+
+    builder.nodes.forEach(n => finalBuilder.addNode(n))
+    builder.edges().forEach(e => finalBuilder.putEdgeValue(e, builder.edgeValue(e).get))
+
+    finalBuilder.build()
+  }
+
+  override type RepresentedObject = DanmakuInstantiation
+  // noinspection UnstableApiUsage
+  override def buildObject(
+      graph: Graph[GraphNodeIdentifier],
+      nodes: Map[GraphNodeIdentifier.Core, NodeInfo]
+  ): DanmakuInstantiation = {
+
+    val types = resolveTypes(typeGraph(graph, nodes))
+
+    def predecessor(id: GraphNodeIdentifier) = {
+      val predecessors = graph.predecessors(id)
+      if (predecessors.size > 1) {
+        throw new IllegalStateException(s"Node $id has more than one predecessor")
+      }
+
+      if (predecessors.isEmpty) None
+      else Some(predecessors.iterator().next())
+    }
+
+    def predecessorIn(id: GraphNodeIdentifier.IO): Option[GraphNodeIdentifier.IO] = {
+      predecessor(id).flatMap {
+        case GraphNodeIdentifier.Core(_, _)    => throw new IllegalStateException(s"Node $id has core predecessor")
+        case io @ GraphNodeIdentifier.IO(_, _) => Some(io)
+        case GraphNodeIdentifier.Misc(from, _) => predecessorIn(from)
+      }
+    }
+
+    def inputValue[A](id: GraphNodeIdentifier.IO, fallbackValue: A, fallbackType: VariableType[A]) =
+      id.id -> predecessorIn(id).fold(DanmakuInstantiation.Value.Constant(fallbackValue, fallbackType)) { pred =>
+        val tpe = types.edgeValue(pred, id).toScala.getOrElse(sys.error(s"Could not find type for $id"))
+        DanmakuInstantiation.Value.FromVariable(
+          pred.core.uuid.toString,
+          pred.id,
+          tpe.toVariableType
+        )
+      }
+
+    DanmakuInstantiation(
+      inputs = graph
+        .nodes()
+        .asScala
+        .collect { case id @ GraphNodeIdentifier.Core(NodeType.Input.identifier, _) =>
+          val node = nodes(id).asInstanceOf[Input]
+
+          DanmakuInstantiation.Input(node.name, node.graphType.toVariableType, ???)
+        }
+        .toSeq,
+      operations = graph
+        .nodes()
+        .asScala
+        .map {
+          case id @ GraphNodeIdentifier.Core(NodeType.Group.identifier, uuid) =>
+
+            val node = nodes(id).asInstanceOf[Group]
+
+            DanmakuInstantiation
+              .Operation(uuid.toString, DanmakuInstantiation.OperationIdentifier.Group(node.groupName), ???)
+
+          case id @ GraphNodeIdentifier.Core(NodeType.Operation.identifier, uuid) =>
+            val node = nodes(id).asInstanceOf[Operation]
+
+            DanmakuInstantiation
+              .Operation(
+                uuid.toString,
+                DanmakuInstantiation.OperationIdentifier.NamedOperation(node.operationName),
+                ???
+              )
+
+          case id @ GraphNodeIdentifier.Core(NodeType.Math.identifier, uuid) =>
+            val node = nodes(id).asInstanceOf[Math]
+
+            DanmakuInstantiation
+              .Operation(
+                uuid.toString,
+                DanmakuInstantiation.OperationIdentifier
+                  .FundamentalOperation(DanmakuInstantiation.FundamentalOp.Math(node.mathOp)),
+                Map(
+                  inputValue(GraphNodeIdentifier.IO(id, "a"), ???, ???),
+                  inputValue(GraphNodeIdentifier.IO(id, "b"), ???, ???)
+                )
+              )
+
+          case id @ GraphNodeIdentifier.Core(NodeType.Enumerate.identifier, uuid) =>
+            DanmakuInstantiation.Operation(
+              uuid.toString,
+              DanmakuInstantiation.OperationIdentifier
+                .FundamentalOperation(DanmakuInstantiation.FundamentalOp.Enumerate),
+              Map(
+                inputValue(GraphNodeIdentifier.IO(id, "count"), ???, VariableType.Int)
+              )
+            )
+
+          case id @ GraphNodeIdentifier.Core(NodeType.KnownConstant.identifier, uuid) =>
+            val node = nodes(id).asInstanceOf[KnownConstant]
+
+            DanmakuInstantiation.Operation(
+              uuid.toString,
+              DanmakuInstantiation.OperationIdentifier
+                .FundamentalOperation(DanmakuInstantiation.FundamentalOp.KnownConstant(node.constant)),
+              Map.empty
+            )
+
+          case id @ GraphNodeIdentifier.Core(NodeType.Convert.identifier, uuid) =>
+            val node = nodes(id).asInstanceOf[Convert]
+
+            DanmakuInstantiation.Operation(
+              uuid.toString,
+              DanmakuInstantiation.OperationIdentifier.FundamentalOperation(
+                DanmakuInstantiation.FundamentalOp.Convert(node.fromType.toVariableType, node.toType.toVariableType)
+              ),
+              Map(
+                inputValue(GraphNodeIdentifier.IO(id, "input"), ???, node.fromType.toVariableType)
+              )
+            )
+
+          case id @ GraphNodeIdentifier.Core(NodeType.Random.identifier, uuid) =>
+            val node = nodes(id).asInstanceOf[Random]
+
+            DanmakuInstantiation.Operation(
+              uuid.toString,
+              DanmakuInstantiation.OperationIdentifier
+                .FundamentalOperation(DanmakuInstantiation.FundamentalOp.Random(node.graphType.toVariableType)),
+              Map(
+                inputValue(GraphNodeIdentifier.IO(id, "min"), ???, node.graphType.toVariableType),
+                inputValue(GraphNodeIdentifier.IO(id, "max"), ???, node.graphType.toVariableType)
+              )
+            )
+        }
+        .toSeq,
+      outputs = graph
+        .nodes()
+        .asScala
+        .collect { case id @ GraphNodeIdentifier.Core(NodeType.Output.identifier, _) =>
+          val node = nodes(id).asInstanceOf[Output]
+
+          predecessorIn(GraphNodeIdentifier.IO(id, "output")) match
+            case Some(pred) =>
+              val value: DanmakuInstantiation.Value.FromVariable =
+                DanmakuInstantiation.Value.FromVariable(
+                  pred.core.uuid.toString,
+                  pred.id,
+                  types
+                    .edgeValue(pred, id)
+                    .toScala
+                    .getOrElse(sys.error(s"Could not find type for output ${pred.core}"))
+                    .toVariableType
+                )
+              node.name -> value
+            case None => throw new IllegalStateException(s"Output node $id has no predecessor")
+        }
+        .toMap,
+      groups = ???,
+      form = ???
+    )
+  }
 
   private class Input extends NodeInfo(NodeType.Input) {
     var title: Component = Component.literal("Input")
     private val nameBox  = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Name"))
-    private val varTpe: CycleButton[VariableType[?]] = varTpeButtonBuilder.create(
+    private val varTypeButton: CycleButton[GraphNumberType] = varTpeNumberButtonBuilder.create(
       0,
       0,
       50,
       14,
-      Component.literal("Type"),
-      (_, v: VariableType[?]) => {
-        println(s"Changed type to $v")
-      }
+      Component.literal("Type")
     )
+
+    def name: String = nameBox.getValue
+
+    def graphType: GraphNumberType = varTypeButton.getValue
 
     override val contents: Seq[NodeContentInfo] = Seq(
       WrapWidgetNodeContentInfo(nameBox, tpe.identifier, _.copy().alignHorizontallyCenter()),
       spacer(tpe),
-      WrapWidgetNodeContentInfo(varTpe, tpe.identifier, _.copy().alignHorizontallyCenter()),
+      WrapWidgetNodeContentInfo(varTypeButton, tpe.identifier, _.copy().alignHorizontallyCenter()),
       spacer(tpe),
       IONodeContentInfo(
         tpe.identifier,
         "output",
         Component.literal("Input"),
-        tpeToColor(varTpe.getValue),
+        tpeToColor(graphType.asGraphType),
         IOContentVariant.Output
       )
     )
@@ -102,6 +469,8 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     var title: Component = Component.literal("Output")
     private val nameBox  = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Name"))
 
+    def name: String = nameBox.getValue
+
     override val contents: Seq[NodeContentInfo] = Seq(
       WrapWidgetNodeContentInfo(nameBox, tpe.identifier, _.copy().alignHorizontallyCenter()),
       spacer(tpe),
@@ -109,7 +478,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
         tpe.identifier,
         "output",
         Component.literal("Output"),
-        tpeToColor(NumberType),
+        tpeToColor(GraphType.Number),
         IOContentVariant.Input
       )
     )
@@ -118,6 +487,8 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
   private class Group extends NodeInfo(NodeType.Group) {
     var title: Component = Component.literal("Group")
     private val nameBox  = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Name"))
+
+    def groupName: String = nameBox.getValue
 
     override val contents: Seq[NodeContentInfo] = Seq(
       WrapWidgetNodeContentInfo(nameBox, tpe.identifier, _.copy().alignHorizontallyCenter()),
@@ -129,6 +500,8 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
   private class Operation extends NodeInfo(NodeType.Operation) {
     var title: Component = Component.literal("Operation")
     private val nameBox  = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Name"))
+
+    def operationName: ResourceLocation = new ResourceLocation(nameBox.getValue)
 
     override val contents: Seq[NodeContentInfo] = Seq(
       WrapWidgetNodeContentInfo(nameBox, tpe.identifier, _.copy().alignHorizontallyCenter()),
@@ -151,6 +524,8 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
       .displayOnlyValue()
       .create(0, 0, 50, 14, Component.literal("Operation"))
 
+    def mathOp: DanmakuInstantiation.MathOp = opButton.getValue
+
     override val contents: Seq[NodeContentInfo] = Seq(
       WrapWidgetNodeContentInfo(opButton, tpe.identifier, _.copy().alignHorizontallyCenter()),
       spacer(tpe),
@@ -158,14 +533,14 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
         tpe.identifier,
         "a",
         Component.literal("Value A"),
-        tpeToColor(NumberType),
+        tpeToColor(GraphType.Number),
         IOContentVariant.Input
       ),
       IONodeContentInfo(
         tpe.identifier,
         "b",
         Component.literal("Value B"),
-        tpeToColor(NumberType),
+        tpeToColor(GraphType.Number),
         IOContentVariant.Input
       ),
       spacer(tpe),
@@ -173,7 +548,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
         tpe.identifier,
         "output",
         Component.literal("Output"),
-        tpeToColor(NumberType), // TODO
+        tpeToColor(GraphType.Number),
         IOContentVariant.Output
       )
     )
@@ -187,7 +562,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
         tpe.identifier,
         "count",
         Component.literal("Count"),
-        tpeToColor(VariableType.Int),
+        tpeToColor(GraphType.Int),
         IOContentVariant.Input
       ),
       spacer(tpe),
@@ -195,7 +570,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
         tpe.identifier,
         "output",
         Component.literal("Output"),
-        tpeToColor(VariableType.Int),
+        tpeToColor(GraphType.Int),
         IOContentVariant.Output
       )
     )
@@ -212,6 +587,8 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
       .withValues(DanmakuInstantiation.ConstantName.values*)
       .create(0, 0, 50, 14, Component.literal("Constant"))
 
+    def constant: DanmakuInstantiation.ConstantName = constantButton.getValue
+
     override val contents: Seq[NodeContentInfo] = Seq(
       WrapWidgetNodeContentInfo(constantButton, tpe.identifier, _.copy().alignHorizontallyCenter()),
       spacer(tpe),
@@ -219,7 +596,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
         tpe.identifier,
         "output",
         Component.literal("Output"),
-        tpeToColor(VariableType.Float),
+        tpeToColor(GraphType.Float),
         IOContentVariant.Output
       )
     )
@@ -227,10 +604,13 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
 
   private class Convert extends NodeInfo(NodeType.Convert) {
     var title: Component = Component.literal("Convert")
-    private val fromButton: CycleButton[VariableType[?]] =
-      varTpeButtonBuilder.create(0, 0, 50, 14, Component.literal("From"))
-    private val toButton: CycleButton[VariableType[?]] =
-      varTpeButtonBuilder.create(0, 0, 50, 14, Component.literal("To"))
+    private val fromButton: CycleButton[GraphNumberType] =
+      varTpeNumberButtonBuilder.create(0, 0, 50, 14, Component.literal("From"))
+    private val toButton: CycleButton[GraphNumberType] =
+      varTpeNumberButtonBuilder.create(0, 0, 50, 14, Component.literal("To"))
+
+    def fromType: GraphNumberType = fromButton.getValue
+    def toType: GraphNumberType   = toButton.getValue
 
     override val contents: Seq[NodeContentInfo] = Seq(
       WrapWidgetNodeContentInfo(fromButton, tpe.identifier, _.copy().alignHorizontallyCenter()),
@@ -240,7 +620,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
         tpe.identifier,
         "input",
         Component.literal("Input"),
-        tpeToColor(fromButton.getValue),
+        tpeToColor(fromType.asGraphType),
         IOContentVariant.Input
       ),
       spacer(tpe),
@@ -248,7 +628,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
         tpe.identifier,
         "output",
         Component.literal("Output"),
-        tpeToColor(toButton.getValue),
+        tpeToColor(toType.asGraphType),
         IOContentVariant.Output
       )
     )
@@ -256,8 +636,10 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
 
   private class Random extends NodeInfo(NodeType.Random) {
     var title: Component = Component.literal("Random")
-    private val tpeButton: CycleButton[VariableType[?]] =
-      varTpeButtonBuilder.create(0, 0, 50, 14, Component.literal("Type"))
+    private val tpeButton: CycleButton[GraphNumberType] =
+      varTpeNumberButtonBuilder.create(0, 0, 50, 14, Component.literal("Type"))
+
+    def graphType: GraphNumberType = tpeButton.getValue
 
     override val contents: Seq[NodeContentInfo] = Seq(
       WrapWidgetNodeContentInfo(tpeButton, tpe.identifier, _.copy().alignHorizontallyCenter()),
@@ -266,14 +648,14 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
         tpe.identifier,
         "max",
         Component.literal("Min"),
-        tpeToColor(tpeButton.getValue),
+        tpeToColor(graphType.asGraphType),
         IOContentVariant.Input
       ),
       IONodeContentInfo(
         tpe.identifier,
         "max",
         Component.literal("Max"),
-        tpeToColor(tpeButton.getValue),
+        tpeToColor(graphType.asGraphType),
         IOContentVariant.Input
       ),
       spacer(tpe),
@@ -281,14 +663,15 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
         tpe.identifier,
         "output",
         Component.literal("Output"),
-        tpeToColor(tpeButton.getValue),
+        tpeToColor(graphType.asGraphType),
         IOContentVariant.Output
       )
     )
   }
 
   sealed trait NodeContentInfo(val coreId: ResourceLocation) extends NodeContentInfoBase
-  private case class SpacerNodeContentInfo(height: Int, coreIdLoc: ResourceLocation) extends NodeContentInfo(coreIdLoc) {
+  private case class SpacerNodeContentInfo(height: Int, coreIdLoc: ResourceLocation)
+      extends NodeContentInfo(coreIdLoc) {
     override def widget: MutableSpacer = new MutableSpacer(0, 0, 0, height)
   }
   private case class WrapWidgetNodeContentInfo(
