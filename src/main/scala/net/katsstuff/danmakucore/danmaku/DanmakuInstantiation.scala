@@ -320,6 +320,11 @@ object DanmakuInstantiation {
       case Float => Codec.FLOAT.xmap(_.toFloat, _.toFloat)
       case Int   => Codec.INT.xmap(_.toInt, _.toInt)
     }
+
+    def castFloat(float: Float): A = this match {
+      case Float => float
+      case Int   => float.toInt
+    }
   }
   object VariableType {
     val codec: Codec[VariableType[_]] = Codec.STRING.comapFlatMap(
@@ -346,7 +351,7 @@ object DanmakuInstantiation {
     case NamedOperation(name: ResourceLocation)
     case FundamentalOperation(op: FundamentalOp)
   }
-  
+
   enum FundamentalOp {
     case Math(op: MathOp)
     case VectorMath(op: VectorMathOp)
@@ -545,7 +550,7 @@ object DanmakuInstantiation {
         )
         EvaluationState(res, Map.empty)
 
-      case DestructQuat => 
+      case DestructQuat =>
         val res = state.generalMapQuat[1, 0, 4, Unit](
           Sized("input"),
           Sized.Empty,

@@ -30,6 +30,9 @@ object NodeFactory {
     def title: Component
     def title_=(title: Component): Unit
     def variant: IOContentVariant
+    
+    def width: Int
+    def height: Int
 
     override def layoutSettings(default: LayoutSettings): LayoutSettings = variant match
       case IOContentVariant.Input  => default.copy().alignHorizontallyLeft()
@@ -43,20 +46,26 @@ object NodeFactory {
 }
 trait NodeFactory {
 
+  type GlobalInfo <: GlobalInfoBase
   type NodeType <: NodeTypeBase
   type NodeInfo <: NodeInfoBase
   type NodeContentInfo <: NodeContentInfoBase
+  
+  trait GlobalInfoBase {
+    def invalidInfos: Seq[NodeInfo]
+  }
 
   trait NodeTypeBase {
     def group: Option[String]
     def identifier: ResourceLocation
 
-    def make: NodeInfo
+    def make(globalInfo: GlobalInfo): NodeInfo
   }
 
   trait NodeInfoBase extends NodeFactory.NodeStyle {
     def tpe: NodeType
     def contents: Seq[NodeContentInfoBase]
+    def defaultWidth: Int
   }
 
   trait NodeContentInfoBase extends NodeFactory.NodeContentStyle {
@@ -66,11 +75,13 @@ trait NodeFactory {
   trait IONodeContentInfoBase extends NodeContentInfoBase, NodeFactory.IONodeContentStyle {
     def identifier: String
   }
+  
+  def makeGlobalInfo: GlobalInfo
 
   def allNodeTypes: Seq[NodeType]
   
   type RepresentedObject
 
   //noinspection UnstableApiUsage
-  def buildObject(graph: Graph[GraphNodeIdentifier], nodes: Map[GraphNodeIdentifier.Core, NodeInfo]): RepresentedObject
+  def buildObject(globalInfo: GlobalInfo, graph: Graph[GraphNodeIdentifier], nodes: Map[GraphNodeIdentifier.Core, NodeInfo]): RepresentedObject
 }

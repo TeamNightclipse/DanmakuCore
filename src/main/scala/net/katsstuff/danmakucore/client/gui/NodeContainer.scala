@@ -17,6 +17,8 @@ trait NodeContainer[NF <: NodeFactory](val nodeFactory: NF) extends ContainerEve
 
   private val graph: MutableGraph[GraphNodeIdentifier] = GraphBuilder.directed().build()
   private val widgetToNodeIdentifierMap: mutable.Map[NodeWidget | NodeIOWidget, GraphNodeIdentifier] = mutable.Map.empty
+  
+  private val globalInfo = nodeFactory.makeGlobalInfo
 
   protected def addWidgetToNodeContainer(widget: AbstractWidget): AbstractWidget
   protected def removeWidgetFromNodeContainer(widget: AbstractWidget): Unit
@@ -24,27 +26,44 @@ trait NodeContainer[NF <: NodeFactory](val nodeFactory: NF) extends ContainerEve
   def newNodeAt(x: Int, y: Int, nodeType: nodeFactory.NodeType): Unit = {
     val coreIdentifier: GraphNodeIdentifier.Core = GraphNodeIdentifier.Core(nodeType.identifier, UUID.randomUUID())
     graph.addNode(coreIdentifier)
+    val style = nodeType.make(globalInfo)
 
-    val node = new NodeWidget(
+    val oldWidgets: mutable.Buffer[AbstractWidget] = mutable.Buffer.empty
+
+    lazy val node: NodeWidget = new NodeWidget(
       x = x,
       y = y,
-      width = 70, // TODO: Needs to go. Should be derived automatically
-      style = nodeType.make
+      width = style.defaultWidth, // TODO: Needs to go. Should be derived automatically
+      style = style,
+      onContentsChange = () =>
+        oldWidgets.foreach { w => 
+          removeWidgetFromNodeContainer(w)
+          w match
+            case w: (NodeWidget | NodeIOWidget) =>
+              graph.removeNode(widgetToNodeIdentifierMap(w))
+              widgetToNodeIdentifierMap.remove(w)
+        }
+
+        oldWidgets.clear()
+        node.visitWidgets { w =>
+          oldWidgets += w
+          w match
+            case io: NodeIOWidget =>
+              widgetToNodeIdentifierMap.put(
+                io,
+                GraphNodeIdentifier.IO(
+                  coreIdentifier,
+                  io.style.asInstanceOf[nodeFactory.IONodeContentInfoBase].identifier,
+                  isInput = io.style.variant == NodeFactory.IOContentVariant.Input
+                )
+              )
+
+            case _ => ()
+
+          addWidgetToNodeContainer(w)
+        }
     )
     widgetToNodeIdentifierMap.put(node, coreIdentifier)
-
-    node.visitWidgets { w =>
-      w match
-        case io: NodeIOWidget =>
-          widgetToNodeIdentifierMap.put(
-            io,
-            GraphNodeIdentifier.IO(coreIdentifier, io.style.asInstanceOf[nodeFactory.IONodeContentInfoBase].identifier)
-          )
-
-        case _ => ()
-
-      addWidgetToNodeContainer(w)
-    }
   }
 
   def removeNode(node: NodeWidget): Unit = {

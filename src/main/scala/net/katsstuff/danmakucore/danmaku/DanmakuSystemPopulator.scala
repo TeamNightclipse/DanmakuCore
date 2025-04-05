@@ -3,6 +3,8 @@ package net.katsstuff.danmakucore.danmaku
 import net.katsstuff.danmakucore.danmaku.form.Form
 import net.minecraft.core.RegistryAccess
 
+import scala.reflect.ClassTag
+
 class DanmakuSystemPopulator(
     vectorMap: Map[String, Int],
     vectorDefaults: Map[String, Float],
@@ -15,9 +17,9 @@ class DanmakuSystemPopulator(
     "secondaryColor" -> (0, 0xFF000000)
   )
 
-  private inline def repeatWithFirst[A](seq: Seq[A], n: Int): Seq[A] = {
+  private inline def repeatWithFirst[A: ClassTag](seq: IArray[A], n: Int): IArray[A] = {
     val first = seq.head
-    Seq.fill(seq.length - n)(first) ++ seq
+    IArray.fill(seq.length - n)(first) ++ seq
   }
 
   def populate(evalState: DanmakuInstantiation.EvaluationState, forms: Seq[Form]): Unit = {
@@ -26,13 +28,13 @@ class DanmakuSystemPopulator(
     val (floatArr, intArr) = compiledSystem.getAddValuesArr(count)
 
     vectorMap.foreach { case (k, idx) =>
-      repeatWithFirst(evalState.floats.getOrElse(k, Seq(vectorDefaults(k))), count).zipWithIndex.foreach { case (v, i) =>
+      repeatWithFirst(evalState.floats.getOrElse(k, IArray(vectorDefaults(k))), count).zipWithIndex.foreach { case (v, i) =>
         floatArr(idx + arrElems * i) = v
       }
     }
 
     intMapValues.foreach { case (k, (idx, default)) =>
-      repeatWithFirst(evalState.ints.getOrElse(k, Seq(default)), count).zipWithIndex.foreach { case (v, i) =>
+      repeatWithFirst(evalState.ints.getOrElse(k, IArray(default)), count).zipWithIndex.foreach { case (v, i) =>
         intArr(idx + arrElems * i) = v
       }
     }
