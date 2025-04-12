@@ -1,7 +1,6 @@
-package net.katsstuff.danmakucore.client.gui
+package net.katsstuff.danmakucore.client.gui.widgets
 
 import com.mojang.blaze3d.systems.RenderSystem
-import net.katsstuff.danmakucore.client.gui.NodeWidget.NodeIOWidget
 import net.katsstuff.danmakucore.util.Bezier
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget

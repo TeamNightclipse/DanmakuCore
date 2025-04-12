@@ -1,4 +1,4 @@
-package net.katsstuff.danmakucore.client.gui
+package net.katsstuff.danmakucore.client.gui.widgets
 
 import java.util.UUID
 
@@ -6,7 +6,7 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
 import com.google.common.graph.{GraphBuilder, MutableGraph}
-import net.katsstuff.danmakucore.client.gui.NodeWidget.NodeIOWidget
+import net.katsstuff.danmakucore.client.gui.{GraphNodeIdentifier, NodeFactory}
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.events.{ContainerEventHandler, GuiEventListener}
 import net.minecraft.client.gui.navigation.ScreenRectangle
@@ -17,7 +17,7 @@ trait NodeContainer[NF <: NodeFactory](val nodeFactory: NF) extends ContainerEve
 
   private val graph: MutableGraph[GraphNodeIdentifier] = GraphBuilder.directed().build()
   private val widgetToNodeIdentifierMap: mutable.Map[NodeWidget | NodeIOWidget, GraphNodeIdentifier] = mutable.Map.empty
-  
+
   private val globalInfo = nodeFactory.makeGlobalInfo
 
   protected def addWidgetToNodeContainer(widget: AbstractWidget): AbstractWidget
@@ -30,13 +30,13 @@ trait NodeContainer[NF <: NodeFactory](val nodeFactory: NF) extends ContainerEve
 
     val oldWidgets: mutable.Buffer[AbstractWidget] = mutable.Buffer.empty
 
-    lazy val node: NodeWidget = new NodeWidget(
+    val node: NodeWidget = new NodeWidget(
       x = x,
       y = y,
       width = style.defaultWidth, // TODO: Needs to go. Should be derived automatically
       style = style,
-      onContentsChange = () =>
-        oldWidgets.foreach { w => 
+      onContentsChange = self =>
+        oldWidgets.foreach { w =>
           removeWidgetFromNodeContainer(w)
           w match
             case w: (NodeWidget | NodeIOWidget) =>
@@ -45,10 +45,11 @@ trait NodeContainer[NF <: NodeFactory](val nodeFactory: NF) extends ContainerEve
         }
 
         oldWidgets.clear()
-        node.visitWidgets { w =>
+        self.visitWidgets { w =>
           oldWidgets += w
           w match
             case io: NodeIOWidget =>
+              println("Node visit C")
               widgetToNodeIdentifierMap.put(
                 io,
                 GraphNodeIdentifier.IO(
@@ -163,7 +164,7 @@ trait NodeContainer[NF <: NodeFactory](val nodeFactory: NF) extends ContainerEve
           case w2: NodeIOWidget if radiusInRectangle(w2.connectorRectangle, point.x, point.y, size) => w2
         }
 
-        def identifierPair = w.fromWidget.map(widgetToNodeIdentifierMap).zip(w.toWidget.map(widgetToNodeIdentifierMap))
+        def identifierPair = w.fromWidget.map(widgetToNodeIdentifierMap).zip(w.toWidget.map(widgetToNodeIdentifierMap)).filter(_ != _)
 
         io match
           case Some(value) =>

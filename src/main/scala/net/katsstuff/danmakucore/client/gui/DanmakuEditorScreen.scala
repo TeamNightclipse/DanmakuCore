@@ -1,7 +1,8 @@
 package net.katsstuff.danmakucore.client.gui
 
-import scala.compiletime.uninitialized
+import net.katsstuff.danmakucore.client.gui.widgets.NodeContainer
 
+import scala.compiletime.uninitialized
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.tabs.{TabManager, TabNavigationBar}

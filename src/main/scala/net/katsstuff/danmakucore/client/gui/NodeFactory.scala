@@ -1,9 +1,6 @@
 package net.katsstuff.danmakucore.client.gui
 
-import java.util.UUID
-import scala.reflect.Typeable
 import com.google.common.graph.Graph
-import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.layouts.{LayoutElement, LayoutSettings}
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -30,7 +27,7 @@ object NodeFactory {
     def title: Component
     def title_=(title: Component): Unit
     def variant: IOContentVariant
-    
+
     def width: Int
     def height: Int
 
@@ -50,7 +47,7 @@ trait NodeFactory {
   type NodeType <: NodeTypeBase
   type NodeInfo <: NodeInfoBase
   type NodeContentInfo <: NodeContentInfoBase
-  
+
   trait GlobalInfoBase {
     def invalidInfos: Seq[NodeInfo]
   }
@@ -75,13 +72,17 @@ trait NodeFactory {
   trait IONodeContentInfoBase extends NodeContentInfoBase, NodeFactory.IONodeContentStyle {
     def identifier: String
   }
-  
+
   def makeGlobalInfo: GlobalInfo
 
   def allNodeTypes: Seq[NodeType]
-  
+
   type RepresentedObject
 
-  //noinspection UnstableApiUsage
-  def buildObject(globalInfo: GlobalInfo, graph: Graph[GraphNodeIdentifier], nodes: Map[GraphNodeIdentifier.Core, NodeInfo]): RepresentedObject
+  // noinspection UnstableApiUsage
+  def buildObject(
+      globalInfo: GlobalInfo,
+      graph: Graph[GraphNodeIdentifier],
+      nodes: Map[GraphNodeIdentifier.Core, NodeInfo]
+  ): RepresentedObject
 }

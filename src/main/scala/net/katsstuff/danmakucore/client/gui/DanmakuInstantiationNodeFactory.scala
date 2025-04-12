@@ -9,11 +9,11 @@ import com.mojang.logging.LogUtils
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.client.gui
 import net.katsstuff.danmakucore.client.gui.NodeFactory.IOContentVariant
-import net.katsstuff.danmakucore.client.gui.NodeWidget.MutableSpacer
+import net.katsstuff.danmakucore.client.gui.widgets.{MutableSpacer, NodeIOWidget, NodeIOWidgetSliderInput}
 import net.katsstuff.danmakucore.danmaku.DanmakuInstantiation.VariableType
 import net.katsstuff.danmakucore.danmaku.{DanmakuInstantiation, DanmakuInstantiations}
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.components.{AbstractWidget, CycleButton, EditBox}
+import net.minecraft.client.gui.components.{AbstractWidget, CycleButton, EditBox, StringWidget}
 import net.minecraft.client.gui.layouts.LayoutSettings
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -80,7 +80,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     protected var listener: () => Unit = () => ()
 
     override def topColor: Int     = tpe.topColor
-    override def color: Int        = 0xFFAAAAAA
+    override def color: Int        = if globalInfo.invalidInfos.contains(this) then 0xFFFF0000 else 0xFFAAAAAA
     override def defaultWidth: Int = 70
 
     override def onContentsChange(listener: () => Unit): Unit = this.listener = listener
@@ -382,9 +382,24 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
                   case operation: Operation =>
                     DanmakuInstantiation.OperationIdentifier.NamedOperation(operation.operationName),
                 inputs = node.operation.toSeq.flatMap { op =>
-                  op.inputs.map(i =>
-                    inputValue(GraphNodeIdentifier.IO(id, i.name, isInput = true), fallbackValue = ???, i.tpe)
-                  )
+                  val nodeInputs = node.dynamicContents.collectFirst {
+                    case i: IONodeContentInfoWithSliderFallback => i
+                    case i: IONodeContentInfo                   => i
+                  }
+                  val opInputs = op.inputs
+
+                  opInputs
+                    .zip(nodeInputs)
+                    .map { case (opInput: DanmakuInstantiation.Input[a], nodeInput) =>
+                      val fallback: a = nodeInput match
+                        case fallback: IONodeContentInfoWithSliderFallback => fallback.fallbackValue(opInput.tpe)
+                        case _ =>
+                          opInput.tpe match
+                            case DanmakuInstantiation.VariableType.Float => 0F
+                            case DanmakuInstantiation.VariableType.Int   => 0
+
+                      inputValue(GraphNodeIdentifier.IO(id, opInput.name, isInput = true), fallback, opInput.tpe)
+                    }
                 }.toMap
               )
 
@@ -510,34 +525,53 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
   }
 
   private class Input(globalInfo: GlobalInfo) extends NodeInfo(globalInfo, NodeType.Input) {
-    var title: Component   = Component.literal("Input")
-    private val nameBox    = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Name"))
+    var title: Component = Component.literal("Input")
+
+    private val nameStr = new StringWidget(0, 0, 50, 10, Component.literal("Name:"), Minecraft.getInstance.font).alignLeft()
+    private val nameBox = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Name"))
+
+    private val defaultStr = new StringWidget(0, 0, 50, 10, Component.literal("Default:"), Minecraft.getInstance.font).alignLeft()
     private val defaultBox = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Default"))
+
+    private def setValidityFromValues(): Unit = {
+      val default = defaultBox.getValue
+
+      val nameBoxValid = nameBox.getValue.nonEmpty
+      val defaultValid = graphType match
+        case GraphType.Int   => default.toIntOption.isDefined
+        case GraphType.Float => default.toFloatOption.isDefined
+
+      defaultBox.setTextColor(if defaultValid then 0xFFE0E0E0 else 0xFFFF0000)
+      nameBox.setTextColor(if nameBoxValid then 0xFFE0E0E0 else 0xFFFF0000)
+      markValidity(nameBoxValid && defaultValid)
+    }
+
+    nameBox.setResponder(_ => setValidityFromValues())
+    defaultBox.setResponder(_ => setValidityFromValues())
+    markValidity(false)
+
     private val varTypeButton: CycleButton[GraphNumberType] = varTpeNumberButtonBuilder.create(
       0,
       0,
       50,
       14,
-      Component.literal("Type")
+      Component.literal("Type"),
+      (_: CycleButton[GraphNumberType], _: GraphNumberType) => {
+        setValidityFromValues()
+      }
     )
 
     def name: String = nameBox.getValue
 
     def graphType: GraphNumberType = varTypeButton.getValue
-    defaultBox.setResponder { str =>
-      val valid = graphType match
-        case GraphType.Int   => str.toIntOption.isDefined
-        case GraphType.Float => str.toFloatOption.isDefined
-
-      defaultBox.setTextColor(if valid then 0xFFE0E0E0 else 0xFFFF0000)
-      markValidity(valid)
-    }
 
     def defaultValue: Float = defaultBox.getValue.toFloatOption.getOrElse(0F)
 
     override val contents: Seq[NodeContentInfo] = Seq(
-      WrapWidgetNodeContentInfo(nameBox, tpe.identifier, _.copy().alignHorizontallyCenter()),
-      WrapWidgetNodeContentInfo(defaultBox, tpe.identifier, _.copy().alignHorizontallyCenter()),
+      WrapWidgetNodeContentInfo(nameStr, tpe.identifier, _.copy().alignHorizontallyCenter().paddingBottom(1)),
+      WrapWidgetNodeContentInfo(nameBox, tpe.identifier, _.copy().alignHorizontallyCenter().paddingBottom(4)),
+      WrapWidgetNodeContentInfo(defaultStr, tpe.identifier, _.copy().alignHorizontallyCenter().paddingBottom(1)),
+      WrapWidgetNodeContentInfo(defaultBox, tpe.identifier, _.copy().alignHorizontallyCenter().paddingBottom(4)),
       spacer(tpe),
       WrapWidgetNodeContentInfo(varTypeButton, tpe.identifier, _.copy().alignHorizontallyCenter()),
       spacer(tpe),
@@ -553,12 +587,20 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
 
   private class Output(globalInfo: GlobalInfo) extends NodeInfo(globalInfo, NodeType.Output) {
     var title: Component = Component.literal("Output")
-    private val nameBox  = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Name"))
+
+    private val nameStr = new StringWidget(Component.literal("Name:"), Minecraft.getInstance.font).alignLeft()
+    private val nameBox = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Name"))
+    nameBox.setResponder { str =>
+      nameBox.setTextColor(if str.nonEmpty then 0xFFE0E0E0 else 0xFFFF0000)
+      markValidity(str.nonEmpty)
+    }
+    markValidity(false)
 
     def name: String = nameBox.getValue
 
     override val contents: Seq[NodeContentInfo] = Seq(
-      WrapWidgetNodeContentInfo(nameBox, tpe.identifier, _.copy().alignHorizontallyCenter()),
+      WrapWidgetNodeContentInfo(nameStr, tpe.identifier, _.copy().alignHorizontallyCenter().paddingBottom(1)),
+      WrapWidgetNodeContentInfo(nameBox, tpe.identifier, _.copy().alignHorizontallyCenter().paddingBottom(4)),
       spacer(tpe),
       IONodeContentInfo(
         tpe.identifier,
@@ -572,16 +614,20 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
 
   sealed abstract private class OtherInstantiationReferencingNodeInfo(globalInfo: GlobalInfo, tpe: NodeType)
       extends NodeInfo(globalInfo, tpe) {
+    private val nameStr   = new StringWidget(Component.literal("Name:"), Minecraft.getInstance.font)
     protected val nameBox = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Name"))
     nameBox.setMaxLength(48)
     private var updateListener: () => Unit = () => ()
 
     private def fixedContents: Seq[NodeContentInfo] = Seq(
-      WrapWidgetNodeContentInfo(nameBox, tpe.identifier, _.copy().alignHorizontallyCenter()),
+      WrapWidgetNodeContentInfo(nameStr, tpe.identifier, _.copy().alignHorizontallyLeft().paddingBottom(1)),
+      WrapWidgetNodeContentInfo(nameBox, tpe.identifier, _.copy().alignHorizontallyCenter().paddingBottom(4)),
       spacer(tpe)
     )
 
-    private var dynamicContents                              = Seq.empty[NodeContentInfo]
+    private var _dynamicContents              = Seq.empty[NodeContentInfo]
+    def dynamicContents: Seq[NodeContentInfo] = _dynamicContents
+
     private var _lastOperation: Option[DanmakuInstantiation] = None
     def operation: Option[DanmakuInstantiation]              = _lastOperation
 
@@ -592,7 +638,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
         op match
           case Some(value) =>
             val newInputs = value.inputs.map { input =>
-              //TODO: Let the instantiation specify min and max value here
+              // TODO: Let the instantiation specify min and max value here
               IONodeContentInfoWithSliderFallback(
                 tpe.identifier,
                 input.name,
@@ -612,9 +658,9 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
               )
             }
 
-            dynamicContents = newInputs ++ Seq(spacer(tpe)).filter(_ => newInputs.nonEmpty) ++ newOutputs
+            _dynamicContents = newInputs ++ Seq(spacer(tpe)).filter(_ => newInputs.nonEmpty) ++ newOutputs
 
-          case None => dynamicContents = Nil
+          case None => _dynamicContents = Nil
 
         listener()
       end if
@@ -622,7 +668,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
 
     protected def getInstantiation: Option[DanmakuInstantiation]
 
-    override val contents: Seq[NodeContentInfo] = fixedContents ++ dynamicContents
+    override val contents: Seq[NodeContentInfo] = fixedContents ++ _dynamicContents
 
     override def onContentsChange(listener: () => Unit): Unit = updateListener = listener
   }
@@ -664,14 +710,14 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     val aInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
       tpe.identifier,
       "a",
-      Component.literal("Value A"),
+      Component.literal("Value A: "),
       tpeToColor(GraphType.Number),
       IOContentVariant.Input
     )
     val bInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
       tpe.identifier,
       "b",
-      Component.literal("Value B"),
+      Component.literal("Value B: "),
       tpeToColor(GraphType.Number),
       IOContentVariant.Input
     )
@@ -841,7 +887,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
 
     override def height: Int = 10
 
-    override val widget: AbstractWidget = new NodeWidget.NodeIOWidget(this)
+    override val widget: AbstractWidget = new NodeIOWidget(this)
   }
 
   private class IONodeContentInfoWithSliderFallback(
@@ -857,11 +903,11 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
       precision: Int = 0
   ) extends IONodeContentInfo(coreIdLoc, identifier, title, color, variant) {
 
-    override val widget: NodeWidget.NodeIOWidgetSliderInput =
-      new NodeWidget.NodeIOWidgetSliderInput(this, 70, minValue, maxValue, currentValue, stepSize, precision)
+    override val widget: NodeIOWidgetSliderInput =
+      new NodeIOWidgetSliderInput(this, 70, minValue, maxValue, currentValue, stepSize, precision)
 
     def fallbackValue[A](varType: VariableType[A]): A = varType match
       case VariableType.Float => widget.value.toFloat
-      case VariableType.Int   => java.lang.Math.round(width.intValue)
+      case VariableType.Int   => java.lang.Math.round(widget.value.toFloat)
   }
 }
