@@ -10,7 +10,7 @@ import net.minecraft.client.gui.layouts.GridLayout
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
 
-class DanmakuEditorScreen extends Screen(Component.literal("Danmaku editor")), NodeContainer(DanmakuInstantiationNodeFactory) {
+class DanmakuEditorScreen extends Screen(Component.literal("Danmaku editor")) {
 
   // TODO: Grid layout
   // TODO: Toasts
@@ -22,17 +22,18 @@ class DanmakuEditorScreen extends Screen(Component.literal("Danmaku editor")), N
   private var tabNavigationBar: TabNavigationBar = uninitialized
   private var bottomButtons: GridLayout          = uninitialized
 
-  override protected def addWidgetToNodeContainer(widget: AbstractWidget): AbstractWidget = addRenderableWidget(widget)
-
-  override protected def removeWidgetFromNodeContainer(widget: AbstractWidget): Unit = removeWidget(widget)
+  private var container: NodeContainer[DanmakuInstantiationNodeFactory.type] = _
 
   override def init(): Unit = {
     super.init()
+    container = new NodeContainer(DanmakuInstantiationNodeFactory, 50, 50, width / 2, height / 2)
+
+    addRenderableWidget(container)
     
-    newNodeAt(50, 50, nodeFactory.NodeType.Input)
-    newNodeAt(50, 100, nodeFactory.NodeType.Input)
-    newNodeAt(150, 150, nodeFactory.NodeType.Output)
-    newNodeAt(150, 200, nodeFactory.NodeType.Math)
+    container.newNodeAt(50, 50, container.nodeFactory.NodeType.Input)
+    container.newNodeAt(50, 100, container.nodeFactory.NodeType.Input)
+    container.newNodeAt(150, 150, container.nodeFactory.NodeType.Output)
+    container.newNodeAt(150, 200, container.nodeFactory.NodeType.Math)
 
     /*
     addRenderableWidget(???)
@@ -71,7 +72,7 @@ class DanmakuEditorScreen extends Screen(Component.literal("Danmaku editor")), N
   }
 
   override def render(pGuiGraphics: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float): Unit = {
-    renderBackground(pGuiGraphics)
+    //renderBackground(pGuiGraphics)
     // println(getFocused)
     super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
   }

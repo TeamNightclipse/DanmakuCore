@@ -6,9 +6,9 @@ import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
 import net.minecraftforge.client.gui.widget.ForgeSlider
 
-// TODO: Eventually use something more custom, and allow entering a custom value instead of just using the slider
 class NodeIOWidgetSliderInput(
   style: NodeFactory.IONodeContentStyle,
+  container: NodeContainer[_],
   maxWidth: Int = 70,
   minValue: Double,
   maxValue: Double,
@@ -17,7 +17,7 @@ class NodeIOWidgetSliderInput(
   precision: Int
 ) extends NodeIOWidget(style, maxWidth) {
 
-  private val internals = new ForgeSlider(
+  private class CustomForgeSlider(width: Int, height: Int) extends ForgeSlider(
     x,
     y,
     width,
@@ -30,7 +30,9 @@ class NodeIOWidgetSliderInput(
     stepSize,
     precision,
     true
-  )
+  ) with container.ContainerRenderScrollingString
+
+  private val internals = new CustomForgeSlider(width, height)
 
   def value: Double = internals.getValue
 

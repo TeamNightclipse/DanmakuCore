@@ -9,8 +9,14 @@ import com.mojang.logging.LogUtils
 import net.katsstuff.danmakucore.DanmakuCore
 import net.katsstuff.danmakucore.client.gui
 import net.katsstuff.danmakucore.client.gui.NodeFactory.IOContentVariant
-import net.katsstuff.danmakucore.client.gui.widgets.{MutableSpacer, NodeIOWidget, NodeIOWidgetSliderInput}
+import net.katsstuff.danmakucore.client.gui.widgets.{
+  MutableSpacer,
+  NodeContainer,
+  NodeIOWidget,
+  NodeIOWidgetSliderInput
+}
 import net.katsstuff.danmakucore.danmaku.DanmakuInstantiation.VariableType
+import net.katsstuff.danmakucore.danmaku.form.{DanCoreForms, Form}
 import net.katsstuff.danmakucore.danmaku.{DanmakuInstantiation, DanmakuInstantiations}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.components.{AbstractWidget, CycleButton, EditBox, StringWidget}
@@ -18,12 +24,13 @@ import net.minecraft.client.gui.layouts.LayoutSettings
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 
-object DanmakuInstantiationNodeFactory extends NodeFactory {
+object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private def spacer(tpe: NodeType, height: Int = 3) = SpacerNodeContentInfo(height, tpe.identifier)
 
   class GlobalInfo extends GlobalInfoBase {
     private val _invalidInfos: mutable.Buffer[NodeInfo] = mutable.Buffer.empty
+    var form: Form                                      = DanCoreForms.SphereForm.get()
 
     override def invalidInfos: Seq[NodeInfo] = _invalidInfos.toSeq
 
@@ -55,16 +62,19 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     case Convert       extends NodeType(Some("Math"), DanmakuCore.resource("convert"))
     case Random        extends NodeType(Some("Math"), DanmakuCore.resource("random"))
 
-    override def make(globalInfo: GlobalInfo): DanmakuInstantiationNodeFactory.NodeInfo = this match
-      case NodeType.Input         => new Input(globalInfo)
-      case NodeType.Output        => new Output(globalInfo)
-      case NodeType.Group         => new Group(globalInfo)
-      case NodeType.Operation     => new Operation(globalInfo)
-      case NodeType.Math          => new Math(globalInfo)
-      case NodeType.Enumerate     => new Enumerate(globalInfo)
-      case NodeType.KnownConstant => new KnownConstant(globalInfo)
-      case NodeType.Convert       => new Convert(globalInfo)
-      case NodeType.Random        => new Random(globalInfo)
+    override def make(
+        container: NodeContainer[self.type],
+        globalInfo: GlobalInfo
+    ): DanmakuInstantiationNodeFactory.NodeInfo = this match
+      case NodeType.Input         => new Input(container, globalInfo)
+      case NodeType.Output        => new Output(container, globalInfo)
+      case NodeType.Group         => new Group(container, globalInfo)
+      case NodeType.Operation     => new Operation(container, globalInfo)
+      case NodeType.Math          => new Math(container, globalInfo)
+      case NodeType.Enumerate     => new Enumerate(container, globalInfo)
+      case NodeType.KnownConstant => new KnownConstant(container, globalInfo)
+      case NodeType.Convert       => new Convert(container, globalInfo)
+      case NodeType.Random        => new Random(container, globalInfo)
 
     def topColor: Int = group match
       case Some("IO")   => 0xFF00FF00
@@ -112,12 +122,13 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     case GraphType.Int    => 0xFF0000FF
     case GraphType.Number => 0xFF00FFFF
 
-  private def varTpeNumberButtonBuilder: CycleButton.Builder[GraphNumberType] = CycleButton
-    .builder[GraphNumberType] {
-      case GraphType.Float => Component.literal("Float")
-      case GraphType.Int   => Component.literal("Int")
-    }
-    .withValues(GraphType.Float, GraphType.Int)
+  private def varTpeNumberButtonBuilder(container: NodeContainer[this.type]): container.CycleButton.Builder[GraphNumberType] =
+    container.CycleButton
+      .builder[GraphNumberType] {
+        case GraphType.Float => Component.literal("Float")
+        case GraphType.Int   => Component.literal("Int")
+      }
+      .withValues(GraphType.Float, GraphType.Int)
 
   // noinspection UnstableApiUsage
   private def typeGraph(
@@ -261,13 +272,10 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
         case _ => false
     }
 
-    var iterationsWithNoProgress = 0
-    while edges.nonEmpty && iterationsWithNoProgress < edges.size + 1 do
+    while edges.nonEmpty do
       val edge = edges.dequeue()
       typeGraph.edgeValue(edge).get match
-        case t: GraphNumberType =>
-          builder.putEdgeValue(edge, t)
-          iterationsWithNoProgress = 0
+        case t: GraphNumberType => builder.putEdgeValue(edge, t)
         case GraphType.Number =>
           val predecessors = typeGraph.predecessors(edge.nodeU()).asScala.toSeq
           val successors   = typeGraph.successors(edge.nodeV()).asScala.toSeq
@@ -290,17 +298,16 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
           val types = (preTypes ++ sucTypes).filter(_ != GraphType.Number)
           types match
             case Seq(t: GraphNumberType) =>
-              iterationsWithNoProgress = 0
               builder.putEdgeValue(edge, t)
 
             case Seq() =>
-              iterationsWithNoProgress += 1
+              builder.putEdgeValue(edge, GraphType.Float)
+
               edges.enqueue(edge)
             case ts =>
               val floatTypes = ts.count(_ == GraphType.Float)
               val intTypes   = ts.count(_ == GraphType.Int)
 
-              iterationsWithNoProgress = 0
               if floatTypes > intTypes then builder.putEdgeValue(edge, GraphType.Float)
               else builder.putEdgeValue(edge, GraphType.Int)
     end while
@@ -520,17 +527,20 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
         }
         .toMap,
       groups = globalInfo.groups,
-      form = ???
+      form = globalInfo.form
     )
   }
 
-  private class Input(globalInfo: GlobalInfo) extends NodeInfo(globalInfo, NodeType.Input) {
+  private class Input(container: NodeContainer[this.type], globalInfo: GlobalInfo)
+      extends NodeInfo(globalInfo, NodeType.Input) {
     var title: Component = Component.literal("Input")
 
-    private val nameStr = new StringWidget(0, 0, 50, 10, Component.literal("Name:"), Minecraft.getInstance.font).alignLeft()
+    private val nameStr =
+      new container.StringWidget(0, 0, 50, 10, Component.literal("Name:"), Minecraft.getInstance.font)
     private val nameBox = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Name"))
 
-    private val defaultStr = new StringWidget(0, 0, 50, 10, Component.literal("Default:"), Minecraft.getInstance.font).alignLeft()
+    private val defaultStr =
+      new container.StringWidget(0, 0, 50, 10, Component.literal("Default:"), Minecraft.getInstance.font).alignLeft()
     private val defaultBox = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Default"))
 
     private def setValidityFromValues(): Unit = {
@@ -550,7 +560,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     defaultBox.setResponder(_ => setValidityFromValues())
     markValidity(false)
 
-    private val varTypeButton: CycleButton[GraphNumberType] = varTpeNumberButtonBuilder.create(
+    private val varTypeButton: CycleButton[GraphNumberType] = varTpeNumberButtonBuilder(container).create(
       0,
       0,
       50,
@@ -585,10 +595,11 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     )
   }
 
-  private class Output(globalInfo: GlobalInfo) extends NodeInfo(globalInfo, NodeType.Output) {
+  private class Output(container: NodeContainer[this.type], globalInfo: GlobalInfo)
+      extends NodeInfo(globalInfo, NodeType.Output) {
     var title: Component = Component.literal("Output")
 
-    private val nameStr = new StringWidget(Component.literal("Name:"), Minecraft.getInstance.font).alignLeft()
+    private val nameStr = new container.StringWidget(Component.literal("Name:"), Minecraft.getInstance.font).alignLeft()
     private val nameBox = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Name"))
     nameBox.setResponder { str =>
       nameBox.setTextColor(if str.nonEmpty then 0xFFE0E0E0 else 0xFFFF0000)
@@ -612,9 +623,12 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     )
   }
 
-  sealed abstract private class OtherInstantiationReferencingNodeInfo(globalInfo: GlobalInfo, tpe: NodeType)
-      extends NodeInfo(globalInfo, tpe) {
-    private val nameStr   = new StringWidget(Component.literal("Name:"), Minecraft.getInstance.font)
+  sealed abstract private class OtherInstantiationReferencingNodeInfo(
+      container: NodeContainer[this.type],
+      globalInfo: GlobalInfo,
+      tpe: NodeType
+  ) extends NodeInfo(globalInfo, tpe) {
+    private val nameStr   = new container.StringWidget(Component.literal("Name:"), Minecraft.getInstance.font)
     protected val nameBox = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Name"))
     nameBox.setMaxLength(48)
     private var updateListener: () => Unit = () => ()
@@ -640,6 +654,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
             val newInputs = value.inputs.map { input =>
               // TODO: Let the instantiation specify min and max value here
               IONodeContentInfoWithSliderFallback(
+                container,
                 tpe.identifier,
                 input.name,
                 Component.literal(input.name),
@@ -673,8 +688,8 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     override def onContentsChange(listener: () => Unit): Unit = updateListener = listener
   }
 
-  private class Group(globalInfo: GlobalInfo)
-      extends OtherInstantiationReferencingNodeInfo(globalInfo, NodeType.Group) {
+  private class Group(container: NodeContainer[this.type], globalInfo: GlobalInfo)
+      extends OtherInstantiationReferencingNodeInfo(container, globalInfo, NodeType.Group) {
     var title: Component = Component.literal("Group")
 
     def groupName: String = nameBox.getValue
@@ -682,8 +697,8 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     override protected def getInstantiation: Option[DanmakuInstantiation] = globalInfo.getGroup(groupName)
   }
 
-  private class Operation(globalInfo: GlobalInfo)
-      extends OtherInstantiationReferencingNodeInfo(globalInfo, NodeType.Operation) {
+  private class Operation(container: NodeContainer[this.type], globalInfo: GlobalInfo)
+      extends OtherInstantiationReferencingNodeInfo(container, globalInfo, NodeType.Operation) {
     var title: Component = Component.literal("Operation")
 
     def operationName: ResourceLocation = new ResourceLocation(nameBox.getValue)
@@ -694,9 +709,10 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     }
   }
 
-  private class Math(globalInfo: GlobalInfo) extends NodeInfo(globalInfo, NodeType.Math) {
+  private class Math(container: NodeContainer[this.type], globalInfo: GlobalInfo)
+      extends NodeInfo(globalInfo, NodeType.Math) {
     var title: Component = Component.literal("Math")
-    private val opButton: CycleButton[DanmakuInstantiation.MathOp] = CycleButton
+    private val opButton: CycleButton[DanmakuInstantiation.MathOp] = container.CycleButton
       .builder[DanmakuInstantiation.MathOp] {
         case DanmakuInstantiation.MathOp.Add      => Component.literal("Add")
         case DanmakuInstantiation.MathOp.Subtract => Component.literal("Subtract")
@@ -708,6 +724,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
       .displayOnlyValue()
       .create(0, 0, 50, 14, Component.literal("Operation"))
     val aInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
+      container,
       tpe.identifier,
       "a",
       Component.literal("Value A: "),
@@ -715,6 +732,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
       IOContentVariant.Input
     )
     val bInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
+      container,
       tpe.identifier,
       "b",
       Component.literal("Value B: "),
@@ -740,9 +758,10 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     )
   }
 
-  private class Enumerate(globalInfo: GlobalInfo) extends NodeInfo(globalInfo, NodeType.Enumerate) {
+  private class Enumerate(container: NodeContainer[this.type], globalInfo: GlobalInfo) extends NodeInfo(globalInfo, NodeType.Enumerate) {
     var title: Component = Component.literal("Enumerate")
     val countInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
+      container,
       tpe.identifier,
       "count",
       Component.literal("Count"),
@@ -763,9 +782,10 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     )
   }
 
-  private class KnownConstant(globalInfo: GlobalInfo) extends NodeInfo(globalInfo, NodeType.KnownConstant) {
+  private class KnownConstant(container: NodeContainer[this.type], globalInfo: GlobalInfo)
+      extends NodeInfo(globalInfo, NodeType.KnownConstant) {
     var title: Component = Component.literal("Known Constant")
-    private val constantButton: CycleButton[DanmakuInstantiation.ConstantName] = CycleButton
+    private val constantButton: CycleButton[DanmakuInstantiation.ConstantName] = container.CycleButton
       .builder[DanmakuInstantiation.ConstantName] {
         case DanmakuInstantiation.ConstantName.Pi  => Component.literal("Pi")
         case DanmakuInstantiation.ConstantName.E   => Component.literal("E")
@@ -789,14 +809,16 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     )
   }
 
-  private class Convert(globalInfo: GlobalInfo) extends NodeInfo(globalInfo, NodeType.Convert) {
+  private class Convert(container: NodeContainer[this.type], globalInfo: GlobalInfo)
+      extends NodeInfo(globalInfo, NodeType.Convert) {
     var title: Component = Component.literal("Convert")
     private val fromButton: CycleButton[GraphNumberType] =
-      varTpeNumberButtonBuilder.create(0, 0, 50, 14, Component.literal("From"))
+      varTpeNumberButtonBuilder(container).create(0, 0, 50, 14, Component.literal("From"))
     private val toButton: CycleButton[GraphNumberType] =
-      varTpeNumberButtonBuilder.create(0, 0, 50, 14, Component.literal("To"))
+      varTpeNumberButtonBuilder(container).create(0, 0, 50, 14, Component.literal("To"))
 
     val input: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
+      container,
       tpe.identifier,
       "input",
       Component.literal("Input"),
@@ -823,12 +845,14 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
     )
   }
 
-  private class Random(globalInfo: GlobalInfo) extends NodeInfo(globalInfo, NodeType.Random) {
+  private class Random(container: NodeContainer[this.type], globalInfo: GlobalInfo)
+      extends NodeInfo(globalInfo, NodeType.Random) {
     var title: Component = Component.literal("Random")
     private val tpeButton: CycleButton[GraphNumberType] =
-      varTpeNumberButtonBuilder.create(0, 0, 50, 14, Component.literal("Type"))
+      varTpeNumberButtonBuilder(container).create(0, 0, 50, 14, Component.literal("Type"))
 
     val minInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
+      container,
       tpe.identifier,
       "min",
       Component.literal("Min"),
@@ -836,6 +860,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
       IOContentVariant.Input
     )
     val maxInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
+      container,
       tpe.identifier,
       "max",
       Component.literal("Max"),
@@ -891,6 +916,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
   }
 
   private class IONodeContentInfoWithSliderFallback(
+      container: NodeContainer[this.type],
       coreIdLoc: ResourceLocation,
       identifier: String,
       title: Component,
@@ -904,7 +930,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory {
   ) extends IONodeContentInfo(coreIdLoc, identifier, title, color, variant) {
 
     override val widget: NodeIOWidgetSliderInput =
-      new NodeIOWidgetSliderInput(this, 70, minValue, maxValue, currentValue, stepSize, precision)
+      new NodeIOWidgetSliderInput(this, container, 70, minValue, maxValue, currentValue, stepSize, precision)
 
     def fallbackValue[A](varType: VariableType[A]): A = varType match
       case VariableType.Float => widget.value.toFloat

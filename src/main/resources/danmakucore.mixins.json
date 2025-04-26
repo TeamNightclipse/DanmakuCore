@@ -1,8 +1,9 @@
 {
-    "required": true,
-    "package": "net.katsstuff.danmakucore.mixin",
-    "compatibilityLevel": "JAVA_17",
-    "minVersion": "0.8.0",
-    "client": [],
-    "refmap": "danmakucore.refmap.json"
+  "required": true,
+  "package": "net.katsstuff.danmakucore.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8.0",
+  "client": [
+  ],
+  "refmap": "danmakucore.refmap.json"
 }

@@ -1,6 +1,7 @@
 package net.katsstuff.danmakucore.client.gui
 
 import com.google.common.graph.Graph
+import net.katsstuff.danmakucore.client.gui.widgets.NodeContainer
 import net.minecraft.client.gui.layouts.{LayoutElement, LayoutSettings}
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -41,7 +42,7 @@ object NodeFactory {
     case Output
   }
 }
-trait NodeFactory {
+trait NodeFactory { self =>
 
   type GlobalInfo <: GlobalInfoBase
   type NodeType <: NodeTypeBase
@@ -56,7 +57,7 @@ trait NodeFactory {
     def group: Option[String]
     def identifier: ResourceLocation
 
-    def make(globalInfo: GlobalInfo): NodeInfo
+    def make(container: NodeContainer[self.type], globalInfo: GlobalInfo): NodeInfo
   }
 
   trait NodeInfoBase extends NodeFactory.NodeStyle {
