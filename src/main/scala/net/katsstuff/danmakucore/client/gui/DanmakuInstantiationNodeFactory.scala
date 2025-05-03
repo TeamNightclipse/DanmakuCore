@@ -122,11 +122,13 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
     case GraphType.Int    => 0xFF0000FF
     case GraphType.Number => 0xFF00FFFF
 
-  private def varTpeNumberButtonBuilder(container: NodeContainer[this.type]): container.CycleButton.Builder[GraphNumberType] =
+  private def varTpeNumberButtonBuilder(
+      container: NodeContainer[this.type]
+  ): container.CycleButton.Builder[GraphNumberType] =
     container.CycleButton
       .builder[GraphNumberType] {
-        case GraphType.Float => Component.literal("Float")
-        case GraphType.Int   => Component.literal("Int")
+        case GraphType.Float => Component.translatable("danmakucore.gui.nodeEditor.type.float")
+        case GraphType.Int   => Component.translatable("danmakucore.gui.nodeEditor.type.int")
       }
       .withValues(GraphType.Float, GraphType.Int)
 
@@ -533,15 +535,43 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private class Input(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends NodeInfo(globalInfo, NodeType.Input) {
-    var title: Component = Component.literal("Input")
+    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.input.title")
 
     private val nameStr =
-      new container.StringWidget(0, 0, 50, 10, Component.literal("Name:"), Minecraft.getInstance.font)
-    private val nameBox = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Name"))
+      new container.StringWidget(
+        0,
+        0,
+        50,
+        10,
+        Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.input.name").append(":"),
+        Minecraft.getInstance.font
+      )
+    private val nameBox = new EditBox(
+      Minecraft.getInstance().font,
+      0,
+      0,
+      50,
+      10,
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.input.name")
+    )
 
     private val defaultStr =
-      new container.StringWidget(0, 0, 50, 10, Component.literal("Default:"), Minecraft.getInstance.font).alignLeft()
-    private val defaultBox = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Default"))
+      new container.StringWidget(
+        0,
+        0,
+        50,
+        10,
+        Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.input.default").append(":"),
+        Minecraft.getInstance.font
+      ).alignLeft()
+    private val defaultBox = new EditBox(
+      Minecraft.getInstance().font,
+      0,
+      0,
+      50,
+      10,
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.input.default")
+    )
 
     private def setValidityFromValues(): Unit = {
       val default = defaultBox.getValue
@@ -565,7 +595,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       0,
       50,
       14,
-      Component.literal("Type"),
+      Component.translatable("danmakucore.gui.nodeEditor.type"),
       (_: CycleButton[GraphNumberType], _: GraphNumberType) => {
         setValidityFromValues()
       }
@@ -588,7 +618,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       IONodeContentInfo(
         tpe.identifier,
         "output",
-        Component.literal("Input"),
+        Component.translatable("danmakucore.gui.nodeEditor.input"),
         tpeToColor(graphType.asGraphType),
         IOContentVariant.Output
       )
@@ -597,10 +627,20 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private class Output(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends NodeInfo(globalInfo, NodeType.Output) {
-    var title: Component = Component.literal("Output")
+    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.output.title")
 
-    private val nameStr = new container.StringWidget(Component.literal("Name:"), Minecraft.getInstance.font).alignLeft()
-    private val nameBox = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Name"))
+    private val nameStr = new container.StringWidget(
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.output.name").append(":"),
+      Minecraft.getInstance.font
+    ).alignLeft()
+    private val nameBox = new EditBox(
+      Minecraft.getInstance().font,
+      0,
+      0,
+      50,
+      10,
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.output.name")
+    )
     nameBox.setResponder { str =>
       nameBox.setTextColor(if str.nonEmpty then 0xFFE0E0E0 else 0xFFFF0000)
       markValidity(str.nonEmpty)
@@ -616,7 +656,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       IONodeContentInfo(
         tpe.identifier,
         "output",
-        Component.literal("Output"),
+        Component.translatable("danmakucore.gui.nodeEditor.output"),
         tpeToColor(GraphType.Number),
         IOContentVariant.Input
       )
@@ -626,10 +666,21 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
   sealed abstract private class OtherInstantiationReferencingNodeInfo(
       container: NodeContainer[this.type],
       globalInfo: GlobalInfo,
-      tpe: NodeType
+      tpe: NodeType,
+      translateName: String
   ) extends NodeInfo(globalInfo, tpe) {
-    private val nameStr   = new container.StringWidget(Component.literal("Name:"), Minecraft.getInstance.font)
-    protected val nameBox = new EditBox(Minecraft.getInstance().font, 0, 0, 50, 10, Component.literal("Name"))
+    private val nameStr = new container.StringWidget(
+      Component.translatable(s"danmakucore.gui.nodeEditor.danmakuInstantiations.$translateName.name").append(":"),
+      Minecraft.getInstance.font
+    )
+    protected val nameBox = new EditBox(
+      Minecraft.getInstance().font,
+      0,
+      0,
+      50,
+      10,
+      Component.translatable(s"danmakucore.gui.nodeEditor.danmakuInstantiations.$translateName.name")
+    )
     nameBox.setMaxLength(48)
     private var updateListener: () => Unit = () => ()
 
@@ -689,8 +740,8 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
   }
 
   private class Group(container: NodeContainer[this.type], globalInfo: GlobalInfo)
-      extends OtherInstantiationReferencingNodeInfo(container, globalInfo, NodeType.Group) {
-    var title: Component = Component.literal("Group")
+      extends OtherInstantiationReferencingNodeInfo(container, globalInfo, NodeType.Group, "group") {
+    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.group.title")
 
     def groupName: String = nameBox.getValue
 
@@ -698,8 +749,8 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
   }
 
   private class Operation(container: NodeContainer[this.type], globalInfo: GlobalInfo)
-      extends OtherInstantiationReferencingNodeInfo(container, globalInfo, NodeType.Operation) {
-    var title: Component = Component.literal("Operation")
+      extends OtherInstantiationReferencingNodeInfo(container, globalInfo, NodeType.Operation, "operation") {
+    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.operation.title")
 
     def operationName: ResourceLocation = new ResourceLocation(nameBox.getValue)
 
@@ -711,23 +762,28 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private class Math(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends NodeInfo(globalInfo, NodeType.Math) {
-    var title: Component = Component.literal("Math")
+    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.title")
     private val opButton: CycleButton[DanmakuInstantiation.MathOp] = container.CycleButton
       .builder[DanmakuInstantiation.MathOp] {
-        case DanmakuInstantiation.MathOp.Add      => Component.literal("Add")
-        case DanmakuInstantiation.MathOp.Subtract => Component.literal("Subtract")
-        case DanmakuInstantiation.MathOp.Multiply => Component.literal("Multiply")
-        case DanmakuInstantiation.MathOp.Divide   => Component.literal("Divide")
-        case DanmakuInstantiation.MathOp.Modulo   => Component.literal("Modulo")
+        case DanmakuInstantiation.MathOp.Add =>
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.add")
+        case DanmakuInstantiation.MathOp.Subtract =>
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.subtract")
+        case DanmakuInstantiation.MathOp.Multiply =>
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.multiply")
+        case DanmakuInstantiation.MathOp.Divide =>
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.divide")
+        case DanmakuInstantiation.MathOp.Modulo =>
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.modulo")
       }
       .withValues(DanmakuInstantiation.MathOp.values*)
       .displayOnlyValue()
-      .create(0, 0, 50, 14, Component.literal("Operation"))
+      .create(0, 0, 50, 14, Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.operation"))
     val aInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
       container,
       tpe.identifier,
       "a",
-      Component.literal("Value A: "),
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.valueA").append(": "),
       tpeToColor(GraphType.Number),
       IOContentVariant.Input
     )
@@ -735,7 +791,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       container,
       tpe.identifier,
       "b",
-      Component.literal("Value B: "),
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.valueB").append(": "),
       tpeToColor(GraphType.Number),
       IOContentVariant.Input
     )
@@ -751,20 +807,21 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       IONodeContentInfo(
         tpe.identifier,
         "output",
-        Component.literal("Output"),
+        Component.translatable("danmakucore.gui.nodeEditor.output"),
         tpeToColor(GraphType.Number),
         IOContentVariant.Output
       )
     )
   }
 
-  private class Enumerate(container: NodeContainer[this.type], globalInfo: GlobalInfo) extends NodeInfo(globalInfo, NodeType.Enumerate) {
-    var title: Component = Component.literal("Enumerate")
+  private class Enumerate(container: NodeContainer[this.type], globalInfo: GlobalInfo)
+      extends NodeInfo(globalInfo, NodeType.Enumerate) {
+    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.enumerate.title")
     val countInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
       container,
       tpe.identifier,
       "count",
-      Component.literal("Count"),
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.enumerate.count"),
       tpeToColor(GraphType.Int),
       IOContentVariant.Input
     )
@@ -775,7 +832,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       IONodeContentInfo(
         tpe.identifier,
         "output",
-        Component.literal("Output"),
+        Component.translatable("danmakucore.gui.nodeEditor.output"),
         tpeToColor(GraphType.Int),
         IOContentVariant.Output
       )
@@ -784,15 +841,25 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private class KnownConstant(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends NodeInfo(globalInfo, NodeType.KnownConstant) {
-    var title: Component = Component.literal("Known Constant")
+    var title: Component =
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.title")
     private val constantButton: CycleButton[DanmakuInstantiation.ConstantName] = container.CycleButton
       .builder[DanmakuInstantiation.ConstantName] {
-        case DanmakuInstantiation.ConstantName.Pi  => Component.literal("Pi")
-        case DanmakuInstantiation.ConstantName.E   => Component.literal("E")
-        case DanmakuInstantiation.ConstantName.Phi => Component.literal("Phi")
+        case DanmakuInstantiation.ConstantName.Pi =>
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.pi")
+        case DanmakuInstantiation.ConstantName.E =>
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.e")
+        case DanmakuInstantiation.ConstantName.Phi =>
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.phi")
       }
       .withValues(DanmakuInstantiation.ConstantName.values*)
-      .create(0, 0, 50, 14, Component.literal("Constant"))
+      .create(
+        0,
+        0,
+        50,
+        14,
+        Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.constant")
+      )
 
     def constant: DanmakuInstantiation.ConstantName = constantButton.getValue
 
@@ -802,7 +869,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       IONodeContentInfo(
         tpe.identifier,
         "output",
-        Component.literal("Output"),
+        Component.translatable("danmakucore.gui.nodeEditor.output"),
         tpeToColor(GraphType.Float),
         IOContentVariant.Output
       )
@@ -811,17 +878,29 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private class Convert(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends NodeInfo(globalInfo, NodeType.Convert) {
-    var title: Component = Component.literal("Convert")
+    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.convert.title")
     private val fromButton: CycleButton[GraphNumberType] =
-      varTpeNumberButtonBuilder(container).create(0, 0, 50, 14, Component.literal("From"))
+      varTpeNumberButtonBuilder(container).create(
+        0,
+        0,
+        50,
+        14,
+        Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.convert.from")
+      )
     private val toButton: CycleButton[GraphNumberType] =
-      varTpeNumberButtonBuilder(container).create(0, 0, 50, 14, Component.literal("To"))
+      varTpeNumberButtonBuilder(container).create(
+        0,
+        0,
+        50,
+        14,
+        Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.convert.to")
+      )
 
     val input: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
       container,
       tpe.identifier,
       "input",
-      Component.literal("Input"),
+      Component.translatable("danmakucore.gui.nodeEditor.input"),
       tpeToColor(fromType.asGraphType),
       IOContentVariant.Input
     )
@@ -838,7 +917,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       IONodeContentInfo(
         tpe.identifier,
         "output",
-        Component.literal("Output"),
+        Component.translatable("danmakucore.gui.nodeEditor.output"),
         tpeToColor(toType.asGraphType),
         IOContentVariant.Output
       )
@@ -847,15 +926,24 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private class Random(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends NodeInfo(globalInfo, NodeType.Random) {
-    var title: Component = Component.literal("Random")
+    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.random.title")
     private val tpeButton: CycleButton[GraphNumberType] =
-      varTpeNumberButtonBuilder(container).create(0, 0, 50, 14, Component.literal("Type"))
+      varTpeNumberButtonBuilder(container).create(
+        0,
+        0,
+        50,
+        14,
+        Component.translatable("danmakucore.gui.nodeEditor.type")
+      )
 
     val minInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
       container,
       tpe.identifier,
       "min",
-      Component.literal("Min"),
+      Component.translatable(
+        "danmakucore.gui.nodeEditor.danmakuInstantiations.random.min" +
+          ""
+      ),
       tpeToColor(graphType.asGraphType),
       IOContentVariant.Input
     )
@@ -863,7 +951,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       container,
       tpe.identifier,
       "max",
-      Component.literal("Max"),
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.random.max"),
       tpeToColor(graphType.asGraphType),
       IOContentVariant.Input
     )
@@ -879,7 +967,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       IONodeContentInfo(
         tpe.identifier,
         "output",
-        Component.literal("Output"),
+        Component.translatable("danmakucore.gui.nodeEditor.output"),
         tpeToColor(graphType.asGraphType),
         IOContentVariant.Output
       )

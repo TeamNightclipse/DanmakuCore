@@ -13,7 +13,7 @@ class NodeBackgroundWidget(
     _x: Int,
     _y: Int,
     sizeX: Int,
-    private var sizeY: Int,
+    private var _sizeY: Int,
     style: NodeFactory.NodeStyle
 ) extends AbstractWidget(_x, _y, sizeX, 13, style.title) {
 
@@ -23,8 +23,10 @@ class NodeBackgroundWidget(
   def x: Int = getX
 
   def y: Int = getY
+  
+  def renderedHeight: Int = _sizeY
 
-  def setRenderedHeight(pHeight: Int): Unit = sizeY = pHeight
+  def setRenderedHeight(pHeight: Int): Unit = _sizeY = pHeight
 
   override def setMessage(pMessage: Component): Unit = {
     super.setMessage(pMessage)
@@ -42,7 +44,7 @@ class NodeBackgroundWidget(
   private def mouseHoverResize(pMouseX: Double, pMouseY: Double): Boolean = {
     val resizePadding = 3
     pMouseX > x + width - resizePadding && pMouseX < x + width + resizePadding &&
-    pMouseY > y && pMouseY < y + sizeY
+    pMouseY > y && pMouseY < y + _sizeY
   }
 
   override def onDrag(pMouseX: Double, pMouseY: Double, pDragX: Double, pDragY: Double): Unit =
@@ -64,7 +66,7 @@ class NodeBackgroundWidget(
   }
 
   override def isMouseOver(pMouseX: Double, pMouseY: Double): Boolean =
-    this.active && this.visible && pMouseX >= x && pMouseY >= y && pMouseX < (x + this.width) && pMouseY < (y + sizeY)
+    this.active && this.visible && pMouseX >= x && pMouseY >= y && pMouseX < (x + this.width) && pMouseY < (y + _sizeY)
 
   override def clicked(pMouseX: Double, pMouseY: Double): Boolean =
     mouseHoverResize(pMouseX, pMouseY) || super.clicked(pMouseX, pMouseY)
@@ -89,7 +91,7 @@ class NodeBackgroundWidget(
     }
 
     setColorFromInt(style.color)
-    pGuiGraphics.blitNineSliced(nodeResource, x, y, width, sizeY, slice, slice * 3, slice * 3, offsetU, 0)
+    pGuiGraphics.blitNineSliced(nodeResource, x, y, width, _sizeY, slice, slice * 3, slice * 3, offsetU, 0)
     setColorFromInt(style.topColor)
     pGuiGraphics.blitNineSliced(nodeResource, x, y, width, 13, slice, slice * 3, slice * 3, offsetU, 0)
     pGuiGraphics.setColor(1F, 1F, 1F, 1F)

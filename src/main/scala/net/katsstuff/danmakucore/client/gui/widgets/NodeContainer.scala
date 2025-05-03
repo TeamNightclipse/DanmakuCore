@@ -4,7 +4,7 @@ import java.util
 import java.util.function.{BooleanSupplier, Consumer, Function}
 import java.util.{Optional, UUID}
 
-import scala.beans.BeanProperty
+import scala.beans.BooleanBeanProperty
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 import scala.jdk.OptionConverters.*
@@ -12,7 +12,7 @@ import scala.jdk.OptionConverters.*
 import com.google.common.graph.{GraphBuilder, MutableGraph}
 import net.katsstuff.danmakucore.client.gui.{GraphNodeIdentifier, NodeFactory}
 import net.minecraft.Util
-import net.minecraft.client.gui.components.events.{AbstractContainerEventHandler, GuiEventListener}
+import net.minecraft.client.gui.components.events.{ContainerEventHandler, GuiEventListener}
 import net.minecraft.client.gui.components.{
   AbstractWidget,
   CycleButton as TopCycleButton,
@@ -22,8 +22,8 @@ import net.minecraft.client.gui.components.{
 }
 import net.minecraft.client.gui.layouts.LayoutElement
 import net.minecraft.client.gui.narration.{NarratableEntry, NarrationElementOutput, NarrationSupplier}
-import net.minecraft.client.gui.navigation.ScreenRectangle
-import net.minecraft.client.gui.{Font, GuiGraphics}
+import net.minecraft.client.gui.navigation.{FocusNavigationEvent, ScreenRectangle}
+import net.minecraft.client.gui.{ComponentPath, Font, GuiGraphics}
 import net.minecraft.client.{Minecraft, OptionInstance}
 import net.minecraft.network.chat.{CommonComponents, Component, MutableComponent}
 import net.minecraft.util.Mth
@@ -34,14 +34,36 @@ import org.joml.Vector2d
 //noinspection UnstableApiUsage
 class NodeContainer[NF <: NodeFactory](
     val nodeFactory: NF,
-    @BeanProperty var x: Int,
-    @BeanProperty var y: Int,
-    @BeanProperty val width: Int,
-    @BeanProperty val height: Int
-) extends AbstractContainerEventHandler,
+    x: Int,
+    y: Int,
+    width: Int,
+    height: Int
+) extends AbstractWidget(x, y, width, height, Component.translatable("danmakucore.gui.nodeEditor.container")),
+      ContainerEventHandler,
       Renderable,
       LayoutElement,
       NarratableEntry { container =>
+  @BooleanBeanProperty var dragging: Boolean    = false
+  private var focused: Option[GuiEventListener] = None
+
+  override def getFocused: GuiEventListener = focused.orNull
+
+  override def setFocused(listener: GuiEventListener): Unit =
+    focused.foreach(_.setFocused(false))
+    if (listener != null) listener.setFocused(true)
+    focused = Option(listener)
+  end setFocused
+
+  override def setFocused(pFocused: Boolean): Unit = super[AbstractWidget].setFocused(pFocused)
+
+  override def isFocused: Boolean = super[AbstractWidget].isFocused
+
+  override def nextFocusPath(pEvent: FocusNavigationEvent): ComponentPath =
+    val containerPath = super[ContainerEventHandler].nextFocusPath(pEvent)
+    if containerPath == null then super[AbstractWidget].nextFocusPath(pEvent)
+    else containerPath
+  end nextFocusPath
+
   private var zoom: Double                              = 1
   private var offsetX: Double                           = 0
   private var offsetY: Double                           = 0
@@ -56,7 +78,23 @@ class NodeContainer[NF <: NodeFactory](
 
   override def getRectangle: ScreenRectangle = super.getRectangle
 
-  override def render(pGuiGraphics: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float): Unit = {
+  private def widgetVisible(widget: AbstractWidget): Boolean = {
+    val realHeight = widget match
+      case w: NodeBackgroundWidget => w.renderedHeight
+      case _                       => widget.getHeight
+
+    val adjustedX      = widget.getX * zoom + offsetX + x
+    val adjustedY      = widget.getY * zoom + offsetY + y
+    val adjustedWidth  = widget.getWidth * zoom
+    val adjustedHeight = realHeight * zoom
+
+    adjustedX + adjustedWidth >= x &&
+    adjustedX <= x + width &&
+    adjustedY + adjustedHeight >= y &&
+    adjustedY <= y + height
+  }
+
+  override def renderWidget(pGuiGraphics: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float): Unit = {
     pGuiGraphics.enableScissor(x, y, x + width, y + height)
 
     pGuiGraphics.fillGradient(x, y, x + this.width, y + this.height, -1072689136, -804253680)
@@ -69,7 +107,8 @@ class NodeContainer[NF <: NodeFactory](
     p.translate(offsetX, offsetY, 0)
     p.scale(zoom.toFloat, zoom.toFloat, 1)
 
-    _children.foreach(_.render(pGuiGraphics, modMouseX(pMouseX).toInt, modMouseY(pMouseY).toInt, pPartialTick))
+    _children.foreach: w =>
+      if widgetVisible(w) then w.render(pGuiGraphics, modMouseX(pMouseX).toInt, modMouseY(pMouseY).toInt, pPartialTick)
 
     p.popPose()
 
@@ -171,6 +210,8 @@ class NodeContainer[NF <: NodeFactory](
   }
 
   override def mouseClicked(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean = {
+    if !isMouseOver(pMouseX, pMouseY) || !active || !visible then return false
+
     val moddedMouseX = modMouseX(pMouseX)
     val moddedMouseY = modMouseY(pMouseY)
     _children
@@ -194,8 +235,7 @@ class NodeContainer[NF <: NodeFactory](
               case NodeFactory.IOContentVariant.Output => connection.fromWidget = Some(w)
 
             _children += connection
-          else
-            connection = w.connections.head
+          else connection = w.connections.head
           end if
 
           w.style.variant match
@@ -219,6 +259,8 @@ class NodeContainer[NF <: NodeFactory](
 
   override def mouseReleased(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean = {
     this.setDragging(false)
+    if !isMouseOver(pMouseX, pMouseY) then return false
+
     val moddedMouseX = modMouseX(pMouseX)
     val moddedMouseY = modMouseY(pMouseY)
 
@@ -283,6 +325,8 @@ class NodeContainer[NF <: NodeFactory](
   }
 
   override def mouseScrolled(pMouseX: Double, pMouseY: Double, pDelta: Double): Boolean = {
+    if !isMouseOver(pMouseX, pMouseY) then return false
+
     val moddedMouseX = modMouseX(pMouseX)
     val moddedMouseY = modMouseY(pMouseY)
 
@@ -304,11 +348,11 @@ class NodeContainer[NF <: NodeFactory](
   }
 
   override def visitWidgets(pConsumer: Consumer[AbstractWidget]): Unit =
-    _children.foreach(_.visitWidgets(pConsumer))
+    pConsumer.accept(this)
 
   override def narrationPriority(): NarratableEntry.NarrationPriority = NarratableEntry.NarrationPriority.FOCUSED
 
-  override def updateNarration(pNarrationElementOutput: NarrationElementOutput): Unit = getFocused match {
+  override def updateWidgetNarration(pNarrationElementOutput: NarrationElementOutput): Unit = getFocused match {
     case w: NarrationSupplier => w.updateNarration(pNarrationElementOutput.nest())
     case _                    => ()
   }
