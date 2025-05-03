@@ -2,6 +2,7 @@ package net.katsstuff.danmakucore.client.gui.widgets
 
 import com.mojang.blaze3d.systems.RenderSystem
 import net.katsstuff.danmakucore.util.Bezier
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.narration.NarrationElementOutput
@@ -40,14 +41,14 @@ class BezierCurveWidget(
   def fromWidget: Option[NodeIOWidget] = _fromWidget
 
   def toWidget_=(widget: Option[NodeIOWidget]): Unit = {
-    _toWidget.foreach(_.connection = None)
-    widget.foreach(_.connection = Some(this))
+    _toWidget.foreach(_.connections = Set.empty)
+    widget.foreach(_.connections = Set(this))
     
     _toWidget = widget
   }
   def fromWidget_=(widget: Option[NodeIOWidget]): Unit = {
-    _fromWidget.foreach(_.connection = None)
-    widget.foreach(_.connection = Some(this))
+    _fromWidget.foreach(w => w.connections = w.connections - this)
+    widget.foreach(w => w.connections = w.connections + this)
     
     _fromWidget = widget
   }
@@ -62,8 +63,8 @@ class BezierCurveWidget(
 
     val diff = fromD.x - toD.x
 
-    control1.x = if diff < 0 then fromD.x + diff / 2 else Mth.lerp(distance, fromD.x, toD.x)
-    control2.x = if diff < 0 then toD.x - diff / 2 else Mth.lerp(1 - distance, fromD.x, toD.x)
+    control1.x = if diff > 0 then fromD.x + diff / 2 else Mth.lerp(distance, fromD.x, toD.x)
+    control2.x = if diff > 0 then toD.x - diff / 2 else Mth.lerp(1 - distance, fromD.x, toD.x)
   }
 
   private var rectangles: Seq[(Vector2d, Vector2d, Vector2d, Vector2d)] = computeRectangles
@@ -157,6 +158,15 @@ class BezierCurveWidget(
 
     sizedSquare(fromD)
     sizedSquare(toD)
+
+    pGuiGraphics.drawString(Minecraft.getInstance().font, "from", fromD.x.toInt, fromD.y.toInt, 0xFFFFFFFF)
+    pGuiGraphics.drawString(Minecraft.getInstance().font, "to", toD.x.toInt, toD.y.toInt, 0xFFFFFFFF)
+
+    val fromComp = if fromWidget.isDefined then fromWidget.get.getMessage else Component.empty
+    val toComp = if toWidget.isDefined then toWidget.get.getMessage else Component.empty
+
+    pGuiGraphics.drawString(Minecraft.getInstance().font, fromComp, control1.x.toInt, control1.y.toInt, 0xFFFFFFFF)
+    pGuiGraphics.drawString(Minecraft.getInstance().font, toComp, control2.x.toInt, control2.y.toInt, 0xFFFFFFFF)
 
     // pGuiGraphics.bufferSource.endBatch()
 

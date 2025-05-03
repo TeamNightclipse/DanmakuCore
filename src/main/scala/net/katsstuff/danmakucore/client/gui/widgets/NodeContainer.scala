@@ -176,12 +176,13 @@ class NodeContainer[NF <: NodeFactory](
     _children
       .collectFirst {
         case w: NodeIOWidget if w.mouseClicked(moddedMouseX, moddedMouseY, pButton) =>
-          val newConnection = w.connection.isEmpty
+          val newConnection = w.style.variant == NodeFactory.IOContentVariant.Output || w.connections.isEmpty
+          var connection: BezierCurveWidget | Null = null
           if newConnection then
             val c = w.connectorRectangle
             val x = c.left + (c.width / 2D)
             val y = c.top + (c.height / 2D)
-            val connection = new BezierCurveWidget(
+            connection = new BezierCurveWidget(
               _from = new Vector2d(x, y),
               _to = new Vector2d(x, y),
               width = 1,
@@ -189,23 +190,21 @@ class NodeContainer[NF <: NodeFactory](
               snapLocation = snapLocation
             )
             w.style.variant match
-              case NodeFactory.IOContentVariant.Input  => connection.fromWidget = Some(w)
-              case NodeFactory.IOContentVariant.Output => connection.toWidget = Some(w)
+              case NodeFactory.IOContentVariant.Input  => connection.toWidget = Some(w)
+              case NodeFactory.IOContentVariant.Output => connection.fromWidget = Some(w)
 
             _children += connection
+          else
+            connection = w.connections.head
           end if
-
-          // Should always be set at this point
-          val connection = w.connection.get
 
           w.style.variant match
             case NodeFactory.IOContentVariant.Input =>
-              if newConnection then connection.toDragging = true
-              else connection.fromDragging = true
-
-            case NodeFactory.IOContentVariant.Output =>
               if newConnection then connection.fromDragging = true
               else connection.toDragging = true
+
+            case NodeFactory.IOContentVariant.Output =>
+              connection.toDragging = true
           end match
 
           setFocused(connection)
@@ -241,22 +240,27 @@ class NodeContainer[NF <: NodeFactory](
 
         io match
           case Some(value) =>
-            identifierPair.foreach((from, to) => graph.removeEdge(from, to))
+            identifierPair.foreach(graph.removeEdge(_, _))
 
-            if fromDragging then w.fromWidget = Some(value)
-            else w.toWidget = Some(value)
+            val connectionsToRemove = if fromDragging then
+              w.fromWidget = Some(value)
+              Nil
+            else
+              val toRemove = value.connections.toSeq
+              w.toWidget = Some(value)
+              toRemove
 
-            identifierPair.foreach((from, to) => graph.putEdge(from, to))
+            identifierPair.foreach(graph.putEdge(_, _))
 
-            None
+            connectionsToRemove
 
           case None =>
-            identifierPair.foreach((from, to) => graph.removeEdge(from, to))
+            identifierPair.foreach(graph.removeEdge(_, _))
 
             w.fromWidget = None
             w.toWidget = None
 
-            Some(w)
+            Seq(w)
     }.flatten
 
     toRemove.foreach(_children -= _)

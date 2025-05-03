@@ -33,7 +33,7 @@ class NodeIOWidget(val style: NodeFactory.IONodeContentStyle, var maxWidth: Int 
     setWidth(Math.min(style.width, maxWidth))
   }
 
-  var connection: Option[BezierCurveWidget] = None
+  var connections: Set[BezierCurveWidget] = Set.empty
 
   var _connectorRectangle: ScreenRectangle = computeConnectorRectangle
   def connectorRectangle: ScreenRectangle  = _connectorRectangle
@@ -143,26 +143,26 @@ class NodeIOWidget(val style: NodeFactory.IONodeContentStyle, var maxWidth: Int 
   override def setX(pX: Int): Unit = {
     super.setX(pX)
     _connectorRectangle = computeConnectorRectangle
-    connection.foreach { conn =>
+    connections.foreach { conn =>
       val c = connectorRectangle
       style.variant match
         case NodeFactory.IOContentVariant.Input =>
-          conn.from = new Vector2d(c.left + (connectorSize / 2D), conn.from.y)
-        case NodeFactory.IOContentVariant.Output =>
           conn.to = new Vector2d(c.left + (connectorSize / 2D), conn.to.y)
+        case NodeFactory.IOContentVariant.Output =>
+          conn.from = new Vector2d(c.left + (connectorSize / 2D), conn.from.y)
     }
   }
 
   override def setY(pY: Int): Unit = {
     super.setY(pY)
     _connectorRectangle = computeConnectorRectangle
-    connection.foreach { conn =>
+    connections.foreach { conn =>
       val c = connectorRectangle
       style.variant match
         case NodeFactory.IOContentVariant.Input =>
-          conn.from = new Vector2d(conn.from.x, c.top + Mth.floor(connectorSize / 2D))
-        case NodeFactory.IOContentVariant.Output =>
           conn.to = new Vector2d(conn.to.x, c.top + Mth.floor(connectorSize / 2D))
+        case NodeFactory.IOContentVariant.Output =>
+          conn.from = new Vector2d(conn.from.x, c.top + Mth.floor(connectorSize / 2D))
     }
   }
 }

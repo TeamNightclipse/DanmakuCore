@@ -42,7 +42,7 @@ class NodeIOWidgetSliderInput(
     pMouseY: Int,
     pPartialTick: Float
   ): Unit = {
-    if connection.isDefined then super.renderSideContent(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
+    if connections.nonEmpty then super.renderSideContent(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
     else {
       val textPaddingX = 4
 
