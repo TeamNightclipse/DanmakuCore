@@ -1,15 +1,21 @@
 package net.katsstuff.danmakucore.client.gui
 
+import java.util
+
+import scala.beans.BooleanBeanProperty
 import scala.collection.mutable
 import scala.compiletime.uninitialized
 import scala.jdk.CollectionConverters.*
 
 import com.mojang.blaze3d.vertex.Tesselator
-import net.katsstuff.danmakucore.client.gui.widgets.NodeContainer
+import net.katsstuff.danmakucore.DanmakuCore
+import net.katsstuff.danmakucore.client.gui.widgets.{MutableSpacer, NodeContainer}
+import net.katsstuff.danmakucore.danmaku.form.{DanCoreForms, Form}
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.components.*
+import net.minecraft.client.gui.components.events.{ContainerEventHandler, GuiEventListener}
 import net.minecraft.client.gui.components.tabs.{GridLayoutTab, TabManager, TabNavigationBar}
-import net.minecraft.client.gui.components.{AbstractWidget, Button, ObjectSelectionList}
-import net.minecraft.client.gui.layouts.{FrameLayout, GridLayout}
+import net.minecraft.client.gui.layouts.{FrameLayout, GridLayout, LayoutElement, LayoutSettings}
 import net.minecraft.client.gui.narration.NarratableEntry.NarrationPriority
 import net.minecraft.client.gui.narration.{NarratableEntry, NarrationElementOutput}
 import net.minecraft.client.gui.navigation.{FocusNavigationEvent, ScreenRectangle}
@@ -31,7 +37,6 @@ class DanmakuEditorScreen extends Screen(Component.translatable("danmakucore.gui
   private val tabManager = new TabManager(addRenderableWidget(_), removeWidget(_))
 
   private var tabNavigationBar: TabNavigationBar = uninitialized
-  private var bottomButtons: GridLayout          = uninitialized
 
   private val tabs: mutable.Buffer[RepositionTab] = mutable.Buffer()
 
@@ -54,32 +59,6 @@ class DanmakuEditorScreen extends Screen(Component.translatable("danmakucore.gui
     tabs += new MainOptionsTab
 
     onTabsChange(reposition = false)
-
-    this.bottomButtons = new GridLayout().columnSpacing(10)
-    val rows = this.bottomButtons.createRowHelper(2)
-    rows.addChild(
-      Button
-        .builder(
-          CommonComponents.GUI_CANCEL,
-          _ => this.onClose()
-        )
-        .build
-    )
-    rows.addChild(
-      Button
-        .builder(
-          Component.translatable("danmakucore.gui.danmakuEditor.save"),
-          _ => {
-            tabs += new NodeEditorTab
-            onTabsChange(reposition = true)
-          }
-        )
-        .build
-    )
-    this.bottomButtons.visitWidgets { (widget: AbstractWidget) =>
-      widget.setTabOrderGroup(1)
-      this.addRenderableWidget(widget)
-    }
     repositionElements()
   }
 
@@ -88,7 +67,7 @@ class DanmakuEditorScreen extends Screen(Component.translatable("danmakucore.gui
     pGuiGraphics.blit(
       CreateWorldScreen.FOOTER_SEPERATOR,
       0,
-      Mth.roundToward(this.height - 36 - 2, 2),
+      Mth.roundToward(this.height - 3, 2),
       0.0F,
       0.0F,
       this.width,
@@ -99,16 +78,13 @@ class DanmakuEditorScreen extends Screen(Component.translatable("danmakucore.gui
     super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
 
   override def repositionElements(): Unit = {
-    if (tabNavigationBar != null && bottomButtons != null) {
+    if (tabNavigationBar != null) {
       tabs.foreach(_.reposition())
       tabNavigationBar.setWidth(width)
       tabNavigationBar.arrangeElements()
-      bottomButtons.arrangeElements()
-      FrameLayout.centerInRectangle(bottomButtons, 0, height - 36, width, 36)
       val i               = tabNavigationBar.getRectangle.bottom
-      val screenrectangle = new ScreenRectangle(0, i, width, bottomButtons.getY - i)
+      val screenrectangle = new ScreenRectangle(0, i, width, height)
       tabManager.setTabArea(screenrectangle)
-
     }
   }
 
@@ -119,6 +95,11 @@ class DanmakuEditorScreen extends Screen(Component.translatable("danmakucore.gui
 
   abstract class RepositionTab(component: Component) extends GridLayoutTab(component):
     def reposition(): Unit
+
+    override def doLayout(pRectangle: ScreenRectangle): Unit = {
+      super.doLayout(pRectangle)
+      layout.setY(layout.getY - 5)
+    }
 
   class MainOptionsTab extends RepositionTab(Component.translatable("danmakucore.gui.danmakuEditor.mainOptions")):
 
@@ -138,7 +119,47 @@ class DanmakuEditorScreen extends Screen(Component.translatable("danmakucore.gui
         val author: String,
         val description: String,
         all: SavedNodeSystemsEntries
-    ) extends ObjectSelectionList.Entry[SavedNodeSystem]:
+    ) extends ObjectSelectionList.Entry[SavedNodeSystem],
+          ContainerEventHandler:
+
+      @BooleanBeanProperty var dragging: Boolean    = false
+      private var focused: Option[GuiEventListener] = None
+
+      override def getFocused: GuiEventListener = focused.orNull
+
+      override def setFocused(pFocused: GuiEventListener): Unit = {
+        focused.foreach(_.setFocused(false))
+        focused = Option(pFocused)
+        focused.foreach(_.setFocused(true))
+      }
+
+      override def isFocused: Boolean                  = super[Entry].isFocused
+      override def setFocused(pFocused: Boolean): Unit = super[Entry].setFocused(pFocused)
+
+      override def nextFocusPath(pEvent: FocusNavigationEvent): ComponentPath =
+        val containerPath = super[ContainerEventHandler].nextFocusPath(pEvent)
+        if containerPath == null then super[Entry].nextFocusPath(pEvent)
+        else containerPath
+      end nextFocusPath
+
+      private val editBox = Button
+        .builder(
+          Component.translatable("danmakucore.gui.danmakuEditor.edit"),
+          _ => {
+            println("Not implemented")
+          }
+        )
+        .size(30, 20)
+        .build()
+      private val deleteBox = Button
+        .builder(
+          Component.translatable("danmakucore.gui.danmakuEditor.delete"),
+          _ => {
+            println("Not implemented")
+          }
+        )
+        .size(30, 20)
+        .build()
 
       override def getNarration: Component = Component
         .translatable("danmakucore.gui.danmakuEditor.entry.name", name)
@@ -168,11 +189,27 @@ class DanmakuEditorScreen extends Screen(Component.translatable("danmakucore.gui
           pTop + font.lineHeight * 2,
           0xFFFFFFFF
         )
+
+        deleteBox.setX(pLeft + pWidth - deleteBox.getWidth - 5)
+        editBox.setX(pLeft + pWidth - deleteBox.getWidth - editBox.getWidth - 5)
+
+        editBox.setY(pTop)
+        deleteBox.setY(pTop)
+
+        editBox.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
+        deleteBox.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
       }
 
+      override def children(): util.List[_ <: GuiEventListener] = Seq(editBox, deleteBox).asJava
+
       override def mouseClicked(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean = {
-        all.setSelected(this)
-        info.entry = Some(this)
+        val res = super[ContainerEventHandler].mouseClicked(pMouseX, pMouseY, pButton)
+        setFocused(null)
+
+        if !res then
+          all.setSelected(this)
+          info.entry = Some(this)
+
         false
       }
 
@@ -187,29 +224,9 @@ class DanmakuEditorScreen extends Screen(Component.translatable("danmakucore.gui
           bottom,
           font.lineHeight * 3 + 4
         ):
-      setRenderHeader(true, font.lineHeight * 3)
       setRenderTopAndBottom(false)
 
       override def addEntry(pEntry: SavedNodeSystem): Int = super.addEntry(pEntry)
-
-      override def renderHeader(pGuiGraphics: GuiGraphics, pX: Int, pY: Int): Unit = {
-        pGuiGraphics.drawString(
-          font,
-          s"x0=$x0, x1=$x1, y0=$y0, y1=$y1, width=$width, height=$height",
-          pX,
-          pY,
-          0xFFFFFFFF
-        )
-        pGuiGraphics.drawString(
-          font,
-          s"screen.width=${screen.width}, screen.height=${screen.height}",
-          pX,
-          pY + font.lineHeight,
-          0xFFFFFFFF
-        )
-
-        super.renderHeader(pGuiGraphics, pX, pY)
-      }
 
       override def getRowWidth: Int = width - 40
 
@@ -379,8 +396,8 @@ class DanmakuEditorScreen extends Screen(Component.translatable("danmakucore.gui
         resetInfo()
       }
 
-      override def setWidth(pWidth: Int): Unit = {
-        super.setWidth(pWidth)
+      override def setWidth(value: Int): Unit = {
+        super.setWidth(value)
         resetInfo()
       }
 
@@ -390,15 +407,70 @@ class DanmakuEditorScreen extends Screen(Component.translatable("danmakucore.gui
       }
     end EntryInfoWrapper
 
-    private val row = layout.createRowHelper(2)
+    // entries.setRenderBackground(false)
+    private val rows = layout.createRowHelper(2)
+    private val side = rows.addChild(new GridLayout())
+    private val info = rows.addChild(new EntryInfoWrapper(Mth.ceil((width / 3D) * 2), height - 26 + 1))
+
+    private val addSystemButton = side.addChild(
+      Button
+        .builder(
+          Component.translatable("danmakucore.gui.danmakuEditor.addSystem"),
+          _ => {
+            println("Not implemented")
+          }
+        )
+        .size(Mth.floor(width / 3D), Button.DEFAULT_HEIGHT)
+        .build(),
+      1,
+      0,
+      side.newCellSettings().alignHorizontallyCenter()
+    )
+    private val addInstantiationButton = side.addChild(
+      Button
+        .builder(
+          Component.translatable("danmakucore.gui.danmakuEditor.addInstantiation"),
+          _ => {
+            val newTab = new NodeEditorTab
+            tabs += newTab
+            onTabsChange(reposition = true)
+            tabManager.setCurrentTab(newTab, false)
+          }
+        )
+        .size(Mth.floor(width / 3D), Button.DEFAULT_HEIGHT)
+        .build(),
+      2,
+      0,
+      side.newCellSettings().alignHorizontallyCenter()
+    )
     private val entries =
-      row
+      side
         .addChild(
-          new EntriesWrapper(new SavedNodeSystemsEntries(Mth.floor(width / 3D), height - 36 - 22, 0, height - 36 - 26))
+          new EntriesWrapper(
+            new SavedNodeSystemsEntries(
+              Mth.floor(width / 3D),
+              height - 26 + 1 - addSystemButton.getHeight - addInstantiationButton.getHeight,
+              0,
+              height - 26 + 1 - addSystemButton.getHeight - addInstantiationButton.getHeight
+            )
+          ),
+          0,
+          0
         )
         .entries
-    // entries.setRenderBackground(false)
-    private val info = row.addChild(new EntryInfoWrapper(Mth.ceil((width / 3D) * 2), height - 36 - 26))
+
+    override def reposition(): Unit = {
+      entries.updateSize(
+        (width / 3D).toInt,
+        height - 26 + 1 - addSystemButton.getHeight - addInstantiationButton.getHeight,
+        0,
+        height - 26 + 1 - addSystemButton.getHeight - addInstantiationButton.getHeight
+      )
+      info.setWidth(Mth.ceil((width / 3D) * 2))
+      info.setHeight(height - 26 + 1)
+      addSystemButton.setWidth(Mth.floor(width / 3D))
+      addInstantiationButton.setWidth(Mth.floor(width / 3D))
+    }
 
     entries.addEntry(
       new SavedNodeSystem(
@@ -473,24 +545,171 @@ class DanmakuEditorScreen extends Screen(Component.translatable("danmakucore.gui
       )
     )
 
-    override def reposition(): Unit = {
-      entries.updateSize((width / 3D).toInt, height - 36 - 22, 0, height - 36 - 26)
-      info.setWidth(Mth.ceil((width / 3D) * 2))
-      info.setHeight(height - 36 - 26)
-    }
-
   end MainOptionsTab
 
   class NodeEditorTab extends RepositionTab(Component.translatable("danmakucore.gui.nodeEditor")):
+    private val leftSide  = new GridLayout()
+    private val rightSide = new GridLayout()
+
+    private val rightSpacer = rightSide.addChild(new MutableSpacer(0, 0, width / 6, 0), 0, 0)
+
+    leftSide.defaultCellSetting().padding(3).paddingLeft(10)
+
     private val container: NodeContainer[DanmakuInstantiationNodeFactory.type] =
-      new NodeContainer(DanmakuInstantiationNodeFactory, 50, 50, 300, 200)
+      new NodeContainer(
+        DanmakuInstantiationNodeFactory,
+        0,
+        0,
+        width - (width / 6) * 2,
+        height - 26 + 1
+      )
     container.newNodeAt(50, 50, container.nodeFactory.NodeType.Input)
     container.newNodeAt(50, 100, container.nodeFactory.NodeType.Input)
     container.newNodeAt(150, 150, container.nodeFactory.NodeType.Output)
     container.newNodeAt(150, 200, container.nodeFactory.NodeType.Math)
 
-    layout.addChild(container, 1, 1)
+    layout.addChild(leftSide, 0, 0)
+    layout.addChild(container, 0, 1)
+    layout.addChild(rightSide, 0, 2)
 
-    override def reposition(): Unit = ()
+    private def addLeftField[A <: LayoutElement](
+        name: Component,
+        content: A,
+        startRow: Int,
+        layout: LayoutSettings = leftSide.newCellSettings().paddingBottom(5),
+        setMessage: Boolean = true
+    ) = {
+      val stringLayout = leftSide.newCellSettings().paddingBottom(0)
+      leftSide.addChild(
+        new StringWidget(font.width(name.getVisualOrderText), 9, name, font),
+        startRow,
+        0,
+        stringLayout
+      )
+      if setMessage then
+        content match {
+          case w: AbstractWidget => w.setMessage(name)
+          case _                 =>
+        }
+
+      leftSide.addChild(content, startRow + 1, 0, layout)
+
+      def layoutHeight(layout: LayoutSettings): Int = {
+        val exposed = layout.getExposed
+        exposed.paddingTop + exposed.paddingBottom
+      }
+
+      (content, 9 + layoutHeight(stringLayout) + content.getHeight + layoutHeight(layout))
+    }
+
+    val (nameBox, nameHeight) = addLeftField(
+      Component.translatable("danmakucore.gui.danmakuEditor.entry.name", ""),
+      new EditBox(font, 0, 0, width / 6 - 6, 10, Component.empty),
+      0,
+      leftSide.newCellSettings().paddingTop(2).paddingLeft(11)
+    )
+    val (authorBox, authorHeight) = addLeftField(
+      Component.translatable("danmakucore.gui.danmakuEditor.entry.author", ""),
+      new EditBox(font, 0, 0, width / 6 - 6, 10, Component.empty),
+      2,
+      leftSide.newCellSettings().paddingTop(2).paddingLeft(11)
+    )
+    val (descriptionBox, descriptionHeight) = addLeftField(
+      Component.translatable("danmakucore.gui.danmakuEditor.entry.description", ""),
+      new MultiLineEditBox(font, 0, 0, width / 6 - 12, font.lineHeight * 6 + 10, Component.empty, Component.empty),
+      4,
+      leftSide.newCellSettings().paddingTop(2)
+    )
+    val (formButton, formHeight) = addLeftField(
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.form.name").append(":"),
+      CycleButton
+        .builder[Form](_.name)
+        .withValues(DanCoreForms.registry.getValues)
+        .withInitialValue(DanCoreForms.SphereForm.get)
+        .displayOnlyValue()
+        .create(0, 0, width / 6 - 3, 20, Component.empty),
+      6,
+      setMessage = false
+    )
+
+    private def leftSpacerHeight =
+      height - 26 + 1 - nameHeight - authorHeight - descriptionHeight - formHeight - 20 - 6
+
+    private val leftSpacer = leftSide.addChild(
+      new AbstractWidget(0, 0, width / 6, leftSpacerHeight, Component.empty) {
+        override def renderWidget(pGuiGraphics: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float): Unit = {
+          val slice   = 3
+          val offsetU = 9
+
+          val pose = pGuiGraphics.pose()
+          pose.pushPose()
+          pose.translate(0, 0, -1000)
+
+          pGuiGraphics.fill(0, 24, screen.width / 6 + 5, screen.height, 0xFF000000)
+
+          pGuiGraphics.setColor(0.5F, 0.5F, 0.5F, 1F)
+          pGuiGraphics.blitNineSliced(
+            DanmakuCore.resource("textures/gui/node.png"),
+            0,
+            24,
+            screen.width / 6 + 5,
+            screen.height - 24,
+            slice,
+            slice * 3,
+            slice * 3,
+            offsetU,
+            0
+          )
+          pGuiGraphics.setColor(1F, 1F, 1F, 1F)
+          pose.popPose()
+        }
+
+        override def updateWidgetNarration(pNarrationElementOutput: NarrationElementOutput): Unit = ()
+
+        override def mouseClicked(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean = false
+
+        override def mouseScrolled(pMouseX: Double, pMouseY: Double, pDelta: Double): Boolean = false
+
+        override def mouseReleased(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean = false
+
+        override def mouseDragged(
+            pMouseX: Double,
+            pMouseY: Double,
+            pButton: Int,
+            pDragX: Double,
+            pDragY: Double
+        ): Boolean = false
+      },
+      8,
+      0,
+      leftSide.newCellSettings().padding(0)
+    )
+
+    private val saveButton = leftSide.addChild(
+      Button
+        .builder(Component.translatable("danmakucore.gui.danmakuEditor.save"), _ => {})
+        .size(width / 6 - 3, 20)
+        .build(),
+      9,
+      0,
+      leftSide.newCellSettings()
+    )
+
+    override def reposition(): Unit = {
+      container.setHeight(height - 26 + 1)
+      leftSpacer.setHeight(leftSpacerHeight)
+      rightSpacer.height = 0
+
+      leftSpacer.setWidth(width / 6)
+      rightSpacer.width = width / 6
+      container.setWidth(width - leftSpacer.getWidth - rightSpacer.width)
+
+      nameBox.setWidth(width / 6 - 6)
+      authorBox.setWidth(width / 6 - 6)
+      descriptionBox.setWidth(width / 6 - 12)
+      saveButton.setWidth(width / 6 - 3)
+      formButton.setWidth(width / 6 - 3)
+
+    }
   end NodeEditorTab
 }

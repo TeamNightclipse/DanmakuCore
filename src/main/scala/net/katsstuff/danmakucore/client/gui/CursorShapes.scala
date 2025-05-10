@@ -6,6 +6,8 @@ import net.minecraftforge.event.TickEvent.RenderTickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import org.lwjgl.glfw.GLFW.{GLFW_ARROW_CURSOR, GLFW_IBEAM_CURSOR, GLFW_POINTING_HAND_CURSOR, GLFW_RESIZE_ALL_CURSOR, GLFW_RESIZE_EW_CURSOR, GLFW_RESIZE_NS_CURSOR, glfwCreateStandardCursor, glfwDestroyCursor, glfwSetCursor}
 
+import scala.util.Try
+
 object CursorShapes:
   private var arrowCursor        = 0L
   private var ibeamCursor        = 0L
@@ -53,9 +55,11 @@ object CursorShapes:
 
   def destroy(): Unit =
     //TODO: Execute this earlier
-    glfwDestroyCursor(arrowCursor)
-    glfwDestroyCursor(ibeamCursor)
-    glfwDestroyCursor(resizeEwCursor)
-    glfwDestroyCursor(resizeNsCursor)
-    glfwDestroyCursor(resizeAllCursor)
-    glfwDestroyCursor(pointingHandCursor)
+    Try {
+      glfwDestroyCursor(arrowCursor)
+      glfwDestroyCursor(ibeamCursor)
+      glfwDestroyCursor(resizeEwCursor)
+      glfwDestroyCursor(resizeNsCursor)
+      glfwDestroyCursor(resizeAllCursor)
+      glfwDestroyCursor(pointingHandCursor)
+    }

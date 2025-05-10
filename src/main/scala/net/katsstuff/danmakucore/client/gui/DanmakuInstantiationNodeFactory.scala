@@ -545,7 +545,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
         10,
         Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.input.name").append(":"),
         Minecraft.getInstance.font
-      )
+      ).alignLeft()
     private val nameBox = new EditBox(
       Minecraft.getInstance().font,
       0,
@@ -630,6 +630,10 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
     var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.output.title")
 
     private val nameStr = new container.StringWidget(
+      0,
+      0,
+      50,
+      10,
       Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.output.name").append(":"),
       Minecraft.getInstance.font
     ).alignLeft()
@@ -670,9 +674,13 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       translateName: String
   ) extends NodeInfo(globalInfo, tpe) {
     private val nameStr = new container.StringWidget(
+      0,
+      0,
+      50,
+      10,
       Component.translatable(s"danmakucore.gui.nodeEditor.danmakuInstantiations.$translateName.name").append(":"),
       Minecraft.getInstance.font
-    )
+    ).alignLeft()
     protected val nameBox = new EditBox(
       Minecraft.getInstance().font,
       0,

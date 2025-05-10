@@ -37,9 +37,14 @@
   "danmakucore.gui.nodeEditor.danmakuInstantiations.random.title": "Random",
   "danmakucore.gui.nodeEditor.danmakuInstantiations.random.max": "Max",
   "danmakucore.gui.nodeEditor.danmakuInstantiations.random.min": "Min",
+  "danmakucore.gui.nodeEditor.danmakuInstantiations.form.name": "Form",
   "danmakucore.gui.danmakuEditor": "Danmaku editor",
   "danmakucore.gui.danmakuEditor.save": "Save",
+  "danmakucore.gui.danmakuEditor.edit": "Edit",
+  "danmakucore.gui.danmakuEditor.delete": "Delete",
   "danmakucore.gui.danmakuEditor.mainOptions": "Main options",
+  "danmakucore.gui.danmakuEditor.addInstantiation": "New instantiation",
+  "danmakucore.gui.danmakuEditor.addSystem": "New system",
   "danmakucore.gui.danmakuEditor.entries": "Entries",
   "danmakucore.gui.danmakuEditor.entryInfo": "Entry info",
   "danmakucore.gui.danmakuEditor.variant.danmakuInstantiation": "Danmaku instatiation",
@@ -47,5 +52,6 @@
   "danmakucore.gui.danmakuEditor.entry.name": "Name: %s",
   "danmakucore.gui.danmakuEditor.entry.variant": "Variant: %s",
   "danmakucore.gui.danmakuEditor.entry.author": "Author: %s",
-  "danmakucore.gui.danmakuEditor.entry.description": "Desscription: %s"
+  "danmakucore.gui.danmakuEditor.entry.description": "Description: %s",
+  "danmakucore.form.sphere.name": "Sphere"
 }

@@ -6,7 +6,7 @@ import net.minecraft.client.gui.layouts.LayoutElement
 import java.util.function.Consumer
 import scala.beans.BeanProperty
 
-class MutableSpacer(@BeanProperty var x: Int, @BeanProperty var y: Int, var width: Int, height: Int)
+class MutableSpacer(@BeanProperty var x: Int, @BeanProperty var y: Int, var width: Int, var height: Int)
   extends LayoutElement {
   override def getWidth: Int = width
 

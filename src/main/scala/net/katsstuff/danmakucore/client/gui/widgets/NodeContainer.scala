@@ -34,11 +34,11 @@ import org.joml.Vector2d
 //noinspection UnstableApiUsage
 class NodeContainer[NF <: NodeFactory](
     val nodeFactory: NF,
-    x: Int,
-    y: Int,
-    width: Int,
-    height: Int
-) extends AbstractWidget(x, y, width, height, Component.translatable("danmakucore.gui.nodeEditor.container")),
+    _x: Int,
+    _y: Int,
+    _width: Int,
+    _height: Int
+) extends AbstractWidget(_x, _y, _width, _height, Component.translatable("danmakucore.gui.nodeEditor.container")),
       ContainerEventHandler,
       Renderable,
       LayoutElement,
@@ -63,6 +63,9 @@ class NodeContainer[NF <: NodeFactory](
     if containerPath == null then super[AbstractWidget].nextFocusPath(pEvent)
     else containerPath
   end nextFocusPath
+
+  private def x: Int = getX
+  private def y: Int = getY
 
   private var zoom: Double                              = 1
   private var offsetX: Double                           = 0
@@ -147,7 +150,6 @@ class NodeContainer[NF <: NodeFactory](
           oldWidgets += w
           w match
             case io: NodeIOWidget =>
-              println("Node visit C")
               widgetToNodeIdentifierMap.put(
                 io,
                 GraphNodeIdentifier.IO(

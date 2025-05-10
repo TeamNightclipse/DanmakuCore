@@ -66,6 +66,7 @@ object DanmakuCore {
 
     @SubscribeEvent def onClientSetup(event: FMLClientSetupEvent): Unit = {
       CursorShapes.init()
+      // TODO: Inject into Minecraft::close
       Runtime.getRuntime.addShutdownHook(new Thread(() => CursorShapes.destroy()))
     }
   }
