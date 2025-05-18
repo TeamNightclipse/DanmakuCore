@@ -14,7 +14,7 @@ class NodeBackgroundWidget(
     _y: Int,
     sizeX: Int,
     private var _sizeY: Int,
-    style: NodeFactory.NodeStyle
+    val style: NodeFactory.NodeStyle
 ) extends AbstractWidget(_x, _y, sizeX, 13, style.title) {
 
   private val nodeResource = DanmakuCore.resource("textures/gui/node.png")
@@ -23,7 +23,7 @@ class NodeBackgroundWidget(
   def x: Int = getX
 
   def y: Int = getY
-  
+
   def renderedHeight: Int = _sizeY
 
   def setRenderedHeight(pHeight: Int): Unit = _sizeY = pHeight

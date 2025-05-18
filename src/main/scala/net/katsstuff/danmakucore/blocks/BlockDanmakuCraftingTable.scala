@@ -1,6 +1,6 @@
 package net.katsstuff.danmakucore.blocks
 
-import net.katsstuff.danmakucore.client.gui.DanmakuEditorScreen
+import net.katsstuff.danmakucore.client.gui.screen.DanmakuEditorScreen
 import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.player.Player

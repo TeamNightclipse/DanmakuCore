@@ -53,5 +53,6 @@
   "danmakucore.gui.danmakuEditor.entry.variant": "Variant: %s",
   "danmakucore.gui.danmakuEditor.entry.author": "Author: %s",
   "danmakucore.gui.danmakuEditor.entry.description": "Description: %s",
+  "danmakucore.gui.danmakuEditor.nodeType": "Node type",
   "danmakucore.form.sphere.name": "Sphere"
 }

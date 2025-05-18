@@ -43,15 +43,19 @@ class NodeContainer[NF <: NodeFactory](
       Renderable,
       LayoutElement,
       NarratableEntry { container =>
+  var onFocusedChanges: (Option[GuiEventListener], Option[GuiEventListener]) => Unit = (_, _) => ()
+  
   @BooleanBeanProperty var dragging: Boolean    = false
   private var focused: Option[GuiEventListener] = None
 
   override def getFocused: GuiEventListener = focused.orNull
 
   override def setFocused(listener: GuiEventListener): Unit =
+    val oldFocused = focused
     focused.foreach(_.setFocused(false))
     if (listener != null) listener.setFocused(true)
     focused = Option(listener)
+    onFocusedChanges(oldFocused, focused)
   end setFocused
 
   override def setFocused(pFocused: Boolean): Unit = super[AbstractWidget].setFocused(pFocused)
