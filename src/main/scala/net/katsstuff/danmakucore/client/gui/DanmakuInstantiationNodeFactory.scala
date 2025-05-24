@@ -21,7 +21,7 @@ import net.katsstuff.danmakucore.danmaku.{DanmakuInstantiation, DanmakuInstantia
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.components.{AbstractWidget, CycleButton, EditBox, StringWidget}
 import net.minecraft.client.gui.layouts.LayoutSettings
-import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.{Component, MutableComponent}
 import net.minecraft.resources.ResourceLocation
 
 object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
@@ -86,8 +86,104 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   override def allNodeTypes: Seq[NodeType] = NodeType.values.toSeq
 
-  sealed trait NodeInfo(val globalInfo: GlobalInfo, val tpe: NodeType) extends NodeInfoBase {
+  sealed trait NodeInfo(container: NodeContainer[this.type], val globalInfo: GlobalInfo, val tpe: NodeType)
+      extends NodeInfoBase {
     protected var listener: () => Unit = () => ()
+
+    protected[this] def labelledSyncedContent[A <: AbstractWidget](
+        contentType: ContentType[A],
+        label: MutableComponent,
+        width: Int = 50,
+        height: Int = 10
+    ): ContentTuple[A, NodeContentInfo, contentType.type] = {
+      val font                     = Minecraft.getInstance.font
+      val (mainWidget, sideWidget) = contentType.make(container, label, width, height)
+      val labelWithColons          = label.copy().append(":")
+
+      ContentTuple(contentType)(
+        mainContents = Seq(
+          WrapWidgetNodeContentInfo(
+            new container.StringWidget(0, 0, width, height, labelWithColons, font).alignLeft(),
+            tpe.identifier,
+            _.copy().alignHorizontallyCenter().paddingBottom(1)
+          ),
+          WrapWidgetNodeContentInfo(mainWidget, tpe.identifier, _.copy().alignHorizontallyCenter().paddingBottom(4))
+        ),
+        sidebarContents = Seq(
+          WrapWidgetNodeContentInfo(
+            new StringWidget(0, 0, width, height, labelWithColons, font).alignLeft(),
+            tpe.identifier,
+            _.copy().alignHorizontallyCenter().paddingBottom(1)
+          ),
+          WrapWidgetNodeContentInfo(
+            sideWidget,
+            tpe.identifier,
+            _.copy().alignHorizontallyCenter().paddingBottom(4)
+          )
+        ),
+        mainWidget,
+        sideWidget
+      )
+    }
+
+    protected[this] def syncedCycleButton[A](
+        contentType: ContentType.CycleButtonType[A],
+        label: MutableComponent,
+        width: Int = 50,
+        height: Int = 14,
+        paddingTop: Option[Int] = None
+    ): ContentTuple[CycleButton[A], NodeContentInfo, contentType.type] = {
+      val (mainWidget, sideWidget) = contentType.make(container, label, width, height)
+
+      def withPaddingTop(layoutSettings: LayoutSettings) = paddingTop.fold(layoutSettings)(layoutSettings.paddingTop)
+
+      ContentTuple(contentType)(
+        mainContents = Seq(
+          WrapWidgetNodeContentInfo(
+            mainWidget,
+            tpe.identifier,
+            l => withPaddingTop(l.copy().alignHorizontallyCenter())
+          )
+        ),
+        sidebarContents = Seq(
+          WrapWidgetNodeContentInfo(
+            sideWidget,
+            tpe.identifier,
+            l => withPaddingTop(l.copy().alignHorizontallyCenter())
+          )
+        ),
+        mainWidget = mainWidget,
+        sidebarWidget = sideWidget
+      )
+    }
+
+    protected[this] def sliderInput(
+        contentType: ContentType.SliderNodeInput,
+        label: MutableComponent,
+        width: Int = 70
+    ): ContentTuple[NodeIOWidgetSliderInput, NodeContentInfo, contentType.type] = {
+      val (mainWidget, sideWidget) = contentType.make(container, label, width, 14)
+
+      ContentTuple(contentType)(
+        Seq(
+          IONodeContentInfoWithSliderFallback(
+            tpe.identifier,
+            contentType,
+            label,
+            mainWidget
+          )
+        ),
+        Seq(
+          WrapWidgetNodeContentInfo(
+            sideWidget,
+            tpe.identifier,
+            _.copy().alignHorizontallyCenter()
+          )
+        ),
+        mainWidget,
+        sideWidget
+      )
+    }
 
     override def topColor: Int     = tpe.topColor
     override def color: Int        = if globalInfo.invalidInfos.contains(this) then 0xFFFF0000 else 0xFFAAAAAA
@@ -122,15 +218,13 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
     case GraphType.Int    => 0xFF0000FF
     case GraphType.Number => 0xFF00FFFF
 
-  private def varTpeNumberButtonBuilder(
-      container: NodeContainer[this.type]
-  ): container.CycleButton.Builder[GraphNumberType] =
-    container.CycleButton
-      .builder[GraphNumberType] {
-        case GraphType.Float => Component.translatable("danmakucore.gui.nodeEditor.type.float")
-        case GraphType.Int   => Component.translatable("danmakucore.gui.nodeEditor.type.int")
-      }
-      .withValues(GraphType.Float, GraphType.Int)
+  private val varTpeContentType: ContentType.CycleButtonType[GraphNumberType] = ContentType.CycleButtonType(
+    {
+      case GraphType.Float => Component.translatable("danmakucore.gui.nodeEditor.type.float")
+      case GraphType.Int   => Component.translatable("danmakucore.gui.nodeEditor.type.int")
+    },
+    Seq(GraphType.Float, GraphType.Int)
+  )
 
   // noinspection UnstableApiUsage
   private def typeGraph(
@@ -534,128 +628,85 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
   }
 
   private class Input(container: NodeContainer[this.type], globalInfo: GlobalInfo)
-      extends NodeInfo(globalInfo, NodeType.Input) {
+      extends NodeInfo(container, globalInfo, NodeType.Input) {
     var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.input.title")
 
-    private val nameStr =
-      new container.StringWidget(
-        0,
-        0,
-        50,
-        10,
-        Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.input.name").append(":"),
-        Minecraft.getInstance.font
-      ).alignLeft()
-    private val nameBox = new EditBox(
-      Minecraft.getInstance().font,
-      0,
-      0,
-      50,
-      10,
+    private val nameContent = labelledSyncedContent(
+      ContentType.EditBoxType,
       Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.input.name")
     )
-
-    private val defaultStr =
-      new container.StringWidget(
-        0,
-        0,
-        50,
-        10,
-        Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.input.default").append(":"),
-        Minecraft.getInstance.font
-      ).alignLeft()
-    private val defaultBox = new EditBox(
-      Minecraft.getInstance().font,
-      0,
-      0,
-      50,
-      10,
+    private val defaultContent = labelledSyncedContent(
+      ContentType.EditBoxType,
       Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.input.default")
     )
 
     private def setValidityFromValues(): Unit = {
-      val default = defaultBox.getValue
+      val default = defaultContent.value
 
-      val nameBoxValid = nameBox.getValue.nonEmpty
+      val nameBoxValid = nameContent.value.nonEmpty
       val defaultValid = graphType match
         case GraphType.Int   => default.toIntOption.isDefined
         case GraphType.Float => default.toFloatOption.isDefined
 
-      defaultBox.setTextColor(if defaultValid then 0xFFE0E0E0 else 0xFFFF0000)
-      nameBox.setTextColor(if nameBoxValid then 0xFFE0E0E0 else 0xFFFF0000)
+      defaultContent.setTextColor(if defaultValid then 0xFFE0E0E0 else 0xFFFF0000)
+      nameContent.setTextColor(if nameBoxValid then 0xFFE0E0E0 else 0xFFFF0000)
       markValidity(nameBoxValid && defaultValid)
     }
 
-    nameBox.setResponder(_ => setValidityFromValues())
-    defaultBox.setResponder(_ => setValidityFromValues())
+    defaultContent.setResponder(_ => setValidityFromValues())
+    nameContent.setResponder(_ => setValidityFromValues())
+
     markValidity(false)
 
-    private val varTypeButton: CycleButton[GraphNumberType] = varTpeNumberButtonBuilder(container).create(
-      0,
-      0,
-      50,
-      14,
+    private val varTpeContent = syncedCycleButton(
+      varTpeContentType.copy(onValueChange = _ => setValidityFromValues()),
       Component.translatable("danmakucore.gui.nodeEditor.type"),
-      (_: CycleButton[GraphNumberType], _: GraphNumberType) => {
-        setValidityFromValues()
-      }
+      paddingTop = Some(3)
     )
 
-    def name: String = nameBox.getValue
+    def name: String = nameContent.value
 
-    def graphType: GraphNumberType = varTypeButton.getValue
+    def graphType: GraphNumberType = varTpeContent.value
 
-    def defaultValue: Float = defaultBox.getValue.toFloatOption.getOrElse(0F)
+    def defaultValue: Float = defaultContent.value.toFloatOption.getOrElse(0F)
 
-    override val contents: Seq[NodeContentInfo] = Seq(
-      WrapWidgetNodeContentInfo(nameStr, tpe.identifier, _.copy().alignHorizontallyCenter().paddingBottom(1)),
-      WrapWidgetNodeContentInfo(nameBox, tpe.identifier, _.copy().alignHorizontallyCenter().paddingBottom(4)),
-      WrapWidgetNodeContentInfo(defaultStr, tpe.identifier, _.copy().alignHorizontallyCenter().paddingBottom(1)),
-      WrapWidgetNodeContentInfo(defaultBox, tpe.identifier, _.copy().alignHorizontallyCenter().paddingBottom(4)),
-      spacer(tpe),
-      WrapWidgetNodeContentInfo(varTypeButton, tpe.identifier, _.copy().alignHorizontallyCenter()),
-      spacer(tpe),
-      IONodeContentInfo(
-        tpe.identifier,
-        "output",
-        Component.translatable("danmakucore.gui.nodeEditor.input"),
-        tpeToColor(graphType.asGraphType),
-        IOContentVariant.Output
+    override val contents: Seq[NodeContentInfo] =
+      nameContent.mainContents ++ defaultContent.mainContents ++ varTpeContent.mainContents ++ Seq(
+        spacer(tpe),
+        IONodeContentInfo(
+          tpe.identifier,
+          "output",
+          Component.translatable("danmakucore.gui.nodeEditor.input"),
+          tpeToColor(graphType.asGraphType),
+          IOContentVariant.Output
+        )
       )
-    )
+
+    override def sidebarContents: Seq[DanmakuInstantiationNodeFactory.NodeContentInfoBase] = Seq(
+      nameContent.sidebarContents,
+      defaultContent.sidebarContents,
+      varTpeContent.mainContents
+    ).flatten
   }
 
   private class Output(container: NodeContainer[this.type], globalInfo: GlobalInfo)
-      extends NodeInfo(globalInfo, NodeType.Output) {
+      extends NodeInfo(container, globalInfo, NodeType.Output) {
     var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.output.title")
 
-    private val nameStr = new container.StringWidget(
-      0,
-      0,
-      50,
-      10,
-      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.output.name").append(":"),
-      Minecraft.getInstance.font
-    ).alignLeft()
-    private val nameBox = new EditBox(
-      Minecraft.getInstance().font,
-      0,
-      0,
-      50,
-      10,
+    private val nameContent = labelledSyncedContent(
+      ContentType.EditBoxType,
       Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.output.name")
     )
-    nameBox.setResponder { str =>
-      nameBox.setTextColor(if str.nonEmpty then 0xFFE0E0E0 else 0xFFFF0000)
+
+    nameContent.setResponder { str =>
+      nameContent.setTextColor(if str.nonEmpty then 0xFFE0E0E0 else 0xFFFF0000)
       markValidity(str.nonEmpty)
     }
     markValidity(false)
 
-    def name: String = nameBox.getValue
+    def name: String = nameContent.value
 
-    override val contents: Seq[NodeContentInfo] = Seq(
-      WrapWidgetNodeContentInfo(nameStr, tpe.identifier, _.copy().alignHorizontallyCenter().paddingBottom(1)),
-      WrapWidgetNodeContentInfo(nameBox, tpe.identifier, _.copy().alignHorizontallyCenter().paddingBottom(4)),
+    override val contents: Seq[NodeContentInfo] = nameContent.mainContents ++ Seq(
       spacer(tpe),
       IONodeContentInfo(
         tpe.identifier,
@@ -665,6 +716,8 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
         IOContentVariant.Input
       )
     )
+
+    override def sidebarContents: Seq[DanmakuInstantiationNodeFactory.NodeContentInfoBase] = nameContent.sidebarContents
   }
 
   sealed abstract private class OtherInstantiationReferencingNodeInfo(
@@ -672,29 +725,17 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       globalInfo: GlobalInfo,
       tpe: NodeType,
       translateName: String
-  ) extends NodeInfo(globalInfo, tpe) {
-    private val nameStr = new container.StringWidget(
-      0,
-      0,
-      50,
-      10,
-      Component.translatable(s"danmakucore.gui.nodeEditor.danmakuInstantiations.$translateName.name").append(":"),
-      Minecraft.getInstance.font
-    ).alignLeft()
-    protected val nameBox = new EditBox(
-      Minecraft.getInstance().font,
-      0,
-      0,
-      50,
-      10,
-      Component.translatable(s"danmakucore.gui.nodeEditor.danmakuInstantiations.$translateName.name")
-    )
-    nameBox.setMaxLength(48)
+  ) extends NodeInfo(container, globalInfo, tpe) {
+    protected val nameContents: ContentTuple[EditBox, NodeContentInfo, ContentType.EditBoxType.type] =
+      labelledSyncedContent(
+        ContentType.EditBoxType,
+        Component.translatable(s"danmakucore.gui.nodeEditor.danmakuInstantiations.$translateName.name")
+      )
+
+    nameContents.setMaxLength(48)
     private var updateListener: () => Unit = () => ()
 
-    private def fixedContents: Seq[NodeContentInfo] = Seq(
-      WrapWidgetNodeContentInfo(nameStr, tpe.identifier, _.copy().alignHorizontallyLeft().paddingBottom(1)),
-      WrapWidgetNodeContentInfo(nameBox, tpe.identifier, _.copy().alignHorizontallyCenter().paddingBottom(4)),
+    private def fixedContents: Seq[NodeContentInfo] = nameContents.mainContents ++ Seq(
       spacer(tpe)
     )
 
@@ -704,7 +745,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
     private var _lastOperation: Option[DanmakuInstantiation] = None
     def operation: Option[DanmakuInstantiation]              = _lastOperation
 
-    nameBox.setResponder { _ =>
+    nameContents.setResponder { _ =>
       val op = getInstantiation
       if _lastOperation != op then
         _lastOperation = op
@@ -744,6 +785,11 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
     override val contents: Seq[NodeContentInfo] = fixedContents ++ _dynamicContents
 
+    override def sidebarContents: Seq[DanmakuInstantiationNodeFactory.NodeContentInfoBase] = Seq(
+      nameContents.sidebarContents,
+      ???
+    ).flatten
+
     override def onContentsChange(listener: () => Unit): Unit = updateListener = listener
   }
 
@@ -751,7 +797,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       extends OtherInstantiationReferencingNodeInfo(container, globalInfo, NodeType.Group, "group") {
     var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.group.title")
 
-    def groupName: String = nameBox.getValue
+    def groupName: String = nameContents.value
 
     override protected def getInstantiation: Option[DanmakuInstantiation] = globalInfo.getGroup(groupName)
   }
@@ -760,7 +806,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       extends OtherInstantiationReferencingNodeInfo(container, globalInfo, NodeType.Operation, "operation") {
     var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.operation.title")
 
-    def operationName: ResourceLocation = new ResourceLocation(nameBox.getValue)
+    def operationName: ResourceLocation = new ResourceLocation(nameContents.value)
 
     override protected def getInstantiation: Option[DanmakuInstantiation] = {
       val reg = Minecraft.getInstance().level.registryAccess()
@@ -769,10 +815,10 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
   }
 
   private class Math(container: NodeContainer[this.type], globalInfo: GlobalInfo)
-      extends NodeInfo(globalInfo, NodeType.Math) {
+      extends NodeInfo(container, globalInfo, NodeType.Math) {
     var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.title")
-    private val opButton: CycleButton[DanmakuInstantiation.MathOp] = container.CycleButton
-      .builder[DanmakuInstantiation.MathOp] {
+    private val opContentType: ContentType.CycleButtonType[DanmakuInstantiation.MathOp] = ContentType.CycleButtonType(
+      {
         case DanmakuInstantiation.MathOp.Add =>
           Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.add")
         case DanmakuInstantiation.MathOp.Subtract =>
@@ -783,10 +829,15 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
           Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.divide")
         case DanmakuInstantiation.MathOp.Modulo =>
           Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.modulo")
-      }
-      .withValues(DanmakuInstantiation.MathOp.values*)
-      .displayOnlyValue()
-      .create(0, 0, 50, 14, Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.operation"))
+      },
+      DanmakuInstantiation.MathOp.values.toSeq,
+      displayOnlyValue = true
+    )
+    private val opContent = syncedCycleButton(
+      opContentType,
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.operation")
+    )
+
     val aInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
       container,
       tpe.identifier,
@@ -804,10 +855,9 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       IOContentVariant.Input
     )
 
-    def mathOp: DanmakuInstantiation.MathOp = opButton.getValue
+    def mathOp: DanmakuInstantiation.MathOp = opContent.value
 
-    override val contents: Seq[NodeContentInfo] = Seq(
-      WrapWidgetNodeContentInfo(opButton, tpe.identifier, _.copy().alignHorizontallyCenter()),
+    override val contents: Seq[NodeContentInfo] = opContent.mainContents ++ Seq(
       spacer(tpe),
       aInput,
       bInput,
@@ -823,7 +873,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
   }
 
   private class Enumerate(container: NodeContainer[this.type], globalInfo: GlobalInfo)
-      extends NodeInfo(globalInfo, NodeType.Enumerate) {
+      extends NodeInfo(container, globalInfo, NodeType.Enumerate) {
     var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.enumerate.title")
     val countInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
       container,
@@ -848,31 +898,29 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
   }
 
   private class KnownConstant(container: NodeContainer[this.type], globalInfo: GlobalInfo)
-      extends NodeInfo(globalInfo, NodeType.KnownConstant) {
+      extends NodeInfo(container, globalInfo, NodeType.KnownConstant) {
     var title: Component =
       Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.title")
-    private val constantButton: CycleButton[DanmakuInstantiation.ConstantName] = container.CycleButton
-      .builder[DanmakuInstantiation.ConstantName] {
-        case DanmakuInstantiation.ConstantName.Pi =>
-          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.pi")
-        case DanmakuInstantiation.ConstantName.E =>
-          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.e")
-        case DanmakuInstantiation.ConstantName.Phi =>
-          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.phi")
-      }
-      .withValues(DanmakuInstantiation.ConstantName.values*)
-      .create(
-        0,
-        0,
-        50,
-        14,
-        Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.constant")
+    private val constantContentType: ContentType.CycleButtonType[DanmakuInstantiation.ConstantName] =
+      ContentType.CycleButtonType(
+        {
+          case DanmakuInstantiation.ConstantName.Pi =>
+            Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.pi")
+          case DanmakuInstantiation.ConstantName.E =>
+            Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.e")
+          case DanmakuInstantiation.ConstantName.Phi =>
+            Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.phi")
+        },
+        DanmakuInstantiation.ConstantName.values.toSeq
       )
+    private val constantContent = syncedCycleButton(
+      constantContentType,
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.constant")
+    )
 
-    def constant: DanmakuInstantiation.ConstantName = constantButton.getValue
+    def constant: DanmakuInstantiation.ConstantName = constantContent.value
 
-    override val contents: Seq[NodeContentInfo] = Seq(
-      WrapWidgetNodeContentInfo(constantButton, tpe.identifier, _.copy().alignHorizontallyCenter()),
+    override val contents: Seq[NodeContentInfo] = constantContent.mainContents ++ Seq(
       spacer(tpe),
       IONodeContentInfo(
         tpe.identifier,
@@ -882,27 +930,22 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
         IOContentVariant.Output
       )
     )
+
+    override def sidebarContents: Seq[DanmakuInstantiationNodeFactory.NodeContentInfoBase] =
+      constantContent.sidebarContents
   }
 
   private class Convert(container: NodeContainer[this.type], globalInfo: GlobalInfo)
-      extends NodeInfo(globalInfo, NodeType.Convert) {
+      extends NodeInfo(container, globalInfo, NodeType.Convert) {
     var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.convert.title")
-    private val fromButton: CycleButton[GraphNumberType] =
-      varTpeNumberButtonBuilder(container).create(
-        0,
-        0,
-        50,
-        14,
-        Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.convert.from")
-      )
-    private val toButton: CycleButton[GraphNumberType] =
-      varTpeNumberButtonBuilder(container).create(
-        0,
-        0,
-        50,
-        14,
-        Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.convert.to")
-      )
+    private val fromContent = syncedCycleButton(
+      varTpeContentType,
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.convert.from")
+    )
+    private val toContent = syncedCycleButton(
+      varTpeContentType,
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.convert.to")
+    )
 
     val input: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
       container,
@@ -913,12 +956,10 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       IOContentVariant.Input
     )
 
-    def fromType: GraphNumberType = fromButton.getValue
-    def toType: GraphNumberType   = toButton.getValue
+    def fromType: GraphNumberType = fromContent.value
+    def toType: GraphNumberType   = toContent.value
 
-    override val contents: Seq[NodeContentInfo] = Seq(
-      WrapWidgetNodeContentInfo(fromButton, tpe.identifier, _.copy().alignHorizontallyCenter()),
-      WrapWidgetNodeContentInfo(toButton, tpe.identifier, _.copy().alignHorizontallyCenter()),
+    override val contents: Seq[NodeContentInfo] = fromContent.mainContents ++ toContent.mainContents ++ Seq(
       spacer(tpe),
       input,
       spacer(tpe),
@@ -933,16 +974,12 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
   }
 
   private class Random(container: NodeContainer[this.type], globalInfo: GlobalInfo)
-      extends NodeInfo(globalInfo, NodeType.Random) {
+      extends NodeInfo(container, globalInfo, NodeType.Random) {
     var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.random.title")
-    private val tpeButton: CycleButton[GraphNumberType] =
-      varTpeNumberButtonBuilder(container).create(
-        0,
-        0,
-        50,
-        14,
-        Component.translatable("danmakucore.gui.nodeEditor.type")
-      )
+    private val tpeContent = syncedCycleButton(
+      varTpeContentType,
+      Component.translatable("danmakucore.gui.nodeEditor.type")
+    )
 
     val minInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
       container,
@@ -964,10 +1001,9 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       IOContentVariant.Input
     )
 
-    def graphType: GraphNumberType = tpeButton.getValue
+    def graphType: GraphNumberType = tpeContent.value
 
-    override val contents: Seq[NodeContentInfo] = Seq(
-      WrapWidgetNodeContentInfo(tpeButton, tpe.identifier, _.copy().alignHorizontallyCenter()),
+    override val contents: Seq[NodeContentInfo] = tpeContent.mainContents ++ Seq(
       spacer(tpe),
       minInput,
       maxInput,
@@ -1012,21 +1048,11 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
   }
 
   private class IONodeContentInfoWithSliderFallback(
-      container: NodeContainer[this.type],
       coreIdLoc: ResourceLocation,
-      identifier: String,
+      contentType: ContentType.SliderNodeInput,
       title: Component,
-      color: Int,
-      variant: IOContentVariant,
-      minValue: Double = 0,
-      maxValue: Double = 1,
-      currentValue: Double = 0,
-      stepSize: Double = 0,
-      precision: Int = 0
-  ) extends IONodeContentInfo(coreIdLoc, identifier, title, color, variant) {
-
-    override val widget: NodeIOWidgetSliderInput =
-      new NodeIOWidgetSliderInput(this, container, 70, minValue, maxValue, currentValue, stepSize, precision)
+      widget: NodeIOWidgetSliderInput
+  ) extends IONodeContentInfo(coreIdLoc, contentType.identifier, title, contentType.color, IOContentVariant.Input) {
 
     def fallbackValue[A](varType: VariableType[A]): A = varType match
       case VariableType.Float => widget.value.toFloat

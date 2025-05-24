@@ -14,6 +14,7 @@ object NodeFactory {
     def title: Component
     def title_=(title: Component): Unit
     def contents: Seq[NodeContentStyle]
+    def sidebarContents: Seq[NodeContentStyle]
 
     def onContentsChange(listener: () => Unit): Unit
   }
@@ -63,6 +64,7 @@ trait NodeFactory { self =>
   trait NodeInfoBase extends NodeFactory.NodeStyle {
     def tpe: NodeType
     def contents: Seq[NodeContentInfoBase]
+    def sidebarContents: Seq[NodeContentInfoBase]
     def defaultWidth: Int
   }
 
