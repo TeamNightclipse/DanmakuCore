@@ -39,7 +39,7 @@ class DanmakuEditorScreen extends Screen(Component.translatable("danmakucore.gui
 
   override def init(): Unit = {
     tabs.clear()
-    tabs += new MainOptionsTab(screen)
+    tabs += new MainOptionsTab(screen, addRenderableWidget(_), removeWidget(_))
 
     onTabsChange(reposition = false)
     repositionElements()

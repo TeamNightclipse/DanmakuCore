@@ -31,7 +31,6 @@ class NodeWidget(
 
   private val _children: mutable.Buffer[LayoutElement] = mutable.Buffer.empty
   private var layout: GridLayout                       = _
-  private var styleContentWidgets: Seq[LayoutElement]  = style.contents.map(_.widget)
 
   private val background: NodeBackgroundWidget = new NodeBackgroundWidget(0, 0, width, 0, style) {
     var dragOffsetX: Double = 0
@@ -73,7 +72,6 @@ class NodeWidget(
       rows.addChild(c.widget, c.layoutSettings(rows.defaultCellSetting()))
       _children += c.widget
     }
-    styleContentWidgets = style.contents.map(_.widget)
     layout.setX(x)
     layout.setY(y)
     layout.arrangeElements()

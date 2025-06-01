@@ -159,17 +159,6 @@ class BezierCurveWidget(
     sizedSquare(fromD)
     sizedSquare(toD)
 
-    pGuiGraphics.drawString(Minecraft.getInstance().font, "from", fromD.x.toInt, fromD.y.toInt, 0xFFFFFFFF)
-    pGuiGraphics.drawString(Minecraft.getInstance().font, "to", toD.x.toInt, toD.y.toInt, 0xFFFFFFFF)
-
-    val fromComp = if fromWidget.isDefined then fromWidget.get.getMessage else Component.empty
-    val toComp = if toWidget.isDefined then toWidget.get.getMessage else Component.empty
-
-    pGuiGraphics.drawString(Minecraft.getInstance().font, fromComp, control1.x.toInt, control1.y.toInt, 0xFFFFFFFF)
-    pGuiGraphics.drawString(Minecraft.getInstance().font, toComp, control2.x.toInt, control2.y.toInt, 0xFFFFFFFF)
-
-    // pGuiGraphics.bufferSource.endBatch()
-
     pGuiGraphics.flush()
   }
 

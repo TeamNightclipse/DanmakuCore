@@ -44,7 +44,7 @@ class NodeContainer[NF <: NodeFactory](
       LayoutElement,
       NarratableEntry { container =>
   var onFocusedChanges: (Option[GuiEventListener], Option[GuiEventListener]) => Unit = (_, _) => ()
-  
+
   @BooleanBeanProperty var dragging: Boolean    = false
   private var focused: Option[GuiEventListener] = None
 
@@ -138,7 +138,7 @@ class NodeContainer[NF <: NodeFactory](
     val node: NodeWidget = new NodeWidget(
       x = x,
       y = y,
-      width = style.defaultWidth, // TODO: Needs to go. Should be derived automatically
+      width = style.contents.map(_.widget.getWidth).maxOption.getOrElse(0) + 10,
       style = style,
       onContentsChange = self =>
         oldWidgets.foreach { w =>
@@ -223,40 +223,47 @@ class NodeContainer[NF <: NodeFactory](
     _children
       .collectFirst {
         case w: NodeIOWidget if w.mouseClicked(moddedMouseX, moddedMouseY, pButton) =>
-          val newConnection = w.style.variant == NodeFactory.IOContentVariant.Output || w.connections.isEmpty
-          var connection: BezierCurveWidget | Null = null
-          if newConnection then
-            val c = w.connectorRectangle
-            val x = c.left + (c.width / 2D)
-            val y = c.top + (c.height / 2D)
-            connection = new BezierCurveWidget(
-              _from = new Vector2d(x, y),
-              _to = new Vector2d(x, y),
-              width = 1,
-              color = 0xFFFFFFFF,
-              snapLocation = snapLocation
-            )
-            w.style.variant match
-              case NodeFactory.IOContentVariant.Input  => connection.toWidget = Some(w)
-              case NodeFactory.IOContentVariant.Output => connection.fromWidget = Some(w)
+          w match {
+            case input: NodeIOWidgetSliderInput if input.internals.isMouseOver(moddedMouseX, moddedMouseY) =>
+              setFocused(input)
+              if pButton == 0 then this.setDragging(true)
 
-            _children += connection
-          else connection = w.connections.head
-          end if
+            case _ =>
+              val newConnection = w.style.variant == NodeFactory.IOContentVariant.Output || w.connections.isEmpty
+              var connection: BezierCurveWidget | Null = null
+              if newConnection then
+                val c = w.connectorRectangle
+                val x = c.left + (c.width / 2D)
+                val y = c.top + (c.height / 2D)
+                connection = new BezierCurveWidget(
+                  _from = new Vector2d(x, y),
+                  _to = new Vector2d(x, y),
+                  width = 1,
+                  color = 0xFFFFFFFF,
+                  snapLocation = snapLocation
+                )
+                w.style.variant match
+                  case NodeFactory.IOContentVariant.Input  => connection.toWidget = Some(w)
+                  case NodeFactory.IOContentVariant.Output => connection.fromWidget = Some(w)
 
-          w.style.variant match
-            case NodeFactory.IOContentVariant.Input =>
-              if newConnection then connection.fromDragging = true
-              else connection.toDragging = true
+                _children += connection
+              else connection = w.connections.head
+              end if
 
-            case NodeFactory.IOContentVariant.Output =>
-              connection.toDragging = true
-          end match
+              w.style.variant match
+                case NodeFactory.IOContentVariant.Input =>
+                  if newConnection then connection.fromDragging = true
+                  else connection.toDragging = true
 
-          setFocused(connection)
-          if (pButton == 0) this.setDragging(true)
+                case NodeFactory.IOContentVariant.Output =>
+                  connection.toDragging = true
+              end match
 
-          true
+              setFocused(connection)
+              if (pButton == 0) this.setDragging(true)
+
+              true
+          }
       }
       .getOrElse(super.mouseClicked(moddedMouseX, moddedMouseY, pButton))
 

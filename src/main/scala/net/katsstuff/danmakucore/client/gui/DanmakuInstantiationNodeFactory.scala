@@ -13,7 +13,8 @@ import net.katsstuff.danmakucore.client.gui.widgets.{
   MutableSpacer,
   NodeContainer,
   NodeIOWidget,
-  NodeIOWidgetSliderInput
+  NodeIOWidgetSliderInput,
+  SliderInputWidget
 }
 import net.katsstuff.danmakucore.danmaku.DanmakuInstantiation.VariableType
 import net.katsstuff.danmakucore.danmaku.form.{DanCoreForms, Form}
@@ -158,19 +159,24 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
     }
 
     protected[this] def sliderInput(
+        identifier: String,
+        color: Int,
         contentType: ContentType.SliderNodeInput,
         label: MutableComponent,
-        width: Int = 70
-    ): ContentTuple[NodeIOWidgetSliderInput, NodeContentInfo, contentType.type] = {
-      val (mainWidget, sideWidget) = contentType.make(container, label, width, 14)
+        width: Int = 70,
+        needsTopPadding: Boolean = false
+    ): ContentTuple[SliderInputWidget, NodeContentInfo, contentType.type] = {
+      val (mainWidget, sideWidget) = contentType.make(container, label.append(": "), width, 14)
 
       ContentTuple(contentType)(
         Seq(
           IONodeContentInfoWithSliderFallback(
             tpe.identifier,
-            contentType,
+            identifier,
             label,
-            mainWidget
+            color,
+            mainWidget,
+            needsTopPadding
           )
         ),
         Seq(
@@ -187,7 +193,6 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
     override def topColor: Int     = tpe.topColor
     override def color: Int        = if globalInfo.invalidInfos.contains(this) then 0xFFFF0000 else 0xFFAAAAAA
-    override def defaultWidth: Int = 70
 
     override def onContentsChange(listener: () => Unit): Unit = this.listener = listener
 
@@ -672,20 +677,20 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
     override val contents: Seq[NodeContentInfo] =
       nameContent.mainContents ++ defaultContent.mainContents ++ varTpeContent.mainContents ++ Seq(
-        spacer(tpe),
         IONodeContentInfo(
           tpe.identifier,
           "output",
           Component.translatable("danmakucore.gui.nodeEditor.input"),
           tpeToColor(graphType.asGraphType),
-          IOContentVariant.Output
+          IOContentVariant.Output,
+          needsTopPadding = true
         )
       )
 
     override def sidebarContents: Seq[DanmakuInstantiationNodeFactory.NodeContentInfoBase] = Seq(
       nameContent.sidebarContents,
       defaultContent.sidebarContents,
-      varTpeContent.mainContents
+      varTpeContent.sidebarContents
     ).flatten
   }
 
@@ -707,13 +712,13 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
     def name: String = nameContent.value
 
     override val contents: Seq[NodeContentInfo] = nameContent.mainContents ++ Seq(
-      spacer(tpe),
       IONodeContentInfo(
         tpe.identifier,
         "output",
         Component.translatable("danmakucore.gui.nodeEditor.output"),
         tpeToColor(GraphType.Number),
-        IOContentVariant.Input
+        IOContentVariant.Input,
+        needsTopPadding = true
       )
     )
 
@@ -733,13 +738,13 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       )
 
     nameContents.setMaxLength(48)
-    private var updateListener: () => Unit = () => ()
 
     private def fixedContents: Seq[NodeContentInfo] = nameContents.mainContents ++ Seq(
       spacer(tpe)
     )
 
     private var _dynamicContents              = Seq.empty[NodeContentInfo]
+    private var dynamicSidebarContents        = Seq.empty[NodeContentInfo]
     def dynamicContents: Seq[NodeContentInfo] = _dynamicContents
 
     private var _lastOperation: Option[DanmakuInstantiation] = None
@@ -753,14 +758,13 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
           case Some(value) =>
             val newInputs = value.inputs.map { input =>
               // TODO: Let the instantiation specify min and max value here
-              IONodeContentInfoWithSliderFallback(
-                container,
-                tpe.identifier,
+              sliderInput(
                 input.name,
-                Component.literal(input.name),
                 tpeToColor(GraphNumberType.fromVarType(input.tpe).asGraphType),
-                IOContentVariant.Input,
-                currentValue = input.default.asInstanceOf[Double]
+                ContentType.SliderNodeInput(
+                  currentValue = input.default.asInstanceOf[Double]
+                ),
+                Component.literal(input.name)
               )
             }
             val newOutputs = value.outputs.map { case (name, output) =>
@@ -773,7 +777,9 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
               )
             }
 
-            _dynamicContents = newInputs ++ Seq(spacer(tpe)).filter(_ => newInputs.nonEmpty) ++ newOutputs
+            _dynamicContents =
+              newInputs.flatMap(_.mainContents) ++ Seq(spacer(tpe)).filter(_ => newInputs.nonEmpty) ++ newOutputs
+            dynamicSidebarContents = newInputs.flatMap(_.sidebarContents)
 
           case None => _dynamicContents = Nil
 
@@ -787,10 +793,8 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
     override def sidebarContents: Seq[DanmakuInstantiationNodeFactory.NodeContentInfoBase] = Seq(
       nameContents.sidebarContents,
-      ???
+      dynamicSidebarContents
     ).flatten
-
-    override def onContentsChange(listener: () => Unit): Unit = updateListener = listener
   }
 
   private class Group(container: NodeContainer[this.type], globalInfo: GlobalInfo)
@@ -838,63 +842,64 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.operation")
     )
 
-    val aInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
-      container,
-      tpe.identifier,
+    val aInput: ContentTuple[SliderInputWidget, NodeContentInfo, _ <: ContentType.SliderNodeInput] = sliderInput(
       "a",
-      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.valueA").append(": "),
       tpeToColor(GraphType.Number),
-      IOContentVariant.Input
+      ContentType.SliderNodeInput(),
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.valueA"),
+      needsTopPadding = true
     )
-    val bInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
-      container,
-      tpe.identifier,
+    val bInput: ContentTuple[SliderInputWidget, NodeContentInfo, _ <: ContentType.SliderNodeInput] = sliderInput(
       "b",
-      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.valueB").append(": "),
       tpeToColor(GraphType.Number),
-      IOContentVariant.Input
+      ContentType.SliderNodeInput(),
+      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.valueB")
     )
 
     def mathOp: DanmakuInstantiation.MathOp = opContent.value
 
-    override val contents: Seq[NodeContentInfo] = opContent.mainContents ++ Seq(
-      spacer(tpe),
-      aInput,
-      bInput,
-      spacer(tpe),
-      IONodeContentInfo(
-        tpe.identifier,
-        "output",
-        Component.translatable("danmakucore.gui.nodeEditor.output"),
-        tpeToColor(GraphType.Number),
-        IOContentVariant.Output
+    override val contents: Seq[NodeContentInfo] =
+      opContent.mainContents ++ aInput.mainContents ++ bInput.mainContents ++ Seq(
+        IONodeContentInfo(
+          tpe.identifier,
+          "output",
+          Component.translatable("danmakucore.gui.nodeEditor.output"),
+          tpeToColor(GraphType.Number),
+          IOContentVariant.Output,
+          needsTopPadding = true
+        )
       )
-    )
+
+    override def sidebarContents: Seq[DanmakuInstantiationNodeFactory.NodeContentInfoBase] = Seq(
+      opContent.sidebarContents,
+      aInput.sidebarContents,
+      bInput.sidebarContents
+    ).flatten
   }
 
   private class Enumerate(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends NodeInfo(container, globalInfo, NodeType.Enumerate) {
     var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.enumerate.title")
-    val countInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
-      container,
-      tpe.identifier,
-      "count",
-      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.enumerate.count"),
-      tpeToColor(GraphType.Int),
-      IOContentVariant.Input
-    )
+    val countInput: ContentTuple[SliderInputWidget, NodeContentInfo, _ <: ContentType.SliderNodeInput] =
+      sliderInput(
+        "count",
+        tpeToColor(GraphType.Int),
+        ContentType.SliderNodeInput(),
+        Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.enumerate.count")
+      )
 
-    override val contents: Seq[NodeContentInfo] = Seq(
-      countInput,
-      spacer(tpe),
+    override val contents: Seq[NodeContentInfo] = countInput.mainContents ++ Seq(
       IONodeContentInfo(
         tpe.identifier,
         "output",
         Component.translatable("danmakucore.gui.nodeEditor.output"),
         tpeToColor(GraphType.Int),
-        IOContentVariant.Output
+        IOContentVariant.Output,
+        needsTopPadding = true
       )
     )
+
+    override def sidebarContents: Seq[DanmakuInstantiationNodeFactory.NodeContentInfoBase] = countInput.sidebarContents
   }
 
   private class KnownConstant(container: NodeContainer[this.type], globalInfo: GlobalInfo)
@@ -921,13 +926,13 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
     def constant: DanmakuInstantiation.ConstantName = constantContent.value
 
     override val contents: Seq[NodeContentInfo] = constantContent.mainContents ++ Seq(
-      spacer(tpe),
       IONodeContentInfo(
         tpe.identifier,
         "output",
         Component.translatable("danmakucore.gui.nodeEditor.output"),
         tpeToColor(GraphType.Float),
-        IOContentVariant.Output
+        IOContentVariant.Output,
+        needsTopPadding = true
       )
     )
 
@@ -947,30 +952,31 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.convert.to")
     )
 
-    val input: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
-      container,
-      tpe.identifier,
+    val input: ContentTuple[SliderInputWidget, NodeContentInfo, _ <: ContentType.SliderNodeInput] = sliderInput(
       "input",
-      Component.translatable("danmakucore.gui.nodeEditor.input"),
       tpeToColor(fromType.asGraphType),
-      IOContentVariant.Input
+      ContentType.SliderNodeInput(),
+      Component.translatable("danmakucore.gui.nodeEditor.input"),
+      needsTopPadding = true
     )
 
     def fromType: GraphNumberType = fromContent.value
     def toType: GraphNumberType   = toContent.value
 
-    override val contents: Seq[NodeContentInfo] = fromContent.mainContents ++ toContent.mainContents ++ Seq(
-      spacer(tpe),
-      input,
-      spacer(tpe),
-      IONodeContentInfo(
-        tpe.identifier,
-        "output",
-        Component.translatable("danmakucore.gui.nodeEditor.output"),
-        tpeToColor(toType.asGraphType),
-        IOContentVariant.Output
+    override val contents: Seq[NodeContentInfo] =
+      fromContent.mainContents ++ toContent.mainContents ++ input.mainContents ++ Seq(
+        IONodeContentInfo(
+          tpe.identifier,
+          "output",
+          Component.translatable("danmakucore.gui.nodeEditor.output"),
+          tpeToColor(toType.asGraphType),
+          IOContentVariant.Output,
+          needsTopPadding = true
+        )
       )
-    )
+
+    override def sidebarContents: Seq[DanmakuInstantiationNodeFactory.NodeContentInfoBase] =
+      fromContent.sidebarContents ++ toContent.sidebarContents ++ input.sidebarContents
   }
 
   private class Random(container: NodeContainer[this.type], globalInfo: GlobalInfo)
@@ -981,41 +987,41 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       Component.translatable("danmakucore.gui.nodeEditor.type")
     )
 
-    val minInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
-      container,
-      tpe.identifier,
-      "min",
-      Component.translatable(
-        "danmakucore.gui.nodeEditor.danmakuInstantiations.random.min" +
-          ""
-      ),
-      tpeToColor(graphType.asGraphType),
-      IOContentVariant.Input
-    )
-    val maxInput: IONodeContentInfoWithSliderFallback = IONodeContentInfoWithSliderFallback(
-      container,
-      tpe.identifier,
-      "max",
-      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.random.max"),
-      tpeToColor(graphType.asGraphType),
-      IOContentVariant.Input
-    )
+    val minInput: ContentTuple[SliderInputWidget, NodeContentInfo, _ <: ContentType.SliderNodeInput] =
+      sliderInput(
+        "min",
+        tpeToColor(graphType.asGraphType),
+        ContentType.SliderNodeInput(),
+        Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.random.min"),
+        needsTopPadding = true
+      )
+    val maxInput: ContentTuple[SliderInputWidget, NodeContentInfo, _ <: ContentType.SliderNodeInput] =
+      sliderInput(
+        "max",
+        tpeToColor(graphType.asGraphType),
+        ContentType.SliderNodeInput(),
+        Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.random.max")
+      )
 
     def graphType: GraphNumberType = tpeContent.value
 
-    override val contents: Seq[NodeContentInfo] = tpeContent.mainContents ++ Seq(
-      spacer(tpe),
-      minInput,
-      maxInput,
-      spacer(tpe),
-      IONodeContentInfo(
-        tpe.identifier,
-        "output",
-        Component.translatable("danmakucore.gui.nodeEditor.output"),
-        tpeToColor(graphType.asGraphType),
-        IOContentVariant.Output
+    override val contents: Seq[NodeContentInfo] =
+      tpeContent.mainContents ++ minInput.mainContents ++ maxInput.mainContents ++ Seq(
+        IONodeContentInfo(
+          tpe.identifier,
+          "output",
+          Component.translatable("danmakucore.gui.nodeEditor.output"),
+          tpeToColor(graphType.asGraphType),
+          IOContentVariant.Output,
+          needsTopPadding = true
+        )
       )
-    )
+
+    override def sidebarContents: Seq[DanmakuInstantiationNodeFactory.NodeContentInfoBase] = Seq(
+      tpeContent.sidebarContents,
+      minInput.sidebarContents,
+      maxInput.sidebarContents
+    ).flatten
   }
 
   sealed trait NodeContentInfo(val coreId: ResourceLocation) extends NodeContentInfoBase
@@ -1036,7 +1042,8 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       identifier: String,
       var title: Component,
       var color: Int,
-      variant: IOContentVariant
+      variant: IOContentVariant,
+      needsTopPadding: Boolean = false
   ) extends NodeContentInfo(coreIdLoc),
         IONodeContentInfoBase {
 
@@ -1045,14 +1052,25 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
     override def height: Int = 10
 
     override val widget: AbstractWidget = new NodeIOWidget(this)
+
+    override def layoutSettings(default: LayoutSettings): LayoutSettings =
+      val settings = super.layoutSettings(default)
+      if needsTopPadding then settings.paddingTop(settings.getExposed.paddingTop + 3) else settings
   }
 
   private class IONodeContentInfoWithSliderFallback(
       coreIdLoc: ResourceLocation,
-      contentType: ContentType.SliderNodeInput,
+      identifier: String,
       title: Component,
-      widget: NodeIOWidgetSliderInput
-  ) extends IONodeContentInfo(coreIdLoc, contentType.identifier, title, contentType.color, IOContentVariant.Input) {
+      color: Int,
+      internals: SliderInputWidget,
+      needsTopPadding: Boolean = false
+  ) extends IONodeContentInfo(coreIdLoc, identifier, title, color, IOContentVariant.Input, needsTopPadding) {
+
+    override val widget: NodeIOWidgetSliderInput = new NodeIOWidgetSliderInput(
+      this,
+      internals
+    )
 
     def fallbackValue[A](varType: VariableType[A]): A = varType match
       case VariableType.Float => widget.value.toFloat

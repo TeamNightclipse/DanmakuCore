@@ -6,6 +6,7 @@
   "danmakucore.gui.nodeEditor.type.int": "Int",
   "danmakucore.gui.nodeEditor.output": "Output",
   "danmakucore.gui.nodeEditor.input": "Input",
+  "danmakucore.gui.nodeEditor.notValidNumber": "%s is not a valid number",
   "danmakucore.gui.nodeEditor.danmakuInstantiations.convert.title": "Convert",
   "danmakucore.gui.nodeEditor.danmakuInstantiations.convert.from": "From",
   "danmakucore.gui.nodeEditor.danmakuInstantiations.convert.to": "To",

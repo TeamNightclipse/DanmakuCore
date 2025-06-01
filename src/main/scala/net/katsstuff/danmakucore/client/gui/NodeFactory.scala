@@ -65,7 +65,6 @@ trait NodeFactory { self =>
     def tpe: NodeType
     def contents: Seq[NodeContentInfoBase]
     def sidebarContents: Seq[NodeContentInfoBase]
-    def defaultWidth: Int
   }
 
   trait NodeContentInfoBase extends NodeFactory.NodeContentStyle {

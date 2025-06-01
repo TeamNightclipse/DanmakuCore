@@ -1,24 +1,29 @@
 package net.katsstuff.danmakucore.client.gui.screen
 
+import scala.collection.mutable
+
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.client.gui.DanmakuInstantiationNodeFactory
 import net.katsstuff.danmakucore.client.gui.widgets.{
   MutableSpacer,
   NodeBackgroundWidget,
   NodeContainer,
-  NodeWidget,
   SearchableSelectWidget
 }
+import net.katsstuff.danmakucore.client.gui.{DanmakuInstantiationNodeFactory, NodeFactory}
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.*
+import net.minecraft.client.gui.components.events.GuiEventListener
 import net.minecraft.client.gui.layouts.{GridLayout, LayoutElement, LayoutSettings}
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
 
-class NodeEditorTab(screen: DanmakuEditorScreen)
-    extends RepositionTab(Component.translatable("danmakucore.gui.nodeEditor")):
+class NodeEditorTab(
+    screen: DanmakuEditorScreen,
+    addWidget: AbstractWidget => Unit,
+    removeWidget: AbstractWidget => Unit
+) extends RepositionTab(Component.translatable("danmakucore.gui.nodeEditor")):
   private val leftSide  = new GridLayout()
-  private val rightSide = new GridLayout()
+  private val rightSide = new MutableGridLayout()
 
   leftSide.defaultCellSetting().padding(3).paddingHorizontal(5)
   rightSide.defaultCellSetting().padding(3).paddingHorizontal(5)
@@ -57,17 +62,12 @@ class NodeEditorTab(screen: DanmakuEditorScreen)
       stringLayout
     )
 
-    content match {
-      case w: AbstractWidget =>
-        if setMessage then w.setMessage(name)
-        if w.getWidth > maxWidth() then w.setWidth(maxWidth())
-
-      case _ =>
-    }
+    if setMessage then content.setMessage(name)
+    if content.getWidth > maxWidth() then content.setWidth(maxWidth())
 
     side.addChild(content, startRow + 1, 0, layout)
 
-    NodeEditorTab.Field(content, string, layout.getExposed, maxWidth)
+    NodeEditorTab.Field(content, Some(string), layout.getExposed, maxWidth)
   }
   private def addLeftField[A <: AbstractWidget](
       name: Component,
@@ -136,9 +136,11 @@ class NodeEditorTab(screen: DanmakuEditorScreen)
     leftSide.newCellSettings().paddingLeft(2)
   )
 
-  private def leftSpacerHeight = {
-    Math.max(0, screen.height - 26 - nameBox.totalHeight - authorBox.totalHeight - descriptionBox.totalHeight - formSelect.totalHeight - 20 + 6)
-  }
+  private def leftSpacerHeight =
+    Math.max(
+      0,
+      screen.height - 26 - nameBox.totalHeight - authorBox.totalHeight - descriptionBox.totalHeight - formSelect.totalHeight - 20 + 6
+    )
 
   private val leftSpacer = leftSide.addChild(
     new NodeEditorTab.BackgroundSpacer(screen, screen.width / 6, leftSpacerHeight),
@@ -147,24 +149,40 @@ class NodeEditorTab(screen: DanmakuEditorScreen)
     leftSide.newCellSettings().padding(0)
   )
 
-  private val saveButton = leftSide.addChild(
-    Button
-      .builder(Component.translatable("danmakucore.gui.danmakuEditor.save"), _ => {})
-      .size(screen.width / 6 - 3, 20)
-      .build(),
-    9,
-    0
+  private val saveButton = NodeEditorTab.Field(
+    leftSide.addChild(
+      Button
+        .builder(Component.translatable("danmakucore.gui.danmakuEditor.save"), _ => {})
+        .size(screen.width / 6 - 3, 20)
+        .build(),
+      9,
+      0
+    ),
+    None,
+    leftSide.defaultCellSetting().getExposed,
+    () => screen.width / 6
   )
 
-  private val nodeTitle = rightSide.addChild(
-    new StringWidget(0, 0, Component.empty, screen.fontInstance).alignLeft(),
-    0,
-    0,
-    rightSide.newCellSettings().paddingTop(10)
+  private val nodeTitle = NodeEditorTab.Field(
+    rightSide.addChild(
+      new StringWidget(0, 0, Component.empty, screen.fontInstance).alignLeft(),
+      0,
+      0,
+      rightSide.newCellSettings().paddingTop(10)
+    ),
+    None,
+    rightSide.newCellSettings().paddingTop(10).getExposed,
+    () => screen.width / 6
   )
+
+  private val currentRightSidebarWidgets: mutable.Buffer[LayoutElement | NodeEditorTab.Field[AbstractWidget]] =
+    mutable.Buffer.empty
 
   private def rightSpacerHeight =
-    screen.height - 26 - nodeTitle.getHeight
+    screen.height - 26 - nodeTitle.totalHeight - currentRightSidebarWidgets.map {
+      case e: LayoutElement          => e.getHeight
+      case e: NodeEditorTab.Field[_] => e.totalHeight
+    }.sum
 
   private val rightSpacer = rightSide.addChild(
     new NodeEditorTab.BackgroundSpacer(screen, screen.width / 6, screen.height - 26),
@@ -173,12 +191,61 @@ class NodeEditorTab(screen: DanmakuEditorScreen)
     rightSide.newCellSettings().padding(0)
   )
 
-  container.onFocusedChanges = (_, newFocus) => {
-    nodeTitle.setMessage(newFocus match {
-      case Some(value: NodeBackgroundWidget) => value.getMessage
-      case _                                 => Component.empty
-    })
+  def setRightSidebarFromStyle(style: NodeFactory.NodeStyle): Unit = {
+    currentRightSidebarWidgets.foreach {
+      case w: AbstractWidget         => removeWidget(w)
+      case w: NodeEditorTab.Field[_] => removeWidget(w.contents)
+      case _                         =>
+    }
+    currentRightSidebarWidgets.clear()
+
+    nodeTitle.contents.setMessage(style.title)
+    rightSide.clear()
+    rightSide.addChild(
+      nodeTitle.contents,
+      0,
+      0,
+      rightSide.newCellSettings().paddingTop(10)
+    )
+
+    style.sidebarContents.zipWithIndex.foreach { case (c, i) =>
+      val layoutSettings = c.layoutSettings(rightSide.defaultCellSetting())
+      c.widget match {
+        case w: MutableSpacer =>
+          w.width = screen.width / 6
+          currentRightSidebarWidgets += w
+
+        case w: AbstractWidget =>
+          w.setWidth(screen.width / 6)
+          addWidget(w)
+          val field = NodeEditorTab.Field(
+            w,
+            None,
+            layoutSettings.getExposed,
+            () => screen.width / 6
+          )
+          field.setWidth(screen.width / 6)
+          currentRightSidebarWidgets += field
+        case w => currentRightSidebarWidgets += w
+      }
+      rightSide.addChild(c.widget, i + 1, 0, layoutSettings)
+    }
+    rightSide.addChild(
+      rightSpacer,
+      1 + style.sidebarContents.length,
+      0,
+      rightSide.newCellSettings().padding(0)
+    )
+
+    rightSpacer.setHeight(rightSpacerHeight)
+    rightSide.arrangeElements()
   }
+
+  container.onFocusedChanges = (oldFocused, newFocus) =>
+    if oldFocused != newFocus then
+      newFocus match
+        case Some(value: NodeBackgroundWidget) => setRightSidebarFromStyle(value.style)
+        case _                                 =>
 
   override def reposition(): Unit = {
     container.setHeight(screen.height - 26)
@@ -194,15 +261,26 @@ class NodeEditorTab(screen: DanmakuEditorScreen)
     descriptionBox.setWidth(screen.width / 6)
     formSelect.setWidth(screen.width / 6)
     saveButton.setWidth(screen.width / 6 - 10)
+    currentRightSidebarWidgets.foreach {
+      case w: MutableSpacer          => w.width = screen.width / 6
+      case w: AbstractWidget         => w.setWidth(screen.width / 6)
+      case w: NodeEditorTab.Field[_] => w.setWidth(screen.width / 6)
+      case _                         =>
+    }
   }
 
 object NodeEditorTab:
-  case class Field[A <: AbstractWidget](contents: A, label: StringWidget, layout: LayoutSettings.LayoutSettingsImpl, maxWidth: () => Int):
+  case class Field[A <: AbstractWidget](
+      contents: A,
+      label: Option[StringWidget],
+      layout: LayoutSettings.LayoutSettingsImpl,
+      maxWidth: () => Int
+  ):
     lazy val layoutHeight: Int = layout.paddingTop + layout.paddingBottom
     lazy val layoutWidth: Int  = layout.paddingLeft + layout.paddingRight
 
     def totalWidth: Int  = contents.getWidth + layoutWidth
-    def totalHeight: Int = label.getHeight + contents.getHeight + layoutHeight * 2
+    def totalHeight: Int = label.fold(0)(_.getHeight + layoutHeight) + contents.getHeight + layoutHeight
 
     def setWidth(width: Int): Unit =
       val usedWidth = if width + layoutWidth > maxWidth() then maxWidth() - layoutWidth else width

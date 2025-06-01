@@ -6,41 +6,16 @@ import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
 import net.minecraftforge.client.gui.widget.ForgeSlider
 
-class NodeIOWidgetSliderInput(
-  style: NodeFactory.IONodeContentStyle,
-  container: NodeContainer[_],
-  maxWidth: Int = 70,
-  minValue: Double,
-  maxValue: Double,
-  currentValue: Double,
-  stepSize: Double,
-  precision: Int
-) extends NodeIOWidget(style, maxWidth) {
-
-  private class CustomForgeSlider(width: Int, height: Int) extends ForgeSlider(
-    x,
-    y,
-    width,
-    height,
-    style.title,
-    Component.empty,
-    minValue,
-    maxValue,
-    currentValue,
-    stepSize,
-    precision,
-    true
-  ) with container.ContainerRenderScrollingString
-
-  private val internals = new CustomForgeSlider(width, height)
+class NodeIOWidgetSliderInput(style: NodeFactory.IONodeContentStyle, val internals: SliderInputWidget, maxWidth: Int = 70)
+    extends NodeIOWidget(style, maxWidth) {
 
   def value: Double = internals.getValue
 
   override protected def renderSideContent(
-    pGuiGraphics: GuiGraphics,
-    pMouseX: Int,
-    pMouseY: Int,
-    pPartialTick: Float
+      pGuiGraphics: GuiGraphics,
+      pMouseX: Int,
+      pMouseY: Int,
+      pPartialTick: Float
   ): Unit = {
     if connections.nonEmpty then super.renderSideContent(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
     else {
@@ -68,12 +43,14 @@ class NodeIOWidgetSliderInput(
     if internals.isMouseOver(pMouseX, pMouseY) then internals.onClick(pMouseX, pMouseY)
   }
 
+  override def isMouseOver(pMouseX: Double, pMouseY: Double): Boolean = super.isMouseOver(pMouseX, pMouseY) || internals.isMouseOver(pMouseX, pMouseY)
+
   override def mouseDragged(
-    pMouseX: Double,
-    pMouseY: Double,
-    pButton: Int,
-    pDragX: Double,
-    pDragY: Double
+      pMouseX: Double,
+      pMouseY: Double,
+      pButton: Int,
+      pDragX: Double,
+      pDragY: Double
   ): Boolean = {
     super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY)
     internals.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY)
@@ -86,4 +63,8 @@ class NodeIOWidgetSliderInput(
   override def onRelease(pMouseX: Double, pMouseY: Double): Unit =
     super.onRelease(pMouseX, pMouseY)
     internals.onRelease(pMouseX, pMouseY)
+
+  override def charTyped(pCodePoint: Char, pModifiers: Int): Boolean =
+    super.charTyped(pCodePoint, pModifiers)
+    internals.charTyped(pCodePoint, pModifiers)
 }

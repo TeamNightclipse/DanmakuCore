@@ -20,7 +20,7 @@ import net.minecraft.network.chat.{Component, Style}
 import net.minecraft.util.{FormattedCharSequence, Mth}
 import net.minecraftforge.client.gui.widget.ScrollPanel
 
-class MainOptionsTab(screen: DanmakuEditorScreen)
+class MainOptionsTab(screen: DanmakuEditorScreen, addWidget: AbstractWidget => Unit, removeWidget: AbstractWidget => Unit)
     extends RepositionTab(Component.translatable("danmakucore.gui.danmakuEditor.mainOptions")):
 
   enum EntryVariant {
@@ -260,7 +260,7 @@ class MainOptionsTab(screen: DanmakuEditorScreen)
       .builder(
         Component.translatable("danmakucore.gui.danmakuEditor.addInstantiation"),
         _ => {
-          val newTab = new NodeEditorTab(screen)
+          val newTab = new NodeEditorTab(screen, addWidget, removeWidget)
           screen.tabs += newTab
           screen.onTabsChange(reposition = true)
           screen.tabManager.setCurrentTab(newTab, false)

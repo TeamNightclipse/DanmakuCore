@@ -1,15 +1,14 @@
 package net.katsstuff.danmakucore.client.gui
 
 import java.util.function.Consumer
+
 import scala.jdk.CollectionConverters.*
-import net.katsstuff.danmakucore.client.gui.NodeFactory.IOContentVariant
-import net.katsstuff.danmakucore.client.gui.widgets.{NodeContainer, NodeIOWidgetSliderInput}
+
+import net.katsstuff.danmakucore.client.gui.widgets.{NodeContainer, SliderInputWidget}
 import net.katsstuff.danmakucore.util.Var
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.components.{AbstractWidget, CycleButton, EditBox}
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
-import net.minecraftforge.client.gui.widget.ForgeSlider
 
 sealed trait ContentType[A <: AbstractWidget]:
   type Value
@@ -74,22 +73,25 @@ object ContentType:
         height: Int
     ): (CycleButton[A], CycleButton[A]) =
       inline def mkResponder(
-          inline other: CycleButton[A],
+          other: Var[CycleButton[A]],
           respond: Var[Boolean],
           otherRespond: Var[Boolean]
       ): CycleButton.OnValueChange[A] =
         (_, v: A) =>
           if respond.value then
             otherRespond.value = false
-            other.setValue(v)
+            other.value.setValue(v)
             onValueChange(v)
             otherRespond.value = true
 
       val respondMain = Var(true)
       val respondSide = Var(true)
 
-      lazy val responderMain: CycleButton.OnValueChange[A] = mkResponder(side, respondMain, respondSide)
-      lazy val responderSide: CycleButton.OnValueChange[A] = mkResponder(main, respondSide, respondMain)
+      val mainRef = Var[CycleButton[A]](null)
+      val sideRef = Var[CycleButton[A]](null)
+
+      lazy val responderMain: CycleButton.OnValueChange[A] = mkResponder(mainRef, respondMain, respondSide)
+      lazy val responderSide: CycleButton.OnValueChange[A] = mkResponder(sideRef, respondSide, respondMain)
 
       val bMain = container.CycleButton.builder(stringifier).withValues(values)
       initialValue.foreach(bMain.withInitialValue)
@@ -101,6 +103,9 @@ object ContentType:
       if displayOnlyValue then bSide.displayOnlyValue()
       lazy val side = bSide.create(0, 0, width, height, label, responderSide)
 
+      mainRef.value = main
+      sideRef.value = side
+
       (main, side)
 
     override def getValue(widget: CycleButton[A]): A = widget.getValue
@@ -108,41 +113,88 @@ object ContentType:
     override def syncWith(main: CycleButton[A], side: CycleButton[A], responder: A => Unit): Unit = ()
 
   case class SliderNodeInput(
-      style: NodeFactory.IONodeContentStyle,
-      identifier: String,
-      color: Int,
       minValue: Double = 0,
       maxValue: Double = 1,
       currentValue: Double = 0,
       stepSize: Double = 0,
-      precision: Int = 0
-  ) extends ContentType[NodeIOWidgetSliderInput]:
+      precision: Int = 4
+  ) extends ContentType[SliderInputWidget]:
     override type Value         = Double
-    override type SidebarWidget = ForgeSlider
+    override type SidebarWidget = SliderInputWidget
 
     override def make[NF <: NodeFactory](
         container: NodeContainer[NF],
         label: Component,
         width: Int,
         height: Int
-    ): (NodeIOWidgetSliderInput, SidebarWidget) = {
-      val side = new ForgeSlider(0, 0, width, height, label, Component.empty, minValue, maxValue, currentValue, stepSize, precision, true)
-      
-      val main = new NodeIOWidgetSliderInput(
-        style,
-        container,
+    ): (SliderInputWidget, SidebarWidget) = {
+      //  Break glass if needed
+      //  private class CustomForgeSlider(width: Int, height: Int) extends SliderInputWidget(
+      //    x,
+      //    y,
+      //    width,
+      //    height,
+      //    style.title,
+      //    Component.empty,
+      //    minValue,
+      //    maxValue,
+      //    currentValue,
+      //    stepSize,
+      //    precision,
+      //    true
+      //  ) with container.ContainerRenderScrollingString
+
+      val main = new SliderInputWidget(
+        0,
+        0,
         width,
+        height,
+        label,
+        Component.empty,
         minValue,
         maxValue,
         currentValue,
         stepSize,
-        precision
+        precision,
+        true
+      ) with container.ContainerRenderScrollingString
+      val side = new SliderInputWidget(
+        0,
+        0,
+        width,
+        height,
+        label,
+        Component.empty,
+        minValue,
+        maxValue,
+        currentValue,
+        stepSize,
+        precision,
+        true
       )
 
       (main, side)
     }
 
+    override def getValue(widget: SliderInputWidget): Double = widget.getValue
 
-    override def getValue(widget: NodeIOWidgetSliderInput): Double = widget.value
+    override def syncWith(main: SliderInputWidget, side: SidebarWidget, responder: Double => Unit): Unit = {
 
-    override def syncWith(main: NodeIOWidgetSliderInput, side: SidebarWidget, responder: Double => Unit): Unit = ???
+      inline def mkResponder(
+          thisV: SliderInputWidget,
+          that: SliderInputWidget,
+          inline otherResponder: () => Unit
+      ): () => Unit =
+        () =>
+          that.responder = () => ()
+          val v = thisV.getValue
+          that.setValue(v)
+          responder(v)
+          that.responder = otherResponder
+
+      lazy val mainResponder: () => Unit = mkResponder(main, side, sideResponder)
+      lazy val sideResponder: () => Unit = mkResponder(side, main, mainResponder)
+
+      main.responder = mainResponder
+      side.responder = sideResponder
+    }
