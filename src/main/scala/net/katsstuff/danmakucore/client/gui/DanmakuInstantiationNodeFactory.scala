@@ -4,6 +4,7 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 import scala.jdk.OptionConverters.*
 
+import com.google.common.base.Defaults.defaultValue
 import com.google.common.graph.{Graph, Traverser, ValueGraph, ValueGraphBuilder}
 import com.mojang.logging.LogUtils
 import net.katsstuff.danmakucore.DanmakuCore
@@ -51,17 +52,63 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
     def getGroup(name: String): Option[DanmakuInstantiation] = _groups.get(name)
   }
 
-  enum NodeType(val group: Option[String], val identifier: ResourceLocation) extends NodeTypeBase {
-    case Input     extends NodeType(Some("IO"), DanmakuCore.resource("input"))
-    case Output    extends NodeType(Some("IO"), DanmakuCore.resource("output"))
-    case Group     extends NodeType(Some("IO"), DanmakuCore.resource("group"))
-    case Operation extends NodeType(Some("IO"), DanmakuCore.resource("group"))
+  enum NodeType(val group: Option[String], val identifier: ResourceLocation, val title: Component)
+      extends NodeTypeBase {
+    case Input
+        extends NodeType(
+          Some("IO"),
+          DanmakuCore.resource("input"),
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.input.title")
+        )
+    case Output
+        extends NodeType(
+          Some("IO"),
+          DanmakuCore.resource("output"),
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.output.title")
+        )
+    case Group
+        extends NodeType(
+          Some("IO"),
+          DanmakuCore.resource("group"),
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.group.title")
+        )
+    case Operation
+        extends NodeType(
+          Some("IO"),
+          DanmakuCore.resource("group"),
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.operation.title")
+        )
 
-    case Math          extends NodeType(Some("Math"), DanmakuCore.resource("math"))
-    case Enumerate     extends NodeType(Some("Math"), DanmakuCore.resource("enumerate"))
-    case KnownConstant extends NodeType(Some("Math"), DanmakuCore.resource("known_constant"))
-    case Convert       extends NodeType(Some("Math"), DanmakuCore.resource("convert"))
-    case Random        extends NodeType(Some("Math"), DanmakuCore.resource("random"))
+    case Math
+        extends NodeType(
+          Some("Math"),
+          DanmakuCore.resource("math"),
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.title")
+        )
+    case Enumerate
+        extends NodeType(
+          Some("Math"),
+          DanmakuCore.resource("enumerate"),
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.enumerate.title")
+        )
+    case KnownConstant
+        extends NodeType(
+          Some("Math"),
+          DanmakuCore.resource("known_constant"),
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.title")
+        )
+    case Convert
+        extends NodeType(
+          Some("Math"),
+          DanmakuCore.resource("convert"),
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.convert.title")
+        )
+    case Random
+        extends NodeType(
+          Some("Math"),
+          DanmakuCore.resource("random"),
+          Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.random.title")
+        )
 
     override def make(
         container: NodeContainer[self.type],
@@ -90,6 +137,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
   sealed trait NodeInfo(container: NodeContainer[this.type], val globalInfo: GlobalInfo, val tpe: NodeType)
       extends NodeInfoBase {
     protected var listener: () => Unit = () => ()
+    var title: Component               = tpe.title
 
     protected[this] def labelledSyncedContent[A <: AbstractWidget](
         contentType: ContentType[A],
@@ -191,8 +239,8 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
       )
     }
 
-    override def topColor: Int     = tpe.topColor
-    override def color: Int        = if globalInfo.invalidInfos.contains(this) then 0xFFFF0000 else 0xFFAAAAAA
+    override def topColor: Int = tpe.topColor
+    override def color: Int    = if globalInfo.invalidInfos.contains(this) then 0xFFFF0000 else 0xFFAAAAAA
 
     override def onContentsChange(listener: () => Unit): Unit = this.listener = listener
 
@@ -634,7 +682,6 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private class Input(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends NodeInfo(container, globalInfo, NodeType.Input) {
-    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.input.title")
 
     private val nameContent = labelledSyncedContent(
       ContentType.EditBoxType,
@@ -696,7 +743,6 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private class Output(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends NodeInfo(container, globalInfo, NodeType.Output) {
-    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.output.title")
 
     private val nameContent = labelledSyncedContent(
       ContentType.EditBoxType,
@@ -799,7 +845,6 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private class Group(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends OtherInstantiationReferencingNodeInfo(container, globalInfo, NodeType.Group, "group") {
-    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.group.title")
 
     def groupName: String = nameContents.value
 
@@ -808,7 +853,6 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private class Operation(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends OtherInstantiationReferencingNodeInfo(container, globalInfo, NodeType.Operation, "operation") {
-    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.operation.title")
 
     def operationName: ResourceLocation = new ResourceLocation(nameContents.value)
 
@@ -820,7 +864,6 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private class Math(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends NodeInfo(container, globalInfo, NodeType.Math) {
-    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.math.title")
     private val opContentType: ContentType.CycleButtonType[DanmakuInstantiation.MathOp] = ContentType.CycleButtonType(
       {
         case DanmakuInstantiation.MathOp.Add =>
@@ -879,12 +922,11 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private class Enumerate(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends NodeInfo(container, globalInfo, NodeType.Enumerate) {
-    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.enumerate.title")
     val countInput: ContentTuple[SliderInputWidget, NodeContentInfo, _ <: ContentType.SliderNodeInput] =
       sliderInput(
         "count",
         tpeToColor(GraphType.Int),
-        ContentType.SliderNodeInput(),
+        ContentType.SliderNodeInput(stepSize = 1, minValue = 1, maxValue = 100, currentValue = 1),
         Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.enumerate.count")
       )
 
@@ -904,8 +946,7 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private class KnownConstant(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends NodeInfo(container, globalInfo, NodeType.KnownConstant) {
-    var title: Component =
-      Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.knownConstant.title")
+
     private val constantContentType: ContentType.CycleButtonType[DanmakuInstantiation.ConstantName] =
       ContentType.CycleButtonType(
         {
@@ -942,7 +983,6 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private class Convert(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends NodeInfo(container, globalInfo, NodeType.Convert) {
-    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.convert.title")
     private val fromContent = syncedCycleButton(
       varTpeContentType,
       Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.convert.from")
@@ -981,7 +1021,6 @@ object DanmakuInstantiationNodeFactory extends NodeFactory { self =>
 
   private class Random(container: NodeContainer[this.type], globalInfo: GlobalInfo)
       extends NodeInfo(container, globalInfo, NodeType.Random) {
-    var title: Component = Component.translatable("danmakucore.gui.nodeEditor.danmakuInstantiations.random.title")
     private val tpeContent = syncedCycleButton(
       varTpeContentType,
       Component.translatable("danmakucore.gui.nodeEditor.type")

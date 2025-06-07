@@ -57,6 +57,7 @@ trait NodeFactory { self =>
   trait NodeTypeBase {
     def group: Option[String]
     def identifier: ResourceLocation
+    def title: Component
 
     def make(container: NodeContainer[self.type], globalInfo: GlobalInfo): NodeInfo
   }

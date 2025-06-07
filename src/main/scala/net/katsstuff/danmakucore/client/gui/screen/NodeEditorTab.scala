@@ -1,14 +1,8 @@
 package net.katsstuff.danmakucore.client.gui.screen
 
 import scala.collection.mutable
-
 import net.katsstuff.danmakucore.DanmakuCore
-import net.katsstuff.danmakucore.client.gui.widgets.{
-  MutableSpacer,
-  NodeBackgroundWidget,
-  NodeContainer,
-  SearchableSelectWidget
-}
+import net.katsstuff.danmakucore.client.gui.widgets.{MutableSpacer, NodeBackgroundWidget, NodeContainer, NodeWidget, SearchableSelectWidget}
 import net.katsstuff.danmakucore.client.gui.{DanmakuInstantiationNodeFactory, NodeFactory}
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.*
@@ -244,7 +238,7 @@ class NodeEditorTab(
   container.onFocusedChanges = (oldFocused, newFocus) =>
     if oldFocused != newFocus then
       newFocus match
-        case Some(value: NodeBackgroundWidget) => setRightSidebarFromStyle(value.style)
+        case Some(value: NodeWidget) => setRightSidebarFromStyle(value.style)
         case _                                 =>
 
   override def reposition(): Unit = {

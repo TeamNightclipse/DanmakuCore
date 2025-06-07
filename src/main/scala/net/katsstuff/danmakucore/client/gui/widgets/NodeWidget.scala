@@ -7,8 +7,9 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
 import net.katsstuff.danmakucore.client.gui.NodeFactory
-import net.minecraft.client.gui.components.AbstractWidget
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.events.{AbstractContainerEventHandler, GuiEventListener}
+import net.minecraft.client.gui.components.{AbstractWidget, Renderable}
 import net.minecraft.client.gui.layouts.{GridLayout, LayoutElement, LinearLayout}
 import net.minecraft.client.gui.narration.{
   NarratableEntry,
@@ -23,11 +24,32 @@ class NodeWidget(
     x: Int,
     y: Int,
     var width: Int,
-    style: NodeFactory.NodeStyle,
+    val style: NodeFactory.NodeStyle,
     onContentsChange: (self: NodeWidget) => Unit
 ) extends AbstractContainerEventHandler,
       NarratableEntry,
-      LayoutElement { self =>
+      LayoutElement,
+      Renderable { self =>
+
+  private var _isFocused: Boolean = false
+  override def isFocused: Boolean = _isFocused
+
+  override def getFocused: GuiEventListener =
+    if _isFocused then
+      val currentFocus = super.getFocused
+      if currentFocus == null then background else currentFocus
+    else null
+
+  override def setFocused(pListener: GuiEventListener): Unit =
+    super.setFocused(pListener)
+    setFocused(pListener != null)
+
+  override def setFocused(pFocused: Boolean): Unit = {
+    _isFocused = pFocused
+    val currentFocus = super.getFocused
+    if !_isFocused && currentFocus != null then currentFocus.setFocused(false)
+    if _isFocused && currentFocus != null then currentFocus.setFocused(true)
+  }
 
   private val _children: mutable.Buffer[LayoutElement] = mutable.Buffer.empty
   private var layout: GridLayout                       = _
@@ -56,6 +78,8 @@ class NodeWidget(
 
         self.setWidth(Math.max(min, (-this.x + pMouseX).toInt))
     }
+
+    override def isFocused: Boolean = self.isFocused
   }
 
   def init(): Unit = {
@@ -64,7 +88,6 @@ class NodeWidget(
     layout = new GridLayout(0, 0).columnSpacing(10)
     val rows: GridLayout#RowHelper = layout.createRowHelper(1)
     rows.addChild(background)
-    _children += background
     val topSpacer = new MutableSpacer(0, 0, width, 3)
     rows.addChild(topSpacer)
     _children += topSpacer
@@ -72,6 +95,7 @@ class NodeWidget(
       rows.addChild(c.widget, c.layoutSettings(rows.defaultCellSetting()))
       _children += c.widget
     }
+    _children += background
     layout.setX(x)
     layout.setY(y)
     layout.arrangeElements()
@@ -82,14 +106,23 @@ class NodeWidget(
 
   style.onContentsChange(() => init())
 
+  override def render(pGuiGraphics: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float): Unit =
+    // We render the background first so it looks right
+    background.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
+    _children.foreach {
+      case r: Renderable => if r != background then r.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
+      case _             => ()
+    }
+
   override def narrationPriority(): NarratableEntry.NarrationPriority =
     if (this.isFocused) NarratableEntry.NarrationPriority.FOCUSED
     else if (background.isHovered) NarratableEntry.NarrationPriority.HOVERED
     else NarratableEntry.NarrationPriority.NONE
 
-  override def children(): util.List[_ <: GuiEventListener] = _children.collect { case w: GuiEventListener =>
-    w
-  }.asJava
+  override def children(): util.List[_ <: GuiEventListener] =
+    _children.collect { case w: GuiEventListener =>
+      w
+    }.asJava
 
   override def updateNarration(pNarrationElementOutput: NarrationElementOutput): Unit = {
     _children.view
@@ -106,7 +139,8 @@ class NodeWidget(
     pNarrationElementOutput.add(NarratedElementType.USAGE, Component.translatable("narration.component_list.usage"))
   }
 
-  override def getRectangle: ScreenRectangle = new ScreenRectangle(layout.getX, layout.getY, width, layout.getHeight + 10)
+  override def getRectangle: ScreenRectangle =
+    new ScreenRectangle(layout.getX, layout.getY, width, layout.getHeight + 10)
 
   override def setX(pX: Int): Unit = layout.setX(pX)
 
@@ -133,6 +167,8 @@ class NodeWidget(
     _children.foreach(_.setX(0))
     layout.arrangeElements()
   }
+
+  override def isMouseOver(pMouseX: Double, pMouseY: Double): Boolean = background.isMouseOver(pMouseX, pMouseY)
 
   override def visitWidgets(pConsumer: Consumer[AbstractWidget]): Unit =
     layout.visitWidgets(pConsumer)
